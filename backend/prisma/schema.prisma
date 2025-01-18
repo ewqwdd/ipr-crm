@@ -1,0 +1,325 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  role              Role                   @relation(fields: [roleId], references: [id])
+  roleId            Int
+  username          String                 @unique
+  phone             String?                @unique
+  email             String                 @unique
+  passwordHash      String
+  firstName         String?
+  lastName          String?
+  specId            Int?
+  assignedCourses   Assigned_Course[]
+  assignedTests     User_Assigned_Test[]
+  growthPlans       IndividualGrowthPlan[] @relation("UserGrowthPlans")
+  growthPlansMentor IndividualGrowthPlan[] @relation("MentorGrowthPlans")
+  tasksToReview     Task[]
+
+  Spec            Spec?              @relation(fields: [specId], references: [id])
+  ratesToEvaluate Rate360Evaluator[]
+  rates360        Rate360OnUser[]
+  notifications   Notification[]
+  logs            GrowthPlanLog[]
+
+  // Self-relation fields
+  mentees  User[]  @relation("MentorMentees")
+  mentor   User?   @relation("MentorMentees", fields: [mentorId], references: [id])
+  mentorId Int?
+}
+
+model Rate360 {
+  id          Int               @id @default(autoincrement())
+  isConfirmed Boolean              @default(false)
+  startDate   DateTime
+  endDate     DateTime
+  specs       SpecsOnRate360[]
+  skills      SkillsOnRate360[]
+  evaluators  Rate360Evaluator[]
+  users       Rate360OnUser[]
+  tests       User_Assigned_Test[]
+  archived    Boolean              @default(false)
+}
+
+// оцениваемые юзеры
+model Rate360OnUser {
+  userId    Int
+  rate360Id Int
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rate360 Rate360 @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
+
+  @@id([userId, rate360Id]) // Композитный первичный ключ для исключения дубликатов
+}
+
+model Role {
+  id    Int @id @default(autoincrement())
+  name  String
+  users User[]
+}
+
+// назначенные курсы для юзеоов
+model Assigned_Course {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  startDate DateTime?
+  endDate   DateTime?
+  status    Status    @default(ACTIVE)
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+}
+
+model Course {
+  id          Int  @id @default(autoincrement())
+  externalUrl String?
+  name        String
+  description String
+  specId      Int?
+  skillId     Int
+
+  Spec            Spec?             @relation(fields: [specId], references: [id])
+  Skill           Skill             @relation(fields: [skillId], references: [id])
+  Assigned_Course Assigned_Course[]
+  archived        Boolean           @default(false)
+}
+
+model Spec {
+  id          Int                 @id @default(autoincrement())
+  name        String
+  users       User[]
+  courses     Course[]
+  Test        Test[]
+  rate360     SpecsOnRate360[]
+  growthPlans IndividualGrowthPlan[]
+}
+
+model Skill {
+  id      Int            @id @default(autoincrement())
+  name    String
+  type    String
+  courses Course[]
+  Test    Test[]
+  rate360 SkillsOnRate360[]
+}
+
+// назначенные тесты юзеру
+model User_Assigned_Test {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  testId    Int
+  rate360Id Int?
+  startDate DateTime?
+  endDate   DateTime?
+  result    Resut?
+
+  user    User     @relation(fields: [userId], references: [id])
+  test    Test     @relation(fields: [testId], references: [id])
+  rate360 Rate360? @relation(fields: [rate360Id], references: [id])
+}
+
+// тесты
+model Test {
+  id             Int   @id @default(autoincrement())
+  skillId        Int
+  specId         Int?
+  name           String
+  anonymous      Boolean  @default(false)
+  description    String
+  access         String
+  slug           String
+  previewImage   String?
+  successMessage String?
+  startDate      DateTime
+  endDate        DateTime
+
+  testQuestions Question[]
+  usersAssigned User_Assigned_Test[]
+
+  Skill    Skill   @relation(fields: [skillId], references: [id])
+  Spec     Spec?   @relation(fields: [specId], references: [id])
+  archived Boolean @default(false)
+}
+
+model Question {
+  id          Int   @id @default(autoincrement())
+  type        String
+  description String
+  testId      Int
+  order       Int
+  options     Option[]
+
+  Test Test @relation(fields: [testId], references: [id])
+}
+
+model Option {
+  id         Int  @id @default(autoincrement())
+  questionId Int
+  value      String
+  isCorrect  Boolean @default(false)
+
+  Question Question @relation(fields: [questionId], references: [id])
+}
+
+// оценивающий 360
+model Rate360Evaluator {
+  id        Int  @id @default(autoincrement())
+  userId    Int
+  rate360Id Int
+  rate      Int
+  comment   String?
+
+  user    User    @relation(fields: [userId], references: [id])
+  rate360 Rate360 @relation(fields: [rate360Id], references: [id])
+}
+
+model SpecsOnRate360 {
+  specId    Int
+  rate360Id Int
+
+  spec    Spec    @relation(fields: [specId], references: [id])
+  rate360 Rate360 @relation(fields: [rate360Id], references: [id])
+
+  @@id([specId, rate360Id])
+}
+
+model SkillsOnRate360 {
+  skillId   Int
+  rate360Id Int
+
+  skill   Skill   @relation(fields: [skillId], references: [id])
+  rate360 Rate360 @relation(fields: [rate360Id], references: [id])
+
+  @@id([skillId, rate360Id])
+}
+
+// ИПР
+model IndividualGrowthPlan {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  startDate DateTime
+  endDate   DateTime?
+  status    Status
+  goal      String
+  // tasks     String
+  result    Resut?
+  specId    Int?
+  mentorId  Int?
+
+  spec      Spec?           @relation(fields: [specId], references: [id])
+  user      User            @relation("UserGrowthPlans", fields: [userId], references: [id])
+  mentor    User?           @relation("MentorGrowthPlans", fields: [mentorId], references: [id])
+  tasks     Task[]
+  materials Material[]
+  logs      GrowthPlanLog[]
+  archived  Boolean         @default(false)
+}
+
+model GrowthPlanLog {
+  id          Int     @id @default(autoincrement())
+  planId      Int
+  changedById Int
+  changeDate  DateTime   @default(now())
+  changeType  ChangeType // Например, CREATED, UPDATED, DELETED
+  changes     Json
+
+  plan      IndividualGrowthPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  changedBy User                 @relation(fields: [changedById], references: [id])
+}
+
+model Task {
+  id          Int           @id @default(autoincrement())
+  planId      Int
+  reviewerId  Int?
+  startDate   DateTime
+  endDate     DateTime?
+  status      TaskStatus
+  name        String
+  description String
+  priority    TaskPriority
+  url         String?
+  type        TaskMaterialType
+
+  reviewer User?                @relation(fields: [reviewerId], references: [id])
+  plan     IndividualGrowthPlan @relation(fields: [planId], references: [id])
+}
+
+model Material {
+  id          Int              @id @default(autoincrement())
+  planId      Int
+  startDate   DateTime
+  endDate     DateTime?
+  status      Status
+  name        String
+  description String
+  priority    TaskPriority
+  url         String?
+  type        TaskMaterialType
+  contentType MaterialContentType
+
+  plan IndividualGrowthPlan @relation(fields: [planId], references: [id])
+}
+
+model Notification {
+  id          Int   @id @default(autoincrement())
+  userId      Int
+  title       String
+  description String?
+  date        DateTime
+  watched     Boolean
+  type        String // todo: enum
+  url         String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum Status {
+  COMPLETED
+  ACTIVE
+  INACTIVE
+}
+
+enum TaskStatus {
+  COMPLETED
+  IN_PROGRESS
+  IN_REVIEW
+  TO_DO
+}
+
+enum MaterialContentType {
+  VIDEO
+  ARTICLE
+  BOOK
+  COURSE
+}
+
+enum TaskMaterialType {
+  GENERAL
+  AFTER_RATE
+}
+
+enum TaskPriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum Resut {
+  PASSED
+  FAILED
+}
+
+enum ChangeType {
+  CREATED
+  UPDATED
+  DELETED
+}
