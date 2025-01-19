@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "src/users/users.service";
+import { PrismaService } from "src/utils/db/prisma.service";
 import { PasswordService } from "src/utils/password/password";
 
 @Injectable()
@@ -8,7 +9,8 @@ export class AuthService {
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService,
-        private passwordService: PasswordService
+        private passwordService: PasswordService,
+        private prismaService: PrismaService
     ) {}
     async signIn(email: string, password: string) {
         const user = await this.usersService.findOneByEmail(email);

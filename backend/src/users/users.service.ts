@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { CreateUserDto } from './dto/create-user.fto';
 import { PasswordService } from 'src/utils/password/password';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -22,8 +23,8 @@ export class UsersService {
   async findOne(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      include: { role: true },
-      omit: { passwordHash: true, roleId: true },
+      include: { role: true, Spec: true },
+      omit: { passwordHash: true, roleId: true, specId: true },
     });
     return user;
   }
@@ -46,5 +47,14 @@ export class UsersService {
     });
     const count = await this.prisma.user.count();
     return { users, count };
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('id указан неправильно.');
+    }
+    await this.prisma.user.update({ where: { id }, data: { ...updateUserDto } });
+    return { message: 'Пользователь обновлен.' };
   }
 }

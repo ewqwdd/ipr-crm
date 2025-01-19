@@ -13,7 +13,7 @@ type NavType = {
 
 const navigation: NavType[] = [
   { name: 'Dashboard', icon: HomeIcon, href: '/', current: true },
-  { name: 'Team', icon: UsersIcon, href: '/team', current: false },
+  { name: 'Users', icon: UsersIcon, href: '/users', current: false },
   { name: 'Projects', icon: FolderIcon, href: '/projects', current: false },
   { name: 'Calendar', icon: CalendarIcon, href: '/calendar', current: false },
   { name: 'Documents', icon: InboxIcon, href: '/documents', current: false },

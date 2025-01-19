@@ -17,6 +17,7 @@ model User {
   passwordHash      String
   firstName         String?
   lastName          String?
+  avatar            String?
   specId            Int?
   assignedCourses   Assigned_Course[]
   assignedTests     User_Assigned_Test[]

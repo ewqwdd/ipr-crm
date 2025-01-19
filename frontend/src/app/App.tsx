@@ -13,7 +13,9 @@ function App() {
   return (
     <main className="flex h-full bg-gray-100">
       <DarkSidebar />
-      <AppRouter />
+      <div className='flex-1 overflow-y-auto'>
+        <AppRouter />
+      </div>
     </main>
   )
 }

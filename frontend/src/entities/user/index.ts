@@ -1,5 +1,6 @@
-import { User } from './types/types'
+import { User, Role, Spec } from './types/types'
 import { userReducer, userActions } from './userSlice'
+import UserForm from './ui/UserForm'
 
-export { userReducer, userActions }
-export type { User }
+export { userReducer, userActions, UserForm }
+export type { User, Role, Spec }

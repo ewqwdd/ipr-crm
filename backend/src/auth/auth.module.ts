@@ -5,6 +5,7 @@ import { CookieService } from 'src/utils/cookie/cookie.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PasswordService } from 'src/utils/password/password';
 import { UsersModule } from 'src/users/users.module';
+import { PrismaService } from 'src/utils/db/prisma.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { UsersModule } from 'src/users/users.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, CookieService, JwtService, PasswordService],
+  providers: [AuthService, CookieService, JwtService, PasswordService, PrismaService],
 })
 export class AuthModule {}
