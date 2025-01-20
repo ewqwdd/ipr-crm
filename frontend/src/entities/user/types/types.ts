@@ -28,5 +28,6 @@ export interface UserFormData {
     lastName?: string
     phone?: string
     roleId?: number
+    specId?: number
     avatar?: File
 }

@@ -1,5 +1,4 @@
 import { User } from '@/entities/user'
-import { UserFormData } from '@/entities/user/types/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 type Pagination = { limit?: number; page?: number }
@@ -23,13 +22,21 @@ const usersApi = createApi({
       providesTags: (result, error, id) => [{ type: 'User', id }],
     }),
     updateUser: build.mutation<any, { id: number; formData: FormData }>({
-        query: ({ id, formData }) => ({
-          url: `/users/${id}`,
-          method: 'PUT',
-          body: formData,
-        }),
-        invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
+      query: ({ id, formData }) => ({
+        url: `/users/${id}`,
+        method: 'PUT',
+        body: formData,
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'User', id }, 'User'],
+    }),
+    createUser: build.mutation<User, FormData>({
+      query: (formData) => ({
+        url: '/users',
+        method: 'POST',
+        body: formData,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 })
 

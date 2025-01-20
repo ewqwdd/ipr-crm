@@ -2,12 +2,10 @@ import { UserForm } from '@/entities/user'
 import { UserFormData } from '@/entities/user/types/types'
 import { usersApi } from '@/shared/api/usersApi'
 import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate } from 'react-router'
 
-export default function UserEdit() {
-  const { id } = useParams()
-  const { data, isFetching, isLoading } = usersApi.useGetUserByIdQuery(Number(id))
-  const [mutate, {isSuccess, isLoading: mutateLoading}] = usersApi.useUpdateUserMutation()
+export default function AddUser() {
+  const [mutate, {isSuccess, isLoading}] = usersApi.useCreateUserMutation()
   const navigate = useNavigate()
 
   const onSubmit = async (data: UserFormData) => {
@@ -17,7 +15,7 @@ export default function UserEdit() {
         formData.append(key, value)
       }
     })
-    mutate({id: Number(id), formData})
+    mutate(formData)
   }
 
   useEffect(() => {
@@ -26,5 +24,5 @@ export default function UserEdit() {
       }
   }, [isSuccess])
 
-  return <UserForm loading={isFetching || isLoading || mutateLoading} initData={data} onSubmit={onSubmit} edit />
+  return <UserForm loading={isLoading} onSubmit={onSubmit} />
 }

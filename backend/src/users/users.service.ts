@@ -38,12 +38,12 @@ export class UsersService {
     return { ...user, passwordHash: null };
   }
 
-  async findAll({ page = 1, limit = 10 }) {
+  async findAll({ page, limit }: { page?: number; limit?: number }) {
     const users = await this.prisma.user.findMany({
       include: { role: true, Spec: true },
       omit: { passwordHash: true, roleId: true, specId: true },
       take: limit,
-      skip: (page - 1) * limit,
+      skip: page ? (page - 1) * limit : undefined,
     });
     const count = await this.prisma.user.count();
     return { users, count };

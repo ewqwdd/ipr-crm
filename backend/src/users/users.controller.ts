@@ -16,21 +16,46 @@ import { UsersService } from './users.service';
 import { AdminGuard } from 'src/utils/guards/admin.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateUserDto } from './dto/update-user.dto';
-import path from 'path';
+import { extname } from 'path';
+import { S3Service } from 'src/utils/s3/s3.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private s3Service: S3Service,
+  ) {}
 
   @Post()
   @UseGuards(AdminGuard)
-  create(@Body() createUserDto: CreateUserDto) {
+  @UseInterceptors(FileInterceptor('avatar'))
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (file) { 
+      createUserDto.avatar = await this.s3Service.uploadImageBufferToS3(
+        file.buffer,
+        createUserDto.username + Date.now() + extname(file.originalname),
+        'users',
+        file.mimetype,
+      );
+    }
     return this.usersService.create(createUserDto);
   }
 
   @Get()
   @UseGuards(AuthGuard)
-  findAll(@Query('page') page: number, @Query('limit') limit: number) {
+  findAll(
+    @Query('page', {
+      transform: (value) => (value ? Number(value) : undefined),
+    })
+    page: number,
+    @Query('limit', {
+      transform: (value) => (value ? Number(value) : undefined),
+    })
+    limit: number,
+  ) {
     return this.usersService.findAll({ page, limit });
   }
 
@@ -44,13 +69,18 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('avatar'))
   async update(
     @Param('id') id: number,
-    // @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (file) {
-      const filePath = path.join(__dirname, '..', '..', 'public', file.filename)
-    //   updateUserDto.avatar = filePath
+      updateUserDto.avatar = await this.s3Service.uploadImageBufferToS3(
+        file.buffer,
+        updateUserDto.username + Date.now() + extname(file.originalname),
+        'users',
+        file.mimetype,
+      );
     }
-
-}
+    await this.usersService.update(id, updateUserDto);
+    return { message: 'Пользователь обновлен.' };
+  }
 }

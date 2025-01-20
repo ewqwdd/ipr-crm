@@ -1,4 +1,4 @@
-import { useAppDispatch } from '@/app'
+import { useAppDispatch, useAppSelector } from '@/app'
 import { userActions } from '@/entities/user'
 import { $api } from '@/shared/lib/$api'
 import { cva } from '@/shared/lib/cva'
@@ -7,8 +7,9 @@ import { styles } from '@/shared/lib/styles'
 import { InputWithLabel } from '@/shared/ui/InputWithLabel'
 import { PrimaryButton } from '@/shared/ui/PrimaryButton'
 import { AxiosError } from 'axios'
-import { FormEvent, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
@@ -16,6 +17,15 @@ export default function Login() {
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const dispatch = useAppDispatch()
+  const user = useAppSelector((state) => state.user.user)
+  const isMounted = useAppSelector((state) => state.user.isMounted)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (isMounted && user) {
+      navigate('/')
+    }
+  }, [isMounted, user, navigate])
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()

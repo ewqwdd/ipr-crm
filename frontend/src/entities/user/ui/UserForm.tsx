@@ -1,5 +1,5 @@
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight'
-import { RolesSelect } from '@/widgets/DarkSidebar/RolesSelect'
+import { RolesSelect } from '@/widgets/RolesSelect'
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
 import { User, UserFormData } from '../types/types'
 import toast from 'react-hot-toast'
@@ -7,10 +7,12 @@ import { emailRegex } from '@/shared/lib/regex'
 import { styles } from '@/shared/lib/styles'
 import { useNavigate } from 'react-router'
 import { cva } from '@/shared/lib/cva'
+import { SpecsSelect } from '@/widgets/SpecsSelect'
 
-type UserFormErrors = Omit<UserFormData, 'avatar' | 'roleId'> & {
+type UserFormErrors = Omit<UserFormData, 'avatar' | 'roleId' | 'specId'> & {
   avatar?: string
   roleId?: string
+  specId?: string
 }
 
 interface UserFormProps {
@@ -83,16 +85,16 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
       setErrors((prev) => ({ ...prev, lastName: 'Введите фамилию' }))
       valid = false
     }
-    if (!data.phone) {
-      setErrors((prev) => ({ ...prev, phone: 'Введите номер телефона' }))
-      valid = false
-    }
     if (!data.username || data.username.length < 4) {
       setErrors((prev) => ({ ...prev, username: 'Имя пользователя должно быть минимум 4 симввола' }))
       valid = false
     }
     if (!data.roleId) {
-      setErrors((prev) => ({ ...prev, role: 'Выберите роль' }))
+      setErrors((prev) => ({ ...prev, roleId: 'Выберите роль' }))
+      valid = false
+    }
+    if (!data.specId) {
+      setErrors((prev) => ({ ...prev, specId: 'Выберите роль' }))
       valid = false
     }
     if (!edit && (!data.password || data.password.length < 7)) {
@@ -116,6 +118,7 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
         password: '',
         username: initData.username,
         roleId: initData.role.id,
+        specId: initData.Spec?.id ?? 0,
       })
       setPhoto(initData.avatar ?? null)
     }
@@ -263,10 +266,13 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
                 error={errors.phone}
               />
             </div>
-
             <div className="sm:col-span-2">
               <RolesSelect role={data.roleId} setRole={(e) => setDataField('roleId', e)} />
               {errors.roleId && <p className={styles.errorStyles}>{errors.roleId}</p>}
+            </div>
+            <div className="sm:col-span-2">
+              <SpecsSelect spec={data.specId} setSpec={(e) => setDataField('specId', e)} />
+              {errors.specId && <p className={styles.errorStyles}>{errors.specId}</p>}
             </div>
           </div>
         </div>

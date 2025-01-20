@@ -1,26 +1,22 @@
 import { usersApi } from '@/shared/api/usersApi'
 import TableRow from './TableRow'
+import { cva } from '@/shared/lib/cva'
+import { useState } from 'react'
+import { Pagination } from '@/shared/ui/Pagination'
 
-/* This example requires Tailwind CSS v2.0+ */
-const people = [
-  {
-    name: 'Lindsay Walton',
-    title: 'Front-end Developer',
-    department: 'Optimization',
-    email: 'lindsay.walton@example.com',
-    role: 'Member',
-    image:
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  },
-  // More people...
-]
+const LIMIT = 10
 
 export default function WithAvatarsAndMultiLineContent() {
-  const { data, isFetching } = usersApi.useGetUsersQuery({})
+  const [page, setPage] = useState<number>(1)
+  const { data, isFetching } = usersApi.useGetUsersQuery({ page, limit: LIMIT })
   const users = data?.users || []
 
   return (
-    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+    <div
+      className={cva('overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg', {
+        'animate-pulse': isFetching,
+      })}
+    >
       <table className="min-w-full divide-y divide-gray-300">
         <thead className="bg-gray-50">
           <tr>
@@ -42,11 +38,11 @@ export default function WithAvatarsAndMultiLineContent() {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {users.map((person) => (
-            <TableRow key={person.id} person={person} />
-          ))}
+          {!isFetching && users.map((person) => <TableRow key={person.id} person={person} />)}
+          {isFetching && new Array(LIMIT).fill(0).map((_, index) => <TableRow edit={false} key={index} person={{}} />)}
         </tbody>
       </table>
+      <Pagination count={data?.count} limit={LIMIT} page={page} setPage={setPage} />
     </div>
   )
 }
