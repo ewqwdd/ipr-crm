@@ -19,7 +19,7 @@ const usersApi = createApi({
     }),
     getUserById: build.query<User, number>({
       query: (id) => `/users/${id}`,
-      providesTags: (result, error, id) => [{ type: 'User', id }],
+      providesTags: (_, __, id) => [{ type: 'User', id }],
     }),
     updateUser: build.mutation<any, { id: number; formData: FormData }>({
       query: ({ id, formData }) => ({
@@ -27,7 +27,7 @@ const usersApi = createApi({
         method: 'PUT',
         body: formData,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'User', id }, 'User'],
+      invalidatesTags: (_, __, { id }) => [{ type: 'User', id }, 'User'],
     }),
     createUser: build.mutation<User, FormData>({
       query: (formData) => ({
