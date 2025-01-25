@@ -22,6 +22,7 @@ export default function RolesSelect({ role, setRole }: RolesSelectProps) {
       onChange={onChange}
       className={cva({ 'animate-pulse': isFetching })}
     >
+      <option>Выберите роль</option>
       {data && data.map((role) => (
         <option key={role.id} value={role.id}>
           {role.name}

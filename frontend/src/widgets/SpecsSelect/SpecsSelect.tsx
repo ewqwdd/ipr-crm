@@ -55,6 +55,7 @@ export default function SpecsSelect({ spec, setSpec }: SpecsSelectProps) {
           </button>
         }
       >
+        <option>Выберите Специализацию</option>
         {data &&
           data.map((spec) => (
             <option key={spec.id} value={spec.id}>

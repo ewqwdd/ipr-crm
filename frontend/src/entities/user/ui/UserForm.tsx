@@ -31,6 +31,7 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
     phone: '',
     password: '',
     username: '',
+    teams: [],
   })
   const [errors, setErrors] = useState<UserFormErrors>({
     email: '',
