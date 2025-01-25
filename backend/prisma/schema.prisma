@@ -30,11 +30,15 @@ model User {
   rates360        Rate360OnUser[]
   notifications   Notification[]
   logs            GrowthPlanLog[]
+  teams        UserTeam[]
 
   // Self-relation fields
   mentees  User[]  @relation("MentorMentees")
   mentor   User?   @relation("MentorMentees", fields: [mentorId], references: [id])
   mentorId Int?
+  teamCurator Team[]
+  
+  createdAt DateTime @default(now())
 }
 
 model Rate360 {
@@ -97,6 +101,7 @@ model Course {
 model Spec {
   id          Int                 @id @default(autoincrement())
   name        String
+  description String?
   users       User[]
   courses     Course[]
   Test        Test[]
@@ -249,6 +254,7 @@ model Task {
   priority    TaskPriority
   url         String?
   type        TaskMaterialType
+  
 
   reviewer User?                @relation(fields: [reviewerId], references: [id])
   plan     IndividualGrowthPlan @relation(fields: [planId], references: [id])
@@ -281,6 +287,29 @@ model Notification {
   url         String?
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Team {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  users       UserTeam[]
+  parentTeamId Int?
+  parentTeam  Team?    @relation("SubTeams", fields: [parentTeamId], references: [id])
+  subTeams    Team[]   @relation("SubTeams")
+  curatorId   Int?
+  curator     User?    @relation(fields: [curatorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+
+model UserTeam {
+  id      Int    @id @default(autoincrement())
+  userId  Int
+  teamId  Int
+  user    User   @relation(fields: [userId], references: [id])
+  team    Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  @@unique([userId, teamId])
 }
 
 enum Status {

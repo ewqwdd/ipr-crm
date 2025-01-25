@@ -2,11 +2,16 @@
 import { lazy, Suspense } from 'react'
 import Content from './Content'
 import { useMaxMediaQuery } from '@/shared/hooks/useMediaQuery.ts'
+import { useAppSelector } from '@/app/index.ts'
 
 const SidebarMobile = lazy(() => import('./SidebarMobile.tsx'))
 
 export default function DarkSidebar() {
   const isMobile = useMaxMediaQuery(1024)
+
+  const user = useAppSelector((state) => state.user.user)
+  
+  if (!user) return null
 
   if (isMobile) {
     return (

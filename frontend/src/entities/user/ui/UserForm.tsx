@@ -8,6 +8,7 @@ import { styles } from '@/shared/lib/styles'
 import { useNavigate } from 'react-router'
 import { cva } from '@/shared/lib/cva'
 import { SpecsSelect } from '@/widgets/SpecsSelect'
+import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect'
 
 type UserFormErrors = Omit<UserFormData, 'avatar' | 'roleId' | 'specId'> & {
   avatar?: string
@@ -119,16 +120,18 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
         username: initData.username,
         roleId: initData.role.id,
         specId: initData.Spec?.id ?? 0,
+        teams: initData.teams?.map((e) => ({ value: e.teamId, label: e.team.name })) ?? [],
       })
       setPhoto(initData.avatar ?? null)
     }
   }, [initData])
 
-  const setDataField = (field: keyof UserFormData, value: string | number) => {
+  const setDataField = <T,>(field: keyof UserFormData, value: T) => {
     setData((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: '' }))
   }
 
+  const disabledTeams = initData?.teamCurator?.map((e) => e.id) ?? []
   return (
     <form
       className={cva('space-y-8 divide-y divide-gray-200 py-10 px-8', {
@@ -273,6 +276,12 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
             <div className="sm:col-span-2">
               <SpecsSelect spec={data.specId} setSpec={(e) => setDataField('specId', e)} />
               {errors.specId && <p className={styles.errorStyles}>{errors.specId}</p>}
+            </div>
+            <div className="sm:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Подразделение
+            </label>
+              <TeamsMultiSelect disabledTeams={disabledTeams} value={data.teams} onChange={(e) => setDataField('teams', e)} />
             </div>
           </div>
         </div>

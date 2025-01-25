@@ -15,6 +15,7 @@ export default function AddUser() {
         formData.append(key, value)
       }
     })
+    formData.set('teams', JSON.stringify(data.teams?.map(({ value }) => value)))
     mutate(formData)
   }
 

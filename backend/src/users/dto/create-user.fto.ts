@@ -1,5 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsNumber, IsPhoneNumber, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -27,4 +33,6 @@ export class CreateUserDto {
   @Transform(({ value }) => Number(value))
   specId: number;
   avatar?: string;
+  @Transform(({ value }) => (value ? JSON.parse(value) : undefined))
+  teams?: number[];
 }

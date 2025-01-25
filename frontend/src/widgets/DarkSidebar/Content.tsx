@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/app'
-import { CalendarIcon, ChartBarIcon, FolderIcon, HomeIcon, InboxIcon, UsersIcon } from '@heroicons/react/outline'
+import { CalendarIcon, ChartBarIcon, FolderIcon, HomeIcon, InboxIcon, UserIcon, UsersIcon } from '@heroicons/react/outline'
 import React from 'react'
 import { Link, NavLink } from 'react-router'
 
@@ -17,9 +17,9 @@ type NavType = {
 
 const navigation: NavType[] = [
   { name: 'Dashboard', icon: HomeIcon, href: '/', current: true },
-  { name: 'Users', icon: UsersIcon, href: '/users', current: false },
-  { name: 'Projects', icon: FolderIcon, href: '/projects', current: false },
-  { name: 'Calendar', icon: CalendarIcon, href: '/calendar', current: false },
+  { name: 'Users', icon: UserIcon, href: '/users', current: false },
+  { name: 'Орагнизационная структура', icon: UsersIcon, href: '/structure', current: false },
+  { name: 'Команды', icon: UsersIcon, href: '/teams', current: false },
   { name: 'Documents', icon: InboxIcon, href: '/documents', current: false },
   { name: 'Reports', icon: ChartBarIcon, href: '/reports', current: false },
 ]
@@ -27,7 +27,6 @@ const navigation: NavType[] = [
 export default function Content() {
   const user = useAppSelector((state) => state.user.user)
   
-  if (!user) return null
   return (
     <>
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
@@ -82,7 +81,7 @@ export default function Content() {
               />
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-white">{user.username}</p>
+              <p className="text-sm font-medium text-white">{user?.username}</p>
               <p className="text-xs font-medium text-gray-300 group-hover:text-gray-200">View profile</p>
             </div>
           </div>

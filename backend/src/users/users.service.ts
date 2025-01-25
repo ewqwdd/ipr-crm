@@ -23,7 +23,16 @@ export class UsersService {
   async findOne(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      include: { role: true, Spec: true },
+      include: {
+        role: true,
+        Spec: true,
+        teams: {
+          select: { teamId: true, team: { select: { name: true } } },
+        },
+        teamCurator: {
+          select: { id: true, name: true },
+        },
+      },
       omit: { passwordHash: true, roleId: true, specId: true },
     });
     return user;
@@ -31,7 +40,11 @@ export class UsersService {
 
   async create(data: CreateUserDto) {
     const passwordHash = await this.passwordService.getHash(data.password);
-    const userData = { ...data, passwordHash };
+    const userData = {
+      ...data,
+      passwordHash,
+      teams: { createMany: { data: data.teams.map((t) => ({ teamId: t })) } },
+    };
     delete userData.password;
     const user = await this.prisma.user.create({ data: userData });
 
@@ -40,7 +53,13 @@ export class UsersService {
 
   async findAll({ page, limit }: { page?: number; limit?: number }) {
     const users = await this.prisma.user.findMany({
-      include: { role: true, Spec: true },
+      include: {
+        role: true,
+        Spec: true,
+        teams: {
+          select: { teamId: true, team: { select: { name: true } } },
+        },
+      },
       omit: { passwordHash: true, roleId: true, specId: true },
       take: limit,
       skip: page ? (page - 1) * limit : undefined,
@@ -54,7 +73,56 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('id указан неправильно.');
     }
-    await this.prisma.user.update({ where: { id }, data: { ...updateUserDto } });
-    return { message: 'Пользователь обновлен.' };
+
+    const { roleId, specId, teams, ...rest } = updateUserDto;
+    const updates: any = { ...rest };
+
+    // Validate spec and role
+    const [specExists, roleExists] = await Promise.all([
+      this.prisma.spec.findUnique({ where: { id: specId } }),
+      this.prisma.role.findUnique({ where: { id: roleId } }),
+    ]);
+
+    if (!specExists) throw new NotFoundException('Spec не найден.');
+    if (!roleExists) throw new NotFoundException('Role не найден.');
+
+    updates.Spec = { connect: { id: specId } };
+    updates.role = { connect: { id: roleId } };
+
+    // teams that user is not in and not a curator of
+    const curatorAt = user.teamCurator.map((t) => t.id);
+    const teamIdsToAdd = teams.filter(
+      (teamId) =>
+        !user.teams.some((ut) => ut.teamId === teamId) &&
+        !curatorAt.includes(teamId),
+    );
+    // teams that user is in but not in the list
+    const teamIdsToRemove = user.teams
+      .map((ut) => ut.teamId)
+      .filter((teamId) => !teams.includes(teamId));
+
+    if (teamIdsToAdd.length) {
+      updates.teams = {
+        ...updates.teams,
+        createMany: {
+          data: teamIdsToAdd.map((teamId) => ({ teamId })),
+        },
+      };
+    }
+
+    if (teamIdsToRemove.length) {
+      updates.teams = {
+        ...updates.teams,
+        deleteMany: {
+          teamId: { in: teamIdsToRemove },
+        },
+      };
+    }
+
+    // Update user
+    return await this.prisma.user.update({
+      where: { id },
+      data: updates,
+    });
   }
 }

@@ -3,6 +3,7 @@ import { Fragment, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon } from '@heroicons/react/outline'
 import { cva } from '@/shared/lib/cva'
+import { createPortal } from 'react-dom'
 
 type Variant = 'success' | 'error' | 'warning' | 'info'
 
@@ -48,7 +49,7 @@ export default function Modal({
     info: 'text-indigo-600',
   }
 
-  return (
+  return createPortal(
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" initialFocus={cancelButtonRef} onClose={setOpen}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -79,13 +80,13 @@ export default function Modal({
           >
             <div
               className={cva(
-                'relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full',
+                'relative inline-block align-bottom bg-white rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full',
                 {
                   'animate-pulse pointer-events-none': !!loading,
                 }
               )}
             >
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 rounded-lg ">
                 <div className="sm:flex sm:items-start">
                   {icon && (
                     <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -132,6 +133,7 @@ export default function Modal({
           </Transition.Child>
         </div>
       </Dialog>
-    </Transition.Root>
+    </Transition.Root>,
+    document.getElementById('root')!
   )
 }

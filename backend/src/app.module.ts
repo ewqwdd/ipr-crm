@@ -8,9 +8,10 @@ import { UsersModule } from './users/users.module';
 import { PasswordService } from './utils/password/password';
 import { UniversalModule } from './universal/universal.module';
 import { S3Service } from './utils/s3/s3.service';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }), AuthModule, UsersModule, UniversalModule, UniversalModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }), AuthModule, UsersModule, UniversalModule, UniversalModule, TeamsModule],
   controllers: [],
   providers: [PrismaService, CookieService, JwtService, PasswordService, S3Service],
 })

@@ -17,6 +17,7 @@ export default function UserEdit() {
         formData.append(key, value)
       }
     })
+    formData.set('teams', JSON.stringify(data.teams?.map(({ value }) => value)))
     mutate({id: Number(id), formData})
   }
 

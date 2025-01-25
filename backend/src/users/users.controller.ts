@@ -33,7 +33,7 @@ export class UsersController {
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) { 
+    if (file) {
       createUserDto.avatar = await this.s3Service.uploadImageBufferToS3(
         file.buffer,
         createUserDto.username + Date.now() + extname(file.originalname),

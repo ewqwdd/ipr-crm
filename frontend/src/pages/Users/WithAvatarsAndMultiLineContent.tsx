@@ -8,13 +8,14 @@ const LIMIT = 10
 
 export default function WithAvatarsAndMultiLineContent() {
   const [page, setPage] = useState<number>(1)
-  const { data, isFetching } = usersApi.useGetUsersQuery({ page, limit: LIMIT })
+  const { data, isLoading } = usersApi.useGetUsersQuery({})
   const users = data?.users || []
+  const paginateddata = users.slice((page - 1) * LIMIT, page * LIMIT)
 
   return (
     <div
       className={cva('overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg', {
-        'animate-pulse': isFetching,
+        'animate-pulse': isLoading,
       })}
     >
       <table className="min-w-full divide-y divide-gray-300">
@@ -27,7 +28,7 @@ export default function WithAvatarsAndMultiLineContent() {
               Username
             </th>
             <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-              Phone
+              Подразделение
             </th>
             <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
               Role
@@ -38,8 +39,10 @@ export default function WithAvatarsAndMultiLineContent() {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {!isFetching && users.map((person) => <TableRow key={person.id} person={person} />)}
-          {isFetching && new Array(LIMIT).fill(0).map((_, index) => <TableRow edit={false} key={index} person={{}} />)}
+          {!isLoading && data && paginateddata.map((person) => <TableRow key={person.id} person={person} />)}
+          {isLoading &&
+            !data &&
+            new Array(LIMIT).fill(0).map((_, index) => <TableRow edit={false} key={index} person={{}} />)}
         </tbody>
       </table>
       <Pagination count={data?.count} limit={LIMIT} page={page} setPage={setPage} />

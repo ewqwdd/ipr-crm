@@ -13,7 +13,7 @@ export default function TableRow({ person, edit = true }: TableRowProps) {
         <div className="flex items-center">
           <Link to={`/users/${person?.id}`} className="h-10 w-10 flex-shrink-0">
             {person.avatar ? (
-              <img className="h-10 w-10 rounded-full" src={person.avatar} alt="avatar" />
+              <img className="h-10 w-10 rounded-full object-cover" src={person.avatar} alt="avatar" />
             ) : (
               <div className="h-10 w-10 rounded-full bg-gray-200" />
             )}
@@ -30,7 +30,14 @@ export default function TableRow({ person, edit = true }: TableRowProps) {
         <div className="text-gray-900">{person.Spec?.name}</div>
         <div className="text-gray-500">{person.username}</div>
       </td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.phone}</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex gap-2 flex-wrap">
+        {person.teams?.map((e, index) => (
+          <span key={e.teamId}>
+            {e?.team?.name}
+            {index !== person.teams!.length - 1 && ', '}
+          </span>
+        ))}
+      </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         <span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
           {person.role?.name}

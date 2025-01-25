@@ -1,5 +1,7 @@
 import { AddUser } from "@/pages/AddUser";
 import Login from "@/pages/Login/Login";
+import { Structure } from "@/pages/Structure";
+import { Teams } from "@/pages/Teams";
 import { UserEdit } from "@/pages/UserEdit";
 import { UserPage } from "@/pages/UserPage";
 import Users from "@/pages/Users/Users";
@@ -15,6 +17,8 @@ export default function AppRouter() {
         </Route>
         <Route path="/userEdit/:id" element={<UserEdit />} />
         <Route path="/addUser" element={<AddUser />} />
+        <Route path="/structure" element={<Structure />} />
+        <Route path="/teams" element={<Teams />} />
     </Routes>
   )
 }
