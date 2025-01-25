@@ -16,9 +16,11 @@ async function bootstrap() {
     origin: [origin],
     credentials: true,
   });
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
 
   app.use(cookieParser());
 

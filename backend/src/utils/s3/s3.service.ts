@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import {S3, config} from 'aws-sdk';
+import { S3, config } from 'aws-sdk';
 
 @Injectable()
 export class S3Service implements OnModuleInit {
@@ -22,10 +22,10 @@ export class S3Service implements OnModuleInit {
   }
 
   async uploadImageBufferToS3(
-    buffer: Buffer, 
-    fileName: string, 
+    buffer: Buffer,
+    fileName: string,
     folderName: string,
-    mimeType?: string
+    mimeType?: string,
   ): Promise<string> {
     try {
       const params: AWS.S3.PutObjectRequest = {

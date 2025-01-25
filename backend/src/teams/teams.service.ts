@@ -77,15 +77,18 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }
-    if (team.users.find((e) => e.userId === body.curatorId)) {
-      throw new ForbiddenException('Куратор не может быть участником команды.');
-    }
 
     const updated = await this.prisma.team.update({
       where: { id },
       data: {
         ...body,
         curatorId: body.curatorId ? body.curatorId : undefined,
+        users: {
+          deleteMany: {
+            userId: { equals: body.curatorId },
+            teamId: { equals: id },
+          },
+        },
         subTeams: body.subTeams
           ? { deleteMany: {}, connect: body.subTeams.map((e) => ({ id: e })) }
           : undefined,
@@ -102,6 +105,26 @@ export class TeamsService {
     await this.prisma.team.update({
       where: { id: teamId },
       data: { curatorId: null },
+    });
+    return;
+  }
+
+  async setCurator(teamId: number, curatorId: number) {
+    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    if (!team) {
+      throw new NotFoundException('Команда не найдена.');
+    }
+    await this.prisma.team.update({
+      where: { id: teamId },
+      data: {
+        curatorId,
+        users: {
+          deleteMany: {
+            userId: { equals: curatorId },
+            teamId: { equals: teamId },
+          },
+        },
+      },
     });
     return;
   }

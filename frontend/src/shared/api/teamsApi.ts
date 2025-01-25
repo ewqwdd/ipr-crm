@@ -57,6 +57,14 @@ const teamsApi = createApi({
       }),
       invalidatesTags: ['Team'],
     }),
+    addCurator: build.mutation<null, { id: number; curatorId: number }>({
+      query: ({ id, curatorId }) => ({
+        url: `/teams/curators/${id}`,
+        method: 'POST',
+        body: { curatorId },
+      }),
+      invalidatesTags: ['Team'],
+    }),
   }),
 })
 

@@ -9,12 +9,12 @@ export default function Teams() {
   const list = data?.list ?? []
 
   return (
-    <div className="px-8 py-10 flex flex-col max-w-5xl">
+    <div className="px-8 py-10 flex flex-col">
       <div className="flex justify-between items-center">
         <Heading title="Подразделения" description="Подразделения и пользователи" />
         <PrimaryButton className="self-start">Добавить</PrimaryButton>
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 max-w-5xl mt-8">
         {list.map((team) => (
           <TeamItem key={team.id} team={team} />
         ))}

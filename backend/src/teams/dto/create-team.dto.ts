@@ -1,8 +1,5 @@
 import { Transform } from 'class-transformer';
-import {
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateTeamDto {
   @IsNotEmpty()
@@ -12,7 +9,7 @@ export class CreateTeamDto {
   @IsString()
   description: string;
 
-  @Transform(({ value }) => value ? Number(value) : undefined)
+  @Transform(({ value }) => (value ? Number(value) : undefined))
   parentTeamId?: number;
 
   curatorId?: number;

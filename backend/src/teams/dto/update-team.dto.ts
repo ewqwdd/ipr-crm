@@ -1,3 +1,3 @@
-import { CreateTeamDto } from "./create-team.dto";
+import { CreateTeamDto } from './create-team.dto';
 
 export type UpdateTeamDto = Partial<CreateTeamDto>;

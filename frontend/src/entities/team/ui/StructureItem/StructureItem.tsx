@@ -37,7 +37,7 @@ export default memo(function StructureItem({ team, openModal, startEditing, curr
 
   if (!team.subTeams?.length) {
     return (
-      <div className={cva("flex p-2 items-center transition-all duration-200 bg-gray-100 hover:bg-gray-200 cursor-pointer", {
+      <div className={cva("flex p-2 items-center transition-all duration-200 bg-gray-100 hover:bg-gray-200 cursor-pointer pr-14", {
         'bg-gray-200': current === team.id,
       })} onClick={onClick}>
         {title}{' '}

@@ -39,7 +39,7 @@ export default function Structure() {
 
   return (
     <>
-      <div className="px-8 py-10 flex flex-col max-w-5xl">
+      <div className="px-8 py-10 flex flex-col">
         <div className="flex justify-between items-center">
           <Heading title="Орагнизационная структура" description="Струкрутра подразделений компании" />
           <PrimaryButton className="self-start" onClick={openCreateModal}>
@@ -47,7 +47,7 @@ export default function Structure() {
           </PrimaryButton>
         </div>
         <div className="flex gap-4">
-          <div className="flex flex-1 flex-col max-w-sm mt-8">
+          <div className="flex flex-1 flex-col max-w-lg mt-8">
             {!isFetching &&
               data?.structure?.map((team) => (
                 <StructureItem

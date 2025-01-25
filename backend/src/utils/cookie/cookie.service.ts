@@ -11,7 +11,7 @@ export class CookieService {
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
       sameSite: isDev ? 'none' : 'strict',
-      secure: true,      
+      secure: true,
     });
   }
 
