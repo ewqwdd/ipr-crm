@@ -30,6 +30,7 @@ export default forwardRef(function TextAreaWithLabel({ label, className, name, r
         )}
         <div className={cva('mt-1 relative rounded-md shadow-sm', className)}>
         <textarea
+          ref={ref}
           rows={4}
           name={name}
           className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"

@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/app'
-import { CalendarIcon, ChartBarIcon, FolderIcon, HomeIcon, InboxIcon, UserIcon, UsersIcon } from '@heroicons/react/outline'
+import { ChartBarIcon, HomeIcon, InboxIcon, UserIcon, UsersIcon } from '@heroicons/react/outline'
 import React from 'react'
 import { Link, NavLink } from 'react-router'
 

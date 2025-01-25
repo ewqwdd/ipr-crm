@@ -1,4 +1,3 @@
-import { Team } from '@/entities/team'
 import { teamsApi } from '@/shared/api/teamsApi'
 import { cva } from '@/shared/lib/cva'
 import Select, { ActionMeta, MultiValue } from 'react-select'
