@@ -43,7 +43,10 @@ export class TeamsService {
   }
 
   async findOne(id: number) {
-    const team = await this.prisma.team.findUnique({ where: { id } });
+    const team = await this.prisma.team.findUnique({ where: { id }, include: {
+      users: true,
+      curator: true,
+    } });
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }

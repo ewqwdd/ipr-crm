@@ -1,6 +1,8 @@
 import { CreateTeamDto, Team } from '@/entities/team'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
+type GetTeamResponse = Omit<Team, 'users'> & { users: { id: number, userId: number, teamId: number }[] }
+
 const teamsApi = createApi({
   reducerPath: 'teamsApi',
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL, credentials: 'include' }),
@@ -64,6 +66,10 @@ const teamsApi = createApi({
         body: { curatorId },
       }),
       invalidatesTags: ['Team'],
+    }),
+    getTeam: build.query<GetTeamResponse, number>({
+      providesTags: (_, __, id) => [{ type: 'Team', id }],
+      query: (id) => `/teams/${id}`,
     }),
   }),
 })

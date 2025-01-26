@@ -9,6 +9,10 @@ import { PasswordService } from './utils/password/password';
 import { UniversalModule } from './universal/universal.module';
 import { S3Service } from './utils/s3/s3.service';
 import { TeamsModule } from './teams/teams.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
+console.log(join(__dirname, '..', '..', 'frontend', 'dist'))
 
 @Module({
   imports: [
@@ -16,8 +20,11 @@ import { TeamsModule } from './teams/teams.module';
     AuthModule,
     UsersModule,
     UniversalModule,
-    UniversalModule,
     TeamsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'frontend', 'dist'), // Путь к папке сборки фронтенда
+      exclude: ['api/*'], // Исключаем маршруты с префиксом /api
+    }),
   ],
   controllers: [],
   providers: [

@@ -59,6 +59,12 @@ export class TeamsController {
     return this.teamsService.setCurator(id, body.curatorId);
   }
 
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  async findOne(@Param('id') id: number) {
+    return this.teamsService.findOne(id);
+  }
+
   @Post('/:id')
   @UseGuards(AdminGuard)
   async update(@Body() body: UpdateTeamDto, @Param('id') id: number) {

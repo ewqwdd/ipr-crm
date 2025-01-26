@@ -21,6 +21,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  
+  app.setGlobalPrefix('api');
 
   app.use(cookieParser());
 

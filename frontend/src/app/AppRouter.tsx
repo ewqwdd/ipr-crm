@@ -1,6 +1,7 @@
 import { AddUser } from "@/pages/AddUser";
 import Login from "@/pages/Login/Login";
 import { Structure } from "@/pages/Structure";
+import { TeamPage } from "@/pages/TeamPage";
 import { Teams } from "@/pages/Teams";
 import { UserEdit } from "@/pages/UserEdit";
 import { UserPage } from "@/pages/UserPage";
@@ -19,6 +20,7 @@ export default function AppRouter() {
         <Route path="/addUser" element={<AddUser />} />
         <Route path="/structure" element={<Structure />} />
         <Route path="/teams" element={<Teams />} />
+        <Route path="/teams/:id" element={<TeamPage />} />
     </Routes>
   )
 }
