@@ -1,7 +1,5 @@
-import { CreateTeamDto, Team } from '@/entities/team'
+import { CreateTeamDto, Team, TeamSingle } from '@/entities/team'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-
-type GetTeamResponse = Omit<Team, 'users'> & { users: { id: number, userId: number, teamId: number }[] }
 
 const teamsApi = createApi({
   reducerPath: 'teamsApi',
@@ -67,9 +65,25 @@ const teamsApi = createApi({
       }),
       invalidatesTags: ['Team'],
     }),
-    getTeam: build.query<GetTeamResponse, number>({
+    getTeam: build.query<TeamSingle, number>({
       providesTags: (_, __, id) => [{ type: 'Team', id }],
       query: (id) => `/teams/${id}`,
+    }),
+    setTeamSpecs: build.mutation<null, { teamId: number; userId: number; specs: number[] }>({
+      query: (body) => ({
+        url: '/teams/specs',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Team'],
+    }),
+    addUsers: build.mutation<null, { userIds: number[]; teamId: number }>({
+      query: (body) => ({
+        url: '/teams/users',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Team'],
     }),
   }),
 })

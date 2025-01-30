@@ -16,6 +16,8 @@ import { AdminGuard } from 'src/utils/guards/admin.guard';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { LeaveTeamDto } from './dto/leave-team.dto';
+import { SetTeamUserSpecs } from './dto/set-team-user-specs';
+import { AddTeamUserDto } from './dto/add-team-users.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -63,6 +65,19 @@ export class TeamsController {
   @UseGuards(AuthGuard)
   async findOne(@Param('id') id: number) {
     return this.teamsService.findOne(id);
+  }
+
+  @Post('/users')
+  @UseGuards(AdminGuard)
+  async addUsers(@Body() body: AddTeamUserDto) {
+    console.log(body);
+    return this.teamsService.addTeamUsers(body.teamId, body.userIds);
+  }
+
+  @Post('/specs')
+  @UseGuards(AdminGuard)
+  async addSpec(@Body() body: SetTeamUserSpecs) {
+    return this.teamsService.setTeamUserSpecs(body);
   }
 
   @Post('/:id')

@@ -17,4 +17,18 @@ interface CreateTeamDto {
   curatorId?: number
 }
 
-export type { Team, CreateTeamDto }
+type TeamSingle = Omit<Team, 'users'> & {
+  users: {
+    id: number
+    userId: number
+    teamId: number
+    user: {
+      specId: number
+      username: string
+      avatar?: string
+      specsOnTeams: { specId: number; teamId: number; userId: number }[]
+    }
+  }[]
+}
+
+export type { Team, CreateTeamDto, TeamSingle }

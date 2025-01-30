@@ -30,8 +30,8 @@ export default function Modal({
   title,
   children,
   variant = 'info',
-  cancelText = 'Cancel',
-  submitText = 'Submit',
+  cancelText = 'Отмена',
+  submitText = 'Подтвердить',
   loading,
 }: ModalProps) {
   const cancelButtonRef = useRef(null)

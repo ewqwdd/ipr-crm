@@ -31,6 +31,7 @@ model User {
   notifications   Notification[]
   logs            GrowthPlanLog[]
   teams        UserTeam[]
+  specsOnTeams SpecsOnUserTeam[]
 
   // Self-relation fields
   mentees  User[]  @relation("MentorMentees")
@@ -107,6 +108,7 @@ model Spec {
   Test        Test[]
   rate360     SpecsOnRate360[]
   growthPlans IndividualGrowthPlan[]
+  usersTeams  SpecsOnUserTeam[]
 }
 
 model Skill {
@@ -307,9 +309,26 @@ model UserTeam {
   id      Int    @id @default(autoincrement())
   userId  Int
   teamId  Int
+
   user    User   @relation(fields: [userId], references: [id])
   team    Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  specs   SpecsOnUserTeam[] @relation("UserTeamToSpecs")
+
   @@unique([userId, teamId])
+}
+
+model SpecsOnUserTeam {
+  specId  Int
+  teamId  Int
+  userId  Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spec Spec @relation(fields: [specId], references: [id], onDelete: Cascade)
+  userTeam UserTeam @relation("UserTeamToSpecs", fields: [userId, teamId], references: [userId, teamId], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([specId, teamId, userId])
 }
 
 enum Status {

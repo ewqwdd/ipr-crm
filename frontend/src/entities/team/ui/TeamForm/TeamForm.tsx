@@ -58,7 +58,7 @@ export default forwardRef(function TeamForm(
   }, [initData, parentId])
 
   const disabledTeams = initData ? findDisabledTeams(initData) : []
-  const disabledUsers = initData ? initData.users?.map(u => u.user.id) : []
+  // const disabledUsers = initData ? initData.users?.map(u => u.user.id) : []
 
   return (
     <form
@@ -93,7 +93,7 @@ export default forwardRef(function TeamForm(
           loading={isLoading}
           value={data.curatorId}
           setValue={(value) => fieldChange(value, 'curatorId')}
-          disabledUsers={disabledUsers}
+          // disabledUsers={disabledUsers}
         />
       </div>
       <PrimaryButton type="submit" className="self-end mt-2">

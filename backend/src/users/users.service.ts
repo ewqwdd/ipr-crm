@@ -59,6 +59,9 @@ export class UsersService {
         teams: {
           select: { teamId: true, team: { select: { name: true } } },
         },
+        teamCurator: {
+          select: { id: true, name: true },
+        },
       },
       omit: { passwordHash: true, roleId: true, specId: true },
       take: limit,

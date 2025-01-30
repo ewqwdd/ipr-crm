@@ -12,7 +12,7 @@ import { TeamsModule } from './teams/teams.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
-console.log(join(__dirname, '..', '..', 'frontend', 'dist'))
+console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
 
 @Module({
   imports: [
