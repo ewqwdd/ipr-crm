@@ -19,6 +19,7 @@ interface ModalProps {
   submitText?: string
   cancelText?: string
   loading?: boolean
+  className?: string
 }
 
 export default function Modal({
@@ -33,6 +34,7 @@ export default function Modal({
   cancelText = 'Отмена',
   submitText = 'Подтвердить',
   loading,
+  className,
 }: ModalProps) {
   const cancelButtonRef = useRef(null)
   const btnColors: Record<Variant, string> = {
@@ -83,7 +85,8 @@ export default function Modal({
                 'relative inline-block align-bottom bg-white rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full',
                 {
                   'animate-pulse pointer-events-none': !!loading,
-                }
+                },
+                className
               )}
             >
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 rounded-lg ">

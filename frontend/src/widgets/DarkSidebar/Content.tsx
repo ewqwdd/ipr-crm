@@ -1,8 +1,9 @@
 import { useAppSelector } from '@/app'
 import { Avatar } from '@/shared/ui/Avatar'
+import { Disclosure } from '@headlessui/react'
 import { ChartBarIcon, HomeIcon, InboxIcon, UserIcon, UsersIcon } from '@heroicons/react/outline'
 import React from 'react'
-import { Link, NavLink } from 'react-router'
+import { Link, NavLink, useLocation } from 'react-router'
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ')
@@ -10,10 +11,11 @@ function classNames(...classes: (string | boolean | undefined)[]) {
 
 type NavType = {
   name: string
-  icon: (props: React.ComponentProps<'svg'>) => JSX.Element
-  href: string
+  icon?: (props: React.ComponentProps<'svg'>) => JSX.Element
+  href?: string
   current: boolean
   count?: number
+  children?: NavType[]
 }
 
 const navigation: NavType[] = [
@@ -21,13 +23,21 @@ const navigation: NavType[] = [
   { name: 'Users', icon: UserIcon, href: '/users', current: false },
   { name: 'Орагнизационная структура', icon: UsersIcon, href: '/structure', current: false },
   { name: 'Команды', icon: UsersIcon, href: '/teams', current: false },
-  { name: 'Documents', icon: InboxIcon, href: '/documents', current: false },
+  {
+    name: 'Оценка',
+    icon: InboxIcon,
+    current: false,
+    children: [
+      { name: 'Оценка 360', href: '/360rate', current: false },
+   ],
+  },
   { name: 'Reports', icon: ChartBarIcon, href: '/reports', current: false },
 ]
 
 export default function Content() {
   const user = useAppSelector((state) => state.user.user)
-  
+  const { pathname } = useLocation()
+
   return (
     <>
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
@@ -39,42 +49,88 @@ export default function Content() {
           />
         </div>
         <nav className="mt-5 flex-1 px-2 bg-gray-800 space-y-1" aria-label="Sidebar">
-          {navigation.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.href}
-              className={({ isActive }) =>
-                classNames(
-                  isActive
-                    ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                  'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                )
-              }
-            >
-              <item.icon
-                className={'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'}
-                aria-hidden="true"
-              />
-              <span className="flex-1">{item.name}</span>
-              {item.count ? (
-                <p
-                  className={classNames(
-                    'bg-gray-900 group-hover:bg-gray-800',
-                    'ml-3 inline-block py-0.5 px-3 text-xs font-medium rounded-full'
-                  )}
+          {navigation.map((item) =>
+            !item.children ? (
+              <div key={item.name}>
+                <NavLink
+                  key={item.name}
+                  to={item.href!}
+                  className={({ isActive }) =>
+                    classNames(
+                      isActive
+                        ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
+                        : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                      'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                    )
+                  }
                 >
-                  {item.count}
-                </p>
-              ) : null}
-            </NavLink>
-          ))}
+                  {item.icon && (
+                    <item.icon
+                      className={'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className="flex-1">{item.name}</span>
+                  {item.count ? (
+                    <p
+                      className={classNames(
+                        'bg-gray-900 group-hover:bg-gray-800',
+                        'ml-3 inline-block py-0.5 px-3 text-xs font-medium rounded-full'
+                      )}
+                    >
+                      {item.count}
+                    </p>
+                  ) : null}
+                </NavLink>
+              </div>
+            ) : (
+              <Disclosure as="div" key={item.name} className="space-y-1">
+                {() => (
+                  <>
+                    <Disclosure.Button
+                      className={classNames(
+                        item.current
+                          ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full'
+                      )}
+                    >
+                      {item.icon && (
+                        <item.icon
+                          className={'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'}
+                          aria-hidden="true"
+                        />
+                      )}
+                      {item.name}
+                    </Disclosure.Button>
+                    <Disclosure.Panel className="space-y-1">
+                      {item.children?.map((subItem) => (
+                        <Disclosure.Button
+                          key={subItem.name}
+                          as={NavLink}
+                          to={subItem.href!}
+                          className={classNames(
+                            pathname.includes(subItem.href!)
+                              ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
+                              : 'text-gray-400/90 hover:bg-gray-700 hover:text-gray-100',
+                            'group flex items-center px-2 py-2 text-sm font-medium rounded-md h-10'
+                          )}
+                        >
+                          {subItem.name}
+                        </Disclosure.Button>
+                      ))}
+                    </Disclosure.Panel>
+                  </>
+                )}
+              </Disclosure>
+            )
+          )}
         </nav>
       </div>
       <div className="flex-shrink-0 flex bg-gray-700 p-4">
         <Link to="#" className="flex-shrink-0 w-full group block">
           <div className="flex items-center">
-            <Avatar className='size-9' src={user?.avatar} />
+            <Avatar className="size-9" src={user?.avatar} />
             <div className="ml-3">
               <p className="text-sm font-medium text-white">{user?.username}</p>
               <p className="text-xs font-medium text-gray-300 group-hover:text-gray-200">View profile</p>

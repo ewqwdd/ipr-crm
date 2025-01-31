@@ -1,6 +1,6 @@
 import { teamsApi } from '@/shared/api/teamsApi'
 import { usersApi } from '@/shared/api/usersApi'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import UserFormItem from './UserFormItem'
 import { cva } from '@/shared/lib/cva'
 
