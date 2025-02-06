@@ -8,15 +8,29 @@ export class Rate360Service {
   async findAll() {
     const rates = await this.prismaService.rate360.findMany({
       include: {
-        tests: true,
-        skills: true,
-        specs: true,
-        users: true,
-      }
+        evaluators: {
+          select: {
+            userId: true,
+            type: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+          },
+        },
+        specs: {
+          select: {
+            specId: true,
+          },
+        },
+        userRates: {
+          include: {
+            indicator: true,
+          },
+        },
+      },
     });
     return rates;
   }
-
-
-
 }

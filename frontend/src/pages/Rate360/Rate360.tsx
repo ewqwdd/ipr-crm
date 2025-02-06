@@ -1,4 +1,4 @@
-import AddRate from '@/entities/rates/ui/AddRate'
+import AddRate from '@/entities/rates/ui/AddRate/AddRate'
 import { rate360Api } from '@/shared/api/rate360Api'
 import { cva } from '@/shared/lib/cva'
 import { Heading } from '@/shared/ui/Heading'

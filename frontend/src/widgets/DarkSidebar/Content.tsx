@@ -1,7 +1,7 @@
 import { useAppSelector } from '@/app'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Disclosure } from '@headlessui/react'
-import { ChartBarIcon, HomeIcon, InboxIcon, UserIcon, UsersIcon } from '@heroicons/react/outline'
+import { DocumentIcon, HomeIcon, InboxIcon, UserIcon, UsersIcon } from '@heroicons/react/outline'
 import React from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 
@@ -31,7 +31,7 @@ const navigation: NavType[] = [
       { name: 'Оценка 360', href: '/360rate', current: false },
    ],
   },
-  { name: 'Reports', icon: ChartBarIcon, href: '/reports', current: false },
+  { name: 'Конструктор профилей', icon: DocumentIcon, href: '/skills', current: false },
 ]
 
 export default function Content() {

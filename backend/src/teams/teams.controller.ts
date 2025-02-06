@@ -70,7 +70,6 @@ export class TeamsController {
   @Post('/users')
   @UseGuards(AdminGuard)
   async addUsers(@Body() body: AddTeamUserDto) {
-    console.log(body);
     return this.teamsService.addTeamUsers(body.teamId, body.userIds);
   }
 

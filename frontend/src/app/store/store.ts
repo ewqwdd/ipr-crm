@@ -1,5 +1,6 @@
 import { userReducer } from '@/entities/user'
 import { rate360Api } from '@/shared/api/rate360Api'
+import { skillsApi } from '@/shared/api/skillsApi'
 import { teamsApi } from '@/shared/api/teamsApi'
 import { universalApi } from '@/shared/api/universalApi'
 import { usersApi } from '@/shared/api/usersApi'
@@ -11,12 +12,13 @@ const rootReducer = combineReducers({
   [universalApi.reducerPath]: universalApi.reducer,
   [teamsApi.reducerPath]: teamsApi.reducer,
   [rate360Api.reducerPath]: rate360Api.reducer,
+  [skillsApi.reducerPath]: skillsApi.reducer,
 })
 
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(usersApi.middleware).concat(universalApi.middleware).concat(teamsApi.middleware).concat(rate360Api.middleware),
+    getDefaultMiddleware().concat(usersApi.middleware).concat(universalApi.middleware).concat(teamsApi.middleware).concat(rate360Api.middleware).concat(skillsApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

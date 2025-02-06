@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router'
 import { cva } from '@/shared/lib/cva'
 import { SpecsSelect } from '@/widgets/SpecsSelect'
 import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect'
+import { PrimaryButton } from '@/shared/ui/PrimaryButton'
+import { SecondaryButton } from '@/shared/ui/SecondaryButton'
 
 type UserFormErrors = Omit<UserFormData, 'avatar' | 'roleId' | 'specId'> & {
   avatar?: string
@@ -150,24 +152,16 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-            <div className="sm:col-span-4">
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <div className="mt-1 flex rounded-md shadow-sm">
-                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                  {import.meta.env.VITE_BASE_URL}/
-                </span>
-                <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  autoComplete="username"
-                  value={data.username}
-                  onChange={(e) => setDataField('username', e.target.value)}
-                  className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
-                />
-              </div>
+            <div className="sm:col-span-4 max-w-96">
+              <InputWithLabelLight
+                label="Username"
+                name="username"
+                id="username"
+                autoComplete="username"
+                value={data.username}
+                onChange={(e) => setDataField('username', e.target.value)}
+                error={errors.username}
+              />
             </div>
             {errors.username && <p className={cva(styles.errorStyles, 'col-span-6')}>{errors.username}</p>}
             {!edit && (
@@ -279,10 +273,12 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
               {errors.specId && <p className={styles.errorStyles}>{errors.specId}</p>}
             </div>
             <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Подразделение
-            </label>
-              <TeamsMultiSelect disabledTeams={disabledTeams} value={data.teams} onChange={(e) => setDataField('teams', e)} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Подразделение</label>
+              <TeamsMultiSelect
+                disabledTeams={disabledTeams}
+                value={data.teams}
+                onChange={(e) => setDataField('teams', e)}
+              />
             </div>
           </div>
         </div>
@@ -299,19 +295,12 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
 
       <div className="pt-5">
         <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
+          <SecondaryButton type="button" onClick={() => navigate(-1)}>
             Cancel
-          </button>
-          <button
-            type="submit"
-            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
+          </SecondaryButton>
+          <PrimaryButton type="submit" className="ml-4">
             Save
-          </button>
+          </PrimaryButton>
         </div>
       </div>
     </form>

@@ -12,6 +12,7 @@ import { TeamsModule } from './teams/teams.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { Rate360Module } from './rate360/rate360.module';
+import { ProfileConstructorModule } from './profile-constructor/profile-constructor.module';
 
 console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
 
@@ -26,6 +27,7 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
       rootPath: join(__dirname, '..', '..', 'frontend', 'dist'), // Путь к папке сборки фронтенда
     }),
     Rate360Module,
+    ProfileConstructorModule,
   ],
   controllers: [],
   providers: [

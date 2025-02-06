@@ -6,12 +6,12 @@ import { useParams } from 'react-router'
 import UserItem from './UserItem'
 import { UsersIcon } from '@heroicons/react/outline'
 import { useEffect, useMemo, useState } from 'react'
-import SpecsFilter from './SpecsFilter'
 import CuratorModal from './CuratorModal'
 import { Dropdown } from '@/shared/ui/Dropdown'
 import { Modal } from '@/shared/ui/Modal'
 import AddUserForm from '@/entities/user/ui/AddUserForm'
 import { usersApi } from '@/shared/api/usersApi'
+import { SpecsFilter } from '@/widgets/SpecsFilter'
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>()

@@ -1,6 +1,7 @@
 import { AddUser } from "@/pages/AddUser";
 import Login from "@/pages/Login/Login";
 import { Rate360 } from "@/pages/Rate360";
+import { Skills } from "@/pages/Skills";
 import { Structure } from "@/pages/Structure";
 import { TeamPage } from "@/pages/TeamPage";
 import { Teams } from "@/pages/Teams";
@@ -23,6 +24,7 @@ export default function AppRouter() {
         <Route path="/teams" element={<Teams />} />
         <Route path="/teams/:id" element={<TeamPage />} />
         <Route path="/360rate" element={<Rate360 />} />
+        <Route path="/skills" element={<Skills />} />
     </Routes>
   )
 }

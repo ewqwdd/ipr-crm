@@ -1,4 +1,4 @@
-export type TeamUser = { id: number; username: string; avatar: string }
+export type TeamUser = { id: number; username: string; avatar: string; specsOnTeams: { specId: number }[] }
 
 interface Team {
   id: number

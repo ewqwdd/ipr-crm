@@ -1,8 +1,8 @@
 import { teamsApi } from '@/shared/api/teamsApi'
 import { cva } from '@/shared/lib/cva'
+import { Option } from '@/shared/types/Option'
 import Select, { ActionMeta, MultiValue } from 'react-select'
 
-export type Option = { value: number; label: string }
 
 interface TeamsMultiSelectProps {
   value?: MultiValue<Option>
@@ -18,6 +18,7 @@ export default function TeamsMultiSelect({ onChange, value, loading, disabledTea
 
   return (
     <Select
+      placeholder="Выберите команды"
       isMulti
       name="teams"
       onChange={onChange}

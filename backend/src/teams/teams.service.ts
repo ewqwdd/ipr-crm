@@ -30,7 +30,16 @@ export class TeamsService {
       include: {
         users: {
           select: {
-            user: { select: { avatar: true, id: true, username: true } },
+            user: {
+              select: {
+                avatar: true,
+                id: true,
+                username: true,
+                specsOnTeams: {
+                  select: { specId: true },
+                },
+              },
+            },
           },
         },
         curator: { select: { avatar: true, id: true, username: true } },

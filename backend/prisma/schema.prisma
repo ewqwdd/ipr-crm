@@ -27,11 +27,12 @@ model User {
 
   Spec            Spec?              @relation(fields: [specId], references: [id])
   ratesToEvaluate Rate360Evaluator[]
-  rates360        Rate360OnUser[]
+  rates360        Rate360[]
   notifications   Notification[]
   logs            GrowthPlanLog[]
   teams        UserTeam[]
   specsOnTeams SpecsOnUserTeam[]
+  userRates    UserRates[]
 
   // Self-relation fields
   mentees  User[]  @relation("MentorMentees")
@@ -44,26 +45,31 @@ model User {
 
 model Rate360 {
   id          Int               @id @default(autoincrement())
-  isConfirmed Boolean              @default(false)
+  userConfirmed Boolean              @default(false)
+  curatorConfirmaed Boolean        @default(false)
   startDate   DateTime
   endDate     DateTime
-  specs       SpecsOnRate360[]
-  skills      SkillsOnRate360[]
-  evaluators  Rate360Evaluator[]
-  users       Rate360OnUser[]
-  tests       User_Assigned_Test[]
+  userId      Int
+  user        User               @relation(fields: [userId], references: [id])
   archived    Boolean              @default(false)
+
+  userRates UserRates[]
+  evaluators  Rate360Evaluator[]
+  specs       SpecsOnRate360[]
 }
 
-// оцениваемые юзеры
-model Rate360OnUser {
+model UserRates {
+  id        Int  @id @default(autoincrement())
   userId    Int
   rate360Id Int
+  indicatorId Int
+  rate      Int
+  comment   String?
+  approved  Boolean @default(false)
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rate360 Rate360 @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
-
-  @@id([userId, rate360Id]) // Композитный первичный ключ для исключения дубликатов
+  indicator Indicator @relation(fields: [indicatorId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+  rate360 Rate360 @relation(fields: [rate360Id], references: [id])
 }
 
 model Role {
@@ -94,7 +100,6 @@ model Course {
   skillId     Int
 
   Spec            Spec?             @relation(fields: [specId], references: [id])
-  Skill           Skill             @relation(fields: [skillId], references: [id])
   Assigned_Course Assigned_Course[]
   archived        Boolean           @default(false)
 }
@@ -109,16 +114,9 @@ model Spec {
   rate360     SpecsOnRate360[]
   growthPlans IndividualGrowthPlan[]
   usersTeams  SpecsOnUserTeam[]
+  competencyBlocks CompetencyBlock[]
 }
 
-model Skill {
-  id      Int            @id @default(autoincrement())
-  name    String
-  type    String
-  courses Course[]
-  Test    Test[]
-  rate360 SkillsOnRate360[]
-}
 
 // назначенные тесты юзеру
 model User_Assigned_Test {
@@ -132,7 +130,6 @@ model User_Assigned_Test {
 
   user    User     @relation(fields: [userId], references: [id])
   test    Test     @relation(fields: [testId], references: [id])
-  rate360 Rate360? @relation(fields: [rate360Id], references: [id])
 }
 
 // тесты
@@ -153,7 +150,6 @@ model Test {
   testQuestions Question[]
   usersAssigned User_Assigned_Test[]
 
-  Skill    Skill   @relation(fields: [skillId], references: [id])
   Spec     Spec?   @relation(fields: [specId], references: [id])
   archived Boolean @default(false)
 }
@@ -183,8 +179,8 @@ model Rate360Evaluator {
   id        Int  @id @default(autoincrement())
   userId    Int
   rate360Id Int
-  rate      Int
-  comment   String?
+
+  type EvaluatorType @default(TEAM_MEMBER)
 
   user    User    @relation(fields: [userId], references: [id])
   rate360 Rate360 @relation(fields: [rate360Id], references: [id])
@@ -203,9 +199,6 @@ model SpecsOnRate360 {
 model SkillsOnRate360 {
   skillId   Int
   rate360Id Int
-
-  skill   Skill   @relation(fields: [skillId], references: [id])
-  rate360 Rate360 @relation(fields: [rate360Id], references: [id])
 
   @@id([skillId, rate360Id])
 }
@@ -262,22 +255,6 @@ model Task {
   plan     IndividualGrowthPlan @relation(fields: [planId], references: [id])
 }
 
-model Material {
-  id          Int              @id @default(autoincrement())
-  planId      Int
-  startDate   DateTime
-  endDate     DateTime?
-  status      Status
-  name        String
-  description String
-  priority    TaskPriority
-  url         String?
-  type        TaskMaterialType
-  contentType MaterialContentType
-
-  plan IndividualGrowthPlan @relation(fields: [planId], references: [id])
-}
-
 model Notification {
   id          Int   @id @default(autoincrement())
   userId      Int
@@ -331,6 +308,74 @@ model SpecsOnUserTeam {
   @@id([specId, teamId, userId])
 }
 
+// Компетенции внутри специализации
+// специализация -> блоки компетенций -> компетенции -> индикаторы
+model CompetencyBlock {
+  id          Int       @id @default(autoincrement())
+  name        String
+  type        SkillType    // Soft или Hard
+  competencies Competency[] // Связь с компетенциями
+  specId      Int?
+  spec        Spec? @relation(fields: [specId], references: [id], onDelete: Cascade)
+}
+
+model Competency {
+  id          Int       @id @default(autoincrement())
+  name        String
+  blockId     Int
+  block       CompetencyBlock @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  indicators  Indicator[] // Связь с индикаторами
+  materials   CompetencyMaterial[]
+}
+
+model Indicator {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  competencyId Int
+  competency  Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  materials   IndicatorMaterial[]
+  
+  userRates UserRates[]
+}
+
+
+// Материалы 
+// Привязаны к компетенциям и индикаторам
+model Material {
+  id          Int              @id @default(autoincrement())
+  planId      Int?
+  name        String
+  description String
+  url         String?
+  contentType MaterialContentType
+
+  plan IndividualGrowthPlan? @relation(fields: [planId], references: [id])
+  competencyMaterials CompetencyMaterial[]
+  indicatorMaterials IndicatorMaterial[]
+}
+
+model CompetencyMaterial {
+  competencyId Int
+  materialId   Int
+  competency   Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  material     Material   @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  @@id([competencyId, materialId])
+}
+
+model IndicatorMaterial {
+  indicatorId Int
+  materialId  Int
+  indicator   Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  material    Material  @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  @@id([indicatorId, materialId])
+}
+
+enum SkillType {
+  SOFT
+  HARD
+}
+
 enum Status {
   COMPLETED
   ACTIVE
@@ -371,4 +416,10 @@ enum ChangeType {
   CREATED
   UPDATED
   DELETED
+}
+
+enum EvaluatorType {
+  CURATOR
+  TEAM_MEMBER
+  SUBORDINATE
 }

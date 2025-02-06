@@ -31,7 +31,7 @@ export default forwardRef(function TeamForm(
 ) {
   const [errors, setErrors] = useState<ErrorType>({})
   const [data, setData] = useState<CreateTeamDto>({ name: '', description: '', parentTeamId: parentId })
-  const { data: usersData, isLoading } = usersApi.useGetUsersQuery({})
+  const { data: usersData, isLoading, refetch } = usersApi.useGetUsersQuery({})
 
   const { users } = usersData || {}
 

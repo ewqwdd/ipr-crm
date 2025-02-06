@@ -6,6 +6,7 @@ import { SoftButton } from '@/shared/ui/SoftButton'
 import { CheckIcon, ThumbUpIcon, UserIcon } from '@heroicons/react/outline'
 import { useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
+import UserDataItem from './ui/UserDataItem'
 
 const eventTypes = {
   applied: { icon: UserIcon, bgColorClass: 'bg-gray-400' },
@@ -118,32 +119,12 @@ export default function UserPage() {
                   </div>
                   <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                     <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Специализация</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{data?.Spec?.name ?? '-'}</dd>
-                      </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Email адрес</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{data?.email ?? '-'}</dd>
-                      </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Руководитель</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{data?.mentorId ?? '-'}</dd>
-                      </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Телефон</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{data?.phone ?? '-'}</dd>
-                      </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Команды</dt>
-                        <dd className="mt-1 text-sm text-gray-900 flex flex-wrap gap-2">{data?.teams?.map(t => <SoftButton size='xs' to={`/teams/${t.teamId}`} key={t.teamId}>{t.team.name}</SoftButton>)}</dd>
-                      </div>
-                      <div className="sm:col-span-2">
-                        <dt className="text-sm font-medium text-gray-500">Руководитель в командах</dt>
-                        <dd className="mt-1 text-sm text-gray-900 flex gap-2 flex-wrap">
-                        {data?.teamCurator?.map(t => <SoftButton size='sm' to={`/teams/${t.id}`} key={t.id}>{t.name}</SoftButton>)}
-                        </dd>
-                      </div>
+                      <UserDataItem label='Специализация' value={data?.Spec?.name} />
+                      <UserDataItem label='Email адрес' value={data?.email} />
+                      <UserDataItem label='Руководитель' value={data?.mentorId} />
+                      <UserDataItem label='Телефон' value={data?.phone} />
+                      <UserDataItem label='Команды' valueStyles='flex flex-wrap gap-2' value={data?.teams?.map(t => <SoftButton size='xs' to={`/teams/${t.teamId}`} key={t.teamId}>{t.team.name}</SoftButton>)} />
+                      <UserDataItem className='sm:col-span-2' label='Руководитель в командах' valueStyles='flex flex-wrap gap-2' value={data?.teamCurator?.map(t => <SoftButton size='sm' to={`/teams/${t.id}`} key={t.id}>{t.name}</SoftButton>)} />
                     </dl>
                   </div>
                 </div>
