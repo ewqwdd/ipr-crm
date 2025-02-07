@@ -1,6 +1,5 @@
 import { TeamUser } from '@/entities/team';
 import { universalApi } from '@/shared/api/universalApi';
-import { usersApi } from '@/shared/api/usersApi';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Checkbox } from '@/shared/ui/Checkbox';
 

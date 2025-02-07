@@ -5,6 +5,7 @@ import { CreateCompetencyDto } from './dto/create-competency.dto';
 import { CreateIndicatorDto } from './dto/create-indicator.dto';
 import { createMaterialCompetencyDto } from './dto/create-material-competency.dto';
 import { createMaterialIndicatorDto } from './dto/create-material-indicator.dto';
+import { AddBlockToSpecDto } from './dto/add-block-to-spec.dto';
 
 @Injectable()
 export class ProfileConstructorService {
@@ -99,6 +100,45 @@ export class ProfileConstructorService {
           create: {
             indicatorId: data.indicatorId,
           },
+        },
+      },
+    });
+  }
+
+  async deleteCompetencyBlock(id: number) {
+    return this.prismaService.competencyBlock.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async deleteCompetency(id: number) {
+    return this.prismaService.competency.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async deleteIndicator(id: number) {
+    return this.prismaService.indicator.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async addBlockToSpec({ specId, blockIds }: AddBlockToSpecDto) {
+    return this.prismaService.spec.update({
+      where: {
+        id: specId,
+      },
+      data: {
+        competencyBlocks: {
+          connect: blockIds.map((id) => ({
+            id,
+          })),
         },
       },
     });

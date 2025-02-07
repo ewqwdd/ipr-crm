@@ -1,4 +1,5 @@
 import {
+    AddBlockToSpecModal,
   AddCompetencyBlockModal,
   AddCompetencyModal,
   AddIndicatorModal,
@@ -81,6 +82,13 @@ export default function Modals({
         onSubmit={indicatorSubmit}
         loading={indicatorProps.isLoading}
         competency={competency}
+      />
+      <AddBlockToSpecModal 
+        open
+        onSubmit={() => {}}
+        setOpen={() => {}}
+        loading={false}
+        spec={{ id: 1, name: 'spec' }}
       />
     </>
   );
