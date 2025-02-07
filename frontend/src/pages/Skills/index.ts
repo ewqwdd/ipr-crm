@@ -1,2 +1,2 @@
-import Skills from "./Skills";
+import Skills from './ui/Skills';
 export { Skills };

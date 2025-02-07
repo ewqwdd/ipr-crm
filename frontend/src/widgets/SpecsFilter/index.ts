@@ -1,2 +1,2 @@
-import SpecsFilter from '@/widgets/SpecsFilter/SpecsFilter'
-export { SpecsFilter }
+import SpecsFilter from '@/widgets/SpecsFilter/SpecsFilter';
+export { SpecsFilter };

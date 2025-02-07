@@ -1,2 +1,2 @@
-import TeamsMultiSelect from './TeamsMultiSelect'
-export { TeamsMultiSelect }
+import TeamsMultiSelect from './TeamsMultiSelect';
+export { TeamsMultiSelect };

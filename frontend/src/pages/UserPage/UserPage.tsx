@@ -1,18 +1,18 @@
-import { usersApi } from '@/shared/api/usersApi'
-import { cva } from '@/shared/lib/cva'
-import { Avatar } from '@/shared/ui/Avatar'
-import { Badge } from '@/shared/ui/Badge'
-import { SoftButton } from '@/shared/ui/SoftButton'
-import { CheckIcon, ThumbUpIcon, UserIcon } from '@heroicons/react/outline'
-import { useEffect } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
-import UserDataItem from './ui/UserDataItem'
+import { usersApi } from '@/shared/api/usersApi';
+import { cva } from '@/shared/lib/cva';
+import { Avatar } from '@/shared/ui/Avatar';
+import { Badge } from '@/shared/ui/Badge';
+import { SoftButton } from '@/shared/ui/SoftButton';
+import { CheckIcon, ThumbUpIcon, UserIcon } from '@heroicons/react/outline';
+import { useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router';
+import UserDataItem from './ui/UserDataItem';
 
 const eventTypes = {
   applied: { icon: UserIcon, bgColorClass: 'bg-gray-400' },
   advanced: { icon: ThumbUpIcon, bgColorClass: 'bg-blue-500' },
   completed: { icon: CheckIcon, bgColorClass: 'bg-green-500' },
-}
+};
 const timeline = [
   {
     id: 1,
@@ -54,84 +54,124 @@ const timeline = [
     date: 'Oct 4',
     datetime: '2020-10-04',
   },
-]
+];
 
 export default function UserPage() {
-  const { id } = useParams()
-  const { data, isError } = usersApi.useGetUserByIdQuery(Number(id))
-  const navigate = useNavigate()
+  const { id } = useParams();
+  const { data, isError } = usersApi.useGetUserByIdQuery(Number(id));
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isError) {
-      navigate('/users')
+      navigate('/users');
     }
-  }, [isError])
+  }, [isError]);
 
-  const name = !data?.firstName && !data?.lastName ? 'Имя не задано' : data?.firstName + ' ' + data?.lastName
+  const name =
+    !data?.firstName && !data?.lastName
+      ? 'Имя не задано'
+      : data?.firstName + ' ' + data?.lastName;
 
   return (
     <main className="py-10">
-          {/* Page header */}
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
-            <div className="flex items-center space-x-5">
-              <div className="flex-shrink-0">
-                <div className="relative">
-                  <Avatar src={data?.avatar} className='size-16' />
-                  <span className="absolute inset-0 shadow-inner rounded-full" aria-hidden="true" />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
-                <p className="text-sm font-medium text-gray-500">
-                  @{data?.username}
-                </p>
-              </div>
+      {/* Page header */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
+        <div className="flex items-center space-x-5">
+          <div className="flex-shrink-0">
+            <div className="relative">
+              <Avatar src={data?.avatar} className="size-16" />
+              <span
+                className="absolute inset-0 shadow-inner rounded-full"
+                aria-hidden="true"
+              />
             </div>
-            <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
-              {/* <button
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
+            <p className="text-sm font-medium text-gray-500">
+              @{data?.username}
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
+          {/* <button
                 type="button"
                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
               >
                 Disqualify
               </button> */}
-              <Badge border size='md' color='green' className='rounded-lg self-center'>{data?.role?.name}</Badge>
-              <Link
-                to={`/userEdit/${id}`}
-                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
-              >
-                Редактировать
-              </Link>
+          <Badge
+            border
+            size="md"
+            color="green"
+            className="rounded-lg self-center"
+          >
+            {data?.role?.name}
+          </Badge>
+          <Link
+            to={`/userEdit/${id}`}
+            className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+          >
+            Редактировать
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
+        <div className="space-y-6 lg:col-start-1 lg:col-span-2">
+          {/* Description list*/}
+          <section aria-labelledby="applicant-information-title">
+            <div className="bg-white shadow sm:rounded-lg pb-4">
+              <div className="px-4 py-5 sm:px-6">
+                <h2
+                  id="applicant-information-title"
+                  className="text-lg leading-6 font-medium text-gray-900"
+                >
+                  Информация о сотруднике
+                </h2>
+                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                  Подробная информация о сотруднике
+                </p>
+              </div>
+              <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                  <UserDataItem
+                    label="Специализация"
+                    value={data?.Spec?.name}
+                  />
+                  <UserDataItem label="Email адрес" value={data?.email} />
+                  <UserDataItem label="Руководитель" value={data?.mentorId} />
+                  <UserDataItem label="Телефон" value={data?.phone} />
+                  <UserDataItem
+                    label="Команды"
+                    valueStyles="flex flex-wrap gap-2"
+                    value={data?.teams?.map((t) => (
+                      <SoftButton
+                        size="xs"
+                        to={`/teams/${t.teamId}`}
+                        key={t.teamId}
+                      >
+                        {t.team.name}
+                      </SoftButton>
+                    ))}
+                  />
+                  <UserDataItem
+                    className="sm:col-span-2"
+                    label="Руководитель в командах"
+                    valueStyles="flex flex-wrap gap-2"
+                    value={data?.teamCurator?.map((t) => (
+                      <SoftButton size="sm" to={`/teams/${t.id}`} key={t.id}>
+                        {t.name}
+                      </SoftButton>
+                    ))}
+                  />
+                </dl>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
-            <div className="space-y-6 lg:col-start-1 lg:col-span-2">
-              {/* Description list*/}
-              <section aria-labelledby="applicant-information-title">
-                <div className="bg-white shadow sm:rounded-lg pb-4">
-                  <div className="px-4 py-5 sm:px-6">
-                    <h2 id="applicant-information-title" className="text-lg leading-6 font-medium text-gray-900">
-                      Информация о сотруднике
-                    </h2>
-                    <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                      Подробная информация о сотруднике
-                    </p>
-                  </div>
-                  <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                    <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                      <UserDataItem label='Специализация' value={data?.Spec?.name} />
-                      <UserDataItem label='Email адрес' value={data?.email} />
-                      <UserDataItem label='Руководитель' value={data?.mentorId} />
-                      <UserDataItem label='Телефон' value={data?.phone} />
-                      <UserDataItem label='Команды' valueStyles='flex flex-wrap gap-2' value={data?.teams?.map(t => <SoftButton size='xs' to={`/teams/${t.teamId}`} key={t.teamId}>{t.team.name}</SoftButton>)} />
-                      <UserDataItem className='sm:col-span-2' label='Руководитель в командах' valueStyles='flex flex-wrap gap-2' value={data?.teamCurator?.map(t => <SoftButton size='sm' to={`/teams/${t.id}`} key={t.id}>{t.name}</SoftButton>)} />
-                    </dl>
-                  </div>
-                </div>
-              </section>
-
-              {/* Comments*/}
-              {/* <section aria-labelledby="notes-title">
+          {/* Comments*/}
+          {/* <section aria-labelledby="notes-title">
                 <div className="bg-white shadow sm:rounded-lg sm:overflow-hidden">
                   <div className="divide-y divide-gray-200">
                     <div className="px-4 py-5 sm:px-6">
@@ -218,67 +258,76 @@ export default function UserPage() {
                   </div>
                 </div>
               </section> */}
-            </div>
+        </div>
 
-            <section aria-labelledby="timeline-title" className="lg:col-start-3 lg:col-span-1">
-              <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:px-6">
-                <h2 id="timeline-title" className="text-lg font-medium text-gray-900">
-                  Timeline
-                </h2>
+        <section
+          aria-labelledby="timeline-title"
+          className="lg:col-start-3 lg:col-span-1"
+        >
+          <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:px-6">
+            <h2
+              id="timeline-title"
+              className="text-lg font-medium text-gray-900"
+            >
+              Timeline
+            </h2>
 
-                {/* Activity Feed */}
-                <div className="mt-6 flow-root">
-                  <ul role="list" className="-mb-8">
-                    {timeline.map((item, itemIdx) => (
-                      <li key={item.id}>
-                        <div className="relative pb-8">
-                          {itemIdx !== timeline.length - 1 ? (
-                            <span
-                              className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
+            {/* Activity Feed */}
+            <div className="mt-6 flow-root">
+              <ul role="list" className="-mb-8">
+                {timeline.map((item, itemIdx) => (
+                  <li key={item.id}>
+                    <div className="relative pb-8">
+                      {itemIdx !== timeline.length - 1 ? (
+                        <span
+                          className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                      <div className="relative flex space-x-3">
+                        <div>
+                          <span
+                            className={cva(
+                              item.type.bgColorClass,
+                              'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white',
+                            )}
+                          >
+                            <item.type.icon
+                              className="w-5 h-5 text-white"
                               aria-hidden="true"
                             />
-                          ) : null}
-                          <div className="relative flex space-x-3">
-                            <div>
-                              <span
-                                className={cva(
-                                  item.type.bgColorClass,
-                                  'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'
-                                )}
-                              >
-                                <item.type.icon className="w-5 h-5 text-white" aria-hidden="true" />
-                              </span>
-                            </div>
-                            <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                              <div>
-                                <p className="text-sm text-gray-500">
-                                  {item.content}{' '}
-                                  <a href="#" className="font-medium text-gray-900">
-                                    {item.target}
-                                  </a>
-                                </p>
-                              </div>
-                              <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                                <time dateTime={item.datetime}>{item.date}</time>
-                              </div>
-                            </div>
+                          </span>
+                        </div>
+                        <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p className="text-sm text-gray-500">
+                              {item.content}{' '}
+                              <a href="#" className="font-medium text-gray-900">
+                                {item.target}
+                              </a>
+                            </p>
+                          </div>
+                          <div className="text-right text-sm whitespace-nowrap text-gray-500">
+                            <time dateTime={item.datetime}>{item.date}</time>
                           </div>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="mt-6 flex flex-col justify-stretch">
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Advance to offer
-                  </button>
-                </div>
-              </div>
-            </section>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-6 flex flex-col justify-stretch">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Advance to offer
+              </button>
+            </div>
           </div>
-        </main>
-  )
+        </section>
+      </div>
+    </main>
+  );
 }

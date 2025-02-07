@@ -1,2 +1,2 @@
-import UserPage from './UserPage'
-export { UserPage }
+import UserPage from './UserPage';
+export { UserPage };

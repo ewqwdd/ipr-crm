@@ -1,2 +1,2 @@
-import SpecsMultiSelect from '@/widgets/SpecsMultiSelect/SpecsMultiSelect'
-export { SpecsMultiSelect }
+import SpecsMultiSelect from '@/widgets/SpecsMultiSelect/SpecsMultiSelect';
+export { SpecsMultiSelect };

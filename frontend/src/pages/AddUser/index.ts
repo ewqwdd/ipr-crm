@@ -1,2 +1,2 @@
-import AddUser from './AddUser'
-export { AddUser }
+import AddUser from './AddUser';
+export { AddUser };

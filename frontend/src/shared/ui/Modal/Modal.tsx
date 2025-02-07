@@ -1,25 +1,25 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useRef } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
-import { ExclamationIcon } from '@heroicons/react/outline'
-import { cva } from '@/shared/lib/cva'
-import { createPortal } from 'react-dom'
+import { Fragment, useRef } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { ExclamationIcon } from '@heroicons/react/outline';
+import { cva } from '@/shared/lib/cva';
+import { createPortal } from 'react-dom';
 
-type Variant = 'success' | 'error' | 'warning' | 'info'
+type Variant = 'success' | 'error' | 'warning' | 'info';
 
 interface ModalProps {
-  open: boolean
-  setOpen: (open: boolean) => void
-  onSubmit?: () => void
-  footer?: boolean
-  icon?: boolean
-  title?: string
-  children?: React.ReactNode
-  variant?: Variant
-  submitText?: string
-  cancelText?: string
-  loading?: boolean
-  className?: string
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onSubmit?: () => void;
+  footer?: boolean;
+  icon?: boolean;
+  title?: string;
+  children?: React.ReactNode;
+  variant?: Variant;
+  submitText?: string;
+  cancelText?: string;
+  loading?: boolean;
+  className?: string;
 }
 
 export default function Modal({
@@ -36,24 +36,29 @@ export default function Modal({
   loading,
   className,
 }: ModalProps) {
-  const cancelButtonRef = useRef(null)
+  const cancelButtonRef = useRef(null);
   const btnColors: Record<Variant, string> = {
     error: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
     warning: 'bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-500',
     success: 'bg-green-600 hover:bg-green-700 focus:ring-green-500',
     info: 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500',
-  }
+  };
 
   const textColors: Record<Variant, string> = {
     error: 'text-red-600',
     warning: 'text-yellow-400',
     success: 'text-green-600',
     info: 'text-indigo-600',
-  }
+  };
 
   return createPortal(
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" initialFocus={cancelButtonRef} onClose={setOpen}>
+      <Dialog
+        as="div"
+        className="fixed z-10 inset-0 overflow-y-auto"
+        initialFocus={cancelButtonRef}
+        onClose={setOpen}
+      >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}
@@ -68,7 +73,10 @@ export default function Modal({
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
-          <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+          <span
+            className="hidden sm:inline-block sm:align-middle sm:h-screen"
+            aria-hidden="true"
+          >
             &#8203;
           </span>
           <Transition.Child
@@ -86,23 +94,32 @@ export default function Modal({
                 {
                   'animate-pulse pointer-events-none': !!loading,
                 },
-                className
+                className,
               )}
             >
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 rounded-lg ">
                 <div className="sm:flex sm:items-start">
                   {icon && (
                     <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <ExclamationIcon className={cva('h-6 w-6', textColors[variant])} aria-hidden="true" />
+                      <ExclamationIcon
+                        className={cva('h-6 w-6', textColors[variant])}
+                        aria-hidden="true"
+                      />
                     </div>
                   )}
                   <div
-                    className={cva('mt-3 text-center sm:mt-0 sm:text-left flex-1', {
-                      'sm:ml-4': !!icon,
-                    })}
+                    className={cva(
+                      'mt-3 text-center sm:mt-0 sm:text-left flex-1',
+                      {
+                        'sm:ml-4': !!icon,
+                      },
+                    )}
                   >
                     {title && (
-                      <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg leading-6 font-medium text-gray-900"
+                      >
                         {title}
                       </Dialog.Title>
                     )}
@@ -116,7 +133,7 @@ export default function Modal({
                     type="button"
                     className={cva(
                       'w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm',
-                      btnColors[variant]
+                      btnColors[variant],
                     )}
                     onClick={onSubmit}
                   >
@@ -137,6 +154,6 @@ export default function Modal({
         </div>
       </Dialog>
     </Transition.Root>,
-    document.getElementById('root')!
-  )
+    document.getElementById('root')!,
+  );
 }

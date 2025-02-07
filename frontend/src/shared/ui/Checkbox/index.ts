@@ -1,2 +1,2 @@
-import Checkbox from './Checkbox'
-export { Checkbox }
+import Checkbox from './Checkbox';
+export { Checkbox };

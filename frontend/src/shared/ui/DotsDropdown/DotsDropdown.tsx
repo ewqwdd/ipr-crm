@@ -1,16 +1,16 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, ReactNode } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { DotsVerticalIcon } from '@heroicons/react/solid'
-import { cva } from '@/shared/lib/cva'
+import { Fragment, ReactNode } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import { DotsVerticalIcon } from '@heroicons/react/solid';
+import { cva } from '@/shared/lib/cva';
 
 interface DotsDropdownProps {
-  buttons?: { text: string; onClick?: () => void; icon?: ReactNode }[]
-  children?: ReactNode
-  className?: string
-  bodyClassName?: string
-  btnClassName?: string
-  ddBtnClassName?: string
+  buttons?: { text: string; onClick?: () => void; icon?: ReactNode }[];
+  children?: ReactNode;
+  className?: string;
+  bodyClassName?: string;
+  btnClassName?: string;
+  ddBtnClassName?: string;
 }
 
 export default function DotsDropdown({
@@ -22,9 +22,17 @@ export default function DotsDropdown({
   ddBtnClassName,
 }: DotsDropdownProps) {
   return (
-    <Menu as="div" className={cva('relative inline-block text-left', className)}>
+    <Menu
+      as="div"
+      className={cva('relative inline-block text-left', className)}
+    >
       <div>
-        <Menu.Button className={cva("bg-gray-100 rounded-full flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500", btnClassName)}>
+        <Menu.Button
+          className={cva(
+            'bg-gray-100 rounded-full flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500',
+            btnClassName,
+          )}
+        >
           <span className="sr-only">Open options</span>
           <DotsVerticalIcon className="h-4 w-4" aria-hidden="true" />
         </Menu.Button>
@@ -42,7 +50,7 @@ export default function DotsDropdown({
         <Menu.Items
           className={cva(
             'origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none',
-            bodyClassName
+            bodyClassName,
           )}
         >
           <div className="py-1">
@@ -56,7 +64,7 @@ export default function DotsDropdown({
                       {
                         'bg-gray-100 text-gray-900': active,
                       },
-                      ddBtnClassName
+                      ddBtnClassName,
                     )}
                   >
                     <div className="flex items-center">
@@ -72,5 +80,5 @@ export default function DotsDropdown({
         </Menu.Items>
       </Transition>
     </Menu>
-  )
+  );
 }

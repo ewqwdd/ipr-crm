@@ -1,7 +1,6 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class createMaterialIndicatorDto {
-  
   @IsNotEmpty()
   @IsString()
   name: string;

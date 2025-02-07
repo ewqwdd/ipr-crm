@@ -1,45 +1,46 @@
-import { universalApi } from '@/shared/api/universalApi'
-import { cva } from '@/shared/lib/cva'
-import { styles } from '@/shared/lib/styles'
-import { Modal } from '@/shared/ui/Modal'
-import { SelectLight } from '@/shared/ui/SelectLight'
-import { useEffect, useState } from 'react'
+import { universalApi } from '@/shared/api/universalApi';
+import { cva } from '@/shared/lib/cva';
+import { styles } from '@/shared/lib/styles';
+import { Modal } from '@/shared/ui/Modal';
+import { SelectLight } from '@/shared/ui/SelectLight';
+import { useEffect, useState } from 'react';
 
 interface SpecsSelectProps {
-  spec?: number
-  setSpec: (spec: number) => void
+  spec?: number;
+  setSpec: (spec: number) => void;
 }
 
 export default function SpecsSelect({ spec, setSpec }: SpecsSelectProps) {
-  const { data, isFetching } = universalApi.useGetSpecsQuery()
-  const [mutate, { isLoading: mutateLoading, isSuccess }] = universalApi.useCreateSpecMutation()
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState('')
-  const [error, setError] = useState<string>()
+  const { data, isFetching } = universalApi.useGetSpecsQuery();
+  const [mutate, { isLoading: mutateLoading, isSuccess }] =
+    universalApi.useCreateSpecMutation();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+  const [error, setError] = useState<string>();
 
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSpec(Number(e.target.value))
-  }
+    setSpec(Number(e.target.value));
+  };
 
   const onSubmit = () => {
     if (!value) {
-      setError('Specialization name is required')
-      return
+      setError('Specialization name is required');
+      return;
     } else if (data?.find((spec) => spec.name === value)) {
-      setError('Specialization already exists')
-      return
+      setError('Specialization already exists');
+      return;
     }
 
-    mutate(value)
-  }
+    mutate(value);
+  };
 
   useEffect(() => {
     if (isSuccess) {
-      setOpen(false)
-      setValue('')
-      setError('')
+      setOpen(false);
+      setValue('');
+      setError('');
     }
-  }, [isSuccess])
+  }, [isSuccess]);
 
   return (
     <>
@@ -50,7 +51,11 @@ export default function SpecsSelect({ spec, setSpec }: SpecsSelectProps) {
         onChange={onChange}
         className={cva({ 'animate-pulse': isFetching })}
         right={
-          <button onClick={() => setOpen(true)} type="button" className="text-xs text-indigo-600 font-medium">
+          <button
+            onClick={() => setOpen(true)}
+            type="button"
+            className="text-xs text-indigo-600 font-medium"
+          >
             + Add new
           </button>
         }
@@ -63,8 +68,17 @@ export default function SpecsSelect({ spec, setSpec }: SpecsSelectProps) {
             </option>
           ))}
       </SelectLight>
-      <Modal loading={mutateLoading} open={open} setOpen={setOpen} footer={false} title="Add specialization">
-        <label htmlFor={'spec'} className="block text-sm font-medium text-gray-700 mt-4">
+      <Modal
+        loading={mutateLoading}
+        open={open}
+        setOpen={setOpen}
+        footer={false}
+        title="Add specialization"
+      >
+        <label
+          htmlFor={'spec'}
+          className="block text-sm font-medium text-gray-700 mt-4"
+        >
           Specialization name
         </label>
         <div className="flex rounded-md shadow-sm justify-center mt-1 mb-3">
@@ -72,8 +86,8 @@ export default function SpecsSelect({ spec, setSpec }: SpecsSelectProps) {
             value={value}
             name="spec"
             onChange={(e) => {
-              setValue(e.target.value)
-              setError('')
+              setValue(e.target.value);
+              setError('');
             }}
             className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
           />
@@ -87,5 +101,5 @@ export default function SpecsSelect({ spec, setSpec }: SpecsSelectProps) {
         {error && <p className={styles.errorStyles}>{error}</p>}
       </Modal>
     </>
-  )
+  );
 }

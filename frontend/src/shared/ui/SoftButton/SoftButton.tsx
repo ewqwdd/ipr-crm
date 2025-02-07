@@ -1,41 +1,47 @@
-import { cva } from '@/shared/lib/cva'
-import { ButtonHTMLAttributes, memo } from 'react'
-import { Link } from 'react-router'
+import { cva } from '@/shared/lib/cva';
+import { ButtonHTMLAttributes, memo } from 'react';
+import { Link } from 'react-router';
 
-type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 interface SoftButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  size?: ButtonSize
-  to?: string
+  size?: ButtonSize;
+  to?: string;
 }
 
-export default memo(function SoftButton({ size = 'md', className, children, to, ...props }: SoftButtonProps) {
+export default memo(function SoftButton({
+  size = 'md',
+  className,
+  children,
+  to,
+  ...props
+}: SoftButtonProps) {
   const sizes: Record<ButtonSize, string> = {
     xs: 'px-2.5 py-1.5 text-xs',
     sm: 'px-3 py-2 text-sm',
     md: 'px-4 py-2 text-sm',
     lg: 'px-4 py-2 text-base',
     xl: 'px-6 py-3 text-base',
-  }
+  };
 
   const newProps: any = {
     type: 'button',
     className: cva(
-      'inline-flex justify-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-indigo-600 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
+      'transition-colors inline-flex justify-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-indigo-600 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
       sizes[size],
-      className
+      className,
     ),
     ...props,
-  }
+  };
 
-  let Cmp
+  let Cmp;
 
   if (to) {
-    Cmp = Link
-    newProps.to = to
+    Cmp = Link;
+    newProps.to = to;
   } else {
-    Cmp = 'button'
+    Cmp = 'button';
   }
 
-  return <Cmp {...newProps}>{children}</Cmp>
-})
+  return <Cmp {...newProps}>{children}</Cmp>;
+});

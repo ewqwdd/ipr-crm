@@ -1,31 +1,36 @@
-import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight'
-import { RolesSelect } from '@/widgets/RolesSelect'
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
-import { User, UserFormData } from '../types/types'
-import toast from 'react-hot-toast'
-import { emailRegex } from '@/shared/lib/regex'
-import { styles } from '@/shared/lib/styles'
-import { useNavigate } from 'react-router'
-import { cva } from '@/shared/lib/cva'
-import { SpecsSelect } from '@/widgets/SpecsSelect'
-import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect'
-import { PrimaryButton } from '@/shared/ui/PrimaryButton'
-import { SecondaryButton } from '@/shared/ui/SecondaryButton'
+import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
+import { RolesSelect } from '@/widgets/RolesSelect';
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import { User, UserFormData } from '../types/types';
+import toast from 'react-hot-toast';
+import { emailRegex } from '@/shared/lib/regex';
+import { styles } from '@/shared/lib/styles';
+import { useNavigate } from 'react-router';
+import { cva } from '@/shared/lib/cva';
+import { SpecsSelect } from '@/widgets/SpecsSelect';
+import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect';
+import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 
 type UserFormErrors = Omit<UserFormData, 'avatar' | 'roleId' | 'specId'> & {
-  avatar?: string
-  roleId?: string
-  specId?: string
-}
+  avatar?: string;
+  roleId?: string;
+  specId?: string;
+};
 
 interface UserFormProps {
-  onSubmit?: (data: UserFormData) => void
-  initData?: User
-  loading?: boolean
-  edit?: boolean
+  onSubmit?: (data: UserFormData) => void;
+  initData?: User;
+  loading?: boolean;
+  edit?: boolean;
 }
 
-export default function UserForm({ onSubmit, initData, loading, edit }: UserFormProps) {
+export default function UserForm({
+  onSubmit,
+  initData,
+  loading,
+  edit,
+}: UserFormProps) {
   const [data, setData] = useState<UserFormData>({
     email: '',
     firstName: '',
@@ -34,7 +39,7 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
     password: '',
     username: '',
     teams: [],
-  })
+  });
   const [errors, setErrors] = useState<UserFormErrors>({
     email: '',
     firstName: '',
@@ -44,73 +49,79 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
     username: '',
     avatar: '',
     roleId: '',
-  })
-  const [photo, setPhoto] = useState<string | ArrayBuffer | null>()
-  const navigate = useNavigate()
-  const fileRef = useRef<HTMLInputElement>(null)
+  });
+  const [photo, setPhoto] = useState<string | ArrayBuffer | null>();
+  const navigate = useNavigate();
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
 
-    if (!file) return
+    if (!file) return;
 
     if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      toast.error('Вы можете загружать только JPG/PNG файлы.')
-      e.preventDefault()
-      return
+      toast.error('Вы можете загружать только JPG/PNG файлы.');
+      e.preventDefault();
+      return;
     }
 
     if (file.size / 1024 / 1024 >= 2) {
-      toast.error('Размер изображения должен быть меньше 2MB.')
-      e.preventDefault()
-      return
+      toast.error('Размер изображения должен быть меньше 2MB.');
+      e.preventDefault();
+      return;
     }
 
-    setData({ ...data, avatar: file })
-    const reader = new FileReader()
+    setData({ ...data, avatar: file });
+    const reader = new FileReader();
     reader.onloadend = () => {
-      setPhoto(reader.result)
-    }
-    reader.readAsDataURL(file)
-  }
+      setPhoto(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const onSubmit_ = (e: FormEvent) => {
-    e.preventDefault()
-    let valid = true
+    e.preventDefault();
+    let valid = true;
     if (!emailRegex.test(data.email ?? '')) {
-      setErrors((prev) => ({ ...prev, email: 'Некорректный email' }))
-      valid = false
+      setErrors((prev) => ({ ...prev, email: 'Некорректный email' }));
+      valid = false;
     }
     if (!data.firstName) {
-      setErrors((prev) => ({ ...prev, firstName: 'Введите имя' }))
-      valid = false
+      setErrors((prev) => ({ ...prev, firstName: 'Введите имя' }));
+      valid = false;
     }
     if (!data.lastName) {
-      setErrors((prev) => ({ ...prev, lastName: 'Введите фамилию' }))
-      valid = false
+      setErrors((prev) => ({ ...prev, lastName: 'Введите фамилию' }));
+      valid = false;
     }
     if (!data.username || data.username.length < 4) {
-      setErrors((prev) => ({ ...prev, username: 'Имя пользователя должно быть минимум 4 симввола' }))
-      valid = false
+      setErrors((prev) => ({
+        ...prev,
+        username: 'Имя пользователя должно быть минимум 4 симввола',
+      }));
+      valid = false;
     }
     if (!data.roleId) {
-      setErrors((prev) => ({ ...prev, roleId: 'Выберите роль' }))
-      valid = false
+      setErrors((prev) => ({ ...prev, roleId: 'Выберите роль' }));
+      valid = false;
     }
     if (!data.specId) {
-      setErrors((prev) => ({ ...prev, specId: 'Выберите роль' }))
-      valid = false
+      setErrors((prev) => ({ ...prev, specId: 'Выберите роль' }));
+      valid = false;
     }
     if (!edit && (!data.password || data.password.length < 7)) {
-      setErrors((prev) => ({ ...prev, password: 'Пароль должен быть минимум 7 символов' }))
-      valid = false
+      setErrors((prev) => ({
+        ...prev,
+        password: 'Пароль должен быть минимум 7 символов',
+      }));
+      valid = false;
     }
     if (!valid) {
-      toast.error('Пожалуйста, заполните все поля корректно.')
-      return
+      toast.error('Пожалуйста, заполните все поля корректно.');
+      return;
     }
-    onSubmit?.(data)
-  }
+    onSubmit?.(data);
+  };
 
   useEffect(() => {
     if (initData) {
@@ -123,18 +134,22 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
         username: initData.username,
         roleId: initData.role.id,
         specId: initData.Spec?.id ?? 0,
-        teams: initData.teams?.map((e) => ({ value: e.teamId, label: e.team.name })) ?? [],
-      })
-      setPhoto(initData.avatar ?? null)
+        teams:
+          initData.teams?.map((e) => ({
+            value: e.teamId,
+            label: e.team.name,
+          })) ?? [],
+      });
+      setPhoto(initData.avatar ?? null);
     }
-  }, [initData])
+  }, [initData]);
 
   const setDataField = <T,>(field: keyof UserFormData, value: T) => {
-    setData((prev) => ({ ...prev, [field]: value }))
-    setErrors((prev) => ({ ...prev, [field]: '' }))
-  }
+    setData((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: '' }));
+  };
 
-  const disabledTeams = initData?.teamCurator?.map((e) => e.id) ?? []
+  const disabledTeams = initData?.teamCurator?.map((e) => e.id) ?? [];
   return (
     <form
       className={cva('space-y-8 divide-y divide-gray-200 py-10 px-8', {
@@ -145,9 +160,12 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
       <div className="space-y-8 divide-y divide-gray-200">
         <div>
           <div>
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Profile</h3>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">
+              Profile
+            </h3>
             <p className="mt-1 text-sm text-gray-500">
-              This information will be displayed publicly so be careful what you share.
+              This information will be displayed publicly so be careful what you
+              share.
             </p>
           </div>
 
@@ -163,7 +181,11 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
                 error={errors.username}
               />
             </div>
-            {errors.username && <p className={cva(styles.errorStyles, 'col-span-6')}>{errors.username}</p>}
+            {errors.username && (
+              <p className={cva(styles.errorStyles, 'col-span-6')}>
+                {errors.username}
+              </p>
+            )}
             {!edit && (
               <div className="sm:col-span-3">
                 <InputWithLabelLight
@@ -179,7 +201,10 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
               </div>
             )}
             <div className="sm:col-span-6">
-              <label htmlFor="photo" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="photo"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Photo
               </label>
               <div className="mt-1 flex items-center">
@@ -191,7 +216,11 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
                   />
                 ) : (
                   <span className="h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-                    <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="h-full w-full text-gray-300"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                   </span>
@@ -203,7 +232,12 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
                 >
                   Change
                 </button>
-                <input type="file" ref={fileRef} onChange={onFileChange} className="hidden" />
+                <input
+                  type="file"
+                  ref={fileRef}
+                  onChange={onFileChange}
+                  className="hidden"
+                />
               </div>
             </div>
           </div>
@@ -211,8 +245,12 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
 
         <div className="pt-8">
           <div>
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Personal Information</h3>
-            <p className="mt-1 text-sm text-gray-500">Use a permanent address where you can receive mail.</p>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">
+              Personal Information
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Use a permanent address where you can receive mail.
+            </p>
           </div>
           <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
             <div className="sm:col-span-3">
@@ -265,15 +303,27 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
               />
             </div>
             <div className="sm:col-span-2">
-              <RolesSelect role={data.roleId} setRole={(e) => setDataField('roleId', e)} />
-              {errors.roleId && <p className={styles.errorStyles}>{errors.roleId}</p>}
+              <RolesSelect
+                role={data.roleId}
+                setRole={(e) => setDataField('roleId', e)}
+              />
+              {errors.roleId && (
+                <p className={styles.errorStyles}>{errors.roleId}</p>
+              )}
             </div>
             <div className="sm:col-span-2">
-              <SpecsSelect spec={data.specId} setSpec={(e) => setDataField('specId', e)} />
-              {errors.specId && <p className={styles.errorStyles}>{errors.specId}</p>}
+              <SpecsSelect
+                spec={data.specId}
+                setSpec={(e) => setDataField('specId', e)}
+              />
+              {errors.specId && (
+                <p className={styles.errorStyles}>{errors.specId}</p>
+              )}
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Подразделение</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Подразделение
+              </label>
               <TeamsMultiSelect
                 disabledTeams={disabledTeams}
                 value={data.teams}
@@ -285,9 +335,12 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
 
         <div className="pt-8">
           <div>
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Notifications</h3>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">
+              Notifications
+            </h3>
             <p className="mt-1 text-sm text-gray-500">
-              We'll always let you know about important changes, but you pick what else you want to hear about.
+              We'll always let you know about important changes, but you pick
+              what else you want to hear about.
             </p>
           </div>
         </div>
@@ -304,5 +357,5 @@ export default function UserForm({ onSubmit, initData, loading, edit }: UserForm
         </div>
       </div>
     </form>
-  )
+  );
 }

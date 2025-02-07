@@ -1,70 +1,80 @@
-import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight'
-import { ForwardedRef, forwardRef, useEffect, useState } from 'react'
-import { CreateTeamDto, Team } from '../../types/types'
-import { cva } from '@/shared/lib/cva'
-import { PrimaryButton } from '@/shared/ui/PrimaryButton'
-import { TeamsSelect } from '@/widgets/TeamsSelect'
-import { TextArea } from '@/shared/ui/TextArea'
-import { usersApi } from '@/shared/api/usersApi'
-import { UsersSelect } from '@/shared/ui/UsersSelect'
-import { findDisabledTeams } from '@/shared/lib/findDisabledTeams'
+import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
+import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
+import { CreateTeamDto, Team } from '../../types/types';
+import { cva } from '@/shared/lib/cva';
+import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { TeamsSelect } from '@/widgets/TeamsSelect';
+import { TextArea } from '@/shared/ui/TextArea';
+import { usersApi } from '@/shared/api/usersApi';
+import { UsersSelect } from '@/shared/ui/UsersSelect';
+import { findDisabledTeams } from '@/shared/lib/findDisabledTeams';
 
 type ErrorType = {
-  name?: string
-  description?: string
-  parentId?: string
-  curators?: string
-}
+  name?: string;
+  description?: string;
+  parentId?: string;
+  curators?: string;
+};
 
 interface TeamFormProps {
-  parentId?: number
-  onSubmit: (values: CreateTeamDto) => void
-  initData?: Team
-  loading?: boolean
-  className?: string
+  parentId?: number;
+  onSubmit: (values: CreateTeamDto) => void;
+  initData?: Team;
+  loading?: boolean;
+  className?: string;
 }
-
 
 export default forwardRef(function TeamForm(
   { parentId, onSubmit, initData, loading, className }: TeamFormProps,
-  ref: ForwardedRef<HTMLFormElement>
+  ref: ForwardedRef<HTMLFormElement>,
 ) {
-  const [errors, setErrors] = useState<ErrorType>({})
-  const [data, setData] = useState<CreateTeamDto>({ name: '', description: '', parentTeamId: parentId })
-  const { data: usersData, isLoading, refetch } = usersApi.useGetUsersQuery({})
+  const [errors, setErrors] = useState<ErrorType>({});
+  const [data, setData] = useState<CreateTeamDto>({
+    name: '',
+    description: '',
+    parentTeamId: parentId,
+  });
+  const { data: usersData, isLoading, refetch } = usersApi.useGetUsersQuery({});
 
-  const { users } = usersData || {}
+  const { users } = usersData || {};
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (data.name === '') {
-      setErrors({ name: 'Name is required' })
-      return
+      setErrors({ name: 'Name is required' });
+      return;
     }
-    onSubmit(data)
-  }
+    onSubmit(data);
+  };
 
   const fieldChange = <T,>(value: T, field: keyof CreateTeamDto) => {
-    setData({ ...data, [field]: value })
-    setErrors({ ...errors, [field]: '' })
-  }
+    setData({ ...data, [field]: value });
+    setErrors({ ...errors, [field]: '' });
+  };
 
   useEffect(() => {
     if (initData) {
-      setData(initData)
+      setData(initData);
     } else {
-      setData({ name: '', description: '', parentTeamId: parentId, curatorId: undefined })
+      setData({
+        name: '',
+        description: '',
+        parentTeamId: parentId,
+        curatorId: undefined,
+      });
     }
-  }, [initData, parentId])
+  }, [initData, parentId]);
 
-  const disabledTeams = initData ? findDisabledTeams(initData) : []
+  const disabledTeams = initData ? findDisabledTeams(initData) : [];
   // const disabledUsers = initData ? initData.users?.map(u => u.user.id) : []
 
   return (
     <form
       ref={ref}
       onSubmit={handleSubmit}
-      className={cva('mt-6 gap-3 flex flex-col flex-1', className, { 'animate-pulse': !!loading })}
+      className={cva('mt-6 gap-3 flex flex-col flex-1', className, {
+        'animate-pulse': !!loading,
+      })}
     >
       <InputWithLabelLight
         value={data.name}
@@ -81,7 +91,7 @@ export default forwardRef(function TeamForm(
         onChange={(e) => fieldChange(e.target.value, 'description')}
       />
       <TeamsSelect
-        label='Родительская команда'
+        label="Родительская команда"
         disabledTeams={disabledTeams}
         team={data.parentTeamId}
         setTeam={({ id }) => fieldChange(id, 'parentTeamId')}
@@ -100,5 +110,5 @@ export default forwardRef(function TeamForm(
         Подтвердить
       </PrimaryButton>
     </form>
-  )
-})
+  );
+});

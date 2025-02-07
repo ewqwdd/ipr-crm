@@ -1,20 +1,30 @@
-import { cva } from '@/shared/lib/cva'
-import { Dialog, Transition } from '@headlessui/react'
-import { XIcon } from '@heroicons/react/outline'
-import { Fragment, ReactNode } from 'react'
+import { cva } from '@/shared/lib/cva';
+import { Dialog, Transition } from '@headlessui/react';
+import { XIcon } from '@heroicons/react/outline';
+import { Fragment, ReactNode } from 'react';
 
 interface DrawerProps {
-  open: boolean
-  setOpen: (open: boolean) => void
-  title?: string
-  children: ReactNode
-  dark?: boolean
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  title?: string;
+  children: ReactNode;
+  dark?: boolean;
 }
 
-export default function Drawer({ open, setOpen, title, children, dark }: DrawerProps) {
+export default function Drawer({
+  open,
+  setOpen,
+  title,
+  children,
+  dark,
+}: DrawerProps) {
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 overflow-hidden" onClose={setOpen}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 overflow-hidden"
+        onClose={setOpen}
+      >
         <div className="absolute inset-0 overflow-hidden">
           <Dialog.Overlay className="absolute inset-0" />
 
@@ -29,18 +39,31 @@ export default function Drawer({ open, setOpen, title, children, dark }: DrawerP
               leaveTo="translate-x-full"
             >
               <div className="pointer-events-auto w-screen max-w-md">
-                <div className={cva("flex h-full flex-col overflow-y-auto bg-white py-6 shadow-xl", {
-                    'bg-gray-800 text-white': !!dark,
-                })}>
+                <div
+                  className={cva(
+                    'flex h-full flex-col overflow-y-auto bg-white py-6 shadow-xl',
+                    {
+                      'bg-gray-800 text-white': !!dark,
+                    },
+                  )}
+                >
                   <div className="px-4 sm:px-6">
                     <div className="flex items-start justify-between">
-                      {title && <Dialog.Title className="text-lg font-medium text-gray-900"> {title} </Dialog.Title>}
+                      {title && (
+                        <Dialog.Title className="text-lg font-medium text-gray-900">
+                          {' '}
+                          {title}{' '}
+                        </Dialog.Title>
+                      )}
                       <div className="ml-3 flex h-7 items-center">
                         <button
                           type="button"
-                          className={cva("rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2", {
-                            'bg-gray-600 text-gray-300': !!dark,
-                          })}
+                          className={cva(
+                            'rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
+                            {
+                              'bg-gray-600 text-gray-300': !!dark,
+                            },
+                          )}
                           onClick={() => setOpen(false)}
                         >
                           <span className="sr-only">Close panel</span>
@@ -61,5 +84,5 @@ export default function Drawer({ open, setOpen, title, children, dark }: DrawerP
         </div>
       </Dialog>
     </Transition.Root>
-  )
+  );
 }

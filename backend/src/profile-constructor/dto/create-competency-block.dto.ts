@@ -1,7 +1,12 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateCompetencyBlockDto {
-  
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -10,6 +15,7 @@ export class CreateCompetencyBlockDto {
   @IsEnum(['SOFT', 'HARD'])
   type: 'SOFT' | 'HARD';
 
+  @IsOptional()
   @IsNumber()
-  specId: number;
+  specId?: number;
 }

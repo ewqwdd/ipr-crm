@@ -1,2 +1,2 @@
-import SearchSelectMultiple from './SearchSelectMultiple'
-export { SearchSelectMultiple }
+import SearchSelectMultiple from './SearchSelectMultiple';
+export { SearchSelectMultiple };

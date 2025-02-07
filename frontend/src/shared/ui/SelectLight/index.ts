@@ -1,2 +1,2 @@
-import SelectLight from './SelectLight'
-export { SelectLight }
+import SelectLight from './SelectLight';
+export { SelectLight };

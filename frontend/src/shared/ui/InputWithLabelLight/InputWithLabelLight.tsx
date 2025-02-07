@@ -1,26 +1,31 @@
-import { cva } from '@/shared/lib/cva'
-import { ExclamationCircleIcon } from '@heroicons/react/outline'
-import { ForwardedRef, forwardRef, InputHTMLAttributes, ReactNode } from 'react'
+import { cva } from '@/shared/lib/cva';
+import { ExclamationCircleIcon } from '@heroicons/react/outline';
+import {
+  ForwardedRef,
+  forwardRef,
+  InputHTMLAttributes,
+  ReactNode,
+} from 'react';
 
 interface InputWithLabelProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string
-  name?: string
-  right?: ReactNode
-  error?: string
+  label?: string;
+  name?: string;
+  right?: ReactNode;
+  error?: string;
 }
 
 export default forwardRef(function InputWithLabel(
   { label, className, name, right, error, ...props }: InputWithLabelProps,
-  ref: ForwardedRef<HTMLInputElement>
+  ref: ForwardedRef<HTMLInputElement>,
 ) {
-  let labelElem
+  let labelElem;
 
   if (label) {
     labelElem = (
       <label htmlFor={name} className="block text-sm font-medium text-gray-700">
         {label}
       </label>
-    )
+    );
   }
 
   return (
@@ -40,7 +45,10 @@ export default forwardRef(function InputWithLabel(
         />
         {error && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
+            <ExclamationCircleIcon
+              className="h-5 w-5 text-red-500"
+              aria-hidden="true"
+            />
           </div>
         )}
       </div>
@@ -50,5 +58,5 @@ export default forwardRef(function InputWithLabel(
         </p>
       )}
     </div>
-  )
-})
+  );
+});

@@ -1,37 +1,54 @@
-import { teamsApi } from '@/shared/api/teamsApi'
-import { Accordion } from '@/shared/ui/Accordion'
-import { useMemo, useState } from 'react'
-import UserItem from './UserItem'
-import { UsersIcon } from '@heroicons/react/outline'
-import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect'
-import { Option } from '@/shared/types/Option'
-import { MultiValue } from 'react-select'
-import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight'
-import { SpecsMultiSelect } from '@/widgets/SpecsMultiSelect'
+import { teamsApi } from '@/shared/api/teamsApi';
+import { Accordion } from '@/shared/ui/Accordion';
+import { useMemo, useState } from 'react';
+import UserItem from './UserItem';
+import { UsersIcon } from '@heroicons/react/outline';
+import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect';
+import { Option } from '@/shared/types/Option';
+import { MultiValue } from 'react-select';
+import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
+import { SpecsMultiSelect } from '@/widgets/SpecsMultiSelect';
 
 export default function AddRate() {
-  const { data } = teamsApi.useGetTeamsQuery()
-  const [teams, setTeams] = useState<MultiValue<Option>>([])
-  const [specs, setSpecs] = useState<MultiValue<Option>>([])
+  const { data } = teamsApi.useGetTeamsQuery();
+  const [teams, setTeams] = useState<MultiValue<Option>>([]);
+  const [specs, setSpecs] = useState<MultiValue<Option>>([]);
 
   const filteredSpecs = useMemo(
     () =>
-      specs.length > 0 ?
-      data?.list?.map((t) => ({
-        ...t,
-        curator: t.curator?.specsOnTeams?.find((s) => specs.find((sp) => sp.value === s.specId)) ? t.curator : undefined,
-        users: t.users?.filter((u) => u.user.specsOnTeams.find((s) => specs.find((sp) => sp.value === s.specId))),
-      })) : data?.list,
-    [data, specs]
-  )
+      specs.length > 0
+        ? data?.list?.map((t) => ({
+            ...t,
+            curator: t.curator?.specsOnTeams?.find((s) =>
+              specs.find((sp) => sp.value === s.specId),
+            )
+              ? t.curator
+              : undefined,
+            users: t.users?.filter((u) =>
+              u.user.specsOnTeams.find((s) =>
+                specs.find((sp) => sp.value === s.specId),
+              ),
+            ),
+          }))
+        : data?.list,
+    [data, specs],
+  );
   const filteredEmpty = useMemo(
-    () => filteredSpecs?.filter((team) => (team.users && team.users?.length > 0) || team.curator),
-    [filteredSpecs]
-  )
+    () =>
+      filteredSpecs?.filter(
+        (team) => (team.users && team.users?.length > 0) || team.curator,
+      ),
+    [filteredSpecs],
+  );
   const filteredTeams = useMemo(
-    () => (teams.length > 0 ? filteredEmpty?.filter((team) => teams.find((t) => t.value === team.id)) : filteredEmpty),
-    [teams, filteredEmpty]
-  )
+    () =>
+      teams.length > 0
+        ? filteredEmpty?.filter((team) =>
+            teams.find((t) => t.value === team.id),
+          )
+        : filteredEmpty,
+    [teams, filteredEmpty],
+  );
 
   return (
     <div className="flex flex-col gap-2">
@@ -60,12 +77,14 @@ export default function AddRate() {
             >
               <div className="flex flex-col gap-2 ml-4">
                 {team.curator && <UserItem user={team.curator} />}
-                {team.users?.map((user) => <UserItem user={user.user} key={user.user.id} />)}
+                {team.users?.map((user) => (
+                  <UserItem user={user.user} key={user.user.id} />
+                ))}
               </div>
             </Accordion>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }

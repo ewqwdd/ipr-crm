@@ -1,3 +1,3 @@
-import type { Rate } from './types/types'
+import type { Rate } from './types/types';
 
-export type { Rate }
+export type { Rate };

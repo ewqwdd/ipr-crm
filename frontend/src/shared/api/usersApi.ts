@@ -1,19 +1,22 @@
-import { User } from '@/entities/user'
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { User } from '@/entities/user';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-type Pagination = { limit?: number; page?: number }
+type Pagination = { limit?: number; page?: number };
 
 const usersApi = createApi({
   reducerPath: 'usersApi',
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL, credentials: 'include' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_URL,
+    credentials: 'include',
+  }),
   tagTypes: ['User'],
   endpoints: (build) => ({
     getUsers: build.query<{ users: User[]; count: number }, Pagination>({
       query: ({ limit, page } = {}) => {
-        const queryParams = new URLSearchParams()
-        if (page !== undefined) queryParams.append('page', page.toString())
-        if (limit !== undefined) queryParams.append('limit', limit.toString())
-        return `/users?${queryParams.toString()}`
+        const queryParams = new URLSearchParams();
+        if (page !== undefined) queryParams.append('page', page.toString());
+        if (limit !== undefined) queryParams.append('limit', limit.toString());
+        return `/users?${queryParams.toString()}`;
       },
       providesTags: ['User'],
     }),
@@ -38,6 +41,6 @@ const usersApi = createApi({
       invalidatesTags: ['User'],
     }),
   }),
-})
+});
 
-export { usersApi }
+export { usersApi };

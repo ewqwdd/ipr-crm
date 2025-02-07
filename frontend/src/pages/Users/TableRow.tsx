@@ -1,9 +1,9 @@
-import { User } from '@/entities/user'
-import { Link } from 'react-router'
+import { User } from '@/entities/user';
+import { Link } from 'react-router';
 
 interface TableRowProps {
-  person: Partial<User>
-  edit?: boolean
+  person: Partial<User>;
+  edit?: boolean;
 }
 
 export default function TableRow({ person, edit = true }: TableRowProps) {
@@ -13,13 +13,20 @@ export default function TableRow({ person, edit = true }: TableRowProps) {
         <div className="flex items-center">
           <Link to={`/users/${person?.id}`} className="h-10 w-10 flex-shrink-0">
             {person.avatar ? (
-              <img className="h-10 w-10 rounded-full object-cover" src={person.avatar} alt="avatar" />
+              <img
+                className="h-10 w-10 rounded-full object-cover"
+                src={person.avatar}
+                alt="avatar"
+              />
             ) : (
               <div className="h-10 w-10 rounded-full bg-gray-200" />
             )}
           </Link>
           <div className="ml-4">
-            <Link to={`/users/${person?.id}`} className="font-medium text-gray-900">
+            <Link
+              to={`/users/${person?.id}`}
+              className="font-medium text-gray-900"
+            >
               {person.firstName} {person.lastName}
             </Link>
             <div className="text-gray-500">{person.email}</div>
@@ -45,11 +52,14 @@ export default function TableRow({ person, edit = true }: TableRowProps) {
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         {edit && (
-          <Link to={'/userEdit/' + person.id} className="text-indigo-600 hover:text-indigo-900">
+          <Link
+            to={'/userEdit/' + person.id}
+            className="text-indigo-600 hover:text-indigo-900"
+          >
             Edit<span className="sr-only">, {person.username}</span>
           </Link>
         )}
       </td>
     </tr>
-  )
+  );
 }

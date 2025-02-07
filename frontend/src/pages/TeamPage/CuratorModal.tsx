@@ -1,37 +1,43 @@
-import { TeamSingle } from '@/entities/team'
-import { teamsApi } from '@/shared/api/teamsApi'
-import { usersApi } from '@/shared/api/usersApi'
-import { Avatar } from '@/shared/ui/Avatar'
-import { Modal } from '@/shared/ui/Modal'
-import { Radio } from '@/shared/ui/Radio'
-import { useEffect, useState } from 'react'
+import { TeamSingle } from '@/entities/team';
+import { teamsApi } from '@/shared/api/teamsApi';
+import { usersApi } from '@/shared/api/usersApi';
+import { Avatar } from '@/shared/ui/Avatar';
+import { Modal } from '@/shared/ui/Modal';
+import { Radio } from '@/shared/ui/Radio';
+import { useEffect, useState } from 'react';
 
 interface CuratorModalProps {
-  open?: boolean
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  loading?: boolean
-  users?: TeamSingle['users']
-  teamId: number
+  open?: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  loading?: boolean;
+  users?: TeamSingle['users'];
+  teamId: number;
 }
 
-export default function CuratorModal({ setOpen, loading, open, users, teamId }: CuratorModalProps) {
-  const [value, setValue] = useState<number>()
-  const {refetch} = usersApi.useGetUsersQuery({})
+export default function CuratorModal({
+  setOpen,
+  loading,
+  open,
+  users,
+  teamId,
+}: CuratorModalProps) {
+  const [value, setValue] = useState<number>();
+  const { refetch } = usersApi.useGetUsersQuery({});
 
-
-  const [mutate, { isSuccess, isLoading: mutateLoading }] = teamsApi.useAddCuratorMutation()
+  const [mutate, { isSuccess, isLoading: mutateLoading }] =
+    teamsApi.useAddCuratorMutation();
 
   const onSubmit = () => {
-    if (!value) return
-    mutate({ curatorId: value, id: teamId })
-  }
+    if (!value) return;
+    mutate({ curatorId: value, id: teamId });
+  };
 
   useEffect(() => {
     if (isSuccess) {
-      setOpen(false)
-      refetch()
+      setOpen(false);
+      refetch();
     }
-  }, [isSuccess])
+  }, [isSuccess]);
 
   return (
     <Modal
@@ -53,7 +59,7 @@ export default function CuratorModal({ setOpen, loading, open, users, teamId }: 
             value={user.userId}
             name="curator"
             onChange={(e) => {
-              setValue(Number(e.target.value))
+              setValue(Number(e.target.value));
             }}
             key={user.userId}
             checked={value === user.userId}
@@ -61,5 +67,5 @@ export default function CuratorModal({ setOpen, loading, open, users, teamId }: 
         ))}
       </div>
     </Modal>
-  )
+  );
 }

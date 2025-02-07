@@ -1,3 +1,3 @@
-import UserMultiSelect from './UserMultiSelect'
+import UserMultiSelect from './UserMultiSelect';
 
-export { UserMultiSelect }
+export { UserMultiSelect };

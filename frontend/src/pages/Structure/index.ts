@@ -1,2 +1,2 @@
-import Structure from './Structure'
-export { Structure }
+import Structure from './Structure';
+export { Structure };

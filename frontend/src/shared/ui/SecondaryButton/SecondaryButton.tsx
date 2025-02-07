@@ -1,11 +1,11 @@
-import { cva } from '@/shared/lib/cva'
-import { ButtonHTMLAttributes, memo } from 'react'
+import { cva } from '@/shared/lib/cva';
+import { ButtonHTMLAttributes, memo } from 'react';
 
-type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 interface SecondaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  size?: ButtonSize
-  danger?: boolean
+  size?: ButtonSize;
+  danger?: boolean;
 }
 
 export default memo(function SecondaryButton({
@@ -21,7 +21,7 @@ export default memo(function SecondaryButton({
     md: 'px-4 py-2 text-sm',
     lg: 'px-4 py-2 text-base',
     xl: 'px-6 py-3 text-base',
-  }
+  };
 
   return (
     <button
@@ -32,11 +32,11 @@ export default memo(function SecondaryButton({
         {
           'bg-red-600 hover:bg-red-700 focus:ring-red-500': !!danger,
         },
-        className
+        className,
       )}
       {...props}
     >
       {children}
     </button>
-  )
-})
+  );
+});

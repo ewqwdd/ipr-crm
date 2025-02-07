@@ -1,26 +1,39 @@
-import { cva } from '@/shared/lib/cva'
-import { ExclamationCircleIcon } from '@heroicons/react/outline'
-import { ForwardedRef, forwardRef, ReactNode, SelectHTMLAttributes } from 'react'
+import { cva } from '@/shared/lib/cva';
+import { ExclamationCircleIcon } from '@heroicons/react/outline';
+import {
+  ForwardedRef,
+  forwardRef,
+  ReactNode,
+  SelectHTMLAttributes,
+} from 'react';
 
 interface InputWithLabelProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string
-  name?: string
-  right?: ReactNode
-  error?: string
+  label?: string;
+  name?: string;
+  right?: ReactNode;
+  error?: string;
 }
 
 export default forwardRef(function SelectLight(
-  { label, className, name, right, error, children, ...props }: InputWithLabelProps,
-  ref: ForwardedRef<HTMLSelectElement>
+  {
+    label,
+    className,
+    name,
+    right,
+    error,
+    children,
+    ...props
+  }: InputWithLabelProps,
+  ref: ForwardedRef<HTMLSelectElement>,
 ) {
-  let labelElem
+  let labelElem;
 
   if (label) {
     labelElem = (
       <label htmlFor={name} className="block text-sm font-medium text-gray-700">
         {label}
       </label>
-    )
+    );
   }
 
   return (
@@ -37,7 +50,7 @@ export default forwardRef(function SelectLight(
           ref={ref}
           className={cva(
             'shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md',
-            className
+            className,
           )}
           {...props}
         >
@@ -45,7 +58,10 @@ export default forwardRef(function SelectLight(
         </select>
         {error && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
+            <ExclamationCircleIcon
+              className="h-5 w-5 text-red-500"
+              aria-hidden="true"
+            />
           </div>
         )}
       </div>
@@ -55,5 +71,5 @@ export default forwardRef(function SelectLight(
         </p>
       )}
     </div>
-  )
-})
+  );
+});

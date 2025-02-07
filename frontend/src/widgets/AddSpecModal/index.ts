@@ -1,2 +1,2 @@
-import AddSpecModal from './AddSpecModal'
-export { AddSpecModal }
+import AddSpecModal from './AddSpecModal';
+export { AddSpecModal };

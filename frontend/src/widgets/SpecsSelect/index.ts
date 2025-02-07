@@ -1,2 +1,2 @@
-import SpecsSelect from './SpecsSelect'
-export { SpecsSelect }
+import SpecsSelect from './SpecsSelect';
+export { SpecsSelect };

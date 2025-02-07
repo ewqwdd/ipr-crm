@@ -1,2 +1,2 @@
-import UserEdit from './UserEdit'
-export { UserEdit }
+import UserEdit from './UserEdit';
+export { UserEdit };

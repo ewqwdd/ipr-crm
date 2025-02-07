@@ -1,43 +1,58 @@
-import { useState } from 'react'
-import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
-import { Combobox } from '@headlessui/react'
-import { cva } from '@/shared/lib/cva'
+import { useState } from 'react';
+import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
+import { Combobox } from '@headlessui/react';
+import { cva } from '@/shared/lib/cva';
 
-type SelectValue = { id: number; name: string }
+type SelectValue = { id: number; name: string };
 
 function classNames(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
 interface SearchSelectProps {
-  value?: number
-  onChange: (value: SelectValue) => void
-  options: SelectValue[]
-  loading?: boolean
-  label?: string
+  value?: number;
+  onChange: (value: SelectValue) => void;
+  options: SelectValue[];
+  loading?: boolean;
+  label?: string;
 }
 
-export default function SearchSelect({ onChange, value, options, loading, label }: SearchSelectProps) {
-  const [query, setQuery] = useState('')
+export default function SearchSelect({
+  onChange,
+  value,
+  options,
+  loading,
+  label,
+}: SearchSelectProps) {
+  const [query, setQuery] = useState('');
 
   const filteredData =
     query === ''
       ? options
       : options.filter((person) => {
-          return person.name.toLowerCase().includes(query.toLowerCase())
-        })
+          return person.name.toLowerCase().includes(query.toLowerCase());
+        });
 
-  const current = options.find((e) => e.id === value) ?? null
+  const current = options.find((e) => e.id === value) ?? null;
 
   return (
-    <Combobox nullable defaultValue={null} as="div" value={current} onChange={onChange} className={cva({ 'animate-pulse': !!loading })}>
-      <Combobox.Label className="block text-sm font-medium text-gray-700">{label}</Combobox.Label>
+    <Combobox
+      nullable
+      defaultValue={null}
+      as="div"
+      value={current}
+      onChange={onChange}
+      className={cva({ 'animate-pulse': !!loading })}
+    >
+      <Combobox.Label className="block text-sm font-medium text-gray-700">
+        {label}
+      </Combobox.Label>
       <div className="relative mt-1">
         <Combobox.Input
           className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
           onChange={(event) => setQuery(event.target.value)}
           displayValue={(data: SelectValue) => {
-            return data?.name ?? ''
+            return data?.name ?? '';
           }}
         />
         <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
@@ -53,19 +68,26 @@ export default function SearchSelect({ onChange, value, options, loading, label 
                 className={({ active }) =>
                   classNames(
                     'relative cursor-default select-none py-2 pl-3 pr-9',
-                    active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                    active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                   )
                 }
               >
                 {({ active, selected }) => (
                   <>
-                    <span className={classNames('block truncate', selected && 'font-semibold')}>{person.name}</span>
+                    <span
+                      className={classNames(
+                        'block truncate',
+                        selected && 'font-semibold',
+                      )}
+                    >
+                      {person.name}
+                    </span>
 
                     {selected && (
                       <span
                         className={classNames(
                           'absolute inset-y-0 right-0 flex items-center pr-4',
-                          active ? 'text-white' : 'text-indigo-600'
+                          active ? 'text-white' : 'text-indigo-600',
                         )}
                       >
                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
@@ -79,5 +101,5 @@ export default function SearchSelect({ onChange, value, options, loading, label 
         )}
       </div>
     </Combobox>
-  )
+  );
 }

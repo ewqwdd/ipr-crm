@@ -1,2 +1,2 @@
-import InputWithLabel from './InputWithLabel'
-export { InputWithLabel }
+import InputWithLabel from './InputWithLabel';
+export { InputWithLabel };

@@ -1,18 +1,29 @@
-import { User } from '@/entities/user'
-import { cva } from '@/shared/lib/cva'
-import Select, { ActionMeta, MultiValue } from 'react-select'
+import { User } from '@/entities/user';
+import { cva } from '@/shared/lib/cva';
+import Select, { ActionMeta, MultiValue } from 'react-select';
 
-export type Option = { value: number; label: string }
+export type Option = { value: number; label: string };
 
 interface UserMultiSelectProps {
-  users: User[]
-  value?: MultiValue<Option>
-  onChange?: (newValue: MultiValue<Option>, actionMeta: ActionMeta<Option>) => void
-  loading?: boolean
+  users: User[];
+  value?: MultiValue<Option>;
+  onChange?: (
+    newValue: MultiValue<Option>,
+    actionMeta: ActionMeta<Option>,
+  ) => void;
+  loading?: boolean;
 }
 
-export default function UserMultiSelect({ users, onChange, value, loading }: UserMultiSelectProps) {
-  const options = users.map((user) => ({ value: user.id, label: user.username }))
+export default function UserMultiSelect({
+  users,
+  onChange,
+  value,
+  loading,
+}: UserMultiSelectProps) {
+  const options = users.map((user) => ({
+    value: user.id,
+    label: user.username,
+  }));
 
   return (
     <Select
@@ -26,5 +37,5 @@ export default function UserMultiSelect({ users, onChange, value, loading }: Use
       })}
       classNamePrefix="select"
     />
-  )
+  );
 }

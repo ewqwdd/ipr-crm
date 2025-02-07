@@ -1,44 +1,44 @@
-import { useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react';
 
 export const useMinMediaQuery = (query: number) => {
-  const [state, setState] = useState<boolean>(false)
+  const [state, setState] = useState<boolean>(false);
 
   useLayoutEffect(() => {
     const check = () => {
       if (query <= window.innerWidth) {
-        setState(true)
+        setState(true);
       } else {
-        setState(false)
+        setState(false);
       }
-    }
-    window.addEventListener('resize', check)
-    check()
+    };
+    window.addEventListener('resize', check);
+    check();
     return () => {
-      window.removeEventListener('resize', check)
-    }
-  }, [query])
+      window.removeEventListener('resize', check);
+    };
+  }, [query]);
 
-  return state
-}
+  return state;
+};
 
 export const useMaxMediaQuery = (query: number) => {
-  const [state, setState] = useState<boolean>(false)
+  const [state, setState] = useState<boolean>(false);
 
   useLayoutEffect(() => {
     const check = () => {
       if (query > window.innerWidth) {
-        setState(true)
+        setState(true);
       } else {
-        setState(false)
+        setState(false);
       }
-    }
-    window.addEventListener('resize', check)
-    check()
+    };
+    window.addEventListener('resize', check);
+    check();
 
     return () => {
-      window.removeEventListener('resize', check)
-    }
-  }, [query])
+      window.removeEventListener('resize', check);
+    };
+  }, [query]);
 
-  return state
-}
+  return state;
+};

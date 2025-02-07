@@ -1,14 +1,18 @@
-import { Avatar } from '@/shared/ui/Avatar'
-import { Badge } from '@/shared/ui/Badge'
-import { User } from '../types/types'
+import { Avatar } from '@/shared/ui/Avatar';
+import { Badge } from '@/shared/ui/Badge';
+import { User } from '../types/types';
 
 interface UserFormItemProps {
-  user?: User
-  selected: number[]
-  setSelected: (selected: number[]) => void
+  user?: User;
+  selected: number[];
+  setSelected: (selected: number[]) => void;
 }
 
-export default function UserFormItem({ selected, setSelected, user }: UserFormItemProps) {
+export default function UserFormItem({
+  selected,
+  setSelected,
+  user,
+}: UserFormItemProps) {
   return (
     <label className="flex gap-4 items-center">
       <input
@@ -16,9 +20,9 @@ export default function UserFormItem({ selected, setSelected, user }: UserFormIt
         checked={selected.includes(user?.id ?? -1)}
         onChange={() => {
           if (selected.includes(user?.id ?? -1)) {
-            setSelected(selected.filter((id) => id !== user?.id))
+            setSelected(selected.filter((id) => id !== user?.id));
           } else {
-            setSelected([...selected, user?.id ?? -1])
+            setSelected([...selected, user?.id ?? -1]);
           }
         }}
       />
@@ -32,5 +36,5 @@ export default function UserFormItem({ selected, setSelected, user }: UserFormIt
         </Badge>
       )}
     </label>
-  )
+  );
 }

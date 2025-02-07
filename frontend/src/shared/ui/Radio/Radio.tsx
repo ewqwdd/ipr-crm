@@ -1,12 +1,17 @@
-import { InputHTMLAttributes, ReactNode } from "react"
-
+import { InputHTMLAttributes, ReactNode, useId } from 'react';
 
 interface RadioProps extends InputHTMLAttributes<HTMLInputElement> {
-    checked?: boolean
-    children: ReactNode
+  checked?: boolean;
+  children: ReactNode;
 }
 
-export default function Radio({ checked, children, onChange, ...props }: RadioProps) {
+export default function Radio({
+  checked,
+  children,
+  onChange,
+  ...props
+}: RadioProps) {
+  const id = useId();
   return (
     <div className="flex items-center">
       <input
@@ -15,8 +20,14 @@ export default function Radio({ checked, children, onChange, ...props }: RadioPr
         checked={checked}
         onChange={onChange}
         {...props}
+        id={id}
       />
-      <label className="ml-3 block text-sm font-medium text-gray-700">{children}</label>
+      <label
+        className="ml-3 block text-sm font-medium text-gray-700"
+        htmlFor={id}
+      >
+        {children}
+      </label>
     </div>
-  )
+  );
 }

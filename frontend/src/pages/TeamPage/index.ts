@@ -1,2 +1,2 @@
-import TeamPage from './TeamPage'
-export { TeamPage }
+import TeamPage from './TeamPage';
+export { TeamPage };

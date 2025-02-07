@@ -1,14 +1,17 @@
-import { teamsApi } from '@/shared/api/teamsApi'
-import { cva } from '@/shared/lib/cva'
-import { DotsDropdown } from '@/shared/ui/DotsDropdown'
+import { teamsApi } from '@/shared/api/teamsApi';
+import { cva } from '@/shared/lib/cva';
+import { DotsDropdown } from '@/shared/ui/DotsDropdown';
 
 interface LeaderDropdownProps {
-  teamId: number
-  setOpenNew?: React.Dispatch<React.SetStateAction<boolean>>
+  teamId: number;
+  setOpenNew?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function LeaderDropdown({ teamId, setOpenNew }: LeaderDropdownProps) {
-  const [mutate, { isLoading }] = teamsApi.useRemoveCuratorMutation()
+export default function LeaderDropdown({
+  teamId,
+  setOpenNew,
+}: LeaderDropdownProps) {
+  const [mutate, { isLoading }] = teamsApi.useRemoveCuratorMutation();
 
   return (
     <DotsDropdown
@@ -29,5 +32,5 @@ export default function LeaderDropdown({ teamId, setOpenNew }: LeaderDropdownPro
         },
       ]}
     />
-  )
+  );
 }

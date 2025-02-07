@@ -1,22 +1,25 @@
-import { CreateTeamDto, Team, TeamSingle } from '@/entities/team'
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { CreateTeamDto, Team, TeamSingle } from '@/entities/team';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const teamsApi = createApi({
   reducerPath: 'teamsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL, credentials: 'include' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_URL,
+    credentials: 'include',
+  }),
   tagTypes: ['Team'],
   endpoints: (build) => ({
     getTeams: build.query<{ structure: Team[]; list: Team[] }, void>({
       query: () => '/teams',
       providesTags: ['Team'],
       transformResponse: (response: Team[]) => {
-        const noParent = response.filter((team) => !team.parentTeamId)
+        const noParent = response.filter((team) => !team.parentTeamId);
         const findChildren = (team: Team) => {
-          team.subTeams = response.filter((t) => t.parentTeamId === team.id)
-          team.subTeams.forEach(findChildren)
-        }
-        noParent.forEach(findChildren)
-        return { structure: noParent, list: response }
+          team.subTeams = response.filter((t) => t.parentTeamId === team.id);
+          team.subTeams.forEach(findChildren);
+        };
+        noParent.forEach(findChildren);
+        return { structure: noParent, list: response };
       },
     }),
     createTeam: build.mutation<Team[], CreateTeamDto>({
@@ -69,7 +72,10 @@ const teamsApi = createApi({
       providesTags: (_, __, id) => [{ type: 'Team', id }],
       query: (id) => `/teams/${id}`,
     }),
-    setTeamSpecs: build.mutation<null, { teamId: number; userId: number; specs: number[] }>({
+    setTeamSpecs: build.mutation<
+      null,
+      { teamId: number; userId: number; specs: number[] }
+    >({
       query: (body) => ({
         url: '/teams/specs',
         method: 'POST',
@@ -86,6 +92,6 @@ const teamsApi = createApi({
       invalidatesTags: ['Team'],
     }),
   }),
-})
+});
 
-export { teamsApi }
+export { teamsApi };

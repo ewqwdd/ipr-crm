@@ -1,15 +1,15 @@
-import { TeamUser } from '@/entities/team'
-import { universalApi } from '@/shared/api/universalApi'
-import { usersApi } from '@/shared/api/usersApi'
-import { Avatar } from '@/shared/ui/Avatar'
-import { Checkbox } from '@/shared/ui/Checkbox'
+import { TeamUser } from '@/entities/team';
+import { universalApi } from '@/shared/api/universalApi';
+import { usersApi } from '@/shared/api/usersApi';
+import { Avatar } from '@/shared/ui/Avatar';
+import { Checkbox } from '@/shared/ui/Checkbox';
 
 interface UserItemProps {
-  user: TeamUser
+  user: TeamUser;
 }
 
 export default function UserItem({ user }: UserItemProps) {
-  const { data } = universalApi.useGetSpecsQuery()
+  const { data } = universalApi.useGetSpecsQuery();
 
   return (
     <div className="flex flex-col gap-2">
@@ -29,10 +29,11 @@ export default function UserItem({ user }: UserItemProps) {
         </div>
       ) : (
         <span className="text-gray-500 font-medium text-sm pt-2 pb-3">
-          Командные специализации не выбраны. Вы можете выбрать их нажав на кнопку «Редактировать» возле имени
-          пользователя или на вкладке «Состав команды»
+          Командные специализации не выбраны. Вы можете выбрать их нажав на
+          кнопку «Редактировать» возле имени пользователя или на вкладке «Состав
+          команды»
         </span>
       )}
     </div>
-  )
+  );
 }

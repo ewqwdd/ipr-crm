@@ -1,14 +1,14 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, ReactNode } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { DotsVerticalIcon } from '@heroicons/react/solid'
+import { Fragment, ReactNode } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import { DotsVerticalIcon } from '@heroicons/react/solid';
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
 interface DropdownMinimalProps {
-  buttons: { title: string; onClick: () => void; icon: ReactNode }[]
+  buttons: { title: string; onClick: () => void; icon: ReactNode }[];
 }
 
 export default function DropdownMinimal({ buttons }: DropdownMinimalProps) {
@@ -39,7 +39,7 @@ export default function DropdownMinimal({ buttons }: DropdownMinimalProps) {
                     onClick={button.onClick}
                     className={classNames(
                       active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                      'block px-4 py-2 text-sm w-full text-left'
+                      'block px-4 py-2 text-sm w-full text-left',
                     )}
                   >
                     {button.icon}
@@ -52,5 +52,5 @@ export default function DropdownMinimal({ buttons }: DropdownMinimalProps) {
         </Menu.Items>
       </Transition>
     </Menu>
-  )
+  );
 }

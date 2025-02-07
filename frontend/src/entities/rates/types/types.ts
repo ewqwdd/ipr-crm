@@ -1,4 +1,3 @@
-
 export interface Rate {
-    id: number
+  id: number;
 }

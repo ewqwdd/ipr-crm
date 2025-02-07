@@ -1,7 +1,6 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class createMaterialCompetencyDto {
-  
   @IsNotEmpty()
   @IsString()
   name: string;

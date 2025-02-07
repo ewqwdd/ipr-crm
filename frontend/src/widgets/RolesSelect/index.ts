@@ -1,2 +1,2 @@
-import RolesSelect from './RolesSelect'
-export { RolesSelect }
+import RolesSelect from './RolesSelect';
+export { RolesSelect };

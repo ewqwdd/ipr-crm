@@ -1,19 +1,22 @@
-import { AddTeamModal, TeamItem } from '@/entities/team'
-import { teamsApi } from '@/shared/api/teamsApi'
-import { Heading } from '@/shared/ui/Heading'
-import { PrimaryButton } from '@/shared/ui/PrimaryButton'
-import { useState } from 'react'
+import { AddTeamModal, TeamItem } from '@/entities/team';
+import { teamsApi } from '@/shared/api/teamsApi';
+import { Heading } from '@/shared/ui/Heading';
+import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { useState } from 'react';
 
 export default function Teams() {
-  const { data } = teamsApi.useGetTeamsQuery()
+  const { data } = teamsApi.useGetTeamsQuery();
 
-  const list = data?.list ?? []
-  const [addAopen, setAddOpen] = useState(false)
+  const list = data?.list ?? [];
+  const [addAopen, setAddOpen] = useState(false);
 
   return (
     <div className="px-8 py-10 flex flex-col">
       <div className="flex justify-between items-center">
-        <Heading title="Подразделения" description="Подразделения и пользователи" />
+        <Heading
+          title="Подразделения"
+          description="Подразделения и пользователи"
+        />
         <PrimaryButton className="self-start" onClick={() => setAddOpen(true)}>
           Добавить
         </PrimaryButton>
@@ -25,5 +28,5 @@ export default function Teams() {
       </div>
       <AddTeamModal open={addAopen} setOpen={setAddOpen} />
     </div>
-  )
+  );
 }

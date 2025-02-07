@@ -1,42 +1,56 @@
-import { useAppSelector } from '@/app'
-import { Avatar } from '@/shared/ui/Avatar'
-import { Disclosure } from '@headlessui/react'
-import { DocumentIcon, HomeIcon, InboxIcon, UserIcon, UsersIcon } from '@heroicons/react/outline'
-import React from 'react'
-import { Link, NavLink, useLocation } from 'react-router'
+import { useAppSelector } from '@/app';
+import { Avatar } from '@/shared/ui/Avatar';
+import { Disclosure } from '@headlessui/react';
+import {
+  DocumentIcon,
+  HomeIcon,
+  InboxIcon,
+  UserIcon,
+  UsersIcon,
+} from '@heroicons/react/outline';
+import React from 'react';
+import { Link, NavLink, useLocation } from 'react-router';
 
 function classNames(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
 type NavType = {
-  name: string
-  icon?: (props: React.ComponentProps<'svg'>) => JSX.Element
-  href?: string
-  current: boolean
-  count?: number
-  children?: NavType[]
-}
+  name: string;
+  icon?: (props: React.ComponentProps<'svg'>) => JSX.Element;
+  href?: string;
+  current: boolean;
+  count?: number;
+  children?: NavType[];
+};
 
 const navigation: NavType[] = [
   { name: 'Dashboard', icon: HomeIcon, href: '/', current: true },
   { name: 'Users', icon: UserIcon, href: '/users', current: false },
-  { name: 'Орагнизационная структура', icon: UsersIcon, href: '/structure', current: false },
+  {
+    name: 'Орагнизационная структура',
+    icon: UsersIcon,
+    href: '/structure',
+    current: false,
+  },
   { name: 'Команды', icon: UsersIcon, href: '/teams', current: false },
   {
     name: 'Оценка',
     icon: InboxIcon,
     current: false,
-    children: [
-      { name: 'Оценка 360', href: '/360rate', current: false },
-   ],
+    children: [{ name: 'Оценка 360', href: '/360rate', current: false }],
   },
-  { name: 'Конструктор профилей', icon: DocumentIcon, href: '/skills', current: false },
-]
+  {
+    name: 'Конструктор профилей',
+    icon: DocumentIcon,
+    href: '/skills',
+    current: false,
+  },
+];
 
 export default function Content() {
-  const user = useAppSelector((state) => state.user.user)
-  const { pathname } = useLocation()
+  const user = useAppSelector((state) => state.user.user);
+  const { pathname } = useLocation();
 
   return (
     <>
@@ -48,7 +62,10 @@ export default function Content() {
             alt="Workflow"
           />
         </div>
-        <nav className="mt-5 flex-1 px-2 bg-gray-800 space-y-1" aria-label="Sidebar">
+        <nav
+          className="mt-5 flex-1 px-2 bg-gray-800 space-y-1"
+          aria-label="Sidebar"
+        >
           {navigation.map((item) =>
             !item.children ? (
               <div key={item.name}>
@@ -60,13 +77,15 @@ export default function Content() {
                       isActive
                         ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
                         : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                      'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                      'group flex items-center px-2 py-2 text-sm font-medium rounded-md',
                     )
                   }
                 >
                   {item.icon && (
                     <item.icon
-                      className={'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'}
+                      className={
+                        'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'
+                      }
                       aria-hidden="true"
                     />
                   )}
@@ -75,7 +94,7 @@ export default function Content() {
                     <p
                       className={classNames(
                         'bg-gray-900 group-hover:bg-gray-800',
-                        'ml-3 inline-block py-0.5 px-3 text-xs font-medium rounded-full'
+                        'ml-3 inline-block py-0.5 px-3 text-xs font-medium rounded-full',
                       )}
                     >
                       {item.count}
@@ -92,12 +111,14 @@ export default function Content() {
                         item.current
                           ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
                           : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                        'group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full'
+                        'group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full',
                       )}
                     >
                       {item.icon && (
                         <item.icon
-                          className={'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'}
+                          className={
+                            'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'
+                          }
                           aria-hidden="true"
                         />
                       )}
@@ -113,7 +134,7 @@ export default function Content() {
                             pathname.includes(subItem.href!)
                               ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
                               : 'text-gray-400/90 hover:bg-gray-700 hover:text-gray-100',
-                            'group flex items-center px-2 py-2 text-sm font-medium rounded-md h-10'
+                            'group flex items-center px-2 py-2 text-sm font-medium rounded-md h-10',
                           )}
                         >
                           {subItem.name}
@@ -123,7 +144,7 @@ export default function Content() {
                   </>
                 )}
               </Disclosure>
-            )
+            ),
           )}
         </nav>
       </div>
@@ -133,11 +154,13 @@ export default function Content() {
             <Avatar className="size-9" src={user?.avatar} />
             <div className="ml-3">
               <p className="text-sm font-medium text-white">{user?.username}</p>
-              <p className="text-xs font-medium text-gray-300 group-hover:text-gray-200">View profile</p>
+              <p className="text-xs font-medium text-gray-300 group-hover:text-gray-200">
+                View profile
+              </p>
             </div>
           </div>
         </Link>
       </div>
     </>
-  )
+  );
 }

@@ -1,2 +1,2 @@
-import Teams from "./Teams"
-export { Teams }
+import Teams from './Teams';
+export { Teams };

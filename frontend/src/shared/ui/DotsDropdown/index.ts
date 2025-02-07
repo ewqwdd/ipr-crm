@@ -1,2 +1,2 @@
-import DotsDropdown from './DotsDropdown'
-export { DotsDropdown }
+import DotsDropdown from './DotsDropdown';
+export { DotsDropdown };

@@ -43,7 +43,7 @@ export class ProfileConstructorController {
   async createMaterialCompetency(@Body() data: createMaterialCompetencyDto) {
     return this.profileConstructorService.createMaterialCompetency(data);
   }
-  
+
   @Post('/indicator/material')
   @UseGuards(AdminGuard)
   async createMaterialIndicator(@Body() data: createMaterialIndicatorDto) {

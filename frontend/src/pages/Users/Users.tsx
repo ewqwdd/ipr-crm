@@ -1,6 +1,6 @@
-import { Link } from 'react-router'
-import WithAvatarsAndMultiLineContent from './WithAvatarsAndMultiLineContent'
-import { Heading } from '@/shared/ui/Heading'
+import { Link } from 'react-router';
+import WithAvatarsAndMultiLineContent from './WithAvatarsAndMultiLineContent';
+import { Heading } from '@/shared/ui/Heading';
 
 export default function Users() {
   return (
@@ -27,5 +27,5 @@ export default function Users() {
         </div>
       </div>
     </div>
-  )
+  );
 }

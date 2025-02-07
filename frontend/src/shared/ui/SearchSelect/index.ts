@@ -1,2 +1,2 @@
-import SearchSelect from './SearchSelect'
-export { SearchSelect }
+import SearchSelect from './SearchSelect';
+export { SearchSelect };

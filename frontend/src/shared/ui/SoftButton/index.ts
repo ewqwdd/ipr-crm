@@ -1,2 +1,2 @@
-import SoftButton from "./SoftButton";
+import SoftButton from './SoftButton';
 export { SoftButton };
