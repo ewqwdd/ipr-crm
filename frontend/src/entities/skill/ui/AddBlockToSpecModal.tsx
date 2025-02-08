@@ -39,7 +39,7 @@ export default function AddBlockToSpecModal({
     } else {
       setValues([...values, id]);
     }
-  }
+  };
 
   return (
     <Modal
@@ -61,7 +61,12 @@ export default function AddBlockToSpecModal({
               Hard skills
             </span>
             {hardSkills?.map((skill) => (
-              <Checkbox key={skill.id} title={skill.name} onChange={() => onChange(skill.id)} checked={values.includes(skill.id)} />
+              <Checkbox
+                key={skill.id}
+                title={skill.name}
+                onChange={() => onChange(skill.id)}
+                checked={values.includes(skill.id)}
+              />
             ))}
           </div>
           <div className="flex flex-col gap-2">
@@ -69,7 +74,12 @@ export default function AddBlockToSpecModal({
               Soft skills
             </span>
             {softSkills?.map((skill) => (
-              <Checkbox key={skill.id} title={skill.name} onChange={() => onChange(skill.id)} checked={values.includes(skill.id)} />
+              <Checkbox
+                key={skill.id}
+                title={skill.name}
+                onChange={() => onChange(skill.id)}
+                checked={values.includes(skill.id)}
+              />
             ))}
           </div>
         </div>

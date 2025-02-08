@@ -40,7 +40,8 @@ const Competency: FC = () => {
           })
           .filter(Boolean);
 
-        return (!search.length || filteredCompetencies.length > 0) && type === skillsFilter
+        return (!search.length || filteredCompetencies.length > 0) &&
+          type === skillsFilter
           ? {
               ...rest,
               type,
@@ -52,7 +53,7 @@ const Competency: FC = () => {
     return filteredData as CompetencyBlock[] | undefined;
   }, [data, skillsFilter, search]);
 
-  console.log(filtereedData)
+  console.log(filtereedData);
 
   // TODO: update active state
   return (
@@ -85,7 +86,11 @@ const Competency: FC = () => {
           Добавить блок
         </SoftButton>
       </div>
-      <CompetencyList data={filtereedData} openModal={openModal} loading={isFetching} />
+      <CompetencyList
+        data={filtereedData}
+        openModal={openModal}
+        loading={isFetching}
+      />
     </Dimmer>
   );
 };

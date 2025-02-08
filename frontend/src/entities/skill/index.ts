@@ -6,12 +6,15 @@ import type {
   AddCompetencyBlockDto,
   AddCompetencyDto,
   AddIndicatorDto,
+  SkillCombineType,
 } from './types/types';
+import { CompetencyType } from './types/types';
 import AddCompetencyBlockModal from './ui/AddCompetencyBlockModal';
 import AddCompetencyModal from './ui/AddCompetencyModal';
 import AddIndicatorModal from './ui/AddIndicatorModal';
 import AddBlockToSpecModal from './ui/AddBlockToSpecModal';
 import useSkillsService from './hooks/useSkillsService';
+import EditSkillsModal from './ui/EditSkillsModal';
 
 export type {
   CompetencyBlock,
@@ -21,6 +24,7 @@ export type {
   AddCompetencyBlockDto,
   AddCompetencyDto,
   AddIndicatorDto,
+  SkillCombineType,
 };
 
 export {
@@ -29,4 +33,6 @@ export {
   AddIndicatorModal,
   AddBlockToSpecModal,
   useSkillsService,
+  CompetencyType,
+  EditSkillsModal,
 };

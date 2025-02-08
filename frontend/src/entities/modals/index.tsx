@@ -3,6 +3,7 @@ import {
   AddCompetencyBlockModal,
   AddCompetencyModal,
   AddIndicatorModal,
+  EditSkillsModal,
 } from '../skill';
 import { useModal } from '@/app/hooks/useModal';
 import { useAppSelector } from '@/app';
@@ -15,7 +16,9 @@ export type ModalProps = {
 };
 
 const ModalWrapper: FC = () => {
-  const { isOpen, modalType, modalData } = useAppSelector((state) => state.modal);
+  const { isOpen, modalType, modalData } = useAppSelector(
+    (state) => state.modal,
+  );
   const { closeModal } = useModal();
 
   if (!isOpen || !modalType) return;
@@ -35,6 +38,8 @@ const ModalWrapper: FC = () => {
       return <AddIndicatorModal {...modalProps} />;
     case 'CONFIRM':
       return <ConfirmModal {...modalProps} />;
+    case 'EDIT_SKILL':
+      return <EditSkillsModal {...modalProps} />;
     default:
       break;
   }

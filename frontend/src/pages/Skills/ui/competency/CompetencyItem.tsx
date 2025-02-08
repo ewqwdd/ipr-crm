@@ -5,8 +5,8 @@ import {
   PencilIcon,
   PlusCircleIcon,
 } from '@heroicons/react/outline';
-import { CompetencyListItemProps, CompetencyType } from './types';
-import { useSkillsService } from '@/entities/skill';
+import { CompetencyListItemProps } from './types';
+import { CompetencyType, useSkillsService } from '@/entities/skill';
 import { cva } from '@/shared/lib/cva';
 
 const getCompetencyListItemStyles = (listItemType: CompetencyType) => {
@@ -107,10 +107,8 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
           size="xs"
           onClick={(e) => {
             e.stopPropagation();
-            // TODO: add edit functionality BTW better to do using modal approach
             console.log('Edit', { competency: { id } });
-            //   setCompetency(competency);
-            //   setCurrent('ADD_INDICATOR');
+            openModal('EDIT_SKILL', { id, name, type: listItemType });
           }}
         >
           <PencilIcon className="h-5 w-5" />

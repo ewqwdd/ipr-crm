@@ -11,11 +11,17 @@ type ICompetencyListProps = {
   loading?: boolean;
 };
 
-const CompetencyList: FC<ICompetencyListProps> = ({ data, openModal, loading }) => {
+const CompetencyList: FC<ICompetencyListProps> = ({
+  data,
+  openModal,
+  loading,
+}) => {
   return (
-    <div className={cva("grow flex flex-col mt-4", {
-      'animate-pulse': !!loading,
-    })}>
+    <div
+      className={cva('grow flex flex-col mt-4', {
+        'animate-pulse': !!loading,
+      })}
+    >
       {data?.map((skill) => (
         <Accordion
           key={skill.id}
