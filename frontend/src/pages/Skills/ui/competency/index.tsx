@@ -1,18 +1,12 @@
 import { FC, useMemo, useState } from 'react';
 import CompetencyList from './CompetencyList';
-import { Radio } from '@/shared/ui/Radio';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { PlusCircleIcon } from '@heroicons/react/outline';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
-import { CompetencyBlock } from '@/entities/skill';
+import { CompetencyBlock, SkillsSwitcher } from '@/entities/skill';
 import Dimmer from '@/shared/ui/Dimmer';
 import { useModal } from '@/app/hooks/useModal';
-
-const skillsFilters: Array<{ title: string; value: 'HARD' | 'SOFT' }> = [
-  { title: 'Hard skills', value: 'HARD' },
-  { title: 'Soft skills', value: 'SOFT' },
-];
 
 const Competency: FC = () => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');
@@ -64,17 +58,7 @@ const Competency: FC = () => {
         onChange={searchFn}
       />
       <div className="flex gap-4 my-4">
-        {skillsFilters.map(({ title, value }) => (
-          <Radio
-            key={value}
-            name="skills"
-            value={value}
-            checked={skillsFilter === value}
-            onChange={() => setSkillsFilter(value)}
-          >
-            {title}
-          </Radio>
-        ))}
+        <SkillsSwitcher value={skillsFilter} setValue={setSkillsFilter} />
         <SoftButton
           size="xs"
           className="gap-2"

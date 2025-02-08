@@ -88,6 +88,7 @@ export default function Rate360() {
         setOpen={setOpen}
         title="Добавить 360 оценку"
         className="sm:max-w-7xl mx-3"
+        footer={false}
       >
         <AddRate />
       </Modal>

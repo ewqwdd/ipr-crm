@@ -27,7 +27,7 @@ export default memo(function PrimaryButton({
     <button
       type="button"
       className={cva(
-        'inline-flex justify-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
+        'inline-flex justify-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-40',
         sizes[size],
         {
           'bg-red-600 hover:bg-red-700 focus:ring-red-500': !!danger,
