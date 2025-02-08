@@ -11,7 +11,15 @@ export class UniversalService {
   }
 
   async findSpecs() {
-    const spec = await this.prismaService.spec.findMany();
+    const spec = await this.prismaService.spec.findMany({
+      include: {
+        competencyBlocks: {
+          select: {
+            id: true
+          }
+        }
+      }
+    });
     return spec;
   }
 
