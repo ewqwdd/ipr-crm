@@ -3,15 +3,19 @@ import { Accordion } from '@/shared/ui/Accordion';
 import { FC, memo } from 'react';
 import { CompetencyType } from './types';
 import CompetencyListItem from './CompetencyItem';
+import { cva } from '@/shared/lib/cva';
 
 type ICompetencyListProps = {
   data: CompetencyBlock[] | undefined;
   openModal: (type: string, data?: any) => void;
+  loading?: boolean;
 };
 
-const CompetencyList: FC<ICompetencyListProps> = ({ data, openModal }) => {
+const CompetencyList: FC<ICompetencyListProps> = ({ data, openModal, loading }) => {
   return (
-    <div className="grow flex flex-col mt-4">
+    <div className={cva("grow flex flex-col mt-4", {
+      'animate-pulse': !!loading,
+    })}>
       {data?.map((skill) => (
         <Accordion
           key={skill.id}

@@ -18,7 +18,7 @@ const Competency: FC = () => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');
   const [search, setSearch] = useState('');
 
-  const { data } = skillsApi.useGetSkillsQuery();
+  const { data, isFetching } = skillsApi.useGetSkillsQuery();
   const { openModal } = useModal();
 
   const searchFn = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +40,7 @@ const Competency: FC = () => {
           })
           .filter(Boolean);
 
-        return filteredCompetencies.length > 0 && type === skillsFilter
+        return (!search.length || filteredCompetencies.length > 0) && type === skillsFilter
           ? {
               ...rest,
               type,
@@ -51,6 +51,8 @@ const Competency: FC = () => {
       .filter(Boolean);
     return filteredData as CompetencyBlock[] | undefined;
   }, [data, skillsFilter, search]);
+
+  console.log(filtereedData)
 
   // TODO: update active state
   return (
@@ -83,7 +85,7 @@ const Competency: FC = () => {
           Добавить блок
         </SoftButton>
       </div>
-      <CompetencyList data={filtereedData} openModal={openModal} />
+      <CompetencyList data={filtereedData} openModal={openModal} loading={isFetching} />
     </Dimmer>
   );
 };

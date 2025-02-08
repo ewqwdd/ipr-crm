@@ -1,9 +1,11 @@
 import { cva } from '@/shared/lib/cva';
-import { useId } from 'react';
+import { HTMLAttributes, useId } from 'react';
 
-interface CheckboxProps extends React.HTMLAttributes<HTMLInputElement> {
+interface CheckboxProps extends HTMLAttributes<HTMLInputElement> {
   title?: string;
   description?: string;
+  name?: string;
+  checked?: boolean;
 }
 
 export default function Checkbox({
@@ -16,9 +18,8 @@ export default function Checkbox({
   return (
     <div className={cva('relative flex items-center', className)}>
       <input
-        aria-describedby="comments-description"
-        name="comments"
         type="checkbox"
+        checked={props.checked}
         className={
           'focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded cursor-pointer'
         }

@@ -10,6 +10,8 @@ import type {
 import AddCompetencyBlockModal from './ui/AddCompetencyBlockModal';
 import AddCompetencyModal from './ui/AddCompetencyModal';
 import AddIndicatorModal from './ui/AddIndicatorModal';
+import AddBlockToSpecModal from './ui/AddBlockToSpecModal';
+import useSkillsService from './hooks/useSkillsService';
 
 export type {
   CompetencyBlock,
@@ -21,4 +23,10 @@ export type {
   AddIndicatorDto,
 };
 
-export { AddCompetencyBlockModal, AddCompetencyModal, AddIndicatorModal };
+export {
+  AddCompetencyBlockModal,
+  AddCompetencyModal,
+  AddIndicatorModal,
+  AddBlockToSpecModal,
+  useSkillsService,
+};

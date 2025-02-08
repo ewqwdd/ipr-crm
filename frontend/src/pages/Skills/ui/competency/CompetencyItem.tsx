@@ -6,6 +6,8 @@ import {
   PlusCircleIcon,
 } from '@heroicons/react/outline';
 import { CompetencyListItemProps, CompetencyType } from './types';
+import { useSkillsService } from '@/entities/skill';
+import { cva } from '@/shared/lib/cva';
 
 const getCompetencyListItemStyles = (listItemType: CompetencyType) => {
   switch (listItemType) {
@@ -27,8 +29,23 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   openModal,
   id,
 }) => {
+  const { competencyBlock, competency, indicator } = useSkillsService();
+
+  const deleteCompetencyBlock = competencyBlock.delete[0];
+  const deleteCompetency = competency.delete[0];
+  const deleteIndicator = indicator.delete[0];
+
+  const loading =
+    competencyBlock.delete[1].isLoading ||
+    competency.delete[1].isLoading ||
+    indicator.delete[1].isLoading;
+
   return (
-    <div className={getCompetencyListItemStyles(listItemType)}>
+    <div
+      className={cva(getCompetencyListItemStyles(listItemType), {
+        'animate-pulse': loading,
+      })}
+    >
       <p className="text-black">{name}</p>
       <div className="flex items-center space-x-2">
         {listItemType === CompetencyType.COMPETENCY_BLOCK && (
@@ -104,10 +121,21 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
           className="rounded-full text-red p-2"
           onClick={(e) => {
             e.stopPropagation();
-            // TODO: add delete functionality
-            console.log('Delete', { competency: { id } });
-            //   setCompetency(competency);
-            //   setCurrent('ADD_INDICATOR');
+            let onSubmit = null;
+            switch (listItemType) {
+              case CompetencyType.COMPETENCY_BLOCK:
+                onSubmit = () => deleteCompetencyBlock({ id });
+                break;
+              case CompetencyType.COMPETENCY:
+                onSubmit = () => deleteCompetency({ id });
+                break;
+              case CompetencyType.INDICATOR:
+                onSubmit = () => deleteIndicator({ id });
+                break;
+              default:
+                break;
+            }
+            openModal('CONFIRM', { onSubmit });
           }}
         >
           <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
