@@ -51,6 +51,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                 >
                   {indicators.map((indicator) => (
                     <CompetencyListItem
+                      key={indicator.id}
                       {...indicator}
                       listItemType={CompetencyType.INDICATOR}
                       openModal={openModal}

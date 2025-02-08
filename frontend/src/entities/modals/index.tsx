@@ -8,6 +8,7 @@ import {
 import { useModal } from '@/app/hooks/useModal';
 import { useAppSelector } from '@/app';
 import { ConfirmModal } from '@/widgets/ConfirmModal';
+import AddMaterialsModal from '../skill/ui/AddMaterialsModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -40,6 +41,10 @@ const ModalWrapper: FC = () => {
       return <ConfirmModal {...modalProps} />;
     case 'EDIT_SKILL':
       return <EditSkillsModal {...modalProps} />;
+    case 'ADD_COMPETENCY_MATERIAL':
+      return <AddMaterialsModal type="COMPETENCY" {...modalProps} />;
+    case 'ADD_INDICATOR_MATERIAL':
+      return <AddMaterialsModal type="INDICATOR" {...modalProps} />;
     default:
       break;
   }

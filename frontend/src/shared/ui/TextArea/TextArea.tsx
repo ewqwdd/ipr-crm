@@ -13,10 +13,19 @@ interface TextareaWithLabelProps
   name?: string;
   right?: ReactNode;
   error?: string;
+  required?: boolean;
 }
 
 export default forwardRef(function TextAreaWithLabel(
-  { label, className, name, right, error, ...props }: TextareaWithLabelProps,
+  {
+    label,
+    className,
+    name,
+    right,
+    error,
+    required,
+    ...props
+  }: TextareaWithLabelProps,
   ref: ForwardedRef<HTMLTextAreaElement>,
 ) {
   let labelElem;
@@ -25,6 +34,7 @@ export default forwardRef(function TextAreaWithLabel(
     labelElem = (
       <label htmlFor={name} className="block text-sm font-medium text-gray-700">
         {label}
+        {required && <span className="text-red-500 font-bold ml-1">*</span>}
       </label>
     );
   }

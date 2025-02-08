@@ -12,10 +12,19 @@ interface InputWithLabelProps extends InputHTMLAttributes<HTMLInputElement> {
   name?: string;
   right?: ReactNode;
   error?: string;
+  required?: boolean;
 }
 
 export default forwardRef(function InputWithLabel(
-  { label, className, name, right, error, ...props }: InputWithLabelProps,
+  {
+    label,
+    className,
+    name,
+    right,
+    error,
+    required,
+    ...props
+  }: InputWithLabelProps,
   ref: ForwardedRef<HTMLInputElement>,
 ) {
   let labelElem;
@@ -24,6 +33,7 @@ export default forwardRef(function InputWithLabel(
     labelElem = (
       <label htmlFor={name} className="block text-sm font-medium text-gray-700">
         {label}
+        {required && <span className="text-red-500 font-bold ml-1">*</span>}
       </label>
     );
   }

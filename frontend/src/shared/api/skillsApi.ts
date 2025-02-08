@@ -87,6 +87,23 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
+    addCompetencyMaterial: build.mutation<void, { id: number; name: string }>({
+      query: ({ id, name }) => ({
+        url: `/competency/material`,
+        method: 'POST',
+        body: { name },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    addIndicatorMaterial: build.mutation<void, { id: number; name: string }>({
+      query: ({ id, name }) => ({
+        url: `/indicator/material`,
+        method: 'POST',
+        body: { name },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    //     /competency/material/indicator/material
   }),
 });
 

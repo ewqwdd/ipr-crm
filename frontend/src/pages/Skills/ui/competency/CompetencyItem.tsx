@@ -28,6 +28,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   name,
   openModal,
   id,
+  ...props
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
 
@@ -64,7 +65,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
         {listItemType === CompetencyType.COMPETENCY && (
           <SoftButton
             size="xs"
-            className="gap-2"
+            className="gap-2 whitespace-nowrap"
             onClick={(e) => {
               e.stopPropagation();
               openModal('ADD_INDICATOR', { competency: { id, name } });
@@ -74,28 +75,30 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
             Добавить индикатор
           </SoftButton>
         )}
-        {listItemType === CompetencyType.INDICATOR && (
+        {/* {listItemType === CompetencyType.INDICATOR && (
+        // TODO: Uncomment
           <button
             className="border-b border-dashed text-indigo-600 border-indigo-600 h-6"
             onClick={() => {
-              // TODO: add ADD_MATERIAL functionality
+              // TODO: add Helper modal functionality
               console.log('open Modal ');
             }}
           >
             Подсказка
           </button>
-        )}
+        )} */}
         {listItemType !== CompetencyType.COMPETENCY_BLOCK && (
           <SoftButton
             size="xs"
             className="whitespace-nowrap"
             onClick={(e) => {
               e.stopPropagation();
-              // TODO: add ADD_MATERIAL functionality
-              console.log('ADD_MATERIAL', { competency: { id } });
-              // openModal('ADD_MATERIAL', { competency: { id } });
-              // setCompetency(competency);
-              // setCurrent('ADD_INDICATOR');
+              if (listItemType === CompetencyType.COMPETENCY) {
+                openModal('ADD_COMPETENCY_MATERIAL', { name, id, ...props });
+              }
+              if (listItemType === CompetencyType.INDICATOR) {
+                openModal('ADD_INDICATOR_MATERIAL', { name, id, ...props });
+              }
             }}
           >
             <PlusCircleIcon className="h-5 w-5" />

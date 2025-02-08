@@ -1,10 +1,17 @@
 import { FC } from 'react';
+import SpecializationsTable from './SpecializationsTable';
+// import Competency from '../competency';
+import CompetencyBlock from './Competency';
 
-export const Specializations: FC = () => {
+const SpecializationsWrapper: FC = () => {
   return (
     <div className="grid grid-cols-2">
-      <div></div>
-      <div></div>
+      {/* <div></div> */}
+      <SpecializationsTable />
+      {/* < */}
+      <CompetencyBlock />
     </div>
   );
 };
+
+export default SpecializationsWrapper;

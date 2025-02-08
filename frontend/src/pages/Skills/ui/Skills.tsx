@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Heading } from '@/shared/ui/Heading';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { Specializations } from './specializations';
+import Specializations from './specializations';
 import Competency from './competency';
 
 const tabs = [
