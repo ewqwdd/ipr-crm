@@ -2,32 +2,44 @@ import { Modal } from '@/shared/ui/Modal';
 import { Competency } from '../types/types';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { skillsApi } from '@/shared/api/skillsApi';
 
+type AddIndicatorModalData = {
+  competency: Pick<Competency, 'id' | 'name'>;
+};
 interface AddIndicatorModalProps {
-  competency?: Competency;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  onSubmit: (name: string) => void;
-  loading?: boolean;
+  isOpen: boolean;
+  closeModal: () => void;
+  modalData: AddIndicatorModalData;
 }
 
 export default function AddIndicatorModal({
-  competency,
-  onSubmit,
-  setOpen,
-  open,
-  loading,
+  isOpen,
+  modalData: { competency },
+  closeModal,
 }: AddIndicatorModalProps) {
   const [value, setValue] = useState('');
 
+  const [createIndicator, indicatorProps] =
+    skillsApi.useCreateIndicatorMutation();
+
+  const indicatorSubmit = (name: string) => {
+    if (!competency) {
+      return toast.error('Не выбрана компетеннция');
+    }
+    createIndicator({ name, competencyId: competency.id });
+    closeModal();
+  };
+
   return (
     <Modal
-      open={open}
-      setOpen={setOpen}
+      open={isOpen}
+      setOpen={closeModal}
       title="Новые индикаторы"
-      onSubmit={() => onSubmit(value)}
+      onSubmit={() => indicatorSubmit(value)}
       submitText="Добавить"
-      loading={loading}
+      loading={indicatorProps.isLoading}
     >
       <div className="flex flex-col gap-4">
         <p className="text-sm text-gray-500 mt-2">

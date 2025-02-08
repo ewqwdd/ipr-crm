@@ -5,9 +5,11 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
 import { usersApi } from '@/shared/api/usersApi';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { modalReducer } from './modalSlice';
 
 const rootReducer = combineReducers({
   user: userReducer,
+  modal: modalReducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [universalApi.reducerPath]: universalApi.reducer,
   [teamsApi.reducerPath]: teamsApi.reducer,
