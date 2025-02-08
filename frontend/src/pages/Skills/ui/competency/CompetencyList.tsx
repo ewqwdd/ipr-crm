@@ -25,6 +25,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
       {data?.map((skill) => (
         <Accordion
           key={skill.id}
+          btnClassName="overflow-y-auto"
           title={
             <>
               <CompetencyListItem
@@ -41,6 +42,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
               return (
                 <Accordion
                   key={id}
+                  btnClassName="overflow-y-auto"
                   title={
                     <CompetencyListItem
                       {...competency}

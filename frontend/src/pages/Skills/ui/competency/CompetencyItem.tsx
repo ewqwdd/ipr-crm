@@ -16,7 +16,7 @@ const getCompetencyListItemStyles = (listItemType: CompetencyType) => {
     case CompetencyType.COMPETENCY:
       return 'flex items-center justify-between  pl-5 pr-2';
     case CompetencyType.INDICATOR:
-      return 'flex items-center justify-between py-3 pl-10 pr-2 hover:bg-gray-200/80 transition-all duration-200 gap-2';
+      return 'flex items-center justify-between py-3 pl-10 pr-2 hover:bg-gray-200/80 transition-all duration-200 gap-2 overflow-y-auto';
 
     default:
       return '';
@@ -47,12 +47,12 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
         'animate-pulse': loading,
       })}
     >
-      <p className="text-black">{name}</p>
+      <p className="text-black min-w-[400px]">{name}</p>
       <div className="flex items-center space-x-2">
         {listItemType === CompetencyType.COMPETENCY_BLOCK && (
           <SoftButton
             size="xs"
-            className="gap-2"
+            className="gap-2 whitespace-nowrap"
             onClick={(e) => {
               e.stopPropagation();
               openModal('ADD_COMPETENCY', { competencyBlock: { id, name } });
