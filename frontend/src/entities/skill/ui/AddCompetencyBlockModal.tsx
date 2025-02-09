@@ -2,32 +2,42 @@ import { Modal } from '@/shared/ui/Modal';
 import { SkillType } from '../types/types';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useState } from 'react';
+import { skillsApi } from '@/shared/api/skillsApi';
 
-interface AddCompetencyBlockModalProps {
+type AddCompetencyBlockModalData = {
   skillType: SkillType;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  onSubmit: (name: string) => void;
-  loading?: boolean;
+};
+interface AddCompetencyBlockModalProps {
+  isOpen: boolean;
+  modalData: AddCompetencyBlockModalData;
+  closeModal: () => void;
 }
 
 export default function AddCompetencyBlockModal({
-  skillType,
-  onSubmit,
-  setOpen,
-  open,
-  loading,
+  isOpen,
+  modalData,
+  closeModal,
 }: AddCompetencyBlockModalProps) {
   const [value, setValue] = useState('');
 
+  const [createCompetencyBlock, blockProps] =
+    skillsApi.useCreateCompetencyBlockMutation();
+
+  const { skillType } = modalData;
+
+  const blockSubmit = (name: string) => {
+    createCompetencyBlock({ name, type: skillType });
+    closeModal();
+  };
+
   return (
     <Modal
-      open={open}
-      setOpen={setOpen}
+      open={isOpen}
+      setOpen={closeModal}
       title="Добавить блок компетенций"
-      onSubmit={() => onSubmit(value)}
+      onSubmit={() => blockSubmit(value)}
       submitText="Добавить"
-      loading={loading}
+      loading={blockProps.isLoading}
     >
       <div className="flex flex-col gap-4">
         <p className="text-sm text-gray-500 mt-2">

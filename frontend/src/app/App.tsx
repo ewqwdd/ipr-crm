@@ -2,6 +2,7 @@ import { useAuthControl } from '@/shared/hooks/useAuthControl';
 import './App.css';
 import AppRouter from './AppRouter';
 import { DarkSidebar } from '@/widgets/DarkSidebar';
+import ModalWrapper from '@/entities/modals';
 
 function App() {
   const { isMounted } = useAuthControl();
@@ -16,6 +17,7 @@ function App() {
       <div className="flex-1 overflow-y-auto">
         <AppRouter />
       </div>
+      <ModalWrapper />
     </main>
   );
 }

@@ -2,32 +2,44 @@ import { Modal } from '@/shared/ui/Modal';
 import { CompetencyBlock } from '../types/types';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { skillsApi } from '@/shared/api/skillsApi';
 
+type AddCompetencyModalData = {
+  competencyBlock: Pick<CompetencyBlock, 'id' | 'name'>;
+};
 interface AddCompetencyModalProps {
-  competencyBlock?: CompetencyBlock;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  onSubmit: (name: string) => void;
-  loading?: boolean;
+  isOpen: boolean;
+  modalData: AddCompetencyModalData;
+  closeModal: () => void;
 }
 
 export default function AddCompetencyModal({
-  competencyBlock,
-  onSubmit,
-  setOpen,
-  open,
-  loading,
+  isOpen,
+  modalData: { competencyBlock },
+  closeModal,
 }: AddCompetencyModalProps) {
   const [value, setValue] = useState('');
 
+  const [createCompetency, comppetencyProps] =
+    skillsApi.useCreateCompetencyMutation();
+
+  const competencySubmit = (name: string) => {
+    if (!competencyBlock) {
+      return toast.error('Не выбран блок компетенций');
+    }
+    createCompetency({ name, blockId: competencyBlock.id });
+    closeModal();
+  };
+
   return (
     <Modal
-      open={open}
-      setOpen={setOpen}
+      open={isOpen}
+      setOpen={closeModal}
       title="Новые компетенции"
-      onSubmit={() => onSubmit(value)}
+      onSubmit={() => competencySubmit(value)}
       submitText="Добавить"
-      loading={loading}
+      loading={comppetencyProps.isLoading}
     >
       <div className="flex flex-col gap-4">
         <p className="text-sm text-gray-500 mt-2">

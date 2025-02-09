@@ -1,4 +1,4 @@
-import { Rate } from '@/entities/rates';
+import { AddRateDto, Rate } from '@/entities/rates';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const rate360Api = createApi({
@@ -12,6 +12,14 @@ const rate360Api = createApi({
     getRates: build.query<Rate[], void>({
       query: () => '/rate360',
       providesTags: ['Rate360'],
+    }),
+    createRate: build.mutation<void, { rate: AddRateDto[]; skill: string[] }>({
+      query: (body) => ({
+        url: '/rate360',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Rate360'],
     }),
   }),
 });

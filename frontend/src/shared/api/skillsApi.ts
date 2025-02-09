@@ -42,6 +42,51 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
+    deleteCompetencyBlock: build.mutation<void, { id: number }>({
+      query: ({ id }) => ({
+        url: `/profile-constructor/competency-block/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    deleteCompetency: build.mutation<void, { id: number }>({
+      query: ({ id }) => ({
+        url: `/profile-constructor/competency/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    deleteIndicator: build.mutation<void, { id: number }>({
+      query: ({ id }) => ({
+        url: `/profile-constructor/indicator/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    editCompetencyBlock: build.mutation<void, { id: number; name: string }>({
+      query: ({ id, name }) => ({
+        url: `/profile-constructor/competency-block/${id}`,
+        method: 'PUT',
+        body: { name },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    editCompetency: build.mutation<void, { id: number; name: string }>({
+      query: ({ id, name }) => ({
+        url: `/profile-constructor/competency/${id}`,
+        method: 'PUT',
+        body: { name },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    editIndicator: build.mutation<void, { id: number; name: string }>({
+      query: ({ id, name }) => ({
+        url: `/profile-constructor/indicator/${id}`,
+        method: 'PUT',
+        body: { name },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
   }),
 });
 

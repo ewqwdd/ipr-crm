@@ -129,6 +129,39 @@ export class ProfileConstructorService {
     });
   }
 
+  async editCompetencyBlock(id: number, name?: string) {
+    return this.prismaService.competencyBlock.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+      },
+    });
+  }
+
+  async editCompetency(id: number, name?: string) {
+    return this.prismaService.competency.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+      },
+    });
+  }
+
+  async editIndicator(id: number, name?: string) {
+    return this.prismaService.indicator.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+      },
+    });
+  }
+
   async addBlockToSpec({ specId, blockIds }: AddBlockToSpecDto) {
     return this.prismaService.spec.update({
       where: {

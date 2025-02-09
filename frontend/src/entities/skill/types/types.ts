@@ -40,3 +40,11 @@ export interface AddIndicatorDto {
   description?: string;
   competencyId: number;
 }
+
+export type SkillCombineType = Competency | Indicator | CompetencyBlock;
+
+export enum CompetencyType {
+  COMPETENCY_BLOCK = 'COMPETENCY_BLOCK',
+  COMPETENCY = 'COMPETENCY',
+  INDICATOR = 'INDICATOR',
+}

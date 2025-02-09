@@ -1,7 +1,7 @@
 export type TeamUser = {
   id: number;
   username: string;
-  avatar: string;
+  avatar?: string;
   specsOnTeams: { specId: number }[];
 };
 

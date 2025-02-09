@@ -1,7 +1,7 @@
 import { cva } from '@/shared/lib/cva';
 import { Disclosure, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/outline';
-import { ElementType, ReactNode, useRef } from 'react';
+import { ElementType, ReactNode } from 'react';
 
 interface AccordionProps {
   title: ReactNode;
