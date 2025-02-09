@@ -55,7 +55,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
             className="gap-2 whitespace-nowrap"
             onClick={(e) => {
               e.stopPropagation();
-              openModal('ADD_COMPETENCY', { competencyBlock: { id, name } });
+              openModal('ADD_COMPETENCY', { id, name });
             }}
           >
             <PlusCircleIcon className="h-5 w-5" />
@@ -68,7 +68,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
             className="gap-2 whitespace-nowrap"
             onClick={(e) => {
               e.stopPropagation();
-              openModal('ADD_INDICATOR', { competency: { id, name } });
+              openModal('ADD_INDICATOR', { id, name });
             }}
           >
             <PlusCircleIcon className="h-5 w-5" />

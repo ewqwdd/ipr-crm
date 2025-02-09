@@ -6,7 +6,7 @@ export const useModal = () => {
   const dispatch = useDispatch();
 
   const openModal = useCallback(
-    (type: string, data?: any) => {
+    (type: string, data?: unknown) => {
       dispatch(open({ type, data }));
     },
     [dispatch],

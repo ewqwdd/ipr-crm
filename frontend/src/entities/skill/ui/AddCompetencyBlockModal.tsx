@@ -4,12 +4,9 @@ import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useState } from 'react';
 import { skillsApi } from '@/shared/api/skillsApi';
 
-type AddCompetencyBlockModalData = {
-  skillType: SkillType;
-};
 interface AddCompetencyBlockModalProps {
   isOpen: boolean;
-  modalData: AddCompetencyBlockModalData;
+  modalData: unknown;
   closeModal: () => void;
 }
 
@@ -23,7 +20,7 @@ export default function AddCompetencyBlockModal({
   const [createCompetencyBlock, blockProps] =
     skillsApi.useCreateCompetencyBlockMutation();
 
-  const { skillType } = modalData;
+  const { skillType } = modalData as { skillType: SkillType };
 
   const blockSubmit = (name: string) => {
     createCompetencyBlock({ name, type: skillType });

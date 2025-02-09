@@ -10,41 +10,32 @@ import { useAppSelector } from '@/app';
 import { ConfirmModal } from '@/widgets/ConfirmModal';
 import AddMaterialsModal from '../skill/ui/AddMaterialsModal';
 
-export type ModalProps = {
-  isOpen: boolean;
-  modalData: any;
-  closeModal: () => void;
-};
-
 const ModalWrapper: FC = () => {
-  const { isOpen, modalType, modalData } = useAppSelector(
-    (state) => state.modal,
-  );
+  const { modalType, ...modalProps } = useAppSelector((state) => state.modal);
   const { closeModal } = useModal();
 
-  if (!isOpen || !modalType) return;
-
-  const modalProps: ModalProps = {
-    isOpen,
-    modalData,
+  const updatedModalProps = {
+    ...modalProps,
     closeModal,
   };
 
+  if (!modalType) return;
+
   switch (modalType) {
     case 'ADD_COMPETENCY_BLOCK':
-      return <AddCompetencyBlockModal {...modalProps} />;
+      return <AddCompetencyBlockModal {...updatedModalProps} />;
     case 'ADD_COMPETENCY':
-      return <AddCompetencyModal {...modalProps} />;
+      return <AddCompetencyModal {...updatedModalProps} />;
     case 'ADD_INDICATOR':
-      return <AddIndicatorModal {...modalProps} />;
+      return <AddIndicatorModal {...updatedModalProps} />;
     case 'CONFIRM':
-      return <ConfirmModal {...modalProps} />;
+      return <ConfirmModal {...updatedModalProps} />;
     case 'EDIT_SKILL':
-      return <EditSkillsModal {...modalProps} />;
+      return <EditSkillsModal {...updatedModalProps} />;
     case 'ADD_COMPETENCY_MATERIAL':
-      return <AddMaterialsModal type="COMPETENCY" {...modalProps} />;
+      return <AddMaterialsModal type="COMPETENCY" {...updatedModalProps} />;
     case 'ADD_INDICATOR_MATERIAL':
-      return <AddMaterialsModal type="INDICATOR" {...modalProps} />;
+      return <AddMaterialsModal type="INDICATOR" {...updatedModalProps} />;
     default:
       break;
   }

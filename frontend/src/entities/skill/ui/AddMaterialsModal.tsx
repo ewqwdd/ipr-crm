@@ -9,7 +9,7 @@ interface AddIndicatorModalProps {
   type: 'COMPETENCY' | 'INDICATOR';
   isOpen: boolean;
   closeModal: () => void;
-  modalData: any;
+  modalData: unknown;
 }
 
 const checkLinkFormat = (link: string) => {
@@ -162,12 +162,15 @@ export default function AddMaterialsModal({
   const [materialType, setMaterialType] = useState<MaterialType>('VIDEO');
   const [level, setLevel] = useState<number>(0);
 
+  const { name } = modalData as { name: string; id: string };
+
   const payload = {
+    // TODO: fix type
+    ...(modalData as { name: string; id: string }),
     name: title,
     url: link,
     contentType: materialType,
     level,
-    ...modalData,
   };
 
   const onSubmit = () => {
@@ -230,8 +233,7 @@ export default function AddMaterialsModal({
     >
       <div className="flex flex-col gap-4">
         <p className="text-sm text-gray-500 mt-2">
-          Название элемента:{' '}
-          <span className="text-gray-900 ml-1">{modalData.name}</span>
+          Название элемента: <span className="text-gray-900 ml-1">{name}</span>
         </p>
         <h3>Материалы для карты развития</h3>
         <TitleInput value={title} onChange={onChangeTitle} />

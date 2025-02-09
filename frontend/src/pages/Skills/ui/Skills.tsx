@@ -14,7 +14,7 @@ export default function Skills() {
 
   return (
     <>
-      <div className="px-8 py-10 flex flex-col">
+      <div className="px-8 py-10 flex flex-col h-full">
         <div className="flex">
           <Heading title="Конструктор профилей" description={tab.label} />
           <div className="space-x-2">
