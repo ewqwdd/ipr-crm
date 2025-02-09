@@ -1,61 +1,127 @@
-import { useMemo, useState } from 'react';
-import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect';
-import { Option } from '@/shared/types/Option';
-import { MultiValue } from 'react-select';
-import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
-import { SpecsMultiSelect } from '@/widgets/SpecsMultiSelect';
-import { useAppSelector } from '@/app';
-import SkillsFilter from '../SkillsFilter';
-import TeamList from '../TeamList/TeamList';
+import { useAppDispatch, useAppSelector } from '@/app';
+import { teamsApi } from '@/shared/api/teamsApi';
 import { TabType } from '../AddRate';
+import { SecondaryButton } from '@/shared/ui/SecondaryButton';
+import TeamItem from './TeamItem';
+import { useEffect, useLayoutEffect, useMemo } from 'react';
+import { EvaluateUser } from '@/entities/rates/types/types';
+import { ratesActions } from '@/entities/rates/model/rateSlice';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { cva } from '@/shared/lib/cva';
+import { rate360Api } from '@/shared/api/rate360Api';
+import toast from 'react-hot-toast';
 
 interface EvaluatorsTabProps {
   setTab: (tab: TabType) => void;
+  skillTypes: string[];
+  closeModal: () => void;
 }
 
-export default function EvaluatorsTab({ setTab }: EvaluatorsTabProps) {
-  const [teams, setTeams] = useState<MultiValue<Option>>([]);
-  const [specs, setSpecs] = useState<MultiValue<Option>>([]);
-  const [skillTypes, setSkillTypes] = useState<string[]>([]);
-  const selectedSpecs = useAppSelector((state) => state.rates.selectedSpecs);
+export interface TeamItemIds {
+  teamId: number;
+  specId: number;
+  userId: number;
+  evaluateCurators: EvaluateUser[];
+  evaluateTeam: EvaluateUser[];
+  evaluateSubbordinate: EvaluateUser[];
+}
 
-  const selectedCount = useMemo(
-    () => selectedSpecs.reduce((acc, s) => acc + s.specs.length, 0),
+export default function EvaluatorsTab({
+  setTab,
+  skillTypes,
+  closeModal,
+}: EvaluatorsTabProps) {
+  const { data, isFetching } = teamsApi.useGetTeamsQuery();
+  const [addRate, { isLoading, isSuccess, isError }] =
+    rate360Api.useCreateRateMutation();
+  const selectedSpecs = useAppSelector((state) => state.rates.selectedSpecs);
+  const dispatch = useAppDispatch();
+
+  const teamIds = useMemo<TeamItemIds[]>(
+    () =>
+      selectedSpecs?.flatMap((s) =>
+        s.specs.map((spec) => ({ teamId: s.teamId, ...spec })),
+      ),
     [selectedSpecs],
   );
 
+  useLayoutEffect(() => {
+    const updated = selectedSpecs.map((s) => {
+      const team = data?.list.find((t) => t.id === s.teamId);
+      const teamUsers =
+        team?.users?.map((u) => ({
+          userId: u.user.id,
+          username: u.user.username,
+        })) ?? [];
+      const teamCurators = team?.curator
+        ? [{ userId: team.curator.id, username: team.curator.username }]
+        : [];
+      const updatedSpecs = s.specs.map((spec) => ({
+        ...spec,
+        evaluateCurators: teamCurators.filter((c) => c.userId !== spec.userId),
+        evaluateTeam: teamUsers.filter((c) => c.userId !== spec.userId),
+        evaluateSubbordinate: [],
+      }));
+      return {
+        ...s,
+        specs: updatedSpecs,
+      };
+    });
+    dispatch(ratesActions.setSpecs(updated));
+  }, []);
+
+  useEffect(() => {
+    if (isSuccess) {
+      closeModal();
+      toast.success('Оценка успешно добавлена');
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Ошибка при добавлении оценки');
+    }
+  }, [isError]);
+
   return (
     <>
-      <div className="grid grid-cols-3 gap-4 my-4">
-        <div className="flex gap-3 flex-col">
-          <h3 className="text-lg font-medium text-gray-600">Вид оценки</h3>
-          <div className="flex gap-2">
-            <SkillsFilter skills={skillTypes} setSkills={setSkillTypes} />
+      <div
+        className={cva('flex gap-2', {
+          'animate-pulse pointer-events-none': isFetching || isLoading,
+        })}
+      >
+        <div className="flex gap-2 flex-col flex-1">
+          <h3 className="text-lg text-gray-800 mt-3">Окружение</h3>
+          <p className="text-sm text-gray-500 -mt-1">
+            Выберите оценивающих экспертов
+          </p>
+          <p className="text-sm text-gray-500 -mt-2">
+            Включены комментарии к каждой компетенции при прохождении оценки
+          </p>
+
+          <div className="flex gap-2 font-medium">
+            <span className="text-sm text-gray-500">Навыки</span>
+            <span className="text-sm text-gray-800">
+              {skillTypes?.join(', ')}
+            </span>
           </div>
         </div>
-        <div className="col-span-2 flex justify-end">
+        <div className="gap-4 mt-4 flex justify-end items-start">
+          <SecondaryButton onClick={() => setTab('specs')}>
+            Назад
+          </SecondaryButton>
           <PrimaryButton
-            className="self-start"
-            disabled={selectedCount === 0}
-            onClick={() => setTab('evaluators')}
+            onClick={() => addRate({ rate: selectedSpecs, skill: skillTypes })}
+            disabled={isLoading}
           >
-            Далее
+            Добавить оценку
           </PrimaryButton>
         </div>
       </div>
-      <h2 className="text-xl font-semibold">Выберите оцениваемых</h2>
-
-      <div className="grid grid-cols-3 gap-4">
-        <TeamsMultiSelect value={teams} onChange={(v) => setTeams(v)} />
-        <InputWithLabelLight placeholder="Поиск по ФИО" className="mt-0" />
-        <SpecsMultiSelect value={specs} onChange={(v) => setSpecs(v)} />
-      </div>
-      <div className="text-gray-500 text-sm">
-        Выбрано специализаций: {selectedCount}
-      </div>
-      <div className="flex flex-col gap-2">
-        <TeamList selectedSpecs={selectedSpecs} specs={specs} teams={teams} />
+      <div className="gap-4 flex flex-col">
+        {teamIds.map((teamId) => (
+          <TeamItem teamId={teamId} />
+        ))}
       </div>
     </>
   );

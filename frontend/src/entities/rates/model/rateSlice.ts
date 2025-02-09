@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RateStoreSchema } from '../types/types';
+import { EvaluateUser, EvaulatorType, RateStoreSchema } from '../types/types';
 
 const initialState: RateStoreSchema = {
   selectedSpecs: [],
@@ -22,7 +22,15 @@ const rateSlice = createSlice({
           ...prev,
           {
             teamId,
-            specs: [{ specId, userId }],
+            specs: [
+              {
+                specId,
+                userId,
+                evaluateCurators: [],
+                evaluateSubbordinate: [],
+                evaluateTeam: [],
+              },
+            ],
           },
         ];
         return;
@@ -37,7 +45,16 @@ const rateSlice = createSlice({
           ...prev.slice(0, teamIndex),
           {
             ...team,
-            specs: [...team.specs, { specId, userId }],
+            specs: [
+              ...team.specs,
+              {
+                specId,
+                userId,
+                evaluateCurators: [],
+                evaluateSubbordinate: [],
+                evaluateTeam: [],
+              },
+            ],
           },
           ...prev.slice(teamIndex + 1),
         ];
@@ -55,6 +72,102 @@ const rateSlice = createSlice({
         ];
         return;
       }
+    },
+    setSpecs: (
+      state,
+      action: PayloadAction<RateStoreSchema['selectedSpecs']>,
+    ) => {
+      state.selectedSpecs = action.payload;
+    },
+    removeEvaluator: (
+      state,
+      action: PayloadAction<{
+        teamId: number;
+        specId: number;
+        userId: number;
+        evaluatorId: number;
+        type: EvaulatorType;
+      }>,
+    ) => {
+      const prev = state.selectedSpecs;
+      const { teamId, specId, userId, evaluatorId, type } = action.payload;
+
+      const teamIndex = prev.findIndex((s) => s.teamId === teamId);
+      if (teamIndex === -1) {
+        return;
+      }
+
+      const team = prev[teamIndex];
+      const specIndex = team.specs.findIndex(
+        (s) => s.specId === specId && s.userId === userId,
+      );
+      if (specIndex === -1) {
+        return;
+      }
+      const updatedData: any = {};
+
+      if (type === 'curator') {
+        let curators = team.specs[specIndex].evaluateCurators;
+        curators = curators.filter((c) => c.userId !== evaluatorId);
+        updatedData.evaluateCurators = curators;
+      } else if (type === 'team') {
+        let teamUsers = team.specs[specIndex].evaluateTeam;
+        teamUsers = teamUsers.filter((c) => c.userId !== evaluatorId);
+        updatedData.evaluateTeam = teamUsers;
+      } else if (type === 'subbordinate') {
+        let subTeams = team.specs[specIndex].evaluateSubbordinate;
+        subTeams = subTeams.filter((c) => c.userId !== evaluatorId);
+        updatedData.evaluateSubbordinate = subTeams;
+      }
+
+      team.specs[specIndex] = {
+        ...team.specs[specIndex],
+        ...updatedData,
+      };
+    },
+    setSpecsForUser: (
+      state,
+      action: PayloadAction<{
+        teamId: number;
+        specId: number;
+        userId: number;
+        type: EvaulatorType;
+        evaluators: EvaluateUser[];
+      }>,
+    ) => {
+      const prev = state.selectedSpecs;
+      const { teamId, specId, userId, type, evaluators } = action.payload;
+
+      const teamIndex = prev.findIndex((s) => s.teamId === teamId);
+      if (teamIndex === -1) {
+        return;
+      }
+
+      const team = prev[teamIndex];
+      const specIndex = team.specs.findIndex(
+        (s) => s.specId === specId && s.userId === userId,
+      );
+      if (specIndex === -1) {
+        return;
+      }
+
+      let key;
+
+      if (type === 'curator') {
+        key = 'evaluateCurators';
+      } else if (type === 'team') {
+        key = 'evaluateTeam';
+      } else {
+        key = 'evaluateSubbordinate';
+      }
+
+      team.specs[specIndex] = {
+        ...team.specs[specIndex],
+        [key]: evaluators,
+      };
+    },
+    clear: (state) => {
+      state.selectedSpecs = [];
     },
   },
 });

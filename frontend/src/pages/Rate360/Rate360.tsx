@@ -1,3 +1,5 @@
+import { useAppDispatch } from '@/app';
+import { ratesActions } from '@/entities/rates';
 import AddRate from '@/entities/rates/ui/AddRate/AddRate';
 import { rate360Api } from '@/shared/api/rate360Api';
 import { cva } from '@/shared/lib/cva';
@@ -9,6 +11,12 @@ import { useState } from 'react';
 export default function Rate360() {
   const { data, isLoading } = rate360Api.useGetRatesQuery();
   const [open, setOpen] = useState(false);
+  const dispatch = useAppDispatch();
+
+  const handleClose = () => {
+    setOpen(false);
+    dispatch(ratesActions.clear());
+  };
 
   return (
     <>
@@ -85,7 +93,7 @@ export default function Rate360() {
       </div>
       <Modal
         open={open}
-        setOpen={setOpen}
+        setOpen={handleClose}
         title="Добавить 360 оценку"
         className="sm:max-w-7xl mx-3"
         footer={false}

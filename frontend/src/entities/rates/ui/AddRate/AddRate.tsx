@@ -1,14 +1,39 @@
 import { useState } from 'react';
+import SpecsTab from './SpecsTab/SpecsTab';
 import EvaluatorsTab from './EvaluatorsTab/EvaluatorsTab';
 
 export type TabType = 'specs' | 'evaluators';
 
-export default function AddRate() {
+interface AddRateProps {
+  closeModal?: () => void;
+}
+
+export default function AddRate({ closeModal }: AddRateProps) {
   const [tab, setTab] = useState<TabType>('specs');
+  const [skillTypes, setSkillTypes] = useState<string[]>([]);
+
+  const onClose = () => {
+    if (closeModal) {
+      closeModal();
+    }
+  };
 
   return (
     <div className="flex flex-col gap-2">
-      {tab === 'specs' && <EvaluatorsTab setTab={setTab} />}
+      {tab === 'specs' && (
+        <SpecsTab
+          skillTypes={skillTypes}
+          setSkillTypes={setSkillTypes}
+          setTab={setTab}
+        />
+      )}
+      {tab === 'evaluators' && (
+        <EvaluatorsTab
+          closeModal={onClose}
+          skillTypes={skillTypes}
+          setTab={setTab}
+        />
+      )}
     </div>
   );
 }
