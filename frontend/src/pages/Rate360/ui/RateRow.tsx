@@ -32,7 +32,7 @@ export default function RateRow({ rate, index }: RateRowProps) {
   const foundSpec = specs?.find((spec) => spec.id === rate.spec.id);
 
   const isLoading = usersFetching || teamsFetching || specsFetching;
-  const { closeModal, openModal } = useModal();
+  const { openModal } = useModal();
 
   if (isLoading) {
     return (

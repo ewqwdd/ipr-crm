@@ -21,8 +21,8 @@ export default function RateStatsModal({
   modalData,
 }: RateStatsModalProps) {
   const { rate, spec, user } = modalData;
-  const evaluatorsCount = rate.evaluators.length;
-  const ratesCount = rate.userRates.length;
+//   const evaluatorsCount = rate.evaluators.length;
+//   const ratesCount = rate.userRates.length;
 
   return (
     <Modal title="Статистика" open={isOpen} setOpen={closeModal} footer={false}>
