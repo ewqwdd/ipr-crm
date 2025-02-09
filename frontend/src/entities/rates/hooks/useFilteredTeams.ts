@@ -38,23 +38,23 @@ export const useFilteredTeams = ({
 
   const filteredSearch = useMemo(
     () =>
-      filteredSpecs?.map((team) =>
-      ({
+      filteredSpecs?.map((team) => ({
         ...team,
         users: team.users?.filter((u) =>
           u.user.username.toLowerCase().includes(search.toLowerCase()),
         ),
-        curator: team.curator?.username.toLowerCase().includes(search.toLowerCase())
+        curator: team.curator?.username
+          .toLowerCase()
+          .includes(search.toLowerCase())
           ? team.curator
           : undefined,
-      })
-      ),
+      })),
     [filteredSpecs, search],
   );
 
   const filteredEmpty = useMemo(
     () =>
-        filteredSearch?.filter(
+      filteredSearch?.filter(
         (team) => (team.users && team.users?.length > 0) || team.curator,
       ),
     [filteredSearch],

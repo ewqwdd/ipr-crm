@@ -63,19 +63,19 @@ export default function TeamItem({ teamId }: TeamItemProps) {
         <div className="grid grid-cols-3 gap-2">
           <EvaluatorsItem
             {...evaluatorItemProps}
-            type="curator"
+            type="CURATOR"
             evaluators={teamId.evaluateCurators}
             title="Руководители"
           />
           <EvaluatorsItem
             {...evaluatorItemProps}
-            type="team"
+            type="TEAM_MEMBER"
             evaluators={teamId.evaluateTeam}
             title="Коллеги"
           />
           <EvaluatorsItem
             {...evaluatorItemProps}
-            type="subbordinate"
+            type="SUBORDINATE"
             evaluators={teamId.evaluateSubbordinate}
             title="Подчиненые"
           />

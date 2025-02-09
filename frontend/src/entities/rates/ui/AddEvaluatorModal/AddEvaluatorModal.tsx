@@ -47,13 +47,13 @@ export default function AddEvaluatorModal({
 
   let evaluators;
   const excluded: EvaluateUser[] = [{ userId }];
-  if (type === 'curator') {
+  if (type === 'CURATOR') {
     evaluators = current?.evaluateCurators;
     excluded.push(
       ...(current?.evaluateSubbordinate ?? []),
       ...(current?.evaluateTeam ?? []),
     );
-  } else if (type === 'team') {
+  } else if (type === 'TEAM_MEMBER') {
     evaluators = current?.evaluateTeam;
     excluded.push(
       ...(current?.evaluateCurators ?? []),

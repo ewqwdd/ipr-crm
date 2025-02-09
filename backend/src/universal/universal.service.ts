@@ -15,10 +15,10 @@ export class UniversalService {
       include: {
         competencyBlocks: {
           select: {
-            id: true
-          }
-        }
-      }
+            id: true,
+          },
+        },
+      },
     });
     return spec;
   }

@@ -63,7 +63,12 @@ export default function SpecsTab({
         Выбрано специализаций: {selectedCount}
       </div>
       <div className="flex flex-col gap-2">
-        <TeamList selectedSpecs={selectedSpecs} search={search} specs={specs} teams={teams} />
+        <TeamList
+          selectedSpecs={selectedSpecs}
+          search={search}
+          specs={specs}
+          teams={teams}
+        />
       </div>
     </>
   );

@@ -106,15 +106,15 @@ const rateSlice = createSlice({
       }
       const updatedData: any = {};
 
-      if (type === 'curator') {
+      if (type === 'CURATOR') {
         let curators = team.specs[specIndex].evaluateCurators;
         curators = curators.filter((c) => c.userId !== evaluatorId);
         updatedData.evaluateCurators = curators;
-      } else if (type === 'team') {
+      } else if (type === 'TEAM_MEMBER') {
         let teamUsers = team.specs[specIndex].evaluateTeam;
         teamUsers = teamUsers.filter((c) => c.userId !== evaluatorId);
         updatedData.evaluateTeam = teamUsers;
-      } else if (type === 'subbordinate') {
+      } else if (type === 'SUBORDINATE') {
         let subTeams = team.specs[specIndex].evaluateSubbordinate;
         subTeams = subTeams.filter((c) => c.userId !== evaluatorId);
         updatedData.evaluateSubbordinate = subTeams;
@@ -153,9 +153,9 @@ const rateSlice = createSlice({
 
       let key;
 
-      if (type === 'curator') {
+      if (type === 'CURATOR') {
         key = 'evaluateCurators';
-      } else if (type === 'team') {
+      } else if (type === 'TEAM_MEMBER') {
         key = 'evaluateTeam';
       } else {
         key = 'evaluateSubbordinate';
