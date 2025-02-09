@@ -7,7 +7,8 @@ import { Heading } from '@/shared/ui/Heading';
 import { Modal } from '@/shared/ui/Modal';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useState } from 'react';
-import Columns from './ui/Columns';
+import ColumnsHeading from './ui/ColumnsHeading';
+import RateRow from './ui/RateRow';
 
 export default function Rate360() {
   const { data, isLoading } = rate360Api.useGetRatesQuery();
@@ -29,35 +30,14 @@ export default function Rate360() {
           </PrimaryButton>
         </div>
         <table className="min-w-full divide-y divide-gray-300 mt-10">
-          <Columns />
+          <ColumnsHeading />
           <tbody
             className={cva('bg-white', {
               'animate-pulse pointer-events-none': isLoading,
             })}
           >
             {data?.map((rate, index) => (
-              <tr
-                key={rate.id}
-                className={index % 2 === 0 ? undefined : 'bg-gray-50'}
-              >
-                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                  {rate.id}
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  {rate.id}
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  {rate.id}
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  {rate.id}
-                </td>
-                <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                  <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                    Edit<span className="sr-only">, {rate.id}</span>
-                  </a>
-                </td>
-              </tr>
+              <RateRow key={rate.id} rate={rate} index={index} />
             ))}
           </tbody>
         </table>

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Rate360Service } from './rate360.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AdminGuard } from 'src/utils/guards/admin.guard';
@@ -19,5 +27,11 @@ export class Rate360Controller {
   @UseGuards(AdminGuard)
   async createRate(@Body() data: CreateRateDto) {
     return this.rate360Service.createRate(data);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AdminGuard)
+  async deleteRate(@Param('id', { transform: (v) => parseInt(v) }) id: number) {
+    return this.rate360Service.deleteRate(id);
   }
 }
