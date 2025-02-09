@@ -14,6 +14,11 @@ export class Rate360Service {
           select: {
             userId: true,
             type: true,
+            user: {
+              select: {
+                username: true,
+              },
+            },
           },
         },
         user: {
@@ -22,6 +27,11 @@ export class Rate360Service {
           },
         },
         spec: {
+          select: {
+            id: true,
+          },
+        },
+        team: {
           select: {
             id: true,
           },
@@ -36,20 +46,31 @@ export class Rate360Service {
     return rates;
   }
 
+  async deleteRate(id: number) {
+    return await this.prismaService.rate360.delete({
+      where: { id },
+    });
+  }
+
   async createRate(data: CreateRateDto) {
     const { rate, skill } = data;
-    const ratesToCreate = rate.flatMap((team) => {
-      return team.specs.map((spec) => ({ teamId: team.teamId, ...spec }));
-    });
+    const ratesToCreate = skill.flatMap((skill) =>
+      rate.flatMap((team) => {
+        return team.specs.map((spec) => ({
+          teamId: team.teamId,
+          type: skill,
+          ...spec,
+        }));
+      }),
+    );
 
     const createdRates = await this.prismaService.rate360.createManyAndReturn({
-      data: skill.flatMap((skill) =>
-        ratesToCreate.map((rate) => ({
-          type: skill,
-          specId: rate.specId,
-          userId: rate.userId,
-        })),
-      ),
+      data: ratesToCreate.map((rate) => ({
+        type: rate.type,
+        specId: rate.specId,
+        userId: rate.userId,
+        teamId: rate.teamId,
+      })),
     });
 
     return await Promise.all(
@@ -73,7 +94,6 @@ export class Rate360Service {
                     type: EvaluatorType.SUBORDINATE,
                   })),
                 ],
-                skipDuplicates: true,
               },
             },
           },

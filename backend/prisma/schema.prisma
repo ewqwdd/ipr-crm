@@ -47,10 +47,11 @@ model Rate360 {
   id               Int       @id @default(autoincrement())
   userConfirmed    Boolean   @default(false)
   curatorConfirmed Boolean   @default(false)
-  startDate        DateTime?
+  startDate        DateTime? @default(now())
   endDate          DateTime?
   userId           Int
   specId           Int
+  teamId           Int
   user             User      @relation(fields: [userId], references: [id])
   archived         Boolean   @default(false)
   type             SkillType
@@ -58,6 +59,8 @@ model Rate360 {
   userRates  UserRates[]
   evaluators Rate360Evaluator[]
   spec       Spec               @relation(fields: [specId], references: [id])
+  team       Team              @relation(fields: [teamId], references: [id])
+  
 }
 
 model UserRates {
@@ -69,9 +72,9 @@ model UserRates {
   comment     String?
   approved    Boolean @default(false)
 
-  indicator Indicator @relation(fields: [indicatorId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
-  rate360   Rate360   @relation(fields: [rate360Id], references: [id])
+  indicator Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rate360   Rate360   @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
 }
 
 model Role {
@@ -183,8 +186,8 @@ model Rate360Evaluator {
 
   type EvaluatorType @default(TEAM_MEMBER)
 
-  user    User    @relation(fields: [userId], references: [id])
-  rate360 Rate360 @relation(fields: [rate360Id], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rate360 Rate360 @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
 }
 
 model SkillsOnRate360 {
@@ -269,6 +272,7 @@ model Team {
   curatorId    Int?
   curator      User?      @relation(fields: [curatorId], references: [id])
   createdAt    DateTime   @default(now())
+  Rate360      Rate360[]
 }
 
 model UserTeam {

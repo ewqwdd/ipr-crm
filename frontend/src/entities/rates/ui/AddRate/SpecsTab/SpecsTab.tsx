@@ -41,7 +41,7 @@ export default function SpecsTab({
         <div className="col-span-2 flex justify-end">
           <PrimaryButton
             className="self-start"
-            disabled={selectedCount === 0}
+            disabled={selectedCount === 0 || !skillTypes.length}
             onClick={() => setTab('evaluators')}
           >
             Далее

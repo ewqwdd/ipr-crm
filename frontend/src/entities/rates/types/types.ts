@@ -1,7 +1,9 @@
 type RateEveloper = {
   userId: number;
-  username: string;
   type: EvaulatorType;
+  user: {
+    username: string;
+  };
 };
 
 export interface Rate {
@@ -17,6 +19,7 @@ export interface Rate {
   evaluators: RateEveloper[];
   user: { id: number };
   spec: { id: number };
+  team: { id: number };
   userRates: any[];
 }
 export type EvaluateUser = { userId: number; username?: string };

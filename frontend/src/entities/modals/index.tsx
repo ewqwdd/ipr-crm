@@ -8,7 +8,7 @@ import {
 import { useModal } from '@/app/hooks/useModal';
 import { useAppSelector } from '@/app';
 import { ConfirmModal } from '@/widgets/ConfirmModal';
-import { AddEvaluatorModal } from '../rates';
+import { AddEvaluatorModal, RateStatsModal } from '../rates';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -43,6 +43,8 @@ const ModalWrapper: FC = () => {
       return <EditSkillsModal {...modalProps} />;
     case 'ADD_EVALUATOR':
       return <AddEvaluatorModal {...modalProps} />;
+    case 'RATE_STATS':
+      return <RateStatsModal {...modalProps} />;
     default:
       break;
   }
