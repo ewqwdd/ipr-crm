@@ -1,5 +1,7 @@
 import { useModal } from '@/app/hooks/useModal';
+import { Spec } from '@/entities/user';
 import { universalApi } from '@/shared/api/universalApi';
+import { cva } from '@/shared/lib/cva';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { MinusCircleIcon, PencilIcon } from '@heroicons/react/outline';
@@ -12,34 +14,18 @@ type Specialization = {
   description: string;
 };
 
-// const data: Specialization[] = [
-//   {
-//     id: 1,
-//     name: 'Frontend Frontend Frontend Frontend Frontend',
-//     materials: 8,
-//     description: 'Frontend description',
-//   },
-//   {
-//     id: 2,
-//     name: 'Backend Backend Backend Backend Backend',
-//     materials: 2,
-//     description: 'Backend description',
-//   },
-//   {
-//     id: 3,
-//     name: 'Devops Devops Devops Devops Devops',
-//     materials: 0,
-//     description: 'Devops description',
-//   },
-// ];
+interface ISpecializationsTableProps {
+  setSelectedSpec: React.Dispatch<React.SetStateAction<number | null>>;
+  }
 
 const materialsButtonClassName =
   'border-b border-dashed text-indigo-600 border-indigo-600 hover:text-indigo-500 hover:border-indigo-500 h-6';
 const materialsButtonEmptyClassName = 'hover:text-indigo-500';
 
-const SpecializationsTable: FC = () => {
+const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec}) => {
   const { openModal } = useModal();
   const { data } = universalApi.useGetSpecsQuery();
+  const [deleteFn, {isLoading}] = universalApi.useDeleteSpecMutation();
 
   //   const openMatreialsModal = ({ id }: { id: number }) => {
   //     console.log('openMatreialsModal', { id });
@@ -62,11 +48,9 @@ const SpecializationsTable: FC = () => {
   //     // console.log('deleteSpecialization', { id, description });
   //   };
 
-  console.log('data', data);
 
-  const selectSpecialization = ({ id }: { id: number }) => {
-    console.log('selectSpecialization', { id });
-    //
+  const selectSpecialization = (data: Spec) => {
+    setSelectedSpec(data.id);
   };
 
   //   const openModalMaterials = ({ id }: { id: number }) => {
@@ -74,7 +58,9 @@ const SpecializationsTable: FC = () => {
   //   };
 
   return (
-    <div className="mt-10 overflow-x-auto">
+    <div className={cva("mt-10 overflow-x-auto", {
+      'animate-pulse': isLoading
+    })}>
       <table className="w-full">
         <thead>
           <tr className="bg-gray-100">
@@ -100,7 +86,7 @@ const SpecializationsTable: FC = () => {
             <tr
               key={row.id}
               className="hover:bg-gray-200 cursor-pointer border-b border-gray-300"
-              onClick={() => selectSpecialization({ id: row.id })}
+              onClick={() => selectSpecialization(row)}
             >
               <td className=" p-2">
                 <div className="hover:text-indigo-600">{row.name}</div>
@@ -165,11 +151,8 @@ const SpecializationsTable: FC = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                       openModal('CONFIRM', {
-                        onSubmit: () => console.log('delete => ', row.id),
+                        onSubmit: () => deleteFn(row.id),
                       });
-                      //   deleteSpecialization({
-                      //     id: row.id,
-                      //   });
                     }}
                   >
                     <MinusCircleIcon className="stroke-red-500 h-5 w-5" />

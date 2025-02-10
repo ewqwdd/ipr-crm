@@ -1,74 +1,38 @@
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import ChooseSpecialization from './ChooseSpecialization';
 import { useModal } from '@/app/hooks/useModal';
 import CompetencyList_V2 from './CompetencyList_V2';
 import { Radio } from '@/shared/ui/Radio';
 import { SoftButton } from '@/shared/ui/SoftButton';
-interface ICompetencyProps {
-  //
-}
+import { skillsApi } from '@/shared/api/skillsApi';
+import { cva } from '@/shared/lib/cva';
+import { universalApi } from '@/shared/api/universalApi';
 
-const mock = [
-  {
-    id: 1,
-    name: 'Аналитика в дизайне',
-    specId: null,
-    type: 'HARD',
-    competencies: [
-      {
-        id: 1,
-        name: 'Иследование конкурентов',
-        blockId: 1,
-        materials: [],
-        indicators: [
-          {
-            id: 1,
-            name: ' Статистика, анализ и визуализация больших объемов данных ',
-            description: null,
-            competencyId: 1,
-            materials: [],
-          },
-          {
-            id: 2,
-            name: 'Тест Индикатор 1',
-            description: null,
-            competencyId: 1,
-            materials: [],
-          },
-          {
-            id: 8,
-            name: 'test',
-            description: null,
-            competencyId: 1,
-            materials: [],
-          },
-          {
-            id: 3,
-            name: 'TEST indicat',
-            description: null,
-            competencyId: 1,
-            materials: [],
-          },
-        ],
-      },
-    ],
-  },
-];
+
+interface ICompetencyProps {
+  selectedSpec: number | null;
+}
 
 const skillsFilters: Array<{ title: string; value: 'HARD' | 'SOFT' }> = [
   { title: 'Hard skills', value: 'HARD' },
   { title: 'Soft skills', value: 'SOFT' },
 ];
 
-const CompetencyBlock: FC<ICompetencyProps> = (props) => {
-  const isExist = true;
+const CompetencyBlock: FC<ICompetencyProps> = ({selectedSpec}) => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');
+  const {data, isFetching} = skillsApi.useGetSkillsQuery()
+  const {data: specs, isFetching: specsFetching} = universalApi.useGetSpecsQuery()
+
+  const spec = specs?.find(item => item.id === selectedSpec)
 
   const { openModal } = useModal();
+  const specSkills = useMemo(() => data?.filter((item) => spec?.competencyBlocks.find((block) => block.id === item.id) && item.type === skillsFilter), [data, selectedSpec, skillsFilter]);
 
   return (
-    <div className="p-4">
-      {!isExist ? (
+    <div className={cva("p-4", {
+      'animate-pulse': isFetching || specsFetching
+    })}>
+      {selectedSpec === null ? (
         <ChooseSpecialization />
       ) : (
         <>
@@ -89,14 +53,14 @@ const CompetencyBlock: FC<ICompetencyProps> = (props) => {
             </div>
             <SoftButton
               onClick={() => {
-                openModal('CHOOSE_COMPETENCY_BLOCK');
+                openModal('CHOOSE_COMPETENCY_BLOCK', {specId: spec?.id, initialBlocks: spec?.competencyBlocks.map(block => block.id)});
               }}
             >
               Добавить
             </SoftButton>
           </div>
           <CompetencyList_V2
-            data={mock}
+            data={specSkills}
             openModal={openModal}
             loading={false}
           />

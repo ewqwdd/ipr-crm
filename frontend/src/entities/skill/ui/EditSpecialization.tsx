@@ -1,6 +1,6 @@
 import { Modal } from '@/shared/ui/Modal';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TextArea } from '@/shared/ui/TextArea';
 import { universalApi } from '@/shared/api/universalApi';
 
@@ -21,7 +21,7 @@ export default function EditSpecialization({
     description?: string;
   };
 
-  console.log('description => ', description);
+  const [mutate, {isLoading, isSuccess}] = universalApi.useEditSpecMutation();
 
   const [newName, setNewName] = useState<string>(name);
   // const [newDescription, setNewDescription] = useState<string>(
@@ -33,27 +33,27 @@ export default function EditSpecialization({
   // universalApi.
 
   const blockSubmit = () => {
-    console.log('EditSpecialization submit => ', {
-      id,
-      name: newName,
-      // description: newDescription,
-    });
-    closeModal();
+    mutate({id, name: newName});
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      closeModal();
+    }
+  }, [isSuccess]);
 
   return (
     <Modal
       open={isOpen}
       setOpen={closeModal}
-      title="Добавить блок компетенций"
+      title="Редактировать специализацию"
       onSubmit={blockSubmit}
       submitText="Добавить"
-      //   loading={blockProps.isLoading}
+        loading={isLoading}
     >
       <div className="flex flex-col gap-4">
-        <h2 className="text-sm text-gray-500 mt-2">Новая специализация</h2>
         <InputWithLabelLight
-          placeholder="Название"
+          label='Название'
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />

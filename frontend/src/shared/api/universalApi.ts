@@ -17,11 +17,26 @@ const universalApi = createApi({
       query: () => '/universal/specs',
       providesTags: ['Spec'],
     }),
-    createSpec: build.mutation<Role[], string>({
+    createSpec: build.mutation<Spec[], string>({
       query: (name) => ({
         url: '/universal/specs',
         method: 'POST',
         body: { name },
+      }),
+      invalidatesTags: ['Spec'],
+    }),
+    editSpec: build.mutation<Spec[], { id: number; name: string }>({
+      query: ({ id, name }) => ({
+        url: `/universal/specs/${id}`,
+        method: 'PUT',
+        body: { name },
+      }),
+      invalidatesTags: ['Spec'],
+    }),
+    deleteSpec: build.mutation<Spec[], number>({
+      query: (id) => ({
+        url: `/universal/specs/${id}`,
+        method: 'DELETE',
       }),
       invalidatesTags: ['Spec'],
     }),

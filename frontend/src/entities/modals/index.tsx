@@ -42,14 +42,13 @@ const ModalWrapper: FC = () => {
     case 'CONFIRM':
       return <ConfirmModal {...updatedModalProps} />;
     case 'EDIT_SKILL':
-      return <EditSkillsModal {...modalProps} />;
-    case 'ADD_EVALUATOR':
-      return <AddEvaluatorModal {...modalProps} />;
-    case 'RATE_STATS':
-      return <RateStatsModal {...modalProps} />;
-    case 'EVALUATE':
-      return <EvaluateModal {...modalProps} />;
       return <EditSkillsModal {...updatedModalProps} />;
+    case 'ADD_EVALUATOR':
+      return <AddEvaluatorModal {...updatedModalProps} />;
+    case 'RATE_STATS':
+      return <RateStatsModal {...updatedModalProps} />;
+    case 'EVALUATE':
+      return <EvaluateModal {...updatedModalProps} />;
     case 'ADD_COMPETENCY_MATERIAL':
       return <AddMaterialsModal type="COMPETENCY" {...updatedModalProps} />;
     case 'ADD_INDICATOR_MATERIAL':

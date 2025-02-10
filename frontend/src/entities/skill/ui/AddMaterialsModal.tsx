@@ -87,7 +87,7 @@ export default function AddMaterialsModal({
   const [level, setLevel] = useState<number>(0);
   const [errors, setErrors] = useState<{ title?: string; link?: string }>({});
 
-  const { name } = modalData as { name: string; id: string };
+  const { name, id } = modalData as { name: string; id: number };
 
   const validate = () => {
     const newErrors: { title?: string; link?: string } = {};
@@ -113,7 +113,7 @@ export default function AddMaterialsModal({
     switch (type) {
       case 'COMPETENCY':
         COMPETENCY_mutate({
-          competencyId: modalData.id,
+          competencyId: id,
           name: title,
           url: link,
           contentType: materialType,
@@ -122,7 +122,7 @@ export default function AddMaterialsModal({
         break;
       case 'INDICATOR':
         INDICATOR_mutate({
-          indicatorId: modalData.id,
+          indicatorId: id,
           name: title,
           url: link,
           contentType: materialType,

@@ -55,7 +55,7 @@ export default function EditSkillsModal({
     <Modal
       open={isOpen}
       setOpen={closeModal}
-      title="Добавить блок компетенций"
+      title="Редактировать блок компетенции"
       onSubmit={onSubmit}
       submitText="Добавить"
       loading={loading}

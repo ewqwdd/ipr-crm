@@ -3,9 +3,12 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { PlusCircleIcon } from '@heroicons/react/outline';
 import SpecializationsTable from './SpecializationsTable';
 import { useModal } from '@/app/hooks/useModal';
-type ISpecializationsTableProps = {};
 
-const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = (props) => {
+type ISpecializationsTableProps = {
+  setSelectSpec: React.Dispatch<React.SetStateAction<number | null>>;
+};
+
+const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = ({setSelectSpec}) => {
   const { openModal } = useModal();
   const onClick = () => {
     openModal('ADD_SPECIALIZATION');
@@ -19,7 +22,7 @@ const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = (props) => {
           Добавить
         </SoftButton>
       </div>
-      <SpecializationsTable />
+      <SpecializationsTable setSelectedSpec={setSelectSpec} />
     </div>
   );
 };
