@@ -1,56 +1,34 @@
-import { useAppSelector } from '@/app';
+import { useAppDispatch, useAppSelector } from '@/app';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Disclosure } from '@headlessui/react';
-import {
-  DocumentIcon,
-  HomeIcon,
-  InboxIcon,
-  UserIcon,
-  UsersIcon,
-} from '@heroicons/react/outline';
-import React from 'react';
-import { Link, NavLink, useLocation } from 'react-router';
+
+import { Link, NavLink, useLocation, useNavigate } from 'react-router';
+import { adminNavigation } from './config/adminNavigation';
+import { userNavigation } from './config/userNavigation';
+import { LogoutIcon } from '@heroicons/react/outline';
+import { $api } from '@/shared/lib/$api';
+import { userActions } from '@/entities/user';
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-type NavType = {
-  name: string;
-  icon?: (props: React.ComponentProps<'svg'>) => JSX.Element;
-  href?: string;
-  current: boolean;
-  count?: number;
-  children?: NavType[];
-};
 
-const navigation: NavType[] = [
-  { name: 'Dashboard', icon: HomeIcon, href: '/', current: true },
-  { name: 'Users', icon: UserIcon, href: '/users', current: false },
-  {
-    name: 'Орагнизационная структура',
-    icon: UsersIcon,
-    href: '/structure',
-    current: false,
-  },
-  { name: 'Команды', icon: UsersIcon, href: '/teams', current: false },
-  {
-    name: 'Оценка',
-    icon: InboxIcon,
-    current: false,
-    children: [{ name: 'Оценка 360', href: '/360rate', current: false }],
-  },
-  {
-    name: 'Конструктор профилей',
-    icon: DocumentIcon,
-    href: '/skills',
-    current: false,
-  },
-];
 
 export default function Content() {
   const user = useAppSelector((state) => state.user.user);
+  const dispatch = useAppDispatch();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const navigation = user?.role.name === 'admin' ? adminNavigation : userNavigation
+
+  const logout = () => {
+    $api.post('/auth/sign-out').then(() => {
+      navigate('/login');
+      dispatch(userActions.setUser(null));
+    });
+  }
 
   return (
     <>
@@ -58,7 +36,7 @@ export default function Content() {
         <div className="flex items-center flex-shrink-0 px-4">
           <img
             className="h-8 w-auto"
-            src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
+            src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
             alt="Workflow"
           />
         </div>
@@ -149,15 +127,18 @@ export default function Content() {
         </nav>
       </div>
       <div className="flex-shrink-0 flex bg-gray-700 p-4">
-        <Link to="#" className="flex-shrink-0 w-full group block">
+        <Link to="/" className="flex-shrink-0 w-full group block">
           <div className="flex items-center">
             <Avatar className="size-9" src={user?.avatar} />
-            <div className="ml-3">
+            <div className="ml-3 flex-1">
               <p className="text-sm font-medium text-white">{user?.username}</p>
               <p className="text-xs font-medium text-gray-300 group-hover:text-gray-200">
-                View profile
+                Профиль
               </p>
             </div>
+            <button onClick={logout}>
+            <LogoutIcon className='size-6 text-gray-100' />
+            </button>
           </div>
         </Link>
       </div>

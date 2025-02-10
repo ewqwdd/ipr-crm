@@ -71,6 +71,7 @@ model UserRates {
   rate        Int
   comment     String?
   approved    Boolean @default(false)
+  approvedByUser Boolean @default(false)
 
   indicator Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)

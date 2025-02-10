@@ -1,4 +1,4 @@
-import { Role } from '@/entities/user';
+import { Role, Spec } from '@/entities/user';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const universalApi = createApi({
@@ -13,7 +13,7 @@ const universalApi = createApi({
       query: () => '/universal/roles',
       providesTags: ['Role'],
     }),
-    getSpecs: build.query<Role[], void>({
+    getSpecs: build.query<Spec[], void>({
       query: () => '/universal/specs',
       providesTags: ['Spec'],
     }),
