@@ -1,6 +1,6 @@
 import { useAuthControl } from '@/shared/hooks/useAuthControl';
 import './App.css';
-import AppRouter from './AppRouter';
+import AppRouter from './router/AppRouter';
 import { DarkSidebar } from '@/widgets/DarkSidebar';
 import ModalWrapper from '@/entities/modals';
 

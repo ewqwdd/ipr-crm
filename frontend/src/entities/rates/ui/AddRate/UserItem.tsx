@@ -2,12 +2,21 @@ import { TeamUser } from '@/entities/team';
 import { universalApi } from '@/shared/api/universalApi';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Checkbox } from '@/shared/ui/Checkbox';
+import { AddRateDto } from '../../types/types';
 
 interface UserItemProps {
   user: TeamUser;
+  selected?: AddRateDto['specs'];
+  onChange?: (teamId: number, specId: number, userId: number) => void;
+  teamId: number;
 }
 
-export default function UserItem({ user }: UserItemProps) {
+export default function UserItem({
+  user,
+  selected,
+  onChange,
+  teamId,
+}: UserItemProps) {
   const { data } = universalApi.useGetSpecsQuery();
 
   return (
@@ -23,6 +32,8 @@ export default function UserItem({ user }: UserItemProps) {
               key={spec.specId}
               title={data?.find((s) => s.id === spec.specId)?.name}
               className="[&_label]:text-base [&_input]:size-5 h-8"
+              checked={!!selected?.find((s) => s.specId === spec.specId)}
+              onChange={() => onChange?.(teamId, spec.specId, user.id)}
             />
           ))}
         </div>

@@ -1,7 +1,6 @@
-import { CompetencyBlock } from '@/entities/skill';
+import { CompetencyBlock, CompetencyType } from '@/entities/skill';
 import { Accordion } from '@/shared/ui/Accordion';
 import { FC, memo } from 'react';
-import { CompetencyType } from './types';
 import CompetencyListItem from './CompetencyItem';
 import { cva } from '@/shared/lib/cva';
 

@@ -15,6 +15,7 @@ import AddIndicatorModal from './ui/AddIndicatorModal';
 import AddBlockToSpecModal from './ui/AddBlockToSpecModal';
 import useSkillsService from './hooks/useSkillsService';
 import EditSkillsModal from './ui/EditSkillsModal';
+import SkillsSwitcher from './ui/SkillsSwitcher';
 
 export type {
   CompetencyBlock,
@@ -35,4 +36,5 @@ export {
   useSkillsService,
   CompetencyType,
   EditSkillsModal,
+  SkillsSwitcher,
 };

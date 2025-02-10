@@ -13,6 +13,13 @@ import EditSpecialization from '../skill/ui/EditSpecialization';
 import AddSpecialization from '../skill/ui/AddSpecialization';
 import MaterialsList from '../skill/ui/MaterialsList';
 import ChooseCompetencyBlockModal from '../skill/ui/ChooseCompetencyBlockModal';
+import { AddEvaluatorModal, EvaluateModal, RateStatsModal } from '../rates';
+
+export type ModalProps = {
+  isOpen: boolean;
+  modalData: any;
+  closeModal: () => void;
+};
 
 const ModalWrapper: FC = () => {
   const { modalType, ...modalProps } = useAppSelector((state) => state.modal);
@@ -35,6 +42,13 @@ const ModalWrapper: FC = () => {
     case 'CONFIRM':
       return <ConfirmModal {...updatedModalProps} />;
     case 'EDIT_SKILL':
+      return <EditSkillsModal {...modalProps} />;
+    case 'ADD_EVALUATOR':
+      return <AddEvaluatorModal {...modalProps} />;
+    case 'RATE_STATS':
+      return <RateStatsModal {...modalProps} />;
+    case 'EVALUATE':
+      return <EvaluateModal {...modalProps} />;
       return <EditSkillsModal {...updatedModalProps} />;
     case 'ADD_COMPETENCY_MATERIAL':
       return <AddMaterialsModal type="COMPETENCY" {...updatedModalProps} />;

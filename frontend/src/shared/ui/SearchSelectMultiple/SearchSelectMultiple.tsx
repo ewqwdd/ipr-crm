@@ -45,10 +45,10 @@ export default function SearchSelectMultiple({
   };
 
   return (
-    // @ts-ignore asdasdasdas
     <Combobox
       as="div"
       value={value}
+      // @ts-ignore mne pohuy
       onChange={handleSelect}
       className={cva({ 'animate-pulse': !!loading })}
     >

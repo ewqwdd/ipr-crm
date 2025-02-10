@@ -34,7 +34,7 @@ export default forwardRef(function TeamForm(
     description: '',
     parentTeamId: parentId,
   });
-  const { data: usersData, isLoading, refetch } = usersApi.useGetUsersQuery({});
+  const { data: usersData, isLoading } = usersApi.useGetUsersQuery({});
 
   const { users } = usersData || {};
 

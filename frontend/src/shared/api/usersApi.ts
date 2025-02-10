@@ -40,6 +40,14 @@ const usersApi = createApi({
       }),
       invalidatesTags: ['User'],
     }),
+    editSelf: build.mutation<User, FormData>({
+      query: (formData) => ({
+        url: '/users/me',
+        method: 'PUT',
+        body: formData,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
