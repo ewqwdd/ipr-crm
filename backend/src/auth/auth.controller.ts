@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 import { CookieService } from 'src/utils/cookie/cookie.service';
 import { SignInDto } from './dto/signin.dto';
 import { Response } from 'express';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from '../utils/guards/auth.guard';
 import { SessionInfo } from './decorator/session-info.decorator';
 import { GetSessionInfoDto } from './dto/get-session-info.dto';
 
@@ -47,5 +47,13 @@ export class AuthController {
       throw new UnauthorizedException('Пользователь не найден');
     }
     return user;
+  }
+
+  @Post('sign-out')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async signOut(@Res({ passthrough: true }) res: Response) {
+    this.cookieService.removeToken(res);
+    return { message: 'Вы вышли из системы' };
   }
 }

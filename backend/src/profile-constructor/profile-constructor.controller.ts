@@ -17,6 +17,7 @@ import { createMaterialCompetencyDto } from './dto/create-material-competency.dt
 import { createMaterialIndicatorDto } from './dto/create-material-indicator.dto';
 import { AddBlockToSpecDto } from './dto/add-block-to-spec.dto';
 import { EditDto } from './dto/edi.dto';
+import { AuthGuard } from 'src/utils/guards/auth.guard';
 
 @Controller('profile-constructor')
 export class ProfileConstructorController {
@@ -25,7 +26,7 @@ export class ProfileConstructorController {
   ) {}
 
   @Get('/')
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   async profileConstructor() {
     const profileConstructor = await this.profileConstructorService.findAll();
     return profileConstructor;

@@ -3,6 +3,7 @@ import { Rate } from '../../types/types';
 import { Modal } from '@/shared/ui/Modal';
 import { XCircleIcon } from '@heroicons/react/outline';
 import EvaluatorsList from './partials/EvaluatorsList';
+import { skillsApi } from '@/shared/api/skillsApi';
 
 interface RateStatsModalData {
   rate: Rate;
@@ -21,8 +22,10 @@ export default function RateStatsModal({
   modalData,
 }: RateStatsModalProps) {
   const { rate, spec, user } = modalData;
-//   const evaluatorsCount = rate.evaluators.length;
-//   const ratesCount = rate.userRates.length;
+  const { data: skills } = skillsApi.useGetSkillsQuery();
+
+  const foundSkills = spec?.competencyBlocks.map(block => skills?.find(skill => skill.id === block.id)!).filter(Boolean);
+  const indicators = foundSkills.flatMap(skill => skill.competencies.flatMap(competency => competency.indicators));
 
   return (
     <Modal title="Статистика" open={isOpen} setOpen={closeModal} footer={false}>
@@ -39,9 +42,9 @@ export default function RateStatsModal({
           {/* CHANGE TO VALID STATS LATER */}
           <span className="text-xl text-gray-800">0</span>
         </div>
-        <EvaluatorsList evaluators={rate.evaluators} type="CURATOR" />
-        <EvaluatorsList evaluators={rate.evaluators} type="TEAM_MEMBER" />
-        <EvaluatorsList evaluators={rate.evaluators} type="SUBORDINATE" />
+        <EvaluatorsList evaluators={rate.evaluators} indicators={indicators} rates={rate.userRates} type="CURATOR" />
+        <EvaluatorsList evaluators={rate.evaluators} indicators={indicators} rates={rate.userRates} type="TEAM_MEMBER" />
+        <EvaluatorsList evaluators={rate.evaluators} indicators={indicators} rates={rate.userRates} type="SUBORDINATE" />
       </div>
     </Modal>
   );

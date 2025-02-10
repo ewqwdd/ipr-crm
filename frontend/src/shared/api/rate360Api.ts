@@ -7,7 +7,7 @@ const rate360Api = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Rate360'],
+  tagTypes: ['Rate360', 'Assigned', 'Self'],
   endpoints: (build) => ({
     getRates: build.query<Rate[], void>({
       query: () => '/rate360',
@@ -27,6 +27,14 @@ const rate360Api = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['Rate360'],
+    }),
+    assignedRates: build.query<Rate[], void>({
+      query: () => '/rate360/assigned-rates',
+      providesTags: ['Assigned'],
+    }),
+    selfRates: build.query<Rate[], void>({
+      query: () => '/rate360/selft-rates',
+      providesTags: ['Self'],
     }),
   }),
 });

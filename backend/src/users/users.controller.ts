@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { CreateUserDto } from './dto/create-user.fto';
 import { UsersService } from './users.service';
 import { AdminGuard } from 'src/utils/guards/admin.guard';
@@ -18,6 +18,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { extname } from 'path';
 import { S3Service } from 'src/utils/s3/s3.service';
+import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
+import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 
 @Controller('users')
 export class UsersController {
@@ -65,7 +67,29 @@ export class UsersController {
     return this.usersService.findOne(Number(id));
   }
 
+  @Put('me')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateMe(
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File,
+    @SessionInfo() sessionInfo: GetSessionInfoDto
+  ) {
+    if (file) {
+      updateUserDto.avatar = await this.s3Service.uploadImageBufferToS3(
+        file.buffer,
+        updateUserDto.username + Date.now() + extname(file.originalname),
+        'users',
+        file.mimetype,
+      );
+    }
+    const id = sessionInfo.id
+    await this.usersService.update(id, updateUserDto);
+    return { message: 'Пользователь обновлен.' };
+  }
+
   @Put(':id')
+  @UseGuards(AdminGuard)
   @UseInterceptors(FileInterceptor('avatar'))
   async update(
     @Param('id') id: number,
@@ -83,4 +107,6 @@ export class UsersController {
     await this.usersService.update(id, updateUserDto);
     return { message: 'Пользователь обновлен.' };
   }
+
+
 }

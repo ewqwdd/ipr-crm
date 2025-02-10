@@ -10,7 +10,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { TeamsService } from './teams.service';
 import { AdminGuard } from 'src/utils/guards/admin.guard';
 import { CreateTeamDto } from './dto/create-team.dto';

@@ -30,6 +30,8 @@ export class AdminGuard implements CanActivate {
     if (decodedToken.role !== 'admin') {
       throw new UnauthorizedException('Недостаточно прав');
     }
+    req['session'] = decodedToken;
+
     return true;
   }
 }

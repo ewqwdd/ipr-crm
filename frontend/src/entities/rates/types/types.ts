@@ -14,13 +14,22 @@ export interface Rate {
   endDate: string | null;
   userId: number;
   specId: number;
+  teamId: number;
   archived: boolean;
   type: 'HARD' | 'SOFT';
   evaluators: RateEveloper[];
   user: { id: number };
   spec: { id: number };
   team: { id: number };
-  userRates: any[];
+  userRates: {
+    id: number;
+    userId: number;
+    rate360Id: number;
+    rate: number;
+    indicatorId: number;
+    comment: string | null;
+    approved: boolean;
+}[];
 }
 export type EvaluateUser = { userId: number; username?: string };
 

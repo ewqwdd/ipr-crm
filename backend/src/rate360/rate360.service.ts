@@ -101,4 +101,41 @@ export class Rate360Service {
       }),
     );
   }
-}
+
+
+  async findAssignedRates(userId: number) {
+    return await this.prismaService.rate360.findMany({
+      where: {
+        evaluators: {
+          some: {
+            userId,
+          },
+        }
+      },
+      include: {
+        spec: true,
+        userRates: {
+          where: {
+            userId,
+          }
+        }
+      },
+    })
+  }
+
+  async findSelfRates(userId: number) {
+    return await this.prismaService.rate360.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        spec: true,
+        userRates: {
+          where: {
+            userId,
+          }
+        },
+      },
+    })
+  }
+  }
