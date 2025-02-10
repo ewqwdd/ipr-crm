@@ -16,16 +16,18 @@ type Specialization = {
 
 interface ISpecializationsTableProps {
   setSelectedSpec: React.Dispatch<React.SetStateAction<number | null>>;
-  }
+}
 
 const materialsButtonClassName =
   'border-b border-dashed text-indigo-600 border-indigo-600 hover:text-indigo-500 hover:border-indigo-500 h-6';
 const materialsButtonEmptyClassName = 'hover:text-indigo-500';
 
-const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec}) => {
+const SpecializationsTable: FC<ISpecializationsTableProps> = ({
+  setSelectedSpec,
+}) => {
   const { openModal } = useModal();
   const { data } = universalApi.useGetSpecsQuery();
-  const [deleteFn, {isLoading}] = universalApi.useDeleteSpecMutation();
+  const [deleteFn, { isLoading }] = universalApi.useDeleteSpecMutation();
 
   //   const openMatreialsModal = ({ id }: { id: number }) => {
   //     console.log('openMatreialsModal', { id });
@@ -48,7 +50,6 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec})
   //     // console.log('deleteSpecialization', { id, description });
   //   };
 
-
   const selectSpecialization = (data: Spec) => {
     setSelectedSpec(data.id);
   };
@@ -58,9 +59,11 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec})
   //   };
 
   return (
-    <div className={cva("mt-10 overflow-x-auto", {
-      'animate-pulse': isLoading
-    })}>
+    <div
+      className={cva('mt-10 overflow-x-auto', {
+        'animate-pulse': isLoading,
+      })}
+    >
       <table className="w-full">
         <thead>
           <tr className="bg-gray-100">

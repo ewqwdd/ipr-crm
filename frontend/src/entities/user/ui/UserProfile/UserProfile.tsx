@@ -6,18 +6,16 @@ import UserDataItem from './ui/UserDataItem';
 import { User } from '../../types/types';
 import { useAppSelector } from '@/app';
 
-
 interface UserProfileProps {
   data: User;
 }
 
 export default function UserProfile({ data }: UserProfileProps) {
-
   const user = useAppSelector((state) => state.user.user);
 
   const canEdit = user?.role?.name === 'admin' || user?.id === data.id;
 
-  const editLink = user?.id === data.id ? '/userEdit' : `/userEdit/${data.id}`
+  const editLink = user?.id === data.id ? '/userEdit' : `/userEdit/${data.id}`;
 
   const name =
     !data?.firstName && !data?.lastName
@@ -46,7 +44,6 @@ export default function UserProfile({ data }: UserProfileProps) {
           </div>
         </div>
         <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
-
           <Badge
             border
             size="md"
@@ -55,12 +52,14 @@ export default function UserProfile({ data }: UserProfileProps) {
           >
             {data?.role?.name}
           </Badge>
-          {canEdit && <Link
-            to={editLink}
-            className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
-          >
-            Редактировать
-          </Link>}
+          {canEdit && (
+            <Link
+              to={editLink}
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+            >
+              Редактировать
+            </Link>
+          )}
         </div>
       </div>
 
@@ -116,9 +115,7 @@ export default function UserProfile({ data }: UserProfileProps) {
               </div>
             </div>
           </section>
-
         </div>
-
       </div>
     </main>
   );

@@ -33,7 +33,7 @@ export default function ProfileEdit() {
 
   return (
     <UserForm
-      loading={ mutateLoading}
+      loading={mutateLoading}
       initData={user ?? undefined}
       onSubmit={onSubmit}
       edit

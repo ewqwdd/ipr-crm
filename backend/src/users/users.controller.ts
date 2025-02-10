@@ -73,7 +73,7 @@ export class UsersController {
   async updateMe(
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() file: Express.Multer.File,
-    @SessionInfo() sessionInfo: GetSessionInfoDto
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     if (file) {
       updateUserDto.avatar = await this.s3Service.uploadImageBufferToS3(
@@ -83,7 +83,7 @@ export class UsersController {
         file.mimetype,
       );
     }
-    const id = sessionInfo.id
+    const id = sessionInfo.id;
     await this.usersService.update(id, updateUserDto);
     return { message: 'Пользователь обновлен.' };
   }
@@ -107,6 +107,4 @@ export class UsersController {
     await this.usersService.update(id, updateUserDto);
     return { message: 'Пользователь обновлен.' };
   }
-
-
 }

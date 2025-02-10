@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { UserProfile } from '@/entities/user';
 
-
 export default function UserPage() {
   const { id } = useParams();
   const { data, isError } = usersApi.useGetUserByIdQuery(Number(id));

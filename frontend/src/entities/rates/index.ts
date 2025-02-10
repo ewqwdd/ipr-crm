@@ -4,7 +4,16 @@ import AddEvaluatorModal from './ui/AddEvaluatorModal/AddEvaluatorModal';
 import RateStatsModal from './ui/RateStatsModal/RateStatsModal';
 import { rateTypeNames } from './model/rateTypeNames';
 import EvaluateModal from './ui/EvaluateModal/EvaluateModal';
+import { rateDescriptions } from './model/rateDescriptions';
 
 export type { Rate, AddRateDto };
 
-export { ratesReducer, ratesActions, AddEvaluatorModal, RateStatsModal, rateTypeNames, EvaluateModal };
+export {
+  ratesReducer,
+  ratesActions,
+  AddEvaluatorModal,
+  RateStatsModal,
+  rateTypeNames,
+  EvaluateModal,
+  rateDescriptions,
+};

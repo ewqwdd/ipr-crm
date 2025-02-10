@@ -8,7 +8,9 @@ type ISpecializationsTableProps = {
   setSelectSpec: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
-const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = ({setSelectSpec}) => {
+const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = ({
+  setSelectSpec,
+}) => {
   const { openModal } = useModal();
   const onClick = () => {
     openModal('ADD_SPECIALIZATION');

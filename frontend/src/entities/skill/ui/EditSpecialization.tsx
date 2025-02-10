@@ -21,7 +21,7 @@ export default function EditSpecialization({
     description?: string;
   };
 
-  const [mutate, {isLoading, isSuccess}] = universalApi.useEditSpecMutation();
+  const [mutate, { isLoading, isSuccess }] = universalApi.useEditSpecMutation();
 
   const [newName, setNewName] = useState<string>(name);
   // const [newDescription, setNewDescription] = useState<string>(
@@ -33,7 +33,7 @@ export default function EditSpecialization({
   // universalApi.
 
   const blockSubmit = () => {
-    mutate({id, name: newName});
+    mutate({ id, name: newName });
   };
 
   useEffect(() => {
@@ -49,11 +49,11 @@ export default function EditSpecialization({
       title="Редактировать специализацию"
       onSubmit={blockSubmit}
       submitText="Добавить"
-        loading={isLoading}
+      loading={isLoading}
     >
       <div className="flex flex-col gap-4">
         <InputWithLabelLight
-          label='Название'
+          label="Название"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />

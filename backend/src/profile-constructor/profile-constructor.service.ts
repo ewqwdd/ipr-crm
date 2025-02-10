@@ -163,7 +163,6 @@ export class ProfileConstructorService {
   }
 
   async addBlockToSpec({ specId, blockIds }: AddBlockToSpecDto) {
-
     return await this.prismaService.spec.update({
       where: {
         id: specId,

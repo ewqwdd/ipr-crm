@@ -1,2 +1,2 @@
-import Profile from "./Profile"
-export { Profile }
+import Profile from './Profile';
+export { Profile };

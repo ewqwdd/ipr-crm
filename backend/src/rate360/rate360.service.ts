@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { CreateRateDto } from './dto/create-rate.dto';
 import { EvaluatorType } from '@prisma/client';
+import { RatingsDto } from './dto/user-assesment.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -102,7 +107,6 @@ export class Rate360Service {
     );
   }
 
-
   async findAssignedRates(userId: number) {
     return await this.prismaService.rate360.findMany({
       where: {
@@ -110,32 +114,178 @@ export class Rate360Service {
           some: {
             userId,
           },
-        }
+        },
+        userRates: {
+          some: {
+            approved: false,
+            userId,
+          },
+        },
       },
       include: {
         spec: true,
         userRates: {
           where: {
             userId,
-          }
-        }
+          },
+        },
       },
-    })
+    });
   }
 
   async findSelfRates(userId: number) {
     return await this.prismaService.rate360.findMany({
       where: {
         userId,
+        userConfirmed: false,
+        userRates: {
+          some: {
+            approved: false,
+          },
+        },
       },
       include: {
         spec: true,
         userRates: {
           where: {
             userId,
-          }
+          },
         },
       },
-    })
+    });
   }
+
+  async findForUser(userId: number, rateId: number) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+        userRates: {
+          some: {
+            userId,
+            approved: false,
+          },
+        },
+      },
+      include: {
+        spec: true,
+        userRates: {
+          where: {
+            userId,
+          },
+        },
+        team: true,
+        evaluators: {
+          where: {
+            userId,
+          },
+        },
+      },
+    });
+    if (!rate) {
+      throw new NotFoundException('Rate not found');
+    }
+    if (
+      rate.userId !== userId &&
+      !rate.evaluators.some((evaluator) => evaluator.userId === userId)
+    ) {
+      throw new NotFoundException('Rate not found');
+    }
+    return rate;
   }
+
+  async userAssessment(userId: number, { rateId, ratings }: RatingsDto) {
+    const found = await this.findForUser(userId, rateId);
+    if (!found) {
+      throw new NotFoundException('Rate not found');
+    }
+
+    const indicatorIds = Object.keys(ratings).map((id) => Number(id));
+    const newRatings = Object.entries(ratings).map(
+      ([indicatorId, { rate, comment }]) => ({
+        userId,
+        rate,
+        indicatorId: Number(indicatorId),
+        comment,
+      }),
+    );
+
+    await this.prismaService.$transaction([
+      this.prismaService.userRates.deleteMany({
+        where: {
+          userId,
+          rate360Id: rateId,
+          indicatorId: { in: indicatorIds },
+        },
+      }),
+      this.prismaService.rate360.update({
+        where: { id: rateId },
+        data: {
+          userRates: {
+            create: newRatings,
+          },
+        },
+      }),
+    ]);
+  }
+
+  async approveSelfRate(userId: number, rateId: number) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+        userId,
+      },
+      include: {
+        userRates: {
+          where: {
+            userId,
+          },
+        },
+        spec: {
+          include: {
+            competencyBlocks: {
+              include: {
+                competencies: {
+                  include: {
+                    indicators: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!rate) {
+      throw new NotFoundException('Оценка не найдена');
+    }
+
+    const indicators = rate.spec.competencyBlocks.flatMap((block) =>
+      block.competencies.flatMap((competency) => competency.indicators),
+    );
+    const userRates = rate.userRates;
+    if (userRates.length !== indicators.length) {
+      throw new ForbiddenException('Оценка не завершена');
+    }
+
+    await this.prismaService.rate360.update({
+      where: {
+        id: rateId,
+        userId,
+      },
+      data: {
+        userConfirmed: true,
+      },
+    });
+    await this.prismaService.userRates.updateMany({
+      where: {
+        rate360Id: rateId,
+        userId,
+      },
+      data: {
+        approved: true,
+      },
+    });
+    return;
+  }
+}

@@ -13,22 +13,21 @@ function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-
-
 export default function Content() {
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const navigation = user?.role.name === 'admin' ? adminNavigation : userNavigation
+  const navigation =
+    user?.role.name === 'admin' ? adminNavigation : userNavigation;
 
   const logout = () => {
     $api.post('/auth/sign-out').then(() => {
       navigate('/login');
       dispatch(userActions.setUser(null));
     });
-  }
+  };
 
   return (
     <>
@@ -137,7 +136,7 @@ export default function Content() {
               </p>
             </div>
             <button onClick={logout}>
-            <LogoutIcon className='size-6 text-gray-100' />
+              <LogoutIcon className="size-6 text-gray-100" />
             </button>
           </div>
         </Link>

@@ -28,9 +28,7 @@ const Competency: FC = () => {
               name.toLowerCase().includes(search.toLowerCase()),
             );
 
-            return filteredIndicators.length > 0
-              ? { ...compRest, indicators: filteredIndicators }
-              : null;
+            return { ...compRest, indicators: filteredIndicators };
           })
           .filter(Boolean);
 

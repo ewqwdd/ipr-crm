@@ -20,4 +20,4 @@ export default memo(function AppRouter() {
   const content = routerItems.map((item) => renderRoute(item));
 
   return <Routes>{content}</Routes>;
-})
+});
