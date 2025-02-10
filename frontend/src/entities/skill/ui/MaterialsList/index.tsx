@@ -62,8 +62,7 @@ export default function MaterialsList({
   closeModal,
 }: MaterialsListProps) {
   const [form, setForm] = useState<Form>(defaultForm);
-  const { id, name } = modalData as {
-    id: number;
+  const { name } = modalData as {
     name: string;
   };
 
@@ -93,6 +92,7 @@ export default function MaterialsList({
 
   const deleteMaterial = (id: number) => {
     // TODO: add api call
+    console.log('delete material', id);
   };
 
   const addNewMaterial = () => {
@@ -101,15 +101,6 @@ export default function MaterialsList({
       type: 'ADD',
     });
   };
-
-  //   const blockSubmit = () => {
-  //     // console.log('EditSpecialization submit => ', {
-  //     //   id,
-  //     //   name: newName,
-  //     //   description: newDescription,
-  //     // });
-  //     // closeModal();
-  //   };
 
   const closeForm = () => {
     setForm(defaultForm);

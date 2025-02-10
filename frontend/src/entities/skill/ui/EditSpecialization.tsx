@@ -1,8 +1,8 @@
 import { Modal } from '@/shared/ui/Modal';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useEffect, useState } from 'react';
-import { TextArea } from '@/shared/ui/TextArea';
 import { universalApi } from '@/shared/api/universalApi';
+import { TextArea } from '@/shared/ui/TextArea';
 
 interface EditSpecializationModalProps {
   isOpen: boolean;
@@ -21,26 +21,26 @@ export default function EditSpecialization({
     description?: string;
   };
 
-  const [mutate, {isLoading, isSuccess}] = universalApi.useEditSpecMutation();
+  const [mutate, { isLoading, isSuccess }] = universalApi.useEditSpecMutation();
 
   const [newName, setNewName] = useState<string>(name);
-  // const [newDescription, setNewDescription] = useState<string>(
-  //   description || '',
-  // );
+  const [newDescription, setNewDescription] = useState<string>(
+    description || '',
+  );
 
   //   const [createCompetencyBlock, blockProps] =
   //     skillsApi.useCreateCompetencyBlockMutation();
   // universalApi.
 
   const blockSubmit = () => {
-    mutate({id, name: newName});
+    mutate({ id, name: newName });
   };
 
   useEffect(() => {
     if (isSuccess) {
       closeModal();
     }
-  }, [isSuccess]);
+  }, [isSuccess, closeModal]);
 
   return (
     <Modal
@@ -49,20 +49,19 @@ export default function EditSpecialization({
       title="Редактировать специализацию"
       onSubmit={blockSubmit}
       submitText="Добавить"
-        loading={isLoading}
+      loading={isLoading}
     >
       <div className="flex flex-col gap-4">
         <InputWithLabelLight
-          label='Название'
+          label="Название"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        {/* TODO:  */}
-        {/* <TextArea
+        <TextArea
           placeholder="Описание"
           value={newDescription}
           onChange={(e) => setNewDescription(e.target.value)}
-        /> */}
+        />
       </div>
     </Modal>
   );

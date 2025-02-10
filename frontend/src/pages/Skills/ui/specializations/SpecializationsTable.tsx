@@ -7,25 +7,29 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { MinusCircleIcon, PencilIcon } from '@heroicons/react/outline';
 import { FC } from 'react';
 
-type Specialization = {
-  id: number;
-  name: string;
-  materials: number;
-  description: string;
-};
+// type Specialization = {
+//   id: number;
+//   name: string;
+//   materials: number;
+//   description: string;
+// };
 
 interface ISpecializationsTableProps {
+  selectedSpec: number | null;
   setSelectedSpec: React.Dispatch<React.SetStateAction<number | null>>;
-  }
+}
 
 const materialsButtonClassName =
   'border-b border-dashed text-indigo-600 border-indigo-600 hover:text-indigo-500 hover:border-indigo-500 h-6';
 const materialsButtonEmptyClassName = 'hover:text-indigo-500';
 
-const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec}) => {
+const SpecializationsTable: FC<ISpecializationsTableProps> = ({
+  selectedSpec,
+  setSelectedSpec,
+}) => {
   const { openModal } = useModal();
   const { data } = universalApi.useGetSpecsQuery();
-  const [deleteFn, {isLoading}] = universalApi.useDeleteSpecMutation();
+  const [deleteFn, { isLoading }] = universalApi.useDeleteSpecMutation();
 
   //   const openMatreialsModal = ({ id }: { id: number }) => {
   //     console.log('openMatreialsModal', { id });
@@ -48,7 +52,6 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec})
   //     // console.log('deleteSpecialization', { id, description });
   //   };
 
-
   const selectSpecialization = (data: Spec) => {
     setSelectedSpec(data.id);
   };
@@ -58,9 +61,11 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec})
   //   };
 
   return (
-    <div className={cva("mt-10 overflow-x-auto", {
-      'animate-pulse': isLoading
-    })}>
+    <div
+      className={cva('mt-10 overflow-x-auto', {
+        'animate-pulse': isLoading,
+      })}
+    >
       <table className="w-full">
         <thead>
           <tr className="bg-gray-100">
@@ -85,11 +90,15 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec})
           {data?.map((row) => (
             <tr
               key={row.id}
-              className="hover:bg-gray-200 cursor-pointer border-b border-gray-300"
+              className={`hover:bg-gray-200 cursor-pointer border-b border-gray-300 ${selectedSpec === row.id ? 'bg-gray-200' : ''}`}
               onClick={() => selectSpecialization(row)}
             >
               <td className=" p-2">
-                <div className="hover:text-indigo-600">{row.name}</div>
+                <div
+                  className={`hover:text-indigo-600 ${selectedSpec === row.id ? 'text-indigo-600' : ''}`}
+                >
+                  {row.name}
+                </div>
               </td>
               <td className=" p-2 text-center">
                 <Checkbox
@@ -114,7 +123,7 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec})
               <td className=" p-2 text-center">
                 <button
                   className={
-                    !row?.materials || row?.materials === 0
+                    !row?.materials || row?.materials?.length === 0
                       ? materialsButtonEmptyClassName
                       : materialsButtonClassName
                   }
@@ -124,9 +133,9 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({setSelectedSpec})
                     openModal('MATERIALS_LIST', { id: row.id, name: row.name });
                   }}
                 >
-                  {!row?.materials || row?.materials === 0
+                  {!row?.materials || row?.materials.length === 0
                     ? 'Без материала'
-                    : `${row?.materials} материалов`}
+                    : `${row?.materials?.length} материалов`}
                 </button>
               </td>
               <td className=" p-2 text-center">

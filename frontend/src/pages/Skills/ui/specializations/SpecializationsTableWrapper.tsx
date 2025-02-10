@@ -5,10 +5,14 @@ import SpecializationsTable from './SpecializationsTable';
 import { useModal } from '@/app/hooks/useModal';
 
 type ISpecializationsTableProps = {
+  selectedSpec: number | null;
   setSelectSpec: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
-const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = ({setSelectSpec}) => {
+const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = ({
+  selectedSpec,
+  setSelectSpec,
+}) => {
   const { openModal } = useModal();
   const onClick = () => {
     openModal('ADD_SPECIALIZATION');
@@ -22,7 +26,10 @@ const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = ({setSelectS
           Добавить
         </SoftButton>
       </div>
-      <SpecializationsTable setSelectedSpec={setSelectSpec} />
+      <SpecializationsTable
+        selectedSpec={selectedSpec}
+        setSelectedSpec={setSelectSpec}
+      />
     </div>
   );
 };
