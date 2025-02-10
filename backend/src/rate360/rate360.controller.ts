@@ -81,4 +81,9 @@ export class Rate360Controller {
   ) {
     return await this.rate360Service.approveSelfRate(sessionInfo.id, rateId);
   }
+
+  @Get('/report/:id')
+  async getReposrt(@Param('id', { transform: (v) => parseInt(v) }) id: number) {
+    return await this.rate360Service.report(id);
+  }
 }

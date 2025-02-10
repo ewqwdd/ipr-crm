@@ -288,4 +288,34 @@ export class Rate360Service {
     });
     return;
   }
+
+  async report(rateId: number) {
+    return await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+      },
+      include: {
+        spec: {
+          include: {
+            competencyBlocks: {
+              include: {
+                competencies: {
+                  include: {
+                    indicators: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        evaluators: {
+          select: {
+            type: true,
+            userId: true,
+          },
+        },
+        userRates: {},
+      },
+    });
+  }
 }
