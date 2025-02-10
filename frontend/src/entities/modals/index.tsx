@@ -9,6 +9,10 @@ import { useModal } from '@/app/hooks/useModal';
 import { useAppSelector } from '@/app';
 import { ConfirmModal } from '@/widgets/ConfirmModal';
 import AddMaterialsModal from '../skill/ui/AddMaterialsModal';
+import EditSpecialization from '../skill/ui/EditSpecialization';
+import AddSpecialization from '../skill/ui/AddSpecialization';
+import MaterialsList from '../skill/ui/MaterialsList';
+import ChooseCompetencyBlockModal from '../skill/ui/ChooseCompetencyBlockModal';
 
 const ModalWrapper: FC = () => {
   const { modalType, ...modalProps } = useAppSelector((state) => state.modal);
@@ -36,6 +40,14 @@ const ModalWrapper: FC = () => {
       return <AddMaterialsModal type="COMPETENCY" {...updatedModalProps} />;
     case 'ADD_INDICATOR_MATERIAL':
       return <AddMaterialsModal type="INDICATOR" {...updatedModalProps} />;
+    case 'ADD_SPECIALIZATION':
+      return <AddSpecialization {...updatedModalProps} />;
+    case 'EDIT_SPECIALIZATION':
+      return <EditSpecialization {...updatedModalProps} />;
+    case 'MATERIALS_LIST':
+      return <MaterialsList {...updatedModalProps} />;
+    case 'CHOOSE_COMPETENCY_BLOCK':
+      return <ChooseCompetencyBlockModal {...updatedModalProps} />;
     default:
       break;
   }

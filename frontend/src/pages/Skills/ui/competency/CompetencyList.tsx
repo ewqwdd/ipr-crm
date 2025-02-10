@@ -7,7 +7,7 @@ import { cva } from '@/shared/lib/cva';
 
 type ICompetencyListProps = {
   data: CompetencyBlock[] | undefined;
-  openModal: (type: string, data?: any) => void;
+  openModal: (type: string, data?: unknown) => void;
   loading?: boolean;
 };
 

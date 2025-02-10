@@ -1,9 +1,10 @@
+import { skillsApi } from '@/shared/api/skillsApi';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { Modal } from '@/shared/ui/Modal';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import { TextArea } from '@/shared/ui/TextArea';
-import { ChangeEvent, FC, memo, useCallback, useState } from 'react';
+import { FC, memo, useCallback, useState } from 'react';
 
 interface AddIndicatorModalProps {
   type: 'COMPETENCY' | 'INDICATOR';
@@ -17,83 +18,6 @@ const checkLinkFormat = (link: string) => {
   return urlRegex.test(link) ? undefined : 'Неверный формат ссылки';
 };
 
-const validate = (value: string) => {
-  if (!value.trim()) {
-    return 'Поле не может быть пустым';
-  }
-  return '';
-};
-
-const TitleInput: FC<{
-  value: string;
-  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-}> = memo(({ value, onChange }) => {
-  const [error, setError] = useState('');
-  const [touched, setTouched] = useState(false);
-
-  const handleBlur = () => {
-    setTouched(true);
-    const validationError = validate(value);
-    setError(validationError);
-  };
-
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setTouched(true);
-    setError(validate(e.target.value));
-    onChange(e);
-  };
-
-  return (
-    <TextArea
-      label="Название"
-      placeholder="Введите название материала"
-      value={value}
-      onChange={handleChange}
-      required
-      onBlur={handleBlur}
-      error={touched ? error : undefined}
-    />
-  );
-});
-
-const LinkInput: FC<{
-  value: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-}> = memo(({ value, onChange }) => {
-  const [error, setError] = useState<string | undefined>('');
-  const [touched, setTouched] = useState<boolean>(false);
-
-  const handleError = (link?: string) => {
-    const errorTest = checkLinkFormat(link || value);
-    if (errorTest) {
-      setError(errorTest);
-    } else {
-      setError(undefined);
-    }
-  };
-
-  const onChangeWrapper = (e: ChangeEvent<HTMLInputElement>) => {
-    setTouched(true);
-    handleError(e.target.value);
-    onChange(e);
-  };
-  const handleBlur = () => {
-    setTouched(true);
-    handleError();
-  };
-  return (
-    <InputWithLabelLight
-      label="Ссылка"
-      placeholder="https://example.com/"
-      value={value}
-      onChange={onChangeWrapper}
-      required
-      error={touched ? error : undefined}
-      onBlur={handleBlur}
-    />
-  );
-});
-
 type MaterialType = 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
 
 const materialTypes = [
@@ -103,7 +27,7 @@ const materialTypes = [
   { text: 'Статья', id: 'ARTICLE' },
 ];
 
-const AddMaterialType: FC<{
+export const AddMaterialType: FC<{
   materialType: string;
   selectMaterialType: (type: MaterialType) => void;
 }> = memo(({ materialType, selectMaterialType }) => {
@@ -157,49 +81,58 @@ export default function AddMaterialsModal({
   modalData,
   closeModal,
 }: AddIndicatorModalProps) {
-  const [title, setTitle] = useState<string>('');
-  const [link, setLink] = useState<string>('');
+  const [title, setTitle] = useState('');
+  const [link, setLink] = useState('');
   const [materialType, setMaterialType] = useState<MaterialType>('VIDEO');
   const [level, setLevel] = useState<number>(0);
+  const [errors, setErrors] = useState<{ title?: string; link?: string }>({});
 
   const { name } = modalData as { name: string; id: string };
 
-  const payload = {
-    // TODO: fix type
-    ...(modalData as { name: string; id: string }),
-    name: title,
-    url: link,
-    contentType: materialType,
-    level,
+  const validate = () => {
+    const newErrors: { title?: string; link?: string } = {};
+    if (!title.trim()) newErrors.title = 'Поле не может быть пустым';
+    const linkError = checkLinkFormat(link);
+    if (linkError) newErrors.link = linkError;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
+  // const [mutate, { isLoading: mutateLoading }] =
+  //   universalApi.useCreateSpecMutation();
+  const [COMPETENCY_mutate, { isLoading: COMPETENCY_Loading }] =
+    skillsApi.useAddCompetencyMaterialMutation();
+
+  const [INDICATOR_mutate, { isLoading: INDICATOR_Loading }] =
+    skillsApi.useAddIndicatorMaterialMutation();
+  // const useSki
+
+  const modalLoading = COMPETENCY_Loading || INDICATOR_Loading;
 
   const onSubmit = () => {
-    // TODO: add api calls
-    //
+    if (!validate()) return;
     switch (type) {
       case 'COMPETENCY':
-        console.log('onSubmit', payload);
+        COMPETENCY_mutate({
+          competencyId: modalData.id,
+          name: title,
+          url: link,
+          contentType: materialType,
+          level,
+        });
         break;
       case 'INDICATOR':
-        console.log('onSubmit', payload);
+        INDICATOR_mutate({
+          indicatorId: modalData.id,
+          name: title,
+          url: link,
+          contentType: materialType,
+          level,
+        });
         break;
       default:
         break;
     }
   };
-
-  const onChangeTitle = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
-      setTitle(e.target.value);
-    },
-    [setTitle],
-  );
-  const onChangeLink = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setLink(e.target.value);
-    },
-    [setLink],
-  );
 
   const selectMaterialType = useCallback(
     (type: MaterialType) => {
@@ -216,8 +149,6 @@ export default function AddMaterialsModal({
   );
 
   const reset = () => {
-    setTitle('');
-    setLink('');
     setMaterialType('VIDEO');
     setLevel(0);
   };
@@ -229,15 +160,32 @@ export default function AddMaterialsModal({
       title="Редактирование элемента"
       onSubmit={onSubmit}
       submitText="Добавить"
-      //   loading={indicatorProps.isLoading}
+      loading={modalLoading}
     >
       <div className="flex flex-col gap-4">
         <p className="text-sm text-gray-500 mt-2">
           Название элемента: <span className="text-gray-900 ml-1">{name}</span>
         </p>
         <h3>Материалы для карты развития</h3>
-        <TitleInput value={title} onChange={onChangeTitle} />
-        <LinkInput value={link} onChange={onChangeLink} />
+        <TextArea
+          label="Название"
+          placeholder="Введите название материала"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={() => validate()}
+          required
+          error={errors.title}
+        />
+
+        <InputWithLabelLight
+          label="Ссылка"
+          placeholder="https://example.com/"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          onBlur={() => validate()}
+          required
+          error={errors.link}
+        />
 
         <AddMaterialType {...{ selectMaterialType, materialType }} />
         <AddLevel {...{ level, selectLevel }} />

@@ -1,13 +1,19 @@
-import { Heading } from '@/shared/ui/Heading';
+import { ArrowLeftIcon } from '@heroicons/react/outline';
 import { FC } from 'react';
 
 const ChooseSpecialization: FC = () => {
   return (
-    <div>
-      <Heading
-        title={`Выберите\n специализацию`}
-        description={`Чтобы управлять блоками,\n компетенциями и индикаторами в ней`}
-      />
+    <div className="pt-5 max-w-[320px] mx-auto text-center">
+      <ArrowLeftIcon className="w-10 h-10 mb-4 mx-auto" />
+      <h2 className="text-lg font-bold mb-2">
+        Выберите
+        <br />
+        специализацию
+      </h2>
+      <p className="">
+        Чтобы управлять блоками,
+        <br /> компетенциями и индикаторами в ней
+      </p>
     </div>
   );
 };

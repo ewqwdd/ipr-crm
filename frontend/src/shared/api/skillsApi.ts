@@ -87,23 +87,40 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
-    addCompetencyMaterial: build.mutation<void, { id: number; name: string }>({
-      query: ({ id, name }) => ({
+    addCompetencyMaterial: build.mutation<
+      void,
+      {
+        competencyId: number;
+        name: string;
+        url: string;
+        contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
+        level: number;
+      }
+    >({
+      query: ({ competencyId, name, url, contentType, level }) => ({
         url: `/competency/material`,
         method: 'POST',
-        body: { name },
+        body: { competencyId, name, url, contentType, level },
       }),
       invalidatesTags: ['Skills'],
     }),
-    addIndicatorMaterial: build.mutation<void, { id: number; name: string }>({
-      query: ({ id, name }) => ({
+    addIndicatorMaterial: build.mutation<
+      void,
+      {
+        indicatorId: number;
+        name: string;
+        url: string;
+        contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
+        level: number;
+      }
+    >({
+      query: ({ indicatorId, name, url, contentType, level }) => ({
         url: `/indicator/material`,
         method: 'POST',
-        body: { name },
+        body: { indicatorId, name, url, contentType, level },
       }),
       invalidatesTags: ['Skills'],
     }),
-    //     /competency/material/indicator/material
   }),
 });
 

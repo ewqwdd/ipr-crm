@@ -20,6 +20,7 @@ interface ModalProps {
   cancelText?: string;
   loading?: boolean;
   className?: string;
+  childrenFlex?: boolean;
 }
 
 export default function Modal({
@@ -35,6 +36,7 @@ export default function Modal({
   submitText = 'Подтвердить',
   loading,
   className,
+  childrenFlex = true,
 }: ModalProps) {
   const cancelButtonRef = useRef(null);
   const btnColors: Record<Variant, string> = {
@@ -98,7 +100,7 @@ export default function Modal({
               )}
             >
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 rounded-lg ">
-                <div className="sm:flex sm:items-start">
+                <div className={childrenFlex ? 'sm:flex sm:items-start' : ''}>
                   {icon && (
                     <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                       <ExclamationIcon
