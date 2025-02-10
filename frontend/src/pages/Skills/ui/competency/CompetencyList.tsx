@@ -6,7 +6,7 @@ import { cva } from '@/shared/lib/cva';
 
 type ICompetencyListProps = {
   data: CompetencyBlock[] | undefined;
-  openModal: (type: string, data?: any) => void;
+  openModal: (type: string, data?: unknown) => void;
   loading?: boolean;
 };
 
@@ -24,6 +24,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
       {data?.map((skill) => (
         <Accordion
           key={skill.id}
+          btnClassName="overflow-y-auto"
           title={
             <>
               <CompetencyListItem
@@ -40,6 +41,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
               return (
                 <Accordion
                   key={id}
+                  btnClassName="overflow-y-auto"
                   title={
                     <CompetencyListItem
                       {...competency}
@@ -50,6 +52,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                 >
                   {indicators.map((indicator) => (
                     <CompetencyListItem
+                      key={indicator.id}
                       {...indicator}
                       listItemType={CompetencyType.INDICATOR}
                       openModal={openModal}

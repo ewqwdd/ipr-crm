@@ -12,6 +12,7 @@ interface InputWithLabelProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name?: string;
   right?: ReactNode;
   error?: string;
+  required?: boolean;
 }
 
 export default forwardRef(function SelectLight(
@@ -22,6 +23,7 @@ export default forwardRef(function SelectLight(
     right,
     error,
     children,
+    required,
     ...props
   }: InputWithLabelProps,
   ref: ForwardedRef<HTMLSelectElement>,
@@ -32,6 +34,7 @@ export default forwardRef(function SelectLight(
     labelElem = (
       <label htmlFor={name} className="block text-sm font-medium text-gray-700">
         {label}
+        {required && <span className="text-red-500 font-bold ml-1">*</span>}
       </label>
     );
   }

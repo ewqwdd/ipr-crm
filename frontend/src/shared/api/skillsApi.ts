@@ -9,18 +9,18 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const skillsApi = createApi({
   reducerPath: 'skillsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_URL,
+    baseUrl: import.meta.env.VITE_API_URL + '/profile-constructor',
     credentials: 'include',
   }),
   tagTypes: ['Skills'],
   endpoints: (build) => ({
     getSkills: build.query<CompetencyBlock[], void>({
-      query: () => '/profile-constructor',
+      query: () => '',
       providesTags: ['Skills'],
     }),
     createCompetencyBlock: build.mutation<void, AddCompetencyBlockDto>({
       query: (body) => ({
-        url: '/profile-constructor/competency-block',
+        url: '/competency-block',
         method: 'POST',
         body,
       }),
@@ -28,7 +28,7 @@ const skillsApi = createApi({
     }),
     createCompetency: build.mutation<void, AddCompetencyDto>({
       query: (body) => ({
-        url: '/profile-constructor/competency',
+        url: '/competency',
         method: 'POST',
         body,
       }),
@@ -36,7 +36,7 @@ const skillsApi = createApi({
     }),
     createIndicator: build.mutation<void, AddIndicatorDto>({
       query: (body) => ({
-        url: '/profile-constructor/indicator',
+        url: '/indicator',
         method: 'POST',
         body,
       }),
@@ -44,28 +44,28 @@ const skillsApi = createApi({
     }),
     deleteCompetencyBlock: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
-        url: `/profile-constructor/competency-block/${id}`,
+        url: `/competency-block/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Skills'],
     }),
     deleteCompetency: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
-        url: `/profile-constructor/competency/${id}`,
+        url: `/competency/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Skills'],
     }),
     deleteIndicator: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
-        url: `/profile-constructor/indicator/${id}`,
+        url: `/indicator/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Skills'],
     }),
     editCompetencyBlock: build.mutation<void, { id: number; name: string }>({
       query: ({ id, name }) => ({
-        url: `/profile-constructor/competency-block/${id}`,
+        url: `/competency-block/${id}`,
         method: 'PUT',
         body: { name },
       }),
@@ -73,7 +73,7 @@ const skillsApi = createApi({
     }),
     editCompetency: build.mutation<void, { id: number; name: string }>({
       query: ({ id, name }) => ({
-        url: `/profile-constructor/competency/${id}`,
+        url: `/competency/${id}`,
         method: 'PUT',
         body: { name },
       }),
@@ -81,9 +81,51 @@ const skillsApi = createApi({
     }),
     editIndicator: build.mutation<void, { id: number; name: string }>({
       query: ({ id, name }) => ({
-        url: `/profile-constructor/indicator/${id}`,
+        url: `/indicator/${id}`,
         method: 'PUT',
         body: { name },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    addCompetencyMaterial: build.mutation<
+      void,
+      {
+        competencyId: number;
+        name: string;
+        url: string;
+        contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
+        level: number;
+      }
+    >({
+      query: ({ competencyId, name, url, contentType, level }) => ({
+        url: `/competency/material`,
+        method: 'POST',
+        body: { competencyId, name, url, contentType, level },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    addIndicatorMaterial: build.mutation<
+      void,
+      {
+        indicatorId: number;
+        name: string;
+        url: string;
+        contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
+        level: number;
+      }
+    >({
+      query: ({ indicatorId, name, url, contentType, level }) => ({
+        url: `/indicator/material`,
+        method: 'POST',
+        body: { indicatorId, name, url, contentType, level },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    addBlockToSpec: build.mutation<void, { specId: number; blockIds: number[] }>({
+      query: ({ specId, blockIds }) => ({
+        url: `/add-block-to-spec`,
+        method: 'POST',
+        body: { specId, blockIds },
       }),
       invalidatesTags: ['Skills'],
     }),

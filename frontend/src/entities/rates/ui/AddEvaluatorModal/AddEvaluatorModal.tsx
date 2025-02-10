@@ -18,7 +18,7 @@ interface AddEvaluatorModalData {
 }
 interface AddEvaluatorModalProps {
   isOpen: boolean;
-  modalData: AddEvaluatorModalData;
+  modalData: unknown;
   closeModal: () => void;
 }
 
@@ -27,7 +27,7 @@ export default function AddEvaluatorModal({
   isOpen,
   modalData,
 }: AddEvaluatorModalProps) {
-  const { type, userId, teamId, specId } = modalData;
+  const { type, userId, teamId, specId } = modalData as AddEvaluatorModalData;
   const [selected, setSelected] = useState<EvaluateUser[]>([]);
   const dispatch = useAppDispatch();
 

@@ -14,7 +14,7 @@ interface EditModalData {
 interface EditModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  modalData: EditModalData;
+  modalData: unknown;
 }
 
 export default function EditSkillsModal({
@@ -23,7 +23,7 @@ export default function EditSkillsModal({
   modalData,
 }: EditModalProps) {
   const { competency, competencyBlock, indicator } = useSkillsService();
-  const { id, name, type } = modalData;
+  const { id, name, type } = modalData as EditModalData;
   const [value, setValue] = useState(name);
 
   const editCompetency = competency.edit[0];
@@ -55,7 +55,7 @@ export default function EditSkillsModal({
     <Modal
       open={isOpen}
       setOpen={closeModal}
-      title="Добавить блок компетенций"
+      title="Редактировать блок компетенции"
       onSubmit={onSubmit}
       submitText="Добавить"
       loading={loading}

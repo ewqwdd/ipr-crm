@@ -14,7 +14,7 @@ interface EvaluateModalData {
 
 interface EvaluateModalProps {
     isOpen: boolean;
-    modalData: EvaluateModalData;
+    modalData: unknown;
     closeModal: () => void;
   }
   
@@ -23,7 +23,9 @@ interface EvaluateModalProps {
     isOpen,
     modalData,
   }: EvaluateModalProps) {
-    const { rate } = modalData;
+  console.log(closeModal)
+
+    const { rate } = modalData as EvaluateModalData;
     const {data: users, isFetching: usersFetching} = usersApi.useGetUsersQuery({});
     const {data: teams, isFetching: teamsFetching} = teamsApi.useGetTeamsQuery();
     const {data: specs, isFetching: specsFetching} = universalApi.useGetSpecsQuery();

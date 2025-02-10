@@ -26,17 +26,19 @@ export default function Checkbox({
         {...props}
         id={id}
       />
-      <div className="ml-3 text-sm flex-1 flex flex-col">
-        <label
-          className="font-medium text-gray-700 cursor-pointer"
-          htmlFor={id}
-        >
-          {title}
-        </label>
-        <p id="comments-description" className="text-gray-500">
-          {description}
-        </p>
-      </div>
+      {(title || description) && (
+        <div className="ml-3 text-sm flex-1 flex flex-col">
+          <label
+            className="font-medium text-gray-700 cursor-pointer"
+            htmlFor={id}
+          >
+            {title}
+          </label>
+          <p id="comments-description" className="text-gray-500">
+            {description}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

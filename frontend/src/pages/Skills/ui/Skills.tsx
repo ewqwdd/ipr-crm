@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Heading } from '@/shared/ui/Heading';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { Specializations } from './specializations';
+import Specializations from './specializations';
 import Competency from './competency';
 
 const tabs = [
@@ -14,7 +14,7 @@ export default function Skills() {
 
   return (
     <>
-      <div className="px-8 py-10 flex flex-col">
+      <div className="px-8 py-10 flex flex-col h-full">
         <div className="flex">
           <Heading title="Конструктор профилей" description={tab.label} />
           <div className="space-x-2">

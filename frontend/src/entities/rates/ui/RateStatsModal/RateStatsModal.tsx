@@ -12,7 +12,7 @@ interface RateStatsModalData {
 }
 interface RateStatsModalProps {
   isOpen: boolean;
-  modalData: RateStatsModalData;
+  modalData: unknown;
   closeModal: () => void;
 }
 
@@ -21,8 +21,9 @@ export default function RateStatsModal({
   isOpen,
   modalData,
 }: RateStatsModalProps) {
-  const { rate, spec, user } = modalData;
+  const { rate, spec, user } = modalData as RateStatsModalData;
   const { data: skills } = skillsApi.useGetSkillsQuery();
+  console.log(closeModal)
 
   const foundSkills = spec?.competencyBlocks.map(block => skills?.find(skill => skill.id === block.id)!).filter(Boolean);
   const indicators = foundSkills.flatMap(skill => skill.competencies.flatMap(competency => competency.indicators));

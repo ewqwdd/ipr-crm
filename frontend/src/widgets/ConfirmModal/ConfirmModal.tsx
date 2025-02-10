@@ -9,7 +9,7 @@ type ConfirmModalData = {
 };
 interface ConfirmModalProps {
   isOpen: boolean;
-  modalData: ConfirmModalData;
+  modalData: unknown;
   closeModal: () => void;
 }
 
@@ -18,7 +18,8 @@ export default function ConfirmModal({
   modalData,
   closeModal,
 }: ConfirmModalProps) {
-  const { onSubmit, title, submitText, children } = modalData;
+  const { onSubmit, title, submitText, children } =
+    modalData as ConfirmModalData;
   const [isLoading, setIsLoading] = useState(false);
 
   const sumbitWithLoading = async () => {

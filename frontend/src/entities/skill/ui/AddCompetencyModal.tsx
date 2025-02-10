@@ -5,18 +5,15 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { skillsApi } from '@/shared/api/skillsApi';
 
-type AddCompetencyModalData = {
-  competencyBlock: Pick<CompetencyBlock, 'id' | 'name'>;
-};
 interface AddCompetencyModalProps {
   isOpen: boolean;
-  modalData: AddCompetencyModalData;
+  modalData: unknown;
   closeModal: () => void;
 }
 
 export default function AddCompetencyModal({
   isOpen,
-  modalData: { competencyBlock },
+  modalData,
   closeModal,
 }: AddCompetencyModalProps) {
   const [value, setValue] = useState('');
@@ -24,11 +21,13 @@ export default function AddCompetencyModal({
   const [createCompetency, comppetencyProps] =
     skillsApi.useCreateCompetencyMutation();
 
+  const { id, name } = modalData as Pick<CompetencyBlock, 'id' | 'name'>;
+
   const competencySubmit = (name: string) => {
-    if (!competencyBlock) {
+    if (!id) {
       return toast.error('Не выбран блок компетенций');
     }
-    createCompetency({ name, blockId: competencyBlock.id });
+    createCompetency({ name, blockId: id });
     closeModal();
   };
 
@@ -43,8 +42,7 @@ export default function AddCompetencyModal({
     >
       <div className="flex flex-col gap-4">
         <p className="text-sm text-gray-500 mt-2">
-          Блок компетенций:{' '}
-          <span className="text-gray-900 ml-1">{competencyBlock?.name}</span>
+          Блок компетенций: <span className="text-gray-900 ml-1">{name}</span>
         </p>
         <InputWithLabelLight
           placeholder="Название компетенции"

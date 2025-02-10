@@ -1,7 +1,9 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsArray, ArrayNotEmpty } from 'class-validator';
 
 export class AddBlockToSpecDto {
-  @IsNumber()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsNumber({}, { each: true })
   blockIds: number[];
 
   @IsNumber()

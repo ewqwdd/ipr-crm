@@ -31,4 +31,19 @@ export class UniversalService {
     });
     return role;
   }
+
+  async editSpec(id: number, name: string) {
+    return await this.prismaService.spec.update({
+      where: { id },
+      data: {
+        name,
+      },
+    });
+  }
+
+  async deleteSpec(id: number) {
+    return await this.prismaService.spec.delete({
+      where: { id },
+    });
+  }
 }

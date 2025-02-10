@@ -5,18 +5,15 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { skillsApi } from '@/shared/api/skillsApi';
 
-type AddIndicatorModalData = {
-  competency: Pick<Competency, 'id' | 'name'>;
-};
 interface AddIndicatorModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  modalData: AddIndicatorModalData;
+  modalData: unknown;
 }
 
 export default function AddIndicatorModal({
   isOpen,
-  modalData: { competency },
+  modalData,
   closeModal,
 }: AddIndicatorModalProps) {
   const [value, setValue] = useState('');
@@ -24,11 +21,13 @@ export default function AddIndicatorModal({
   const [createIndicator, indicatorProps] =
     skillsApi.useCreateIndicatorMutation();
 
+  const { id, name } = modalData as Pick<Competency, 'id' | 'name'>;
+
   const indicatorSubmit = (name: string) => {
-    if (!competency) {
+    if (!id) {
       return toast.error('Не выбрана компетеннция');
     }
-    createIndicator({ name, competencyId: competency.id });
+    createIndicator({ name, competencyId: id });
     closeModal();
   };
 
@@ -43,8 +42,7 @@ export default function AddIndicatorModal({
     >
       <div className="flex flex-col gap-4">
         <p className="text-sm text-gray-500 mt-2">
-          Компетенция:{' '}
-          <span className="text-gray-900 ml-1">{competency?.name}</span>
+          Компетенция: <span className="text-gray-900 ml-1">{name}</span>
         </p>
         <InputWithLabelLight
           placeholder="Название индикатора"
