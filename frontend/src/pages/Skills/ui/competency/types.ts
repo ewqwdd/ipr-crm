@@ -10,5 +10,5 @@ export enum CompetencyType {
 
 export type CompetencyListItemProps = CombineType & {
   listItemType: CompetencyType;
-  openModal: (type: string, data?: any) => void;
+  openModal: (type: string, data?: unknown) => void;
 };

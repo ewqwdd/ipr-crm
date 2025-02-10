@@ -2,7 +2,11 @@ import { MultiValue } from 'react-select';
 
 type IdName = { id: number; name: string };
 export type Role = IdName;
-export type Spec = IdName & { competencyBlocks: { id: number }[] };
+export type Spec = IdName & {
+  competencyBlocks: { id: number, name: string }[];
+  materials?: { id: number }[];
+  description?: string;
+};
 
 export interface User {
   id: number;

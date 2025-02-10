@@ -28,7 +28,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   name,
   openModal,
   id,
-  ...props
+  // ...props
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
 

@@ -1,8 +1,8 @@
 import { Modal } from '@/shared/ui/Modal';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useEffect, useState } from 'react';
-import { TextArea } from '@/shared/ui/TextArea';
 import { universalApi } from '@/shared/api/universalApi';
+import { TextArea } from '@/shared/ui/TextArea';
 
 interface EditSpecializationModalProps {
   isOpen: boolean;
@@ -24,9 +24,9 @@ export default function EditSpecialization({
   const [mutate, { isLoading, isSuccess }] = universalApi.useEditSpecMutation();
 
   const [newName, setNewName] = useState<string>(name);
-  // const [newDescription, setNewDescription] = useState<string>(
-  //   description || '',
-  // );
+  const [newDescription, setNewDescription] = useState<string>(
+    description || '',
+  );
 
   //   const [createCompetencyBlock, blockProps] =
   //     skillsApi.useCreateCompetencyBlockMutation();
@@ -40,7 +40,7 @@ export default function EditSpecialization({
     if (isSuccess) {
       closeModal();
     }
-  }, [isSuccess]);
+  }, [isSuccess, closeModal]);
 
   return (
     <Modal
@@ -57,12 +57,11 @@ export default function EditSpecialization({
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        {/* TODO:  */}
-        {/* <TextArea
+        <TextArea
           placeholder="Описание"
           value={newDescription}
           onChange={(e) => setNewDescription(e.target.value)}
-        /> */}
+        />
       </div>
     </Modal>
   );

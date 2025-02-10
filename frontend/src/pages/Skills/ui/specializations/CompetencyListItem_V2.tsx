@@ -1,9 +1,20 @@
 import { FC } from 'react';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { MinusCircleIcon, PencilIcon } from '@heroicons/react/outline';
-import { CompetencyListItemProps } from './types';
-import { CompetencyType, useSkillsService } from '@/entities/skill';
+// import { CompetencyListItemProps } from './types';
+import {
+  Competency,
+  CompetencyBlock,
+  Indicator,
+  useSkillsService,
+} from '@/entities/skill';
 import { cva } from '@/shared/lib/cva';
+
+enum CompetencyType {
+  COMPETENCY_BLOCK = 'COMPETENCY_BLOCK',
+  COMPETENCY = 'COMPETENCY',
+  INDICATOR = 'INDICATOR',
+}
 
 const getCompetencyListItemStyles = (listItemType: CompetencyType) => {
   switch (listItemType) {
@@ -17,6 +28,13 @@ const getCompetencyListItemStyles = (listItemType: CompetencyType) => {
     default:
       return '';
   }
+};
+
+type CombineType = Competency | Indicator | CompetencyBlock;
+
+type CompetencyListItemProps = CombineType & {
+  listItemType: CompetencyType;
+  openModal: (type: string, data?: unknown) => void;
 };
 
 const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({

@@ -1,36 +1,36 @@
 import { useState } from 'react';
 import { Heading } from '@/shared/ui/Heading';
-import { SoftButton } from '@/shared/ui/SoftButton';
 import Specializations from './specializations';
 import Competency from './competency';
+import { Tabs } from '@/shared/ui/Tabs';
 
 const tabs = [
-  { title: 'Компетенции', label: 'Реестр компетенций', value: 'COMPETENCY' },
-  { title: 'Специализации', label: 'Специализации', value: 'SPECIALIZATIONS' },
+  { name: 'Компетенции', key: 'COMPETENCY' },
+  { name: 'Специализации', key: 'SPECIALIZATIONS' },
 ];
 
 export default function Skills() {
   const [tab, setTab] = useState(tabs[0]);
 
+  const setTabWrapper = (tab: string) => {
+    setTab((s) => tabs.find((t) => t.key === tab) || s);
+  };
+
   return (
     <>
       <div className="px-8 py-10 flex flex-col h-full">
         <div className="flex">
-          <Heading title="Конструктор профилей" description={tab.label} />
+          <Heading title="Конструктор профилей" description={tab.name} />
           <div className="space-x-2">
-            {tabs.map((tabItem) => (
-              <SoftButton
-                key={tabItem.value}
-                onClick={() => setTab(tabItem)}
-                className={`${tab.value === tabItem.value ? 'bg-gray-200/80' : ''}`}
-              >
-                {tabItem.title}
-              </SoftButton>
-            ))}
+            <Tabs
+              tabs={tabs}
+              currentTab={tab.key}
+              setCurrentTab={setTabWrapper}
+            />
           </div>
         </div>
-        {tab.value === 'COMPETENCY' && <Competency />}
-        {tab.value === 'SPECIALIZATIONS' && <Specializations />}
+        {tab.key === 'COMPETENCY' && <Competency />}
+        {tab.key === 'SPECIALIZATIONS' && <Specializations />}
       </div>
     </>
   );

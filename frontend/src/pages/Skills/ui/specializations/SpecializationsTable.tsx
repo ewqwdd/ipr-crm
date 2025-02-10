@@ -7,14 +7,15 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { MinusCircleIcon, PencilIcon } from '@heroicons/react/outline';
 import { FC } from 'react';
 
-type Specialization = {
-  id: number;
-  name: string;
-  materials: number;
-  description: string;
-};
+// type Specialization = {
+//   id: number;
+//   name: string;
+//   materials: number;
+//   description: string;
+// };
 
 interface ISpecializationsTableProps {
+  selectedSpec: number | null;
   setSelectedSpec: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
@@ -64,6 +65,11 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
         'animate-pulse': isLoading,
       })}
     >
+    <div
+      className={cva('mt-10 overflow-x-auto', {
+        'animate-pulse': isLoading,
+      })}
+    >
       <table className="w-full">
         <thead>
           <tr className="bg-gray-100">
@@ -88,11 +94,15 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
           {data?.map((row) => (
             <tr
               key={row.id}
-              className="hover:bg-gray-200 cursor-pointer border-b border-gray-300"
+              className={`hover:bg-gray-200 cursor-pointer border-b border-gray-300 ${selectedSpec === row.id ? 'bg-gray-200' : ''}`}
               onClick={() => selectSpecialization(row)}
             >
               <td className=" p-2">
-                <div className="hover:text-indigo-600">{row.name}</div>
+                <div
+                  className={`hover:text-indigo-600 ${selectedSpec === row.id ? 'text-indigo-600' : ''}`}
+                >
+                  {row.name}
+                </div>
               </td>
               <td className=" p-2 text-center">
                 <Checkbox
@@ -117,7 +127,7 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
               <td className=" p-2 text-center">
                 <button
                   className={
-                    !row?.materials || row?.materials === 0
+                    !row?.materials || row?.materials?.length === 0
                       ? materialsButtonEmptyClassName
                       : materialsButtonClassName
                   }
@@ -127,9 +137,9 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
                     openModal('MATERIALS_LIST', { id: row.id, name: row.name });
                   }}
                 >
-                  {!row?.materials || row?.materials === 0
+                  {!row?.materials || row?.materials.length === 0
                     ? 'Без материала'
-                    : `${row?.materials} материалов`}
+                    : `${row?.materials?.length} материалов`}
                 </button>
               </td>
               <td className=" p-2 text-center">
