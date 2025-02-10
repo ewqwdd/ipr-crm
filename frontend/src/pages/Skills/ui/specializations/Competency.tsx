@@ -8,7 +8,6 @@ import { skillsApi } from '@/shared/api/skillsApi';
 import { cva } from '@/shared/lib/cva';
 import { universalApi } from '@/shared/api/universalApi';
 
-
 interface ICompetencyProps {
   selectedSpec: number | null;
 }
@@ -18,20 +17,31 @@ const skillsFilters: Array<{ title: string; value: 'HARD' | 'SOFT' }> = [
   { title: 'Soft skills', value: 'SOFT' },
 ];
 
-const CompetencyBlock: FC<ICompetencyProps> = ({selectedSpec}) => {
+const CompetencyBlock: FC<ICompetencyProps> = ({ selectedSpec }) => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');
-  const {data, isFetching} = skillsApi.useGetSkillsQuery()
-  const {data: specs, isFetching: specsFetching} = universalApi.useGetSpecsQuery()
+  const { data, isFetching } = skillsApi.useGetSkillsQuery();
+  const { data: specs, isFetching: specsFetching } =
+    universalApi.useGetSpecsQuery();
 
-  const spec = specs?.find(item => item.id === selectedSpec)
+  const spec = specs?.find((item) => item.id === selectedSpec);
 
   const { openModal } = useModal();
-  const specSkills = useMemo(() => data?.filter((item) => spec?.competencyBlocks.find((block) => block.id === item.id) && item.type === skillsFilter), [data, selectedSpec, skillsFilter]);
+  const specSkills = useMemo(
+    () =>
+      data?.filter(
+        (item) =>
+          spec?.competencyBlocks.find((block) => block.id === item.id) &&
+          item.type === skillsFilter,
+      ),
+    [data, selectedSpec, skillsFilter],
+  );
 
   return (
-    <div className={cva("p-4", {
-      'animate-pulse': isFetching || specsFetching
-    })}>
+    <div
+      className={cva('p-4', {
+        'animate-pulse': isFetching || specsFetching,
+      })}
+    >
       {selectedSpec === null ? (
         <ChooseSpecialization />
       ) : (
@@ -53,7 +63,12 @@ const CompetencyBlock: FC<ICompetencyProps> = ({selectedSpec}) => {
             </div>
             <SoftButton
               onClick={() => {
-                openModal('CHOOSE_COMPETENCY_BLOCK', {specId: spec?.id, initialBlocks: spec?.competencyBlocks.map(block => block.id)});
+                openModal('CHOOSE_COMPETENCY_BLOCK', {
+                  specId: spec?.id,
+                  initialBlocks: spec?.competencyBlocks.map(
+                    (block) => block.id,
+                  ),
+                });
               }}
             >
               Добавить

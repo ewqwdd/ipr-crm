@@ -27,9 +27,9 @@ export interface Rate {
     rate360Id: number;
     rate: number;
     indicatorId: number;
-    comment: string | null;
+    comment?: string;
     approved: boolean;
-}[];
+  }[];
 }
 export type EvaluateUser = { userId: number; username?: string };
 

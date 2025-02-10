@@ -1,2 +1,2 @@
-import ProfileEdit from "./ProfileEdit";
+import ProfileEdit from './ProfileEdit';
 export { ProfileEdit };

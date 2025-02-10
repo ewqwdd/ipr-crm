@@ -1,18 +1,25 @@
-import { cva } from "@/shared/lib/cva"
+import { cva } from '@/shared/lib/cva';
 
 interface Tab {
-    name: string
-    key: string
+  name: string;
+  key: string;
 }
 
 interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
-    tabs: Tab[]
-    currentTab?: string
-    setCurrentTab: (tab: string) => void
-    tabClassName?: string
+  tabs: Tab[];
+  currentTab?: string;
+  setCurrentTab: (tab: string) => void;
+  tabClassName?: string;
 }
 
-export default function Tabs({tabs, currentTab, setCurrentTab, className, tabClassName, ...props}: TabsProps) {
+export default function Tabs({
+  tabs,
+  currentTab,
+  setCurrentTab,
+  className,
+  tabClassName,
+  ...props
+}: TabsProps) {
   return (
     <div className={className} {...props}>
       <div className="sm:hidden">
@@ -37,11 +44,13 @@ export default function Tabs({tabs, currentTab, setCurrentTab, className, tabCla
             {tabs.map((tab) => (
               <button
                 key={tab.name}
-                className={cva( 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all',
+                className={cva(
+                  'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all',
                   {
-                    'border-indigo-500 text-indigo-600 hover:border-indigo-500 hover:text-indigo-500': tab.key === currentTab,
+                    'border-indigo-500 text-indigo-600 hover:border-indigo-500 hover:text-indigo-500':
+                      tab.key === currentTab,
                   },
-                  tabClassName
+                  tabClassName,
                 )}
                 onClick={() => setCurrentTab(tab.key)}
               >
@@ -52,5 +61,5 @@ export default function Tabs({tabs, currentTab, setCurrentTab, className, tabCla
         </div>
       </div>
     </div>
-  )
+  );
 }

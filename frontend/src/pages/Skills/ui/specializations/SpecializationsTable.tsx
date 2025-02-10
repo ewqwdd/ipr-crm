@@ -24,7 +24,6 @@ const materialsButtonClassName =
 const materialsButtonEmptyClassName = 'hover:text-indigo-500';
 
 const SpecializationsTable: FC<ISpecializationsTableProps> = ({
-  selectedSpec,
   setSelectedSpec,
 }) => {
   const { openModal } = useModal();
@@ -61,6 +60,11 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
   //   };
 
   return (
+    <div
+      className={cva('mt-10 overflow-x-auto', {
+        'animate-pulse': isLoading,
+      })}
+    >
     <div
       className={cva('mt-10 overflow-x-auto', {
         'animate-pulse': isLoading,

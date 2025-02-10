@@ -33,8 +33,33 @@ const rate360Api = createApi({
       providesTags: ['Assigned'],
     }),
     selfRates: build.query<Rate[], void>({
-      query: () => '/rate360/selft-rates',
+      query: () => '/rate360/self-rates',
       providesTags: ['Self'],
+    }),
+    findForUser: build.query<Rate, number>({
+      query: (id) => `/rate360/rate/${id}`,
+      providesTags: (_, __, id) => [{ type: 'Rate360', id }],
+    }),
+    assesment: build.mutation<
+      void,
+      {
+        id: number;
+        ratings: Record<number, { rate: number; comment?: string }>;
+      }
+    >({
+      query: (data) => ({
+        url: `/rate360/assesment`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Rate360', 'Assigned', 'Self'],
+    }),
+    approveSelf: build.mutation<void, { rateId: number }>({
+      query: ({ rateId }) => ({
+        url: `/rate360/assesment/approve-self/${rateId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Rate360', 'Assigned', 'Self'],
     }),
   }),
 });

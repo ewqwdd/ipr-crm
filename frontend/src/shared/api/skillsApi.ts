@@ -121,7 +121,10 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
-    addBlockToSpec: build.mutation<void, { specId: number; blockIds: number[] }>({
+    addBlockToSpec: build.mutation<
+      void,
+      { specId: number; blockIds: number[] }
+    >({
       query: ({ specId, blockIds }) => ({
         url: `/add-block-to-spec`,
         method: 'POST',

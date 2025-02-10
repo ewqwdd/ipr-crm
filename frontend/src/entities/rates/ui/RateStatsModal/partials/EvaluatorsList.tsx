@@ -15,7 +15,7 @@ export default function EvaluatorsList({
   evaluators,
   type,
   indicators,
-  rates
+  rates,
 }: EvaluatorsListProps) {
   const filteredEvaluators = evaluators.filter(
     (evaluator) => evaluator.type === type,
@@ -25,7 +25,12 @@ export default function EvaluatorsList({
     <Accordion title={evaluatorTypeNames[type]} defaultOpen>
       <div className="rext-gray-700 text-sm flex flex-col bg-violet-50">
         {filteredEvaluators.map((evaluator) => (
-          <EvaluatorItem rates={rates} indicators={indicators} evaluator={evaluator} key={evaluator.userId} />
+          <EvaluatorItem
+            rates={rates}
+            indicators={indicators}
+            evaluator={evaluator}
+            key={evaluator.userId}
+          />
         ))}
       </div>
     </Accordion>
