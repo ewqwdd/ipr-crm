@@ -122,6 +122,7 @@ export default function RateRow({ rate, index }: RateRowProps) {
         <button
           onClick={() => deleteFn({ id: rate.id })}
           className="text-indigo-600 hover:text-indigo-900"
+          disabled
         >
           Edit<span className="sr-only">, {rate.id}</span>
         </button>

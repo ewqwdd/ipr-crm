@@ -1,5 +1,6 @@
 import { AddTeamModal, StructureItem, Team, TeamEdit } from '@/entities/team';
 import { teamsApi } from '@/shared/api/teamsApi';
+import Dimmer from '@/shared/ui/Dimmer';
 import { Heading } from '@/shared/ui/Heading';
 import { Modal } from '@/shared/ui/Modal';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
@@ -39,7 +40,7 @@ export default function Structure() {
   }, [isSuccess]);
 
   return (
-    <>
+    <Dimmer active={isLoading || isFetching}>
       <div className="px-8 py-10 flex flex-col">
         <div className="flex justify-between items-center">
           <Heading
@@ -86,6 +87,6 @@ export default function Structure() {
         variant="error"
         onSubmit={() => mutate(deleteItem!.id)}
       />
-    </>
+    </Dimmer>
   );
 }

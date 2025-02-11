@@ -143,6 +143,11 @@ export class Rate360Service {
             userId,
           },
         },
+        evaluators: {
+          where: {
+            userId,
+          },
+        },
       },
     });
   }
@@ -235,14 +240,14 @@ export class Rate360Service {
     }
 
     const indicatorIds = Object.keys(ratings).map((id) => Number(id));
-    const newRatings = Object.entries(ratings).map(
-      ([indicatorId, { rate, comment }]) => ({
+    const newRatings = Object.entries(ratings)
+      .filter(([, v]) => !!v.rate)
+      .map(([indicatorId, { rate, comment }]) => ({
         userId,
         rate,
         indicatorId: Number(indicatorId),
         comment,
-      }),
-    );
+      }));
 
     await this.prismaService.$transaction([
       this.prismaService.userRates.deleteMany({

@@ -3,7 +3,6 @@ import { Rate } from '../../types/types';
 import { Modal } from '@/shared/ui/Modal';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import EvaluatorsList from './partials/EvaluatorsList';
-import { skillsApi } from '@/shared/api/skillsApi';
 import { Indicator } from '@/entities/skill';
 
 interface RateStatsModalData {

@@ -1,14 +1,20 @@
 import { FC, PropsWithChildren } from 'react';
 import Loading from '../Loading';
+import { cva } from '@/shared/lib/cva';
 
 type DimmerProps = PropsWithChildren<{ active: boolean }>;
 
+// хуйня навзание
 const Dimmer: FC<DimmerProps> = ({ children, active }) => {
   return (
-    <div className="relative grow width-full height-full">
+    <div
+      className={cva('relative grow width-full height-full', {
+        'pointer-events-none': active,
+      })}
+    >
       {children}
       {active && (
-        <div className="absolute  inset-0 bg-gray-900/50 flex justify-center items-center">
+        <div className="absolute inset-0 flex justify-center items-center">
           <Loading />
         </div>
       )}

@@ -49,7 +49,7 @@ const Competency: FC = () => {
 
   // TODO: update active state
   return (
-    <Dimmer active={!data}>
+    <Dimmer active={isFetching}>
       <InputWithLabelLight
         placeholder="Поиск..."
         value={search}
