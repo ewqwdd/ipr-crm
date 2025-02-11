@@ -14,66 +14,6 @@ import Dimmer from '@/shared/ui/Dimmer';
 // 3 - Curator
 // 1,2 - teamMembers
 
-// 11 12 13 14
-const userRates = [
-  {
-    id: 1,
-    userId: 1,
-    rate360Id: 1,
-    rate: 1,
-    indicatorId: 13,
-    approved: false,
-  },
-  {
-    id: 1,
-    userId: 1,
-    rate360Id: 1,
-    rate: 4,
-    indicatorId: 13,
-    approved: false,
-  },
-  {
-    id: 1,
-    userId: 3,
-    rate360Id: 1,
-    rate: 4,
-    indicatorId: 13,
-    approved: false,
-  },
-  {
-    id: 1,
-    userId: 3,
-    rate360Id: 1,
-    rate: 2,
-    indicatorId: 13,
-    approved: false,
-  },
-  {
-    id: 1,
-    userId: 2,
-    rate360Id: 1,
-    rate: 1,
-    indicatorId: 12,
-    approved: false,
-  },
-  {
-    id: 1,
-    userId: 3,
-    rate360Id: 1,
-    rate: 1,
-    indicatorId: 11,
-    approved: false,
-  },
-  {
-    id: 1,
-    userId: 2,
-    rate360Id: 1,
-    rate: 3,
-    indicatorId: 11,
-    approved: false,
-  },
-];
-
 const evaluatorTypes = ['CURATOR', 'TEAM_MEMBER', 'SUBORDINATE'];
 
 const RateCell = ({ rate }: { rate?: number }) => {
@@ -93,8 +33,8 @@ const Report360: FC = () => {
   const { data, isLoading } = rate360Api.useGetRatesQuery();
 
   const rate = data?.find((report) => report.id === Number(id));
+  const userRates = rate?.userRates;
   const indicatorRatings = useIndicatorRatings(rate?.evaluators, userRates);
-  console.log('indicatorRatings => ', indicatorRatings);
   const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
     {},
   );
@@ -108,7 +48,7 @@ const Report360: FC = () => {
   const foundUser = users?.users.find((user) => user.id === rate?.user?.id);
 
   const neededIndicatorIdsSet = new Set(
-    userRates.map((rate) => rate.indicatorId),
+    userRates?.map((rate) => rate.indicatorId),
   );
 
   // Фильтрация скиллов по индикатору типу и id

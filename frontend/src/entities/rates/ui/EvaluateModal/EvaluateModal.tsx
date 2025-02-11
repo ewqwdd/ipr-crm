@@ -7,7 +7,6 @@ import { universalApi } from '@/shared/api/universalApi';
 import DetailItem from './DetailItem';
 import { skillsApi } from '@/shared/api/skillsApi';
 import BlockList from './BlockList';
-import { useLocation } from 'react-router';
 import { useEffect } from 'react';
 import { useAppSelector } from '@/app';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
