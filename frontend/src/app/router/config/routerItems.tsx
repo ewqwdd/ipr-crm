@@ -13,6 +13,7 @@ import { Profile } from '@/pages/Profile';
 import { ProfileEdit } from '@/pages/ProfileEdit';
 import { Progress } from '@/pages/Progress';
 import { Rate360Assesment } from '@/pages/Rate360Assesment';
+import Report360 from '@/pages/Report360';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -29,6 +30,7 @@ export const routerItems: RouterItemType[] = [
   { path: '/teams', element: <Teams />, onlyAdmin: true },
   { path: '/teams/:id', element: <TeamPage />, onlyAdmin: true },
   { path: '/360rate', element: <Rate360 />, onlyAdmin: true },
+  { path: '/360rate/report/:id', element: <Report360 />, onlyAdmin: true },
   { path: '/skills', element: <Skills />, onlyAdmin: true },
   { path: '/profile', element: <Profile /> },
   { path: '/progress', element: <Progress /> },

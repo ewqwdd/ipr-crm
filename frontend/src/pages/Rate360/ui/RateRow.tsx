@@ -7,8 +7,9 @@ import { usersApi } from '@/shared/api/usersApi';
 import { cva } from '@/shared/lib/cva';
 import { Progress } from '@/shared/ui/Progress';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { DocumentTextIcon } from '@heroicons/react/outline';
+import { DocumentReportIcon, DocumentTextIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router';
+import { useNavigate } from 'react-router';
 
 interface RateRowProps {
   rate: Rate;
@@ -33,6 +34,7 @@ export default function RateRow({ rate, index }: RateRowProps) {
 
   const isLoading = usersFetching || teamsFetching || specsFetching;
   const { openModal } = useModal();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -86,6 +88,14 @@ export default function RateRow({ rate, index }: RateRowProps) {
           }
         >
           <DocumentTextIcon className="h-5 w-5" />
+        </SoftButton>
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
+        <SoftButton
+          className="rounded-full p-1"
+          onClick={() => navigate(`/360rate/report/${rate.id}`)}
+        >
+          <DocumentReportIcon className="h-5 w-5" />
         </SoftButton>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">

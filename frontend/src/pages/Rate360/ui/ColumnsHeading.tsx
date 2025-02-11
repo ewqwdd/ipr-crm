@@ -42,6 +42,12 @@ export default function ColumnsHeading() {
           scope="col"
           className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-center"
         >
+          Результат
+        </th>
+        <th
+          scope="col"
+          className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-center"
+        >
           Назначен
         </th>
         <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"></th>

@@ -7,13 +7,6 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { MinusCircleIcon, PencilIcon } from '@heroicons/react/outline';
 import { FC } from 'react';
 
-// type Specialization = {
-//   id: number;
-//   name: string;
-//   materials: number;
-//   description: string;
-// };
-
 interface ISpecializationsTableProps {
   selectedSpec: number | null;
   setSelectedSpec: React.Dispatch<React.SetStateAction<number | null>>;
@@ -24,47 +17,18 @@ const materialsButtonClassName =
 const materialsButtonEmptyClassName = 'hover:text-indigo-500';
 
 const SpecializationsTable: FC<ISpecializationsTableProps> = ({
+  selectedSpec,
   setSelectedSpec,
 }) => {
   const { openModal } = useModal();
   const { data } = universalApi.useGetSpecsQuery();
   const [deleteFn, { isLoading }] = universalApi.useDeleteSpecMutation();
 
-  //   const openMatreialsModal = ({ id }: { id: number }) => {
-  //     console.log('openMatreialsModal', { id });
-  //     // openModal('MATERIALS', { id });
-  //   };
-  //   const editSpecialization = ({
-  //     id,
-  //     name,
-  //     description,
-  //   }: {
-  //     id: number;
-  //     name: string;
-  //     description: string;
-  //   }) => {
-  //     console.log('editSpecialization', { id, name, description });
-  //     openModal('EDIT_SPECIALIZATION', { id, name, description });
-  //   };
-  //   const deleteSpecialization = ({ id }: { id: number }) => {
-  //     openModal('CONFIRM', { onSubmit: () => console.log('delete => ', id) });
-  //     // console.log('deleteSpecialization', { id, description });
-  //   };
-
   const selectSpecialization = (data: Spec) => {
     setSelectedSpec(data.id);
   };
 
-  //   const openModalMaterials = ({ id }: { id: number }) => {
-  //     openModal('MATERIALS', { id });
-  //   };
-
   return (
-    <div
-      className={cva('mt-10 overflow-x-auto', {
-        'animate-pulse': isLoading,
-      })}
-    >
     <div
       className={cva('mt-10 overflow-x-auto', {
         'animate-pulse': isLoading,

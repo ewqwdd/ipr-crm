@@ -64,6 +64,7 @@ const ChooseCompetencyBlockModal: FC<ChooseCompetencyBlockModalProps> = ({
           <h3 className="text-lg font-medium text-gray-800">Hard skills</h3>
           {hardSkills?.map((skill) => (
             <Checkbox
+              key={skill.id}
               checked={selected.includes(skill.id)}
               onChange={generateOnChange(skill.id)}
               title={skill.name}
@@ -74,6 +75,7 @@ const ChooseCompetencyBlockModal: FC<ChooseCompetencyBlockModalProps> = ({
           <h3 className="text-lg font-medium text-gray-800">Soft skills</h3>
           {softSkills?.map((skill) => (
             <Checkbox
+              key={skill.id}
               checked={selected.includes(skill.id)}
               onChange={generateOnChange(skill.id)}
               title={skill.name}
