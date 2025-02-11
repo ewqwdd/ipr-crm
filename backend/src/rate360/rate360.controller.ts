@@ -82,6 +82,19 @@ export class Rate360Controller {
     return await this.rate360Service.approveSelfRate(sessionInfo.id, rateId);
   }
 
+  @Post('/assesment/approve-assigned/:rateId')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async approveAssigned(
+    @Param('rateId', { transform: (v) => parseInt(v) }) rateId: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.approveAssignedRate(
+      sessionInfo.id,
+      rateId,
+    );
+  }
+
   @Get('/report/:id')
   async getReposrt(@Param('id', { transform: (v) => parseInt(v) }) id: number) {
     return await this.rate360Service.report(id);

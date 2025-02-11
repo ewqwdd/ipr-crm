@@ -61,6 +61,13 @@ const rate360Api = createApi({
       }),
       invalidatesTags: ['Rate360', 'Assigned', 'Self'],
     }),
+    approveAssigned: build.mutation<void, { rateId: number }>({
+      query: ({ rateId }) => ({
+        url: `/rate360/assesment/approve-assigned/${rateId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Rate360', 'Assigned', 'Self'],
+    }),
   }),
 });
 

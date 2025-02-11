@@ -1,6 +1,7 @@
 import { useModal } from '@/app/hooks/useModal';
 import { Rate } from '@/entities/rates';
 import { rate360Api } from '@/shared/api/rate360Api';
+import { skillsApi } from '@/shared/api/skillsApi';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
 import { usersApi } from '@/shared/api/usersApi';
@@ -17,8 +18,8 @@ interface RateRowProps {
 }
 
 export default function RateRow({ rate, index }: RateRowProps) {
-  const evaluatorsCount = rate.evaluators.length;
-  const ratesCount = rate.userRates.length;
+  const evaluatorsCount = rate.evaluators.length ?? 0;
+  const ratesCount = rate.userRates.length ?? 0;
   const [deleteFn] = rate360Api.useDeleteRateMutation();
   const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
     {},
@@ -27,14 +28,28 @@ export default function RateRow({ rate, index }: RateRowProps) {
     teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
+  const { data: skills, isFetching: skillsFetching } =
+    skillsApi.useGetSkillsQuery();
 
   const foundUser = users?.users.find((user) => user.id === rate.user.id);
   const foundTeam = teams?.list.find((team) => team.id === rate.team.id);
   const foundSpec = specs?.find((spec) => spec.id === rate.spec.id);
+  const indicators = foundSpec?.competencyBlocks
+    .map((block) => skills?.find((skill) => skill.id === block.id))
+    .filter(Boolean)
+    .flatMap((skill) => skill!.competencies.flatMap((comp) => comp.indicators));
 
-  const isLoading = usersFetching || teamsFetching || specsFetching;
+  const isLoading =
+    usersFetching || teamsFetching || specsFetching || skillsFetching;
   const { openModal } = useModal();
   const navigate = useNavigate();
+
+  let percent =
+    ratesCount / Math.max((evaluatorsCount + 1) * (indicators?.length ?? 1), 1);
+
+  if (indicators?.length === 0) {
+    percent = 1;
+  }
 
   if (isLoading) {
     return (
@@ -74,17 +89,19 @@ export default function RateRow({ rate, index }: RateRowProps) {
         {rate.type}
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center flex items-center gap-2">
-        {Math.floor((ratesCount / evaluatorsCount) * 100)}%
-        <Progress
-          percent={ratesCount / evaluatorsCount}
-          className="w-full max-w-14"
-        />
+        {Math.floor(percent * 100)}%
+        <Progress percent={percent} className="w-full max-w-14" />
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
         <SoftButton
           className="rounded-full p-1"
           onClick={() =>
-            openModal('RATE_STATS', { rate, spec: foundSpec, user: foundUser })
+            openModal('RATE_STATS', {
+              rate,
+              spec: foundSpec,
+              user: foundUser,
+              indicators,
+            })
           }
         >
           <DocumentTextIcon className="h-5 w-5" />

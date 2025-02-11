@@ -38,8 +38,18 @@ export default function EvaluateModal({
     universalApi.useGetSpecsQuery();
   const { data: skills, isFetching: skillsFetching } =
     skillsApi.useGetSkillsQuery();
+
+  const [
+    mutateApproveSelf,
+    {
+      isLoading: approveSelfLoading,
+      isSuccess: isSuccessSelf,
+      isError: isErrorSelf,
+    },
+  ] = rate360Api.useApproveSelfMutation();
   const [mutateApprove, { isLoading: approveLoading, isSuccess, isError }] =
-    rate360Api.useApproveSelfMutation();
+    rate360Api.useApproveAssignedMutation();
+
   const userId = useAppSelector((state) => state.user.user!.id);
 
   const foundUser = users?.users.find((user) => user.id === rate.userId);
@@ -82,16 +92,24 @@ export default function EvaluateModal({
   const isCompleted = userRates.length === indicators.length;
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess || isSuccessSelf) {
       closeModal();
     }
-  }, [isSuccess]);
+  }, [isSuccess, isSuccessSelf]);
 
   useEffect(() => {
-    if (isError) {
+    if (isError || isErrorSelf) {
       toast.error('Ошибка при завершении тестирования');
     }
-  }, [isError]);
+  }, [isError, isErrorSelf]);
+
+  const onSubmit = () => {
+    if (rate.userId === userId) {
+      mutateApproveSelf({ rateId: rate.id });
+    } else {
+      mutateApprove({ rateId: rate.id });
+    }
+  };
 
   return (
     <Modal
@@ -104,7 +122,8 @@ export default function EvaluateModal({
         teamsFetching ||
         specsFetching ||
         skillsFetching ||
-        approveLoading
+        approveLoading ||
+        approveSelfLoading
       }
       className="sm:max-w-2xl"
     >
@@ -127,10 +146,7 @@ export default function EvaluateModal({
           skills={foundSkills ?? []}
         />
         {isCompleted && (
-          <PrimaryButton
-            className="self-end"
-            onClick={() => mutateApprove({ rateId: rate.id })}
-          >
+          <PrimaryButton className="self-end" onClick={onSubmit}>
             Завершить тестирование
           </PrimaryButton>
         )}

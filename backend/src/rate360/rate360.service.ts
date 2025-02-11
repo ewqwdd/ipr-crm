@@ -45,6 +45,9 @@ export class Rate360Service {
           include: {
             indicator: true,
           },
+          where: {
+            approved: true,
+          },
         },
       },
     });
@@ -115,12 +118,23 @@ export class Rate360Service {
             userId,
           },
         },
-        userRates: {
-          some: {
-            approved: false,
-            userId,
+        OR: [
+          {
+            userRates: {
+              some: {
+                approved: false,
+                userId,
+              },
+            },
           },
-        },
+          {
+            userRates: {
+              none: {
+                userId,
+              },
+            },
+          },
+        ],
       },
       include: {
         spec: true,
@@ -137,12 +151,22 @@ export class Rate360Service {
     return await this.prismaService.rate360.findMany({
       where: {
         userId,
-        userConfirmed: false,
-        userRates: {
-          some: {
-            approved: false,
+        OR: [
+          {
+            userRates: {
+              some: {
+                approved: false,
+              },
+            },
           },
-        },
+          {
+            userRates: {
+              none: {
+                userId,
+              },
+            },
+          },
+        ],
       },
       include: {
         spec: true,
@@ -159,12 +183,23 @@ export class Rate360Service {
     const rate = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
-        userRates: {
-          some: {
-            userId,
-            approved: false,
+        OR: [
+          {
+            userRates: {
+              some: {
+                userId,
+                approved: false,
+              },
+            },
           },
-        },
+          {
+            userRates: {
+              none: {
+                userId,
+              },
+            },
+          },
+        ],
       },
       include: {
         spec: true,
@@ -268,15 +303,62 @@ export class Rate360Service {
       throw new ForbiddenException('Оценка не завершена');
     }
 
-    await this.prismaService.rate360.update({
+    await this.prismaService.userRates.updateMany({
       where: {
-        id: rateId,
+        rate360Id: rateId,
         userId,
       },
       data: {
-        userConfirmed: true,
+        approved: true,
       },
     });
+    return;
+  }
+
+  async approveAssignedRate(userId: number, rateId: number) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+        evaluators: {
+          some: {
+            userId,
+          },
+        },
+      },
+      include: {
+        userRates: {
+          where: {
+            userId,
+          },
+        },
+        spec: {
+          include: {
+            competencyBlocks: {
+              include: {
+                competencies: {
+                  include: {
+                    indicators: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!rate) {
+      throw new NotFoundException('Оценка не найдена');
+    }
+
+    const indicators = rate.spec.competencyBlocks.flatMap((block) =>
+      block.competencies.flatMap((competency) => competency.indicators),
+    );
+    const userRates = rate.userRates;
+    if (userRates.length !== indicators.length) {
+      throw new ForbiddenException('Оценка не завершена');
+    }
+
     await this.prismaService.userRates.updateMany({
       where: {
         rate360Id: rateId,

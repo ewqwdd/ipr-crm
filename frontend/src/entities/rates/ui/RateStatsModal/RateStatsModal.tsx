@@ -1,14 +1,16 @@
 import { Spec, User } from '@/entities/user';
 import { Rate } from '../../types/types';
 import { Modal } from '@/shared/ui/Modal';
-import { XCircleIcon } from '@heroicons/react/outline';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import EvaluatorsList from './partials/EvaluatorsList';
 import { skillsApi } from '@/shared/api/skillsApi';
+import { Indicator } from '@/entities/skill';
 
 interface RateStatsModalData {
   rate: Rate;
   spec: Spec;
   user: User;
+  indicators: Indicator[];
 }
 interface RateStatsModalProps {
   isOpen: boolean;
@@ -21,21 +23,22 @@ export default function RateStatsModal({
   isOpen,
   modalData,
 }: RateStatsModalProps) {
-  const { rate, spec, user } = modalData as RateStatsModalData;
-  const { data: skills } = skillsApi.useGetSkillsQuery();
+  const { rate, spec, user, indicators } = modalData as RateStatsModalData;
 
-  const foundSkills = spec?.competencyBlocks
-    .map((block) => skills?.find((skill) => skill.id === block.id)!)
-    .filter(Boolean);
-  const indicators = foundSkills.flatMap((skill) =>
-    skill.competencies.flatMap((competency) => competency.indicators),
+  const selfRates = rate.userRates.filter((r) => r.userId === user.id);
+  const isSelfRated = selfRates.length < indicators.length;
+
+  const icon = isSelfRated ? (
+    <XCircleIcon className="size-5 text-red-500" />
+  ) : (
+    <CheckCircleIcon className="size-5 text-green-500" />
   );
 
   return (
     <Modal title="Статистика" open={isOpen} setOpen={closeModal} footer={false}>
       <div className="flex flex-col gap-4">
         <div className="flex gap-3 py-2 items-center">
-          <XCircleIcon className="size-7 text-red-500" />
+          {icon}
           <div className="flex flex-col gap-1 flex-1">
             <h3 className="text-lg text-gray-800">{user.username}</h3>
             <p className="flex gap-2 text-gray-500 text-sm">
