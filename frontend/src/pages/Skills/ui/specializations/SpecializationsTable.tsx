@@ -19,6 +19,7 @@ const materialsButtonEmptyClassName = 'hover:text-indigo-500';
 const SpecializationsTable: FC<ISpecializationsTableProps> = ({
   selectedSpec,
   setSelectedSpec,
+  selectedSpec,
 }) => {
   const { openModal } = useModal();
   const { data } = universalApi.useGetSpecsQuery();
@@ -140,6 +141,7 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
           ))}
         </tbody>
       </table>
+    </div>
     </div>
   );
 };
