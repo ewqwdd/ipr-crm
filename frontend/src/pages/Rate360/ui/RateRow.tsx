@@ -51,6 +51,27 @@ export default function RateRow({ rate, index }: RateRowProps) {
     percent = 1;
   }
 
+  let percent =
+    ratesCount / Math.max((evaluatorsCount + 1) * (indicators?.length ?? 1), 1);
+
+  if (indicators?.length === 0) {
+    percent = 1;
+  }
+
+  let percent =
+    ratesCount / Math.max((evaluatorsCount + 1) * (indicators?.length ?? 1), 1);
+
+  if (indicators?.length === 0) {
+    percent = 1;
+  }
+
+  let percent =
+    ratesCount / Math.max((evaluatorsCount + 1) * (indicators?.length ?? 1), 1);
+
+  if (indicators?.length === 0) {
+    percent = 1;
+  }
+
   if (isLoading) {
     return (
       <div

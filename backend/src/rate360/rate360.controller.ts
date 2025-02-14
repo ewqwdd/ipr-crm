@@ -94,9 +94,4 @@ export class Rate360Controller {
       rateId,
     );
   }
-
-  @Get('/report/:id')
-  async getReposrt(@Param('id', { transform: (v) => parseInt(v) }) id: number) {
-    return await this.rate360Service.report(id);
-  }
 }
