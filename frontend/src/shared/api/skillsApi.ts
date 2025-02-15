@@ -1,3 +1,4 @@
+import { Material } from '@/entities/material';
 import {
   AddCompetencyBlockDto,
   AddCompetencyDto,
@@ -87,37 +88,19 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
-    addCompetencyMaterial: build.mutation<
-      void,
-      {
-        competencyId: number;
-        name: string;
-        url: string;
-        contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
-        level: number;
-      }
-    >({
-      query: ({ competencyId, name, url, contentType, level }) => ({
+    addCompetencyMaterial: build.mutation<void, Omit<Material, 'id'>>({
+      query: (body) => ({
         url: `/competency/material`,
         method: 'POST',
-        body: { competencyId, name, url, contentType, level },
+        body,
       }),
       invalidatesTags: ['Skills'],
     }),
-    addIndicatorMaterial: build.mutation<
-      void,
-      {
-        indicatorId: number;
-        name: string;
-        url: string;
-        contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
-        level: number;
-      }
-    >({
-      query: ({ indicatorId, name, url, contentType, level }) => ({
+    addIndicatorMaterial: build.mutation<void, Omit<Material, 'id'>>({
+      query: (body) => ({
         url: `/indicator/material`,
         method: 'POST',
-        body: { indicatorId, name, url, contentType, level },
+        body,
       }),
       invalidatesTags: ['Skills'],
     }),
@@ -129,6 +112,21 @@ const skillsApi = createApi({
         url: `/add-block-to-spec`,
         method: 'POST',
         body: { specId, blockIds },
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    removeMaterial: build.mutation<void, { id: number }>({
+      query: ({ id }) => ({
+        url: `/material/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Skills'],
+    }),
+    editMaterial: build.mutation<void, Material>({
+      query: (body) => ({
+        url: `/material/${body.id}`,
+        method: 'PUT',
+        body,
       }),
       invalidatesTags: ['Skills'],
     }),

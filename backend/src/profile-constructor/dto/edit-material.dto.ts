@@ -6,7 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 
-export class createMaterialCompetencyDto {
+export class EditMaterialDto {
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -24,8 +24,4 @@ export class createMaterialCompetencyDto {
 
   @IsNumber()
   level: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  competencyId: number;
 }

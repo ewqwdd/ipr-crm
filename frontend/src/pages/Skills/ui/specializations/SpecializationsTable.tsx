@@ -12,10 +12,6 @@ interface ISpecializationsTableProps {
   setSelectedSpec: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-const materialsButtonClassName =
-  'border-b border-dashed text-indigo-600 border-indigo-600 hover:text-indigo-500 hover:border-indigo-500 h-6';
-const materialsButtonEmptyClassName = 'hover:text-indigo-500';
-
 const SpecializationsTable: FC<ISpecializationsTableProps> = ({
   selectedSpec,
   setSelectedSpec,
@@ -50,9 +46,6 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
               </th>
               <th className="border-b border-gray-300 p-2 text-center">
                 <div className="w-[70px]">PR</div>
-              </th>
-              <th className="border-b border-gray-300 p-2 text-center">
-                <div className="w-[150px]">Материалы</div>
               </th>
               <th className="border-b border-gray-300 p-2 text-center">
                 <div className="w-[70px]">Действия</div>
@@ -93,27 +86,7 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
                     }}
                   />
                 </td>
-                <td className=" p-2 text-center">
-                  <button
-                    className={
-                      !row?.materials || row?.materials?.length === 0
-                        ? materialsButtonEmptyClassName
-                        : materialsButtonClassName
-                    }
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // TODO: Possible add materials
-                      openModal('MATERIALS_LIST', {
-                        id: row.id,
-                        name: row.name,
-                      });
-                    }}
-                  >
-                    {!row?.materials || row?.materials.length === 0
-                      ? 'Без материала'
-                      : `${row?.materials?.length} материалов`}
-                  </button>
-                </td>
+
                 <td className=" p-2 text-center">
                   <div className="flex gap-2">
                     <SoftButton

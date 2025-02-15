@@ -18,6 +18,7 @@ import { createMaterialIndicatorDto } from './dto/create-material-indicator.dto'
 import { AddBlockToSpecDto } from './dto/add-block-to-spec.dto';
 import { EditDto } from './dto/edi.dto';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
+import { EditMaterialDto } from './dto/edit-material.dto';
 
 @Controller('profile-constructor')
 export class ProfileConstructorController {
@@ -84,6 +85,23 @@ export class ProfileConstructorController {
   @UseGuards(AdminGuard)
   async createMaterialIndicator(@Body() data: createMaterialIndicatorDto) {
     return this.profileConstructorService.createMaterialIndicator(data);
+  }
+
+  @Delete('/material/:id')
+  @UseGuards(AdminGuard)
+  async deleteMaterial(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+  ) {
+    return this.profileConstructorService.deleteMaterial(id);
+  }
+
+  @Put('/material/:id')
+  @UseGuards(AdminGuard)
+  async editMaterial(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @Body() data: EditMaterialDto,
+  ) {
+    return this.profileConstructorService.editMaterial(id, data);
   }
 
   @Post('/add-block-to-spec')

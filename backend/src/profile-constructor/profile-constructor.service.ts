@@ -6,6 +6,7 @@ import { CreateIndicatorDto } from './dto/create-indicator.dto';
 import { createMaterialCompetencyDto } from './dto/create-material-competency.dto';
 import { createMaterialIndicatorDto } from './dto/create-material-indicator.dto';
 import { AddBlockToSpecDto } from './dto/add-block-to-spec.dto';
+import { EditMaterialDto } from './dto/edit-material.dto';
 
 @Injectable()
 export class ProfileConstructorService {
@@ -16,10 +17,18 @@ export class ProfileConstructorService {
       include: {
         competencies: {
           include: {
-            materials: true,
+            materials: {
+              select: {
+                material: true,
+              },
+            },
             indicators: {
               include: {
-                materials: true,
+                materials: {
+                  select: {
+                    material: true,
+                  },
+                },
               },
             },
           },
@@ -80,6 +89,7 @@ export class ProfileConstructorService {
         contentType: data.contentType,
         description: data.description,
         url: data.url,
+        level: data.level,
         competencyMaterials: {
           create: {
             competencyId: data.competencyId,
@@ -96,11 +106,20 @@ export class ProfileConstructorService {
         contentType: data.contentType,
         description: data.description,
         url: data.url,
+        level: data.level,
         indicatorMaterials: {
           create: {
             indicatorId: data.indicatorId,
           },
         },
+      },
+    });
+  }
+
+  async deleteMaterial(id: number) {
+    return this.prismaService.material.delete({
+      where: {
+        id,
       },
     });
   }
@@ -172,6 +191,15 @@ export class ProfileConstructorService {
           set: blockIds.map((id) => ({ id })),
         },
       },
+    });
+  }
+
+  async editMaterial(id: number, data: EditMaterialDto) {
+    return this.prismaService.material.update({
+      where: {
+        id,
+      },
+      data,
     });
   }
 }
