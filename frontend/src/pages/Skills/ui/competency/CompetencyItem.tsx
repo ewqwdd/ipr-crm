@@ -28,7 +28,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   name,
   openModal,
   id,
-  // ...props
+  materials,
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
 
@@ -49,6 +49,23 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
     >
       <p className="text-black min-w-[400px]">{name}</p>
       <div className="flex items-center space-x-2">
+        {materials && materials.length > 0 && (
+          <button
+            className="text-left text-sm text-gray-500 hover:text-gray-800 mr-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal('MATERIALS_LIST', {
+                materials,
+                name,
+                id,
+                type: listItemType,
+              });
+              return;
+            }}
+          >
+            {materials.length} Материалов
+          </button>
+        )}
         {listItemType === CompetencyType.COMPETENCY_BLOCK && (
           <SoftButton
             size="xs"
@@ -75,18 +92,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
             Добавить индикатор
           </SoftButton>
         )}
-        {/* {listItemType === CompetencyType.INDICATOR && (
-        // TODO: Uncomment
-          <button
-            className="border-b border-dashed text-indigo-600 border-indigo-600 h-6"
-            onClick={() => {
-              // TODO: add Helper modal functionality
-              console.log('open Modal ');
-            }}
-          >
-            Подсказка
-          </button>
-        )} */}
+
         {listItemType !== CompetencyType.COMPETENCY_BLOCK && (
           <SoftButton
             size="xs"

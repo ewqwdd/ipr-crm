@@ -341,6 +341,7 @@ model Material {
   name        String
   description String
   url         String?
+  level       Int
   contentType MaterialContentType
 
   plan                IndividualGrowthPlan? @relation(fields: [planId], references: [id])

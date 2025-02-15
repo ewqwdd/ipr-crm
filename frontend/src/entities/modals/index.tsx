@@ -8,7 +8,7 @@ import {
 import { useModal } from '@/app/hooks/useModal';
 import { useAppSelector } from '@/app';
 import { ConfirmModal } from '@/widgets/ConfirmModal';
-import AddMaterialsModal from '../skill/ui/AddMaterialsModal';
+import AddMaterialsModal from '../material/ui/AddMaterialsModal';
 import EditSpecialization from '../skill/ui/EditSpecialization';
 import AddSpecialization from '../skill/ui/AddSpecialization';
 import MaterialsList from '../skill/ui/MaterialsList';
@@ -17,7 +17,7 @@ import { AddEvaluatorModal, EvaluateModal, RateStatsModal } from '../rates';
 
 export type ModalProps = {
   isOpen: boolean;
-  modalData: any;
+  modalData: unknown;
   closeModal: () => void;
 };
 

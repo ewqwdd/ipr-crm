@@ -42,6 +42,7 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
   name,
   openModal,
   id,
+  materials,
   ...props
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
@@ -107,10 +108,19 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
             Добавить Материалы
           </SoftButton>
         )} */}
-        {listItemType !== CompetencyType.COMPETENCY_BLOCK && (
+        {listItemType !== CompetencyType.COMPETENCY_BLOCK && materials && (
           <button
             className="text-left text-sm text-gray-500 hover:text-gray-800 mr-2"
             onClick={(e) => {
+              if (materials.length > 0) {
+                openModal('MATERIALS_LIST', {
+                  materials,
+                  name,
+                  id,
+                  type: listItemType,
+                });
+                return;
+              }
               e.stopPropagation();
               if (listItemType === CompetencyType.COMPETENCY) {
                 openModal('ADD_COMPETENCY_MATERIAL', { name, id, ...props });
@@ -120,7 +130,9 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
               }
             }}
           >
-            Без Метериалов
+            {materials.length > 0
+              ? `${materials.length} Материалов`
+              : 'Без Метериалов'}
           </button>
         )}
         <SoftButton

@@ -32,8 +32,11 @@ const modalSlice = createSlice({
       state.modalType = null;
       state.modalData = null;
     },
+    setModalData: (state: ModalState, action: PayloadAction<unknown>) => {
+      state.modalData = action.payload;
+    },
   },
 });
 
-export const { openModal, closeModal } = modalSlice.actions;
+export const { openModal, closeModal, setModalData } = modalSlice.actions;
 export const modalReducer = modalSlice.reducer;

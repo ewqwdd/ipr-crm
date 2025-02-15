@@ -1,3 +1,5 @@
+import { Material } from '@/entities/material';
+
 export type SkillType = 'SOFT' | 'HARD';
 
 export interface Competency {
@@ -5,7 +7,7 @@ export interface Competency {
   name: string;
   blockId: number;
   indicators: Indicator[];
-  materials: {}[];
+  materials: { material: Material }[];
 }
 
 export interface Indicator {
@@ -13,7 +15,7 @@ export interface Indicator {
   name: string;
   description?: string;
   competencyId: number;
-  materials: {}[];
+  materials: { material: Material }[];
 }
 
 export interface CompetencyBlock {
@@ -21,6 +23,7 @@ export interface CompetencyBlock {
   name: string;
   type: SkillType;
   specId: number;
+  materials?: { material: Material }[];
   competencies: Competency[];
 }
 

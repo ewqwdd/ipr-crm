@@ -4,7 +4,9 @@ import { Modal } from '@/shared/ui/Modal';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import { TextArea } from '@/shared/ui/TextArea';
-import { FC, memo, useCallback, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useState } from 'react';
+import { MaterialType } from '../model/types';
+import toast from 'react-hot-toast';
 
 interface AddIndicatorModalProps {
   type: 'COMPETENCY' | 'INDICATOR';
@@ -17,8 +19,6 @@ const checkLinkFormat = (link: string) => {
   const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
   return urlRegex.test(link) ? undefined : 'Неверный формат ссылки';
 };
-
-type MaterialType = 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
 
 const materialTypes = [
   { text: 'Видео', id: 'VIDEO' },
@@ -75,6 +75,8 @@ const AddLevel: FC<{ level: number; selectLevel: (level: number) => void }> =
     );
   });
 
+type ErorrsType = { title?: string; link?: string };
+
 export default function AddMaterialsModal({
   type,
   isOpen,
@@ -82,29 +84,40 @@ export default function AddMaterialsModal({
   closeModal,
 }: AddIndicatorModalProps) {
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
   const [materialType, setMaterialType] = useState<MaterialType>('VIDEO');
   const [level, setLevel] = useState<number>(0);
-  const [errors, setErrors] = useState<{ title?: string; link?: string }>({});
+  const [errors, setErrors] = useState<ErorrsType>({});
 
   const { name, id } = modalData as { name: string; id: number };
 
   const validate = () => {
-    const newErrors: { title?: string; link?: string } = {};
+    const newErrors: ErorrsType = {};
     if (!title.trim()) newErrors.title = 'Поле не может быть пустым';
     const linkError = checkLinkFormat(link);
     if (linkError) newErrors.link = linkError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  // const [mutate, { isLoading: mutateLoading }] =
-  //   universalApi.useCreateSpecMutation();
-  const [COMPETENCY_mutate, { isLoading: COMPETENCY_Loading }] =
-    skillsApi.useAddCompetencyMaterialMutation();
 
-  const [INDICATOR_mutate, { isLoading: INDICATOR_Loading }] =
-    skillsApi.useAddIndicatorMaterialMutation();
-  // const useSki
+  const [
+    COMPETENCY_mutate,
+    {
+      isLoading: COMPETENCY_Loading,
+      isSuccess: COMPETENCY_success,
+      isError: COMPETENCY_error,
+    },
+  ] = skillsApi.useAddCompetencyMaterialMutation();
+
+  const [
+    INDICATOR_mutate,
+    {
+      isLoading: INDICATOR_Loading,
+      isSuccess: INDICATOR_success,
+      isError: INDICATOR_error,
+    },
+  ] = skillsApi.useAddIndicatorMaterialMutation();
 
   const modalLoading = COMPETENCY_Loading || INDICATOR_Loading;
 
@@ -118,6 +131,7 @@ export default function AddMaterialsModal({
           url: link,
           contentType: materialType,
           level,
+          description,
         });
         break;
       case 'INDICATOR':
@@ -127,6 +141,7 @@ export default function AddMaterialsModal({
           url: link,
           contentType: materialType,
           level,
+          description,
         });
         break;
       default:
@@ -151,7 +166,22 @@ export default function AddMaterialsModal({
   const reset = () => {
     setMaterialType('VIDEO');
     setLevel(0);
+    setTitle('');
+    setDescription('');
   };
+
+  useEffect(() => {
+    if (COMPETENCY_success || INDICATOR_success) {
+      closeModal();
+      toast.success('Материал успешно добавлен');
+    }
+  }, [COMPETENCY_success, closeModal, INDICATOR_success]);
+
+  useEffect(() => {
+    if (COMPETENCY_error || INDICATOR_error) {
+      toast.error('Ошибка при добавлении материала');
+    }
+  }, [COMPETENCY_error, INDICATOR_error]);
 
   return (
     <Modal
@@ -175,6 +205,15 @@ export default function AddMaterialsModal({
           onBlur={() => validate()}
           required
           error={errors.title}
+        />
+
+        <TextArea
+          label="Описание"
+          placeholder="Введите описание материала"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          onBlur={() => validate()}
+          required
         />
 
         <InputWithLabelLight

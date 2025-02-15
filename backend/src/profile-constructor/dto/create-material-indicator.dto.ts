@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class createMaterialIndicatorDto {
   @IsNotEmpty()
@@ -6,6 +12,7 @@ export class createMaterialIndicatorDto {
   name: string;
 
   @IsString()
+  @IsOptional()
   description?: string;
 
   @IsNotEmpty()
@@ -14,6 +21,9 @@ export class createMaterialIndicatorDto {
 
   @IsString()
   url?: string;
+
+  @IsNumber()
+  level: number;
 
   @IsNotEmpty()
   @IsNumber()

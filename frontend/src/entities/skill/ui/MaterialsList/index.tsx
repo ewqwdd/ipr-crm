@@ -6,7 +6,19 @@ import {
   PencilIcon,
   PlusCircleIcon,
 } from '@heroicons/react/outline';
-import { MaterialsListForm, MaterialType } from './MaterialsListForm';
+import { MaterialsListForm } from './MaterialsListForm';
+import { Material } from '@/entities/material';
+import { CompetencyType } from '../../types/types';
+import { skillsApi } from '@/shared/api/skillsApi';
+import { useDispatch } from 'react-redux';
+import { setModalData } from '@/app/store/modalSlice';
+
+interface MaterialsListData {
+  materials: { material: Material }[];
+  name: string;
+  id: number;
+  type: CompetencyType;
+}
 
 interface MaterialsListProps {
   isOpen: boolean;
@@ -14,42 +26,12 @@ interface MaterialsListProps {
   closeModal: () => void;
 }
 
-type Material = {
-  id: number;
-  name: string;
-  link: string;
-  type: MaterialType;
-};
-
-const materials: Material[] = [
-  {
-    id: 1,
-    name: 'Материал 1',
-    link: 'http://google.com',
-    type: 'VIDEO',
-  },
-  {
-    id: 2,
-    name: 'Материал 2',
-    link: 'http://google.com',
-    type: 'BOOK',
-  },
-  {
-    id: 3,
-    name: 'Материал 3',
-    link: 'http://google.com',
-    type: 'COURSE',
-  },
-];
-
 type Form = {
   open: boolean;
   type: 'ADD' | 'EDIT';
-  name?: string;
-  link?: string;
-  materialType?: MaterialType;
-  id?: number;
-};
+  parentId?: number;
+  parentType?: CompetencyType;
+} & Partial<Material>;
 
 const defaultForm: Form = {
   open: false,
@@ -62,43 +44,31 @@ export default function MaterialsList({
   closeModal,
 }: MaterialsListProps) {
   const [form, setForm] = useState<Form>(defaultForm);
-  const { name } = modalData as {
-    name: string;
-  };
+  const { name, materials, id, type } = modalData as MaterialsListData;
+  const [removeMaterial, { isLoading }] = skillsApi.useRemoveMaterialMutation();
+  const dispatch = useDispatch();
 
-  //   const [createCompetencyBlock, blockProps] =
-  //     skillsApi.useCreateCompetencyBlockMutation();
-
-  const editMaterial = ({
-    id,
-    name,
-    link,
-    materialType,
-  }: {
-    id: number;
-    name: string;
-    link: string;
-    materialType: MaterialType;
-  }) => {
+  const editMaterial = (data: Material) => {
     setForm({
       open: true,
       type: 'EDIT',
-      id,
-      name,
-      link,
-      materialType,
+      ...data,
     });
   };
 
   const deleteMaterial = (id: number) => {
-    // TODO: add api call
-    console.log('delete material', id);
+    removeMaterial({ id });
+    const data = { name, materials, id };
+    data.materials = data.materials.filter((item) => item.material.id !== id);
+    dispatch(setModalData(data));
   };
 
   const addNewMaterial = () => {
     setForm({
       open: true,
       type: 'ADD',
+      parentId: id,
+      parentType: type,
     });
   };
 
@@ -116,7 +86,7 @@ export default function MaterialsList({
       //   onSubmit={blockSubmit}
       submitText="Добавить"
       childrenFlex={false}
-      //   loading={blockProps.isLoading}
+      loading={isLoading}
     >
       <div className="">
         <p className="text-gray-400">
@@ -139,6 +109,9 @@ export default function MaterialsList({
                   <div className="w-[380px]">Название</div>
                 </th>
                 <th className="p-3 text-left text-sm font-semibold text-gray-600 ">
+                  <div className="w-[380px]">Описание</div>
+                </th>
+                <th className="p-3 text-left text-sm font-semibold text-gray-600 ">
                   <div className="w-[258px]">Ссылка</div>
                 </th>
                 <th className="p-3 text-left text-sm font-semibold text-gray-600 ">
@@ -152,30 +125,35 @@ export default function MaterialsList({
             <tbody>
               {materials.map((row) => {
                 return (
-                  <tr key={row.id} className=" border-b border-gray-300">
-                    <td className="p-3 text-sm text-gray-700">{row.name}</td>
-                    <td className="p-3 text-sm text-indigo-700">{row.link}</td>
-                    <td className="p-3 text-sm text-gray-700">{row.type}</td>
+                  <tr
+                    key={row.material.id}
+                    className=" border-b border-gray-300"
+                  >
+                    <td className="p-3 text-sm text-gray-700">
+                      {row.material.name ?? '-'}
+                    </td>
+                    <td className="p-3 text-sm text-gray-700">
+                      {row.material.description ?? '-'}
+                    </td>
+                    <td className="p-3 text-sm text-indigo-700">
+                      {row.material.url ?? '-'}
+                    </td>
+                    <td className="p-3 text-sm text-gray-700">
+                      {row.material.contentType ?? '-'}
+                    </td>
                     <td className="p-3 text-sm text-gray-700">
                       <div className="flex space-x-2">
                         <SoftButton
                           className="rounded-full p-2"
                           size="xs"
-                          onClick={() =>
-                            editMaterial({
-                              id: row.id,
-                              name: row.name,
-                              link: row.link,
-                              materialType: row.type,
-                            })
-                          }
+                          onClick={() => editMaterial(row.material)}
                         >
                           <PencilIcon className="h-5 w-5" />
                         </SoftButton>
                         <SoftButton
                           className="rounded-full p-2"
                           size="xs"
-                          onClick={() => deleteMaterial(row.id)}
+                          onClick={() => deleteMaterial(row.material.id)}
                         >
                           <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
                         </SoftButton>
