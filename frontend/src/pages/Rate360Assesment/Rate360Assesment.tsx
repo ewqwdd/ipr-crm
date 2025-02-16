@@ -25,12 +25,13 @@ export default function Rate360Assesment() {
   ] = rate360Api.useAssesmentMutation();
 
   const [assessment, setAssessment] = useState<AssesmentType>({});
-  const [comments, setComments] = useState<Record<string, string | undefined>>({});
+  const [comments, setComments] = useState<Record<string, string | undefined>>(
+    {},
+  );
 
   const [urlSearchParams] = useSearchParams();
 
   const tab = urlSearchParams.get('tab');
-
 
   useEffect(() => {
     if (isError) {
@@ -59,7 +60,7 @@ export default function Rate360Assesment() {
     }
   }, [blocks, data]);
 
-  console.log(comments)
+  console.log(comments);
 
   const currentBlock = blocks.find((block) => block.id.toString() === tab);
 
@@ -92,7 +93,7 @@ export default function Rate360Assesment() {
       <TabsHeader blocks={blocks} />
       {currentBlock && (
         <Assesment
-        comments={comments}
+          comments={comments}
           setComments={setComments}
           assesment={assessment}
           setAssesment={setAssessment}

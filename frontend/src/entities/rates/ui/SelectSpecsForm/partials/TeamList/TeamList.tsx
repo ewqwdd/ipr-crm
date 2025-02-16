@@ -1,9 +1,7 @@
-import { useAppDispatch } from '@/app';
-import { ratesActions } from '@/entities/rates/model/rateSlice';
-import TeamListItem from './TeamListItem';
 import { AddRateDto } from '@/entities/rates/types/types';
 import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
+import TeamListItem from './TeamListItem';
 import { useFilteredTeams } from '@/entities/rates/hooks/useFilteredTeams';
 
 interface TeamListProps {
@@ -11,6 +9,7 @@ interface TeamListProps {
   specs: MultiValue<Option>;
   search: string;
   selectedSpecs: AddRateDto[];
+  onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
 }
 
 export default function TeamList({
@@ -18,13 +17,8 @@ export default function TeamList({
   specs,
   search,
   teams,
+  onChangeSpecs,
 }: TeamListProps) {
-  const dispatch = useAppDispatch();
-
-  const onChangeSpecs = (teamId: number, specId: number, userId: number) => {
-    dispatch(ratesActions.selectSpec({ teamId, specId, userId }));
-  };
-
   const filteredTeams = useFilteredTeams({ specs, teams, search });
 
   return filteredTeams?.map((team) => (

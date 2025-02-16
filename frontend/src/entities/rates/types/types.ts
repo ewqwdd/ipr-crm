@@ -18,9 +18,9 @@ export interface Rate {
   archived: boolean;
   type: 'HARD' | 'SOFT';
   evaluators: RateEveloper[];
-  user: { id: number };
-  spec: { id: number };
-  team: { id: number };
+  user: { id: number; username: string };
+  spec: { id: number; name: string };
+  team: { id: number; name: string };
   userRates: {
     id: number;
     userId: number;

@@ -9,7 +9,9 @@ interface AssesmentProps {
   assesment: AssesmentType;
   setAssesment: React.Dispatch<React.SetStateAction<AssesmentType>>;
   comments: Record<number, string | undefined>;
-  setComments: React.Dispatch<React.SetStateAction<Record<number, string | undefined>>>
+  setComments: React.Dispatch<
+    React.SetStateAction<Record<number, string | undefined>>
+  >;
 }
 
 export default function Assesment({
@@ -17,7 +19,7 @@ export default function Assesment({
   assesment,
   setAssesment,
   comments,
-  setComments
+  setComments,
 }: AssesmentProps) {
   return (
     <div className="flex flex-col gap-6 px-8 flex-1 overflow-y-auto">
@@ -54,7 +56,16 @@ export default function Assesment({
                 />
               ))}
 
-              <TextArea label='Комментарий (опционально)' value={comments[competency.id]} onChange={e => setComments({...comments, [competency.id]: e.target.value || undefined})} />
+              <TextArea
+                label="Комментарий (опционально)"
+                value={comments[competency.id]}
+                onChange={(e) =>
+                  setComments({
+                    ...comments,
+                    [competency.id]: e.target.value || undefined,
+                  })
+                }
+              />
             </div>
           </React.Fragment>
         ))}

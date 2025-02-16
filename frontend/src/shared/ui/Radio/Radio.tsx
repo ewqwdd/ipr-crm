@@ -23,7 +23,7 @@ export default function Radio({
         id={id}
       />
       <label
-        className="ml-3 block text-sm font-medium text-gray-700"
+        className="pl-3 block text-sm font-medium text-gray-700"
         htmlFor={id}
       >
         {children}
