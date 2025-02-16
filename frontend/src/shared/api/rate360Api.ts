@@ -1,5 +1,13 @@
 import { AddRateDto, Rate } from '@/entities/rates';
+import { EvaluateUser } from '@/entities/rates/types/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+interface ConfirmDto {
+  rateId: number;
+  evaluateCurators: EvaluateUser[];
+  evaluateTeam: EvaluateUser[];
+  evaluateSubbordinate: EvaluateUser[];
+}
 
 const rate360Api = createApi({
   reducerPath: 'rate360Api',
@@ -7,7 +15,7 @@ const rate360Api = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Rate360', 'Assigned', 'Self'],
+  tagTypes: ['Rate360', 'Assigned', 'Self', 'ConfirmCurator', 'ConfirmUser'],
   endpoints: (build) => ({
     getRates: build.query<Rate[], void>({
       query: () => '/rate360',
@@ -45,6 +53,7 @@ const rate360Api = createApi({
       {
         id: number;
         ratings: Record<number, { rate: number; comment?: string }>;
+        comments: Record<number, string>;
       }
     >({
       query: (data) => ({
@@ -67,6 +76,30 @@ const rate360Api = createApi({
         method: 'POST',
       }),
       invalidatesTags: ['Rate360', 'Assigned', 'Self'],
+    }),
+    confirmByCurator: build.query<Rate[], void>({
+      query: () => '/rate360/confirm-by-curator',
+      providesTags: ['ConfirmCurator'],
+    }),
+    confirmByUser: build.query<Rate[], void>({
+      query: () => '/rate360/confirm-by-user',
+      providesTags: ['ConfirmUser'],
+    }),
+    confirmRateByCurator: build.mutation<void, ConfirmDto>({
+      query: (data) => ({
+        url: '/rate360/confirm-by-curator',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Rate360', 'ConfirmCurator', 'Assigned'],
+    }),
+    confirmRateByUser: build.mutation<void, ConfirmDto>({
+      query: (data) => ({
+        url: '/rate360/confirm-by-user',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Rate360', 'ConfirmUser', 'Self'],
     }),
   }),
 });

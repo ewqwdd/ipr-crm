@@ -5,6 +5,7 @@ import RateStatsModal from './ui/RateStatsModal/RateStatsModal';
 import { rateTypeNames } from './model/rateTypeNames';
 import EvaluateModal from './ui/EvaluateModal/EvaluateModal';
 import { rateDescriptions } from './model/rateDescriptions';
+import ConfirmEvaluatorsModal from './ui/ConfirmEvaluatorsModal/ConfirmEvaluatorsModal';
 
 export type { Rate, AddRateDto };
 
@@ -16,4 +17,5 @@ export {
   rateTypeNames,
   EvaluateModal,
   rateDescriptions,
+  ConfirmEvaluatorsModal,
 };

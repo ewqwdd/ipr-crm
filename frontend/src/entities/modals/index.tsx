@@ -13,7 +13,12 @@ import EditSpecialization from '../skill/ui/EditSpecialization';
 import AddSpecialization from '../skill/ui/AddSpecialization';
 import MaterialsList from '../skill/ui/MaterialsList';
 import ChooseCompetencyBlockModal from '../skill/ui/ChooseCompetencyBlockModal';
-import { AddEvaluatorModal, EvaluateModal, RateStatsModal } from '../rates';
+import {
+  AddEvaluatorModal,
+  ConfirmEvaluatorsModal,
+  EvaluateModal,
+  RateStatsModal,
+} from '../rates';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -61,6 +66,8 @@ const ModalWrapper: FC = () => {
       return <MaterialsList {...updatedModalProps} />;
     case 'CHOOSE_COMPETENCY_BLOCK':
       return <ChooseCompetencyBlockModal {...updatedModalProps} />;
+    case 'CONFIRM_EVALUATORS':
+      return <ConfirmEvaluatorsModal {...updatedModalProps} />;
     default:
       break;
   }

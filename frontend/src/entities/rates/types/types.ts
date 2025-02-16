@@ -18,9 +18,9 @@ export interface Rate {
   archived: boolean;
   type: 'HARD' | 'SOFT';
   evaluators: RateEveloper[];
-  user: { id: number };
-  spec: { id: number };
-  team: { id: number };
+  user: { id: number; username: string };
+  spec: { id: number; name: string };
+  team: { id: number; name: string };
   userRates: {
     id: number;
     userId: number;
@@ -29,6 +29,13 @@ export interface Rate {
     indicatorId: number;
     comment?: string;
     approved: boolean;
+  }[];
+  comments: {
+    id: number;
+    userId: number;
+    rate360Id: number;
+    comment: string;
+    competencyId: number;
   }[];
 }
 export type EvaluateUser = { userId: number; username?: string };

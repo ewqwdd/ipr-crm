@@ -7,6 +7,7 @@ import { PrismaService } from 'src/utils/db/prisma.service';
 import { CreateRateDto } from './dto/create-rate.dto';
 import { EvaluatorType } from '@prisma/client';
 import { RatingsDto } from './dto/user-assesment.dto';
+import { ConfirmRateDto } from './dto/confirm-rate.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -135,6 +136,8 @@ export class Rate360Service {
             },
           },
         ],
+        curatorConfirmed: true,
+        userConfirmed: true,
       },
       include: {
         spec: true,
@@ -172,6 +175,8 @@ export class Rate360Service {
             },
           },
         ],
+        userConfirmed: true,
+        curatorConfirmed: true,
       },
       include: {
         spec: true,
@@ -205,6 +210,8 @@ export class Rate360Service {
             },
           },
         ],
+        userConfirmed: true,
+        curatorConfirmed: true,
       },
       include: {
         spec: true,
@@ -215,6 +222,11 @@ export class Rate360Service {
         },
         team: true,
         evaluators: {
+          where: {
+            userId,
+          },
+        },
+        comments: {
           where: {
             userId,
           },
@@ -233,7 +245,10 @@ export class Rate360Service {
     return rate;
   }
 
-  async userAssessment(userId: number, { rateId, ratings }: RatingsDto) {
+  async userAssessment(
+    userId: number,
+    { rateId, ratings, comments }: RatingsDto,
+  ) {
     const found = await this.findForUser(userId, rateId);
     if (!found) {
       throw new NotFoundException('Rate not found');
@@ -265,6 +280,21 @@ export class Rate360Service {
           },
         },
       }),
+      this.prismaService.userComments.deleteMany({
+        where: { rate360Id: rateId, userId: userId },
+      }),
+      this.prismaService.rate360.update({
+        where: { id: rateId },
+        data: {
+          comments: {
+            create: Object.entries(comments).map(([competencyId, comment]) => ({
+              competencyId: Number(competencyId),
+              comment,
+              userId,
+            })),
+          },
+        },
+      }),
     ]);
   }
 
@@ -273,6 +303,8 @@ export class Rate360Service {
       where: {
         id: rateId,
         userId,
+        userConfirmed: true,
+        curatorConfirmed: true,
       },
       include: {
         userRates: {
@@ -329,6 +361,8 @@ export class Rate360Service {
             userId,
           },
         },
+        userConfirmed: true,
+        curatorConfirmed: true,
       },
       include: {
         userRates: {
@@ -360,7 +394,7 @@ export class Rate360Service {
       block.competencies.flatMap((competency) => competency.indicators),
     );
     const userRates = rate.userRates;
-    if (userRates.length !== indicators.length) {
+    if (userRates.length >= indicators.length) {
       throw new ForbiddenException('Оценка не завершена');
     }
 
@@ -395,6 +429,7 @@ export class Rate360Service {
             },
           },
         },
+
         evaluators: {
           select: {
             type: true,
@@ -404,5 +439,216 @@ export class Rate360Service {
         userRates: {},
       },
     });
+  }
+
+  async confirmRateCurator(userId: number, rateId: number) {
+    const data = await this.prismaService.rate360.update({
+      where: {
+        team: {
+          curatorId: userId,
+        },
+        id: rateId,
+      },
+      data: {
+        curatorConfirmed: true,
+      },
+    });
+    if (!data) {
+      throw new NotFoundException('Rate not found');
+    }
+    return data;
+  }
+
+  async confirmRateUser(userId: number, rateId: number) {
+    const data = await this.prismaService.rate360.update({
+      where: {
+        userId,
+        id: rateId,
+      },
+      data: {
+        userConfirmed: true,
+      },
+    });
+    if (!data) {
+      throw new NotFoundException('Rate not found');
+    }
+    return data;
+  }
+
+  async findRatesToConfirmByUser(userId: number) {
+    return await this.prismaService.rate360.findMany({
+      where: {
+        userId,
+        userConfirmed: false,
+      },
+      include: {
+        spec: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+        evaluators: {
+          select: {
+            type: true,
+            userId: true,
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
+        team: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findRatesToConfirmByCurator(userId: number) {
+    return await this.prismaService.rate360.findMany({
+      where: {
+        team: {
+          curatorId: userId,
+        },
+        curatorConfirmed: false,
+        userConfirmed: true,
+      },
+      include: {
+        spec: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+        evaluators: {
+          select: {
+            type: true,
+            userId: true,
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
+        team: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  async confirmByCurator(
+    {
+      evaluateCurators,
+      evaluateSubbordinate,
+      evaluateTeam,
+      rateId,
+    }: ConfirmRateDto,
+    curatorId: number,
+  ) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+        team: {
+          curatorId,
+        },
+      },
+    });
+    if (!rate) {
+      throw new NotFoundException('Rate not found');
+    }
+
+    const evaluatorsData = [
+      ...evaluateCurators.map((e) => ({
+        userId: e.userId,
+        type: EvaluatorType.CURATOR,
+      })),
+      ...evaluateSubbordinate.map((e) => ({
+        userId: e.userId,
+        type: EvaluatorType.SUBORDINATE,
+      })),
+      ...evaluateTeam.map((e) => ({
+        userId: e.userId,
+        type: EvaluatorType.TEAM_MEMBER,
+      })),
+    ];
+
+    await this.prismaService.$transaction([
+      this.prismaService.rate360Evaluator.deleteMany({
+        where: {
+          rate360Id: rateId,
+        },
+      }),
+      this.prismaService.rate360.update({
+        where: {
+          id: rateId,
+        },
+        data: {
+          evaluators: {
+            createMany: {
+              data: evaluatorsData,
+            },
+          },
+          curatorConfirmed: true,
+        },
+      }),
+    ]);
+  }
+
+  async confirmByUser(
+    { evaluateSubbordinate, evaluateTeam, rateId }: ConfirmRateDto,
+    userId: number,
+  ) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+        userId,
+      },
+    });
+    if (!rate) {
+      throw new NotFoundException('Rate not found');
+    }
+
+    const evaluatorsData = [
+      ...evaluateSubbordinate.map((e) => ({
+        userId: e.userId,
+        type: EvaluatorType.SUBORDINATE,
+      })),
+      ...evaluateTeam.map((e) => ({
+        userId: e.userId,
+        type: EvaluatorType.TEAM_MEMBER,
+      })),
+    ];
+
+    await this.prismaService.$transaction([
+      this.prismaService.rate360Evaluator.deleteMany({
+        where: {
+          rate360Id: rateId,
+          type: {
+            not: EvaluatorType.CURATOR,
+          },
+        },
+      }),
+      this.prismaService.rate360.update({
+        where: {
+          id: rateId,
+        },
+        data: {
+          evaluators: {
+            createMany: {
+              data: evaluatorsData,
+            },
+          },
+          userConfirmed: true,
+        },
+      }),
+    ]);
   }
 }

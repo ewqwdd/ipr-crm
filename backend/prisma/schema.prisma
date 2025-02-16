@@ -33,6 +33,7 @@ model User {
   teams           UserTeam[]
   specsOnTeams    SpecsOnUserTeam[]
   userRates       UserRates[]
+  userComments    UserComments[]
 
   // Self-relation fields
   mentees     User[] @relation("MentorMentees")
@@ -58,9 +59,22 @@ model Rate360 {
 
   userRates  UserRates[]
   evaluators Rate360Evaluator[]
+  comments  UserComments[]
   spec       Spec               @relation(fields: [specId], references: [id])
   team       Team              @relation(fields: [teamId], references: [id])
   
+}
+
+model UserComments {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  rate360Id Int
+  comment   String
+  competencyId Int
+
+  compentency Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rate360 Rate360 @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
 }
 
 model UserRates {
@@ -69,8 +83,7 @@ model UserRates {
   rate360Id   Int
   indicatorId Int
   rate        Int
-  comment     String?
-  approved    Boolean @default(false)
+  approved   Boolean @default(false)
   approvedByUser Boolean @default(false)
 
   indicator Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
@@ -320,6 +333,7 @@ model Competency {
   block      CompetencyBlock      @relation(fields: [blockId], references: [id], onDelete: Cascade)
   indicators Indicator[] // Связь с индикаторами
   materials  CompetencyMaterial[]
+  comments   UserComments[]
 }
 
 model Indicator {

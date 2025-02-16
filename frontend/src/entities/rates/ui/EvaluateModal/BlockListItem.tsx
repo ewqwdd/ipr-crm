@@ -29,7 +29,7 @@ export default function BlockListItem({
 
   let linkText = 'Оценить';
   if (ratesPercent > 0) {
-    linkText = `Продолжить оценку (${ratesPercent * 100}%)`;
+    linkText = `Продолжить оценку (${(ratesPercent * 100).toFixed(0)}%)`;
   } else if (indicators.length === 0) {
     disabled = true;
     linkText = 'Оценка не требуется';

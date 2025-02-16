@@ -16,6 +16,7 @@ import { CreateRateDto } from './dto/create-rate.dto';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { RatingsDto } from './dto/user-assesment.dto';
+import { ConfirmRateDto } from './dto/confirm-rate.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -93,5 +94,57 @@ export class Rate360Controller {
       sessionInfo.id,
       rateId,
     );
+  }
+
+  @Post('/approve-curator/:rateId')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async confirmCurator(
+    @Param('rateId', { transform: (v) => parseInt(v) }) rateId: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.confirmRateCurator(sessionInfo.id, rateId);
+  }
+
+  @Post('/approve-user/:rateId')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async confirmUser(
+    @Param('rateId', { transform: (v) => parseInt(v) }) rateId: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.confirmRateUser(sessionInfo.id, rateId);
+  }
+
+  @Get('/confirm-by-curator')
+  @UseGuards(AuthGuard)
+  async findCuratorConfirm(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return await this.rate360Service.findRatesToConfirmByCurator(
+      sessionInfo.id,
+    );
+  }
+
+  @Post('/confirm-by-curator')
+  @UseGuards(AuthGuard)
+  async curatorConfirm(
+    @Body() data: ConfirmRateDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.confirmByCurator(data, sessionInfo.id);
+  }
+
+  @Get('/confirm-by-user')
+  @UseGuards(AuthGuard)
+  async findUserConfirm(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return await this.rate360Service.findRatesToConfirmByUser(sessionInfo.id);
+  }
+
+  @Post('/confirm-by-user')
+  @UseGuards(AuthGuard)
+  async userConfirm(
+    @Body() data: ConfirmRateDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.confirmByUser(data, sessionInfo.id);
   }
 }

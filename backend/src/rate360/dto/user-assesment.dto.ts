@@ -22,4 +22,7 @@ export class RatingsDto {
 
   @IsObject()
   ratings: Record<string, UserAssessmentDto>;
+
+  @IsObject()
+  comments: Record<number, string>;
 }
