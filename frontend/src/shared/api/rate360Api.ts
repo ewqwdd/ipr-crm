@@ -45,6 +45,7 @@ const rate360Api = createApi({
       {
         id: number;
         ratings: Record<number, { rate: number; comment?: string }>;
+        comments: Record<number, string>;
       }
     >({
       query: (data) => ({

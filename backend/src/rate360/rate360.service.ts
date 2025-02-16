@@ -219,6 +219,11 @@ export class Rate360Service {
             userId,
           },
         },
+        comments: {
+          where: {
+            userId,
+          }
+        }
       },
     });
     if (!rate) {
@@ -233,7 +238,7 @@ export class Rate360Service {
     return rate;
   }
 
-  async userAssessment(userId: number, { rateId, ratings }: RatingsDto) {
+  async userAssessment(userId: number, { rateId, ratings, comments }: RatingsDto) {
     const found = await this.findForUser(userId, rateId);
     if (!found) {
       throw new NotFoundException('Rate not found');
@@ -265,6 +270,21 @@ export class Rate360Service {
           },
         },
       }),
+      this.prismaService.userComments.deleteMany({
+        where: { rate360Id: rateId, userId: userId },
+      }),
+      this.prismaService.rate360.update({
+        where: { id: rateId },
+        data: {
+          comments: {
+            create: Object.entries(comments).map(([competencyId, comment]) => ({
+              competencyId: Number(competencyId),
+              comment,
+              userId,
+            })),
+          }
+        }
+      })
     ]);
   }
 
@@ -395,6 +415,7 @@ export class Rate360Service {
             },
           },
         },
+
         evaluators: {
           select: {
             type: true,
@@ -404,5 +425,39 @@ export class Rate360Service {
         userRates: {},
       },
     });
+  }
+
+  async confirmRateCurator(userId: number, rateId: number) {
+    const data = await this.prismaService.rate360.update({
+      where: {
+        team: {
+          curatorId: userId,
+        },
+        id: rateId,
+      },
+      data: {
+        curatorConfirmed: true,
+      },
+    });
+    if (!data) {
+      throw new NotFoundException('Rate not found');
+    }
+    return data;
+  }
+
+  async confirmRateUser(userId: number, rateId: number) {
+    const data = await this.prismaService.rate360.update({
+      where: {
+        userId,
+        id: rateId,
+      },
+      data: {
+        userConfirmed: true,
+      },
+    });
+    if (!data) {
+      throw new NotFoundException('Rate not found');
+    }
+    return data;
   }
 }

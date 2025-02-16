@@ -89,13 +89,14 @@ export default function EvaluateModal({
     ) ?? [];
   const userRates = rate.userRates.filter((rate) => rate.userId === userId);
 
-  const isCompleted = userRates.length === indicators.length;
+  const isCompleted = userRates.length >= indicators.length;
+  console.log(indicators, userRates)
 
   useEffect(() => {
     if (isSuccess || isSuccessSelf) {
       closeModal();
     }
-  }, [isSuccess, isSuccessSelf]);
+  }, [isSuccess, isSuccessSelf, closeModal]);
 
   useEffect(() => {
     if (isError || isErrorSelf) {

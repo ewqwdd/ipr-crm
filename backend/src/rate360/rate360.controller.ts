@@ -94,4 +94,24 @@ export class Rate360Controller {
       rateId,
     );
   }
+
+  @Post('/approve-curator/:rateId')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async confirmCurator(
+    @Param('rateId', { transform: (v) => parseInt(v) }) rateId: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.confirmRateCurator(sessionInfo.id, rateId);
+  }
+
+  @Post('/approve-user/:rateId')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async confirmUser(
+    @Param('rateId', { transform: (v) => parseInt(v) }) rateId: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.confirmRateUser(sessionInfo.id, rateId);
+  }
 }

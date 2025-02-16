@@ -30,6 +30,13 @@ export interface Rate {
     comment?: string;
     approved: boolean;
   }[];
+  comments: {
+    id: number;
+    userId: number;
+    rate360Id: number;
+    comment: string;
+    competencyId: number;
+  }[];
 }
 export type EvaluateUser = { userId: number; username?: string };
 

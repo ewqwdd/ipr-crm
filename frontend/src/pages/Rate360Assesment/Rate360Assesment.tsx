@@ -25,12 +25,12 @@ export default function Rate360Assesment() {
   ] = rate360Api.useAssesmentMutation();
 
   const [assessment, setAssessment] = useState<AssesmentType>({});
+  const [comments, setComments] = useState<Record<string, string | undefined>>({});
 
   const [urlSearchParams] = useSearchParams();
 
   const tab = urlSearchParams.get('tab');
 
-  if (!id) return null;
 
   useEffect(() => {
     if (isError) {
@@ -51,8 +51,15 @@ export default function Rate360Assesment() {
     if (Object.keys(assessment).length === 0 && data) {
       const assesmentData = tranformAssesment(blocks, data);
       setAssessment(assesmentData);
+      const comments: Record<number, string> = {};
+      data.comments.forEach((comment) => {
+        comments[comment.competencyId] = comment.comment;
+      });
+      setComments(comments);
     }
   }, [blocks, data]);
+
+  console.log(comments)
 
   const currentBlock = blocks.find((block) => block.id.toString() === tab);
 
@@ -61,8 +68,8 @@ export default function Rate360Assesment() {
       .flatMap((a) => Object.values(a))
       .reduce((acc, val) => ({ ...acc, ...val }), {});
 
-    // @ts-ignore
-    mutateAssesment({ rateId: data?.id, ratings: body });
+    // @ts-expect-error похуй
+    mutateAssesment({ rateId: data?.id, ratings: body, comments });
   };
 
   useEffect(() => {
@@ -71,6 +78,8 @@ export default function Rate360Assesment() {
       navigate('/progress');
     }
   }, [mutateAssesmentSuccess]);
+
+  if (!id) return null;
 
   return (
     <div
@@ -83,6 +92,8 @@ export default function Rate360Assesment() {
       <TabsHeader blocks={blocks} />
       {currentBlock && (
         <Assesment
+        comments={comments}
+          setComments={setComments}
           assesment={assessment}
           setAssesment={setAssessment}
           block={currentBlock}
