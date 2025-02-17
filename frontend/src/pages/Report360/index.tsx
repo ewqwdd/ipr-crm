@@ -13,8 +13,11 @@ import Dimmer from '@/shared/ui/Dimmer';
 import { useCalculateAvgIndicatorRaitings } from './useCalculateAvgIndicatorRaitings';
 import { useAggregatedAverages } from './useAggregatedAverages';
 import { Competency, CompetencyBlock } from '@/entities/skill';
+import { WorkSpace } from './WorkSpace';
 
 const evaluatorTypes = ['CURATOR', 'TEAM_MEMBER', 'SUBORDINATE'];
+
+const commonHeaders = ['Руководители', 'Коллеги', 'Подчиненные'];
 
 const RateCell = ({ rate }: { rate?: number }) => {
   if (!rate) return <td className="px-3 py-4 text-sm">N/D</td>;
@@ -85,7 +88,12 @@ const Report360: FC = () => {
   const { overallAverage, blocksRaiting, competenciesRaiting } =
     useAggregatedAverages(filteredBlocksCompetencies, indicatorRatings);
 
-  const { avatar, firstName, lastName } = foundUser || {};
+  console.log(foundUser);
+
+  const { avatar, firstName, lastName, role } = foundUser || {};
+
+  const isAdmin = role?.name === 'admin';
+
   const onClickExport = () => {
     console.log('innerHTML => ', ref?.current?.innerHTML);
   };
@@ -117,22 +125,7 @@ const Report360: FC = () => {
             </div>
 
             <p className="text-right">{dateFormatter(rate?.startDate)}</p>
-            <div>
-              <p className="mt-6 text-sm text-gray-700">
-                Отчет отображает результаты, полученные при прохождении оценки
-                по методу 360/180 градусов. Результаты оценки 360 градусов
-                базируются на мнениях руководителя, коллег, подчиненных, а также
-                на самооценке самого участника команды. В небольших командах
-                некоторые из ролей оценивающих могут отсутствовать. Цель отчета
-                — дать участнику команды и его окружению обратную связь, помочь
-                оцениваемому понять,как его воспринимают со стороны, увидеть
-                свои сильные и слабые стороны, чтобы в результате усилить слабые
-                стороны или более уверенно пользоваться своими сильными
-                сторонами. Результаты оценки помогают подготовить планы для
-                развития сотрудника,повысить эффективность взаимодействия за
-                счет комплексной обратной связи.
-              </p>
-            </div>
+            {isAdmin && <WorkSpace user={foundUser} />}
             <div>
               <ProgressBarBlock />
               <div className="mt-16">
@@ -159,30 +152,18 @@ const Report360: FC = () => {
                               <table className="min-w-full divide-y divide-gray-300">
                                 <thead className="bg-gray-50">
                                   <tr>
-                                    <th
-                                      scope="col"
-                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                      Компетенция/Индикатор
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                      Руководители
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                      Коллеги
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                      Подчиненные
-                                    </th>
+                                    {[
+                                      'Компетенция/Индикатор',
+                                      ...commonHeaders,
+                                    ].map((header) => (
+                                      <th
+                                        key={header}
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                      >
+                                        {header}
+                                      </th>
+                                    ))}
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -238,30 +219,17 @@ const Report360: FC = () => {
                         <table className="min-w-full divide-y divide-gray-300">
                           <thead className="bg-gray-50">
                             <tr>
-                              <th
-                                scope="col"
-                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              >
-                                Блок компетенции
-                              </th>
-                              <th
-                                scope="col"
-                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              >
-                                Руководители
-                              </th>
-                              <th
-                                scope="col"
-                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              >
-                                Коллеги
-                              </th>
-                              <th
-                                scope="col"
-                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              >
-                                Подчиненные
-                              </th>
+                              {['Блок компетенции', ...commonHeaders].map(
+                                (header) => (
+                                  <th
+                                    key={header}
+                                    scope="col"
+                                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                  >
+                                    {header}
+                                  </th>
+                                ),
+                              )}
                             </tr>
                           </thead>
                           <tbody>
@@ -295,30 +263,15 @@ const Report360: FC = () => {
                 <table className="min-w-full divide-y divide-gray-300">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Общая оценка
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Руководители
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Коллеги
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Подчиненные
-                      </th>
+                      {['Общая оценка', ...commonHeaders].map((header) => (
+                        <th
+                          key={header}
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
+                          {header}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
@@ -339,12 +292,6 @@ const Report360: FC = () => {
                     </tr>
                   </tbody>
                 </table>
-              </div>
-              <div>
-                <h4 className="">{''}</h4>
-              </div>
-              <div>
-                <h4 className="">{''}</h4>
               </div>
             </div>
           </div>
