@@ -8,11 +8,11 @@ import { useParams } from 'react-router';
 import ProgressBarBlock from './ProgressBarBlock';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { cva } from '@/shared/lib/cva';
-import { dateFormatter, useIndicatorRatings } from './helpers';
+import { dateFormatter } from './helpers';
 import Dimmer from '@/shared/ui/Dimmer';
-
-// 3 - Curator
-// 1,2 - teamMembers
+import { useCalculateAvgIndicatorRaitings } from './useCalculateAvgIndicatorRaitings';
+import { useAggregatedAverages } from './useAggregatedAverages';
+import { Competency, CompetencyBlock } from '@/entities/skill';
 
 const evaluatorTypes = ['CURATOR', 'TEAM_MEMBER', 'SUBORDINATE'];
 
@@ -34,7 +34,11 @@ const Report360: FC = () => {
 
   const rate = data?.find((report) => report.id === Number(id));
   const userRates = rate?.userRates;
-  const indicatorRatings = useIndicatorRatings(rate?.evaluators, userRates);
+
+  const indicatorRatings = useCalculateAvgIndicatorRaitings(
+    rate?.evaluators,
+    userRates,
+  );
   const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
     {},
   );
@@ -70,16 +74,18 @@ const Report360: FC = () => {
             ? { ...competency, indicators: filteredIndicators }
             : null;
         })
-        .filter(Boolean);
+        .filter((competency): competency is Competency => competency !== null);
 
       return filteredCompetencies.length > 0
-        ? { ...skill, competencies: filteredCompetencies }
+        ? { ...skill, competencies: filteredCompetencies.filter(Boolean) }
         : null;
     })
-    .filter(Boolean);
+    .filter(Boolean) as CompetencyBlock[];
+
+  const { overallAverage, blocksRaiting, competenciesRaiting } =
+    useAggregatedAverages(filteredBlocksCompetencies, indicatorRatings);
 
   const { avatar, firstName, lastName } = foundUser || {};
-
   const onClickExport = () => {
     console.log('innerHTML => ', ref?.current?.innerHTML);
   };
@@ -136,20 +142,15 @@ const Report360: FC = () => {
                       className="mb-16 last:mb-0"
                       key={blocksCompetencies?.id}
                     >
-                      <h2 className="text-2xl font-bold mb-10">
-                        {/* Block Competencies:  */}
+                      <h2 className="text-2xl font-bold mb-5">
                         {blocksCompetencies?.name}
                       </h2>
                       {blocksCompetencies?.competencies?.map((competency) => {
                         return (
                           <div
                             key={blocksCompetencies?.id}
-                            className="mb-12 last:mb-0"
+                            className="mb-4 last:mb-0"
                           >
-                            <h3 className="text-lg font-semibold mb-5">
-                              {/* Competency:  */}
-                              {competency?.name}
-                            </h3>
                             <div
                               className={cva(
                                 'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg',
@@ -162,7 +163,7 @@ const Report360: FC = () => {
                                       scope="col"
                                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                     >
-                                      Индикатор
+                                      Компетенция/Индикатор
                                     </th>
                                     <th
                                       scope="col"
@@ -185,6 +186,23 @@ const Report360: FC = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
+                                  <tr>
+                                    <td className="w-full px-3 py-4 text-sm">
+                                      {competency?.name}
+                                    </td>
+                                    {evaluatorTypes.map((evaluatorType) => (
+                                      <RateCell
+                                        key={evaluatorType}
+                                        rate={
+                                          competenciesRaiting?.[
+                                            competency?.id
+                                          ]?.[
+                                            evaluatorType as keyof (typeof competenciesRaiting)[typeof competency.id]
+                                          ]
+                                        }
+                                      />
+                                    ))}
+                                  </tr>
                                   {competency?.indicators?.map((indicator) => {
                                     return (
                                       <tr key={indicator.id}>
@@ -193,6 +211,7 @@ const Report360: FC = () => {
                                         </td>
                                         {evaluatorTypes.map((evaluatorType) => (
                                           <RateCell
+                                            key={evaluatorType}
                                             rate={
                                               indicatorRatings?.[
                                                 indicator?.id
@@ -211,9 +230,115 @@ const Report360: FC = () => {
                           </div>
                         );
                       })}
+                      <div
+                        className={cva(
+                          'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mt-5',
+                        )}
+                      >
+                        <table className="min-w-full divide-y divide-gray-300">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th
+                                scope="col"
+                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              >
+                                Блок компетенции
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              >
+                                Руководители
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              >
+                                Коллеги
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              >
+                                Подчиненные
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                {blocksCompetencies?.name}
+                              </td>
+                              {evaluatorTypes.map((evaluatorType) => (
+                                <RateCell
+                                  key={evaluatorType}
+                                  rate={
+                                    blocksRaiting?.[blocksCompetencies?.id]?.[
+                                      evaluatorType as keyof (typeof blocksRaiting)[typeof blocksCompetencies.id]
+                                    ]
+                                  }
+                                />
+                              ))}
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   );
                 })}
+              </div>
+              <div
+                className={cva(
+                  'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mt-10',
+                )}
+              >
+                <table className="min-w-full divide-y divide-gray-300">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Общая оценка
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Руководители
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Коллеги
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Подчиненные
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Общая оценка
+                      </td>
+                      {evaluatorTypes.map((evaluatorType) => (
+                        <RateCell
+                          key={evaluatorType}
+                          rate={
+                            overallAverage?.[
+                              evaluatorType as keyof typeof overallAverage
+                            ]
+                          }
+                        />
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
               </div>
               <div>
                 <h4 className="">{''}</h4>
