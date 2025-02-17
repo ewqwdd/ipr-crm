@@ -21,6 +21,8 @@ export interface Rate {
   user: { id: number; username: string };
   spec: { id: number; name: string };
   team: { id: number; name: string };
+  userComment?: string;
+  curatorComment?: string;
   userRates: {
     id: number;
     userId: number;

@@ -145,6 +145,7 @@ export class Rate360Controller {
     @Body() data: ConfirmRateDto,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
+    console.log(data);
     return await this.rate360Service.confirmByUser(data, sessionInfo.id);
   }
 }

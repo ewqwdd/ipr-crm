@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class EvaluateUserDto {
@@ -27,4 +27,8 @@ export class ConfirmRateDto {
   @ValidateNested({ each: true })
   @Type(() => EvaluateUserDto)
   evaluateTeam: EvaluateUserDto[];
+
+  @IsString()
+  @IsOptional()
+  comment?: string;
 }

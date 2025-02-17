@@ -7,6 +7,7 @@ interface ConfirmDto {
   evaluateCurators: EvaluateUser[];
   evaluateTeam: EvaluateUser[];
   evaluateSubbordinate: EvaluateUser[];
+  comment?: string;
 }
 
 const rate360Api = createApi({

@@ -12,6 +12,7 @@ import EvaluatorsForm from '../EvaluatorsForm/EvaluatorsForm';
 import ConfirmTitle from './ConfirmTitle';
 import { rate360Api } from '@/shared/api/rate360Api';
 import toast from 'react-hot-toast';
+import { TextArea } from '@/shared/ui/TextArea';
 
 interface ConfirmEvaluatorsModalData {
   rate: Rate;
@@ -33,6 +34,7 @@ export default function ConfirmEvaluatorsModal({
   const [confirmCurator, curatorProps] =
     rate360Api.useConfirmRateByCuratorMutation();
   const [confirmUser, userProps] = rate360Api.useConfirmRateByUserMutation();
+  const [comment, setComment] = useState<string>('');
 
   const [addType, setAddType] = useState<EvaulatorType | undefined>();
 
@@ -128,6 +130,7 @@ export default function ConfirmEvaluatorsModal({
       evaluateCurators,
       evaluateSubbordinate,
       evaluateTeam,
+      comment: comment,
     });
   };
 
@@ -206,6 +209,13 @@ export default function ConfirmEvaluatorsModal({
             evaluators={selectedSpecs[0].specs[0].evaluateSubbordinate}
             onClick={onDelete}
           />
+          {!curatorBlocked && rate.userComment && (<div className='col-span-3 flex-col gap-2'>
+            <h3 className='text-gray-700 font-semibold'>Комментарий оцениваемого</h3>
+            <p className='text-gray-500'>{rate.userComment}</p>
+            </div>)}
+          <div className='col-span-3'>
+            <TextArea label='Комментарий' value={comment} onChange={e => setComment(e.target.value)} />
+            </div>
         </div>
         <Modal
           open={!!addType}

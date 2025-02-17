@@ -336,7 +336,7 @@ export class Rate360Service {
       block.competencies.flatMap((competency) => competency.indicators),
     );
     const userRates = rate.userRates;
-    if (userRates.length !== indicators.length) {
+    if (userRates.length < indicators.length) {
       throw new ForbiddenException('Оценка не завершена');
     }
 
@@ -394,7 +394,7 @@ export class Rate360Service {
       block.competencies.flatMap((competency) => competency.indicators),
     );
     const userRates = rate.userRates;
-    if (userRates.length >= indicators.length) {
+    if (userRates.length < indicators.length) {
       throw new ForbiddenException('Оценка не завершена');
     }
 
@@ -550,6 +550,7 @@ export class Rate360Service {
       evaluateSubbordinate,
       evaluateTeam,
       rateId,
+      comment,
     }: ConfirmRateDto,
     curatorId: number,
   ) {
@@ -596,6 +597,7 @@ export class Rate360Service {
               data: evaluatorsData,
             },
           },
+          curatorComment: comment,
           curatorConfirmed: true,
         },
       }),
@@ -603,9 +605,10 @@ export class Rate360Service {
   }
 
   async confirmByUser(
-    { evaluateSubbordinate, evaluateTeam, rateId }: ConfirmRateDto,
+    { evaluateSubbordinate, evaluateTeam, rateId, comment }: ConfirmRateDto,
     userId: number,
   ) {
+    console.log(comment);
     const rate = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
@@ -646,6 +649,7 @@ export class Rate360Service {
               data: evaluatorsData,
             },
           },
+          userComment: comment,
           userConfirmed: true,
         },
       }),

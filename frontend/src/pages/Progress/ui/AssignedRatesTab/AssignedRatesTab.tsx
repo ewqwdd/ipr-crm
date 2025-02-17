@@ -7,8 +7,7 @@ export default function AssignedRatesTab() {
     <RateList
       data={data}
       isLoading={isLoading}
-      heading="По другим пользователям
-  "
+      heading="По другим пользователям"
     />
   );
 }
