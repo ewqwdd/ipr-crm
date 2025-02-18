@@ -2,13 +2,13 @@ import { Team } from '@/entities/team';
 import { User } from '@/entities/user';
 import { teamsApi } from '@/shared/api/teamsApi';
 import Dimmer from '@/shared/ui/Dimmer';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { getCuratorsAndMembers, getTeamMembers } from './helpers';
 type WorkSpaceProps = {
   user?: User;
 };
 
-export const WorkSpace: FC<WorkSpaceProps> = ({ user }) => {
+const WorkSpace: FC<WorkSpaceProps> = ({ user }) => {
   const { data: teams, isFetching: teamsFetching } =
     teamsApi.useGetTeamsQuery();
 
@@ -67,3 +67,5 @@ export const WorkSpace: FC<WorkSpaceProps> = ({ user }) => {
     </Dimmer>
   );
 };
+
+export default memo(WorkSpace);

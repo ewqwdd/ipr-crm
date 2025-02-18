@@ -4,7 +4,7 @@ import { Competency, CompetencyBlock } from '@/entities/skill';
 import { calculateAverage } from './helpers';
 import { FinalRatings } from './useCalculateAvgIndicatorRaitings';
 
-type EvaluatorType = EvaulatorType; // TODO: change to EvaulatorType
+type EvaluatorType = EvaulatorType | 'SELF';
 
 interface AggregatedAveragesResult {
   competenciesRaiting: Record<number, Record<EvaluatorType, number>>;

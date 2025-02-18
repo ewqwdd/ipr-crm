@@ -13,11 +13,21 @@ import Dimmer from '@/shared/ui/Dimmer';
 import { useCalculateAvgIndicatorRaitings } from './useCalculateAvgIndicatorRaitings';
 import { useAggregatedAverages } from './useAggregatedAverages';
 import { Competency, CompetencyBlock } from '@/entities/skill';
-import { WorkSpace } from './WorkSpace';
+import WorkSpace from './WorkSpace';
 import AyeChart from './ayeChart';
 
-const evaluatorTypes = ['CURATOR', 'TEAM_MEMBER', 'SUBORDINATE'] as const;
-const commonHeaders = ['Руководители', 'Коллеги', 'Подчиненные'] as const;
+const evaluatorTypes = [
+  'CURATOR',
+  'TEAM_MEMBER',
+  'SUBORDINATE',
+  'SELF',
+] as const;
+const commonHeaders = [
+  'Руководители',
+  'Коллеги',
+  'Подчиненные',
+  'Самооц.',
+] as const;
 
 const RateCell = ({ rate }: { rate?: number }) => {
   if (!rate) return <td className="px-3 py-4 text-sm">N/D</td>;
@@ -31,17 +41,12 @@ const RateCell = ({ rate }: { rate?: number }) => {
 
 const Report360: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const ref = useRef<HTMLDivElement>(null);
 
   const { data, isLoading } = rate360Api.useGetRatesQuery();
 
   const rate = data?.find((report) => report.id === Number(id));
   const userRates = rate?.userRates;
 
-  const indicatorRatings = useCalculateAvgIndicatorRaitings(
-    rate?.evaluators,
-    userRates,
-  );
   const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
     {},
   );
@@ -53,6 +58,17 @@ const Report360: FC = () => {
 
   const foundSpec = specs?.find((spec) => spec.id === rate?.spec?.id);
   const foundUser = users?.users.find((user) => user.id === rate?.user?.id);
+
+  const { avatar, firstName, lastName, role, id: userId } = foundUser || {};
+
+  const indicatorRatings = useCalculateAvgIndicatorRaitings(
+    rate?.evaluators,
+    userRates,
+    userId,
+  );
+
+  const ref = useRef<HTMLDivElement>(null);
+  const isAdmin = role?.name === 'admin';
 
   const neededIndicatorIdsSet = new Set(
     userRates?.map((rate) => rate.indicatorId),
@@ -87,10 +103,6 @@ const Report360: FC = () => {
 
   const { overallAverage, blocksRaiting, competenciesRaiting } =
     useAggregatedAverages(filteredBlocksCompetencies, indicatorRatings);
-
-  const { avatar, firstName, lastName, role } = foundUser || {};
-
-  const isAdmin = role?.name === 'admin';
 
   const onClickExport = () => {
     console.log('innerHTML => ', ref?.current?.innerHTML);

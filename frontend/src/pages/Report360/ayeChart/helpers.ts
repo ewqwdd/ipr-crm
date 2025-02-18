@@ -24,12 +24,18 @@ const ayeChartColor = {
     borderColor: 'rgba(75, 192, 75, 1)',
     borderWidth: 2,
   },
-  //   TODO: add SELF
   SELF: {
     backgroundColor: 'rgba(128, 128, 128, 0.5)',
     borderColor: 'rgba(128, 128, 128, 1)',
     borderWidth: 2,
   },
+};
+
+const ayeLabels = {
+  CURATOR: 'Кураторы',
+  TEAM_MEMBER: 'Коллеги',
+  SUBORDINATE: 'Подчинённые',
+  SELF: 'Самооценка',
 };
 
 export const getAyeChartData = (
@@ -40,7 +46,7 @@ export const getAyeChartData = (
     labels: [label],
     datasets: evaluatorTypes.map((evalutor) => {
       return {
-        label: evalutor,
+        label: ayeLabels[evalutor],
         data: [data?.[evalutor as EvaulatorType] ?? 0],
         ...ayeChartColor[evalutor],
       };

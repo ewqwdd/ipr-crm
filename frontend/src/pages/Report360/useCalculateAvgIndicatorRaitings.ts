@@ -25,11 +25,12 @@ type IndicatorRatings = {
   CURATOR: number[];
   TEAM_MEMBER: number[];
   SUBORDINATE: number[];
+  SELF: number[];
 };
 
 export type FinalRatings = Record<
   IndicatorId,
-  { CURATOR: number; TEAM_MEMBER: number; SUBORDINATE: number }
+  { CURATOR: number; TEAM_MEMBER: number; SUBORDINATE: number; SELF: number }
 >;
 
 // Функция: Создаёт карту userId → type
@@ -43,17 +44,22 @@ const createUserTypeMap = (rateEvelopers: RateEveloper[]) =>
 const groupRatingsByIndicator = (
   userRates: UserRate[],
   userTypeMap: Map<number, string>,
+  currentUserId: number,
 ): Map<number, IndicatorRatings> => {
   const indicatorRatings = new Map();
 
   userRates.forEach(({ userId, indicatorId, rate }) => {
-    const userType = userTypeMap.get(userId) || 'SUBORDINATE';
+    const userType =
+      userId === currentUserId
+        ? 'SELF'
+        : userTypeMap.get(userId) || 'SUBORDINATE';
 
     if (!indicatorRatings.has(indicatorId)) {
       indicatorRatings.set(indicatorId, {
         CURATOR: [],
         TEAM_MEMBER: [],
         SUBORDINATE: [],
+        SELF: [],
       });
     }
 
@@ -83,6 +89,9 @@ const calculateAverageRatings = (
           ? ratings.SUBORDINATE.reduce((sum, r) => sum + r, 0) /
             ratings.SUBORDINATE.length
           : 0,
+        SELF: ratings.SELF.length
+          ? ratings.SELF.reduce((sum, r) => sum + r, 0) / ratings.SELF.length
+          : 0,
       },
     ]),
   );
@@ -91,18 +100,28 @@ const calculateAverageRatings = (
 const calculateFinalRatings = (
   assessors: RateEveloper[],
   userRates: UserRate[],
+  currentUserId: number,
 ): FinalRatings => {
   const userTypeMap = createUserTypeMap(assessors);
-  const indicatorRatings = groupRatingsByIndicator(userRates, userTypeMap);
+  const indicatorRatings = groupRatingsByIndicator(
+    userRates,
+    userTypeMap,
+    currentUserId,
+  );
   return calculateAverageRatings(indicatorRatings);
 };
 
 export const useCalculateAvgIndicatorRaitings = (
   assessors?: RateEveloper[],
   userRates?: UserRate[],
+  currentUserId?: number,
 ): FinalRatings => {
   return useMemo(() => {
-    if (!assessors?.length || !userRates?.length) return {};
-    return calculateFinalRatings(assessors, userRates) as FinalRatings;
-  }, [assessors, userRates]);
+    if (!assessors?.length || !userRates?.length || !currentUserId) return {};
+    return calculateFinalRatings(
+      assessors,
+      userRates,
+      currentUserId,
+    ) as FinalRatings;
+  }, [assessors, userRates, currentUserId]);
 };
