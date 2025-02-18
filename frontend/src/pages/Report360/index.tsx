@@ -8,13 +8,26 @@ import { useParams } from 'react-router';
 import ProgressBarBlock from './ProgressBarBlock';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { cva } from '@/shared/lib/cva';
-import { dateFormatter, useIndicatorRatings } from './helpers';
+import { dateFormatter } from './helpers';
 import Dimmer from '@/shared/ui/Dimmer';
+import { useCalculateAvgIndicatorRaitings } from './useCalculateAvgIndicatorRaitings';
+import { useAggregatedAverages } from './useAggregatedAverages';
+import { Competency, CompetencyBlock } from '@/entities/skill';
+import WorkSpace from './WorkSpace';
+import AyeChart from './ayeChart';
 
-// 3 - Curator
-// 1,2 - teamMembers
-
-const evaluatorTypes = ['CURATOR', 'TEAM_MEMBER', 'SUBORDINATE'];
+const evaluatorTypes = [
+  'CURATOR',
+  'TEAM_MEMBER',
+  'SUBORDINATE',
+  'SELF',
+] as const;
+const commonHeaders = [
+  'Руководители',
+  'Коллеги',
+  'Подчиненные',
+  'Самооц.',
+] as const;
 
 const RateCell = ({ rate }: { rate?: number }) => {
   if (!rate) return <td className="px-3 py-4 text-sm">N/D</td>;
@@ -28,13 +41,12 @@ const RateCell = ({ rate }: { rate?: number }) => {
 
 const Report360: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const ref = useRef<HTMLDivElement>(null);
 
   const { data, isLoading } = rate360Api.useGetRatesQuery();
 
   const rate = data?.find((report) => report.id === Number(id));
   const userRates = rate?.userRates;
-  const indicatorRatings = useIndicatorRatings(rate?.evaluators, userRates);
+
   const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
     {},
   );
@@ -46,6 +58,17 @@ const Report360: FC = () => {
 
   const foundSpec = specs?.find((spec) => spec.id === rate?.spec?.id);
   const foundUser = users?.users.find((user) => user.id === rate?.user?.id);
+
+  const { avatar, firstName, lastName, role, id: userId } = foundUser || {};
+
+  const indicatorRatings = useCalculateAvgIndicatorRaitings(
+    rate?.evaluators,
+    userRates,
+    userId,
+  );
+
+  const ref = useRef<HTMLDivElement>(null);
+  const isAdmin = role?.name === 'admin';
 
   const neededIndicatorIdsSet = new Set(
     userRates?.map((rate) => rate.indicatorId),
@@ -70,15 +93,16 @@ const Report360: FC = () => {
             ? { ...competency, indicators: filteredIndicators }
             : null;
         })
-        .filter(Boolean);
+        .filter((competency): competency is Competency => competency !== null);
 
       return filteredCompetencies.length > 0
-        ? { ...skill, competencies: filteredCompetencies }
+        ? { ...skill, competencies: filteredCompetencies.filter(Boolean) }
         : null;
     })
-    .filter(Boolean);
+    .filter(Boolean) as CompetencyBlock[];
 
-  const { avatar, firstName, lastName } = foundUser || {};
+  const { overallAverage, blocksRaiting, competenciesRaiting } =
+    useAggregatedAverages(filteredBlocksCompetencies, indicatorRatings);
 
   const onClickExport = () => {
     console.log('innerHTML => ', ref?.current?.innerHTML);
@@ -111,22 +135,7 @@ const Report360: FC = () => {
             </div>
 
             <p className="text-right">{dateFormatter(rate?.startDate)}</p>
-            <div>
-              <p className="mt-6 text-sm text-gray-700">
-                Отчет отображает результаты, полученные при прохождении оценки
-                по методу 360/180 градусов. Результаты оценки 360 градусов
-                базируются на мнениях руководителя, коллег, подчиненных, а также
-                на самооценке самого участника команды. В небольших командах
-                некоторые из ролей оценивающих могут отсутствовать. Цель отчета
-                — дать участнику команды и его окружению обратную связь, помочь
-                оцениваемому понять,как его воспринимают со стороны, увидеть
-                свои сильные и слабые стороны, чтобы в результате усилить слабые
-                стороны или более уверенно пользоваться своими сильными
-                сторонами. Результаты оценки помогают подготовить планы для
-                развития сотрудника,повысить эффективность взаимодействия за
-                счет комплексной обратной связи.
-              </p>
-            </div>
+            {isAdmin && <WorkSpace user={foundUser} />}
             <div>
               <ProgressBarBlock />
               <div className="mt-16">
@@ -136,20 +145,15 @@ const Report360: FC = () => {
                       className="mb-16 last:mb-0"
                       key={blocksCompetencies?.id}
                     >
-                      <h2 className="text-2xl font-bold mb-10">
-                        {/* Block Competencies:  */}
+                      <h2 className="text-2xl mb-5">
                         {blocksCompetencies?.name}
                       </h2>
                       {blocksCompetencies?.competencies?.map((competency) => {
                         return (
                           <div
                             key={blocksCompetencies?.id}
-                            className="mb-12 last:mb-0"
+                            className="mb-4 last:mb-0"
                           >
-                            <h3 className="text-lg font-semibold mb-5">
-                              {/* Competency:  */}
-                              {competency?.name}
-                            </h3>
                             <div
                               className={cva(
                                 'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg',
@@ -158,33 +162,38 @@ const Report360: FC = () => {
                               <table className="min-w-full divide-y divide-gray-300">
                                 <thead className="bg-gray-50">
                                   <tr>
-                                    <th
-                                      scope="col"
-                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                      Индикатор
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                      Руководители
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                      Коллеги
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >
-                                      Подчиненные
-                                    </th>
+                                    {[
+                                      'Компетенция/Индикатор',
+                                      ...commonHeaders,
+                                    ].map((header) => (
+                                      <th
+                                        key={header}
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                      >
+                                        {header}
+                                      </th>
+                                    ))}
                                   </tr>
                                 </thead>
                                 <tbody>
+                                  <tr>
+                                    <td className="w-full px-3 py-4 text-sm">
+                                      {competency?.name}
+                                    </td>
+                                    {evaluatorTypes.map((evaluatorType) => (
+                                      <RateCell
+                                        key={evaluatorType}
+                                        rate={
+                                          competenciesRaiting?.[
+                                            competency?.id
+                                          ]?.[
+                                            evaluatorType as keyof (typeof competenciesRaiting)[typeof competency.id]
+                                          ]
+                                        }
+                                      />
+                                    ))}
+                                  </tr>
                                   {competency?.indicators?.map((indicator) => {
                                     return (
                                       <tr key={indicator.id}>
@@ -193,6 +202,7 @@ const Report360: FC = () => {
                                         </td>
                                         {evaluatorTypes.map((evaluatorType) => (
                                           <RateCell
+                                            key={evaluatorType}
                                             rate={
                                               indicatorRatings?.[
                                                 indicator?.id
@@ -211,17 +221,90 @@ const Report360: FC = () => {
                           </div>
                         );
                       })}
+                      <div
+                        className={cva(
+                          'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mt-5',
+                        )}
+                      >
+                        <table className="min-w-full divide-y divide-gray-300">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              {['Блок компетенции', ...commonHeaders].map(
+                                (header) => (
+                                  <th
+                                    key={header}
+                                    scope="col"
+                                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                  >
+                                    {header}
+                                  </th>
+                                ),
+                              )}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                {blocksCompetencies?.name}
+                              </td>
+                              {evaluatorTypes.map((evaluatorType) => (
+                                <RateCell
+                                  key={evaluatorType}
+                                  rate={
+                                    blocksRaiting?.[blocksCompetencies?.id]?.[
+                                      evaluatorType as keyof (typeof blocksRaiting)[typeof blocksCompetencies.id]
+                                    ]
+                                  }
+                                />
+                              ))}
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   );
                 })}
               </div>
-              <div>
-                <h4 className="">{''}</h4>
-              </div>
-              <div>
-                <h4 className="">{''}</h4>
+              <div
+                className={cva(
+                  'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mt-10',
+                )}
+              >
+                <table className="min-w-full divide-y divide-gray-300">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      {['Общая оценка', ...commonHeaders].map((header) => (
+                        <th
+                          key={header}
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Общая оценка
+                      </td>
+                      {evaluatorTypes.map((evaluatorType) => (
+                        <RateCell
+                          key={evaluatorType}
+                          rate={
+                            overallAverage?.[
+                              evaluatorType as keyof typeof overallAverage
+                            ]
+                          }
+                        />
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
+            <AyeChart data={overallAverage} label={foundSpec?.name} />
           </div>
         </div>
       </Dimmer>
