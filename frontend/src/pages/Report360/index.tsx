@@ -14,10 +14,10 @@ import { useCalculateAvgIndicatorRaitings } from './useCalculateAvgIndicatorRait
 import { useAggregatedAverages } from './useAggregatedAverages';
 import { Competency, CompetencyBlock } from '@/entities/skill';
 import { WorkSpace } from './WorkSpace';
+import AyeChart from './ayeChart';
 
-const evaluatorTypes = ['CURATOR', 'TEAM_MEMBER', 'SUBORDINATE'];
-
-const commonHeaders = ['Руководители', 'Коллеги', 'Подчиненные'];
+const evaluatorTypes = ['CURATOR', 'TEAM_MEMBER', 'SUBORDINATE'] as const;
+const commonHeaders = ['Руководители', 'Коллеги', 'Подчиненные'] as const;
 
 const RateCell = ({ rate }: { rate?: number }) => {
   if (!rate) return <td className="px-3 py-4 text-sm">N/D</td>;
@@ -88,8 +88,6 @@ const Report360: FC = () => {
   const { overallAverage, blocksRaiting, competenciesRaiting } =
     useAggregatedAverages(filteredBlocksCompetencies, indicatorRatings);
 
-  console.log(foundUser);
-
   const { avatar, firstName, lastName, role } = foundUser || {};
 
   const isAdmin = role?.name === 'admin';
@@ -135,7 +133,7 @@ const Report360: FC = () => {
                       className="mb-16 last:mb-0"
                       key={blocksCompetencies?.id}
                     >
-                      <h2 className="text-2xl font-bold mb-5">
+                      <h2 className="text-2xl mb-5">
                         {blocksCompetencies?.name}
                       </h2>
                       {blocksCompetencies?.competencies?.map((competency) => {
@@ -294,6 +292,7 @@ const Report360: FC = () => {
                 </table>
               </div>
             </div>
+            <AyeChart data={overallAverage} label={foundSpec?.name} />
           </div>
         </div>
       </Dimmer>
