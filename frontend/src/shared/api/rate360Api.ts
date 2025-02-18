@@ -22,7 +22,15 @@ const rate360Api = createApi({
       query: () => '/rate360',
       providesTags: ['Rate360'],
     }),
-    createRate: build.mutation<void, { rate: AddRateDto[]; skill: string[] }>({
+    createRate: build.mutation<
+      void,
+      {
+        rate: AddRateDto[];
+        skill: string[];
+        confirmCurator: boolean;
+        confirmUser: boolean;
+      }
+    >({
       query: (body) => ({
         url: '/rate360',
         method: 'POST',

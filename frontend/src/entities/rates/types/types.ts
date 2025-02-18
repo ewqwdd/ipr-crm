@@ -57,4 +57,6 @@ export type AddRateDto = {
 
 export interface RateStoreSchema {
   selectedSpecs: AddRateDto[];
+  confirmUser: boolean;
+  confirmCurator: boolean;
 }

@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
 import { AddRateDto } from '../../types/types';
+import ConfirmCheckbox from '../AddRate/ConfirmCheckbox/ConfirmCheckbox';
 
 interface SelectSpecsFormProps {
   skillTypes: string[];
@@ -15,9 +16,15 @@ interface SelectSpecsFormProps {
   teams: MultiValue<Option>;
   specs: MultiValue<Option>;
   search: string;
+  confirmCurator?: boolean;
+  confirmUser?: boolean;
+
   setTeams: React.Dispatch<React.SetStateAction<MultiValue<Option>>>;
   setSpecs: React.Dispatch<React.SetStateAction<MultiValue<Option>>>;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
+
+  onChangeConfirmCurator?: (v: boolean) => void;
+  onChageConfirmUser?: (v: boolean) => void;
   onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
 }
 
@@ -33,6 +40,10 @@ export default function SelectSpecsForm({
   specs,
   teams,
   onChangeSpecs,
+  confirmCurator,
+  confirmUser,
+  onChageConfirmUser,
+  onChangeConfirmCurator,
 }: SelectSpecsFormProps) {
   const selectedCount = useMemo(
     () => selectedSpecs.reduce((acc, s) => acc + s.specs.length, 0),
@@ -60,6 +71,14 @@ export default function SelectSpecsForm({
               </PrimaryButton>
             </div>
           </>
+        )}
+        {onChageConfirmUser && onChangeConfirmCurator && (
+          <ConfirmCheckbox
+            onChageConfirmUser={onChageConfirmUser}
+            onChangeConfirmCurator={onChangeConfirmCurator}
+            confirmCurator={confirmCurator}
+            confirmUser={confirmUser}
+          />
         )}
       </div>
       <h2 className="text-xl font-semibold">Выберите оцениваемых</h2>

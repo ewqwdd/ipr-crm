@@ -209,13 +209,21 @@ export default function ConfirmEvaluatorsModal({
             evaluators={selectedSpecs[0].specs[0].evaluateSubbordinate}
             onClick={onDelete}
           />
-          {!curatorBlocked && rate.userComment && (<div className='col-span-3 flex-col gap-2'>
-            <h3 className='text-gray-700 font-semibold'>Комментарий оцениваемого</h3>
-            <p className='text-gray-500'>{rate.userComment}</p>
-            </div>)}
-          <div className='col-span-3'>
-            <TextArea label='Комментарий' value={comment} onChange={e => setComment(e.target.value)} />
+          {!curatorBlocked && rate.userComment && (
+            <div className="col-span-3 flex-col gap-2">
+              <h3 className="text-gray-700 font-semibold">
+                Комментарий оцениваемого
+              </h3>
+              <p className="text-gray-500">{rate.userComment}</p>
             </div>
+          )}
+          <div className="col-span-3">
+            <TextArea
+              label="Комментарий"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+          </div>
         </div>
         <Modal
           open={!!addType}

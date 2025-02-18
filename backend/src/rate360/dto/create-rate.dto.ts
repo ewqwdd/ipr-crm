@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsString,
@@ -59,4 +60,10 @@ export class CreateRateDto {
   @IsArray()
   @IsEnum(['SOFT', 'HARD'], { each: true })
   skill: SkillType[];
+
+  @IsBoolean()
+  confirmUser: boolean;
+
+  @IsBoolean()
+  confirmCurator: boolean;
 }

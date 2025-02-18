@@ -21,10 +21,20 @@ export default function SpecsTab({
   const [specs, setSpecs] = useState<MultiValue<Option>>([]);
   const [search, setSearch] = useState('');
   const selectedSpecs = useAppSelector((state) => state.rates.selectedSpecs);
+  const confirmCurator = useAppSelector((state) => state.rates.confirmCurator);
+  const confirmUser = useAppSelector((state) => state.rates.confirmUser);
   const dispatch = useAppDispatch();
 
   const onChangeSpecs = (teamId: number, specId: number, userId: number) => {
     dispatch(ratesActions.selectSpec({ teamId, specId, userId }));
+  };
+
+  const onChangeConfirmCurator = (v: boolean) => {
+    dispatch(ratesActions.setConfirmCurator(v));
+  };
+
+  const onChangeConfirmUser = (v: boolean) => {
+    dispatch(ratesActions.setConfirmUser(v));
   };
 
   return (
@@ -40,6 +50,10 @@ export default function SpecsTab({
       skillTypes={skillTypes}
       specs={specs}
       teams={teams}
+      confirmCurator={confirmCurator}
+      confirmUser={confirmUser}
+      onChangeConfirmCurator={onChangeConfirmCurator}
+      onChageConfirmUser={onChangeConfirmUser}
     />
   );
 }

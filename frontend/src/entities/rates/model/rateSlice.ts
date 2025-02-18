@@ -3,6 +3,8 @@ import { EvaluateUser, EvaulatorType, RateStoreSchema } from '../types/types';
 
 const initialState: RateStoreSchema = {
   selectedSpecs: [],
+  confirmCurator: false,
+  confirmUser: false,
 };
 
 const rateSlice = createSlice({
@@ -168,6 +170,14 @@ const rateSlice = createSlice({
     },
     clear: (state) => {
       state.selectedSpecs = [];
+      state.confirmCurator = false;
+      state.confirmUser = false;
+    },
+    setConfirmCurator: (state, action: PayloadAction<boolean>) => {
+      state.confirmCurator = action.payload;
+    },
+    setConfirmUser: (state, action: PayloadAction<boolean>) => {
+      state.confirmUser = action.payload;
     },
   },
 });

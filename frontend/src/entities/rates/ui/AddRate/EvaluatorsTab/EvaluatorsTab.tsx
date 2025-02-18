@@ -35,6 +35,9 @@ export default function EvaluatorsTab({
   const [addRate, { isLoading, isSuccess, isError }] =
     rate360Api.useCreateRateMutation();
   const selectedSpecs = useAppSelector((state) => state.rates.selectedSpecs);
+  const confirmCurator = useAppSelector((state) => state.rates.confirmCurator);
+  const confirmUser = useAppSelector((state) => state.rates.confirmUser);
+
   const dispatch = useAppDispatch();
 
   const teamIds = useMemo<TeamItemIds[]>(
@@ -111,7 +114,14 @@ export default function EvaluatorsTab({
             Назад
           </SecondaryButton>
           <PrimaryButton
-            onClick={() => addRate({ rate: selectedSpecs, skill: skillTypes })}
+            onClick={() =>
+              addRate({
+                rate: selectedSpecs,
+                skill: skillTypes,
+                confirmCurator,
+                confirmUser,
+              })
+            }
             disabled={isLoading}
           >
             Добавить оценку

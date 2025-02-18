@@ -62,7 +62,7 @@ export class Rate360Service {
   }
 
   async createRate(data: CreateRateDto) {
-    const { rate, skill } = data;
+    const { rate, skill, confirmCurator, confirmUser } = data;
     const ratesToCreate = skill.flatMap((skill) =>
       rate.flatMap((team) => {
         return team.specs.map((spec) => ({
@@ -79,6 +79,8 @@ export class Rate360Service {
         specId: rate.specId,
         userId: rate.userId,
         teamId: rate.teamId,
+        userConfirmed: !confirmUser,
+        curatorConfirmed: !confirmCurator,
       })),
     });
 
