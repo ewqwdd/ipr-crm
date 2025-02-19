@@ -1,8 +1,13 @@
 import { cva } from '@/shared/lib/cva';
 import { ExclamationCircleIcon } from '@heroicons/react/outline';
-import { ForwardedRef, forwardRef, HTMLAttributes, ReactNode } from 'react';
+import {
+  ForwardedRef,
+  forwardRef,
+  InputHTMLAttributes,
+  ReactNode,
+} from 'react';
 
-interface InputWithLabelProps extends HTMLAttributes<HTMLInputElement> {
+interface InputWithLabelProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   name?: string;
   right?: ReactNode;

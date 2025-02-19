@@ -42,6 +42,13 @@ export class Rate360Service {
             id: true,
           },
         },
+        comments: {
+          select: {
+            comment: true,
+            competencyId: true,
+            userId: true,
+          },
+        },
         userRates: {
           include: {
             indicator: true,
