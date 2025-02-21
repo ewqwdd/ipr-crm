@@ -56,4 +56,11 @@ export class AuthController {
     this.cookieService.removeToken(res);
     return { message: 'Вы вышли из системы' };
   }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body('email') email: string) {
+    await this.authService.resetPassword(email);
+    return;
+  }
 }

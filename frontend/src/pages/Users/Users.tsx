@@ -1,6 +1,6 @@
-import { Link } from 'react-router';
 import WithAvatarsAndMultiLineContent from './WithAvatarsAndMultiLineContent';
 import { Heading } from '@/shared/ui/Heading';
+import { AddUser } from '@/widgets/AddUser';
 
 export default function Users() {
   return (
@@ -11,12 +11,7 @@ export default function Users() {
           description="A list of all the users in your account including their name, title, email and role."
         />
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <Link
-            to="/addUser"
-            className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-          >
-            Add user
-          </Link>
+          <AddUser />
         </div>
       </div>
       <div className="mt-8 flex flex-col">

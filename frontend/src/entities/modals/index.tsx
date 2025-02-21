@@ -19,6 +19,8 @@ import {
   EvaluateModal,
   RateStatsModal,
 } from '../rates';
+import { InviteModal } from '../user/ui/InviteModal';
+import { PasswordResetModal } from '@/widgets/PasswordResetModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -68,6 +70,10 @@ const ModalWrapper: FC = () => {
       return <ChooseCompetencyBlockModal {...updatedModalProps} />;
     case 'CONFIRM_EVALUATORS':
       return <ConfirmEvaluatorsModal {...updatedModalProps} />;
+    case 'INVITE':
+      return <InviteModal {...updatedModalProps} />;
+    case 'PASSWORD_RESET':
+      return <PasswordResetModal {...updatedModalProps} />;
     default:
       break;
   }

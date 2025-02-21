@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/app';
+import { useModal } from '@/app/hooks/useModal';
 import { userActions } from '@/entities/user';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
@@ -23,6 +24,7 @@ export default function Login() {
   const user = useAppSelector((state) => state.user.user);
   const isMounted = useAppSelector((state) => state.user.isMounted);
   const navigate = useNavigate();
+  const { openModal } = useModal();
 
   useEffect(() => {
     if (isMounted && user) {
@@ -37,17 +39,17 @@ export default function Login() {
     let valid = true;
 
     if (!email) {
-      setErrors((prev) => ({ ...prev, email: 'Email is required' }));
+      setErrors((prev) => ({ ...prev, email: 'Введите почту' }));
       valid = false;
     } else if (!emailRegex.test(email)) {
-      setErrors((prev) => ({ ...prev, email: 'Invalid email' }));
+      setErrors((prev) => ({ ...prev, email: 'Неверная почта' }));
       valid = false;
     } else {
       setErrors((prev) => ({ ...prev, email: '' }));
     }
 
     if (!password) {
-      setErrors((prev) => ({ ...prev, password: 'Password is required' }));
+      setErrors((prev) => ({ ...prev, password: 'Введите пароль' }));
       valid = false;
     } else {
       setErrors((prev) => ({ ...prev, password: '' }));
@@ -74,6 +76,9 @@ export default function Login() {
       });
   };
 
+  const resetPassword = () =>
+    openModal('PASSWORD_RESET', { email: emailRef.current?.value });
+
   return (
     <div className="min-h-full flex flex-col w-full items-center justify-center bg-gray-900">
       <form
@@ -84,19 +89,32 @@ export default function Login() {
       >
         <img
           className="h-10 w-auto self-center"
-          src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
+          src="/tailwind.svg"
           alt="Workflow"
         />
         <h1 className="text-2xl font-bold text-white text-center my-3">
-          Sign in to your account
+          Войти в аккаунт
         </h1>
-        <InputWithLabel ref={emailRef} error={errors.email} label="Email" />
         <InputWithLabel
+          autoComplete="email webauthn"
+          ref={emailRef}
+          error={errors.email}
+          label="Почта"
+        />
+        <InputWithLabel
+          autoComplete="current-password webauthn"
           ref={passwordRef}
           error={errors.password}
-          label="Password"
+          label="Пароль"
+          type="password"
           right={
-            <button className={styles.linkStyles}>Forgot password?</button>
+            <button
+              type="button"
+              onClick={resetPassword}
+              className={styles.linkStyles}
+            >
+              Забыли пароль?
+            </button>
           }
         />
         <PrimaryButton type="submit">Login</PrimaryButton>

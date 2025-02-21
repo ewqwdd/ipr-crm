@@ -14,11 +14,13 @@ model User {
   username          String                 @unique
   phone             String?                @unique
   email             String                 @unique
-  passwordHash      String
+  passwordHash      String?
   firstName         String?
   lastName          String?
   avatar            String?
   specId            Int?
+  authCode          String?
+
   assignedCourses   Assigned_Course[]
   assignedTests     User_Assigned_Test[]
   growthPlans       IndividualGrowthPlan[] @relation("UserGrowthPlans")

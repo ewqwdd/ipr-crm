@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -20,6 +22,8 @@ import { extname } from 'path';
 import { S3Service } from 'src/utils/s3/s3.service';
 import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
+import { InviteUserDTO } from './dto/invite-user.dto';
+import { InviteAcceptDTO } from './dto/invite-accept.dto';
 
 @Controller('users')
 export class UsersController {
@@ -106,5 +110,24 @@ export class UsersController {
     }
     await this.usersService.update(id, updateUserDto);
     return { message: 'Пользователь обновлен.' };
+  }
+
+  @Post('/invite')
+  @UseGuards(AdminGuard)
+  @HttpCode(HttpStatus.OK)
+  async invite(@Body() data: InviteUserDTO) {
+    return this.usersService.invite(data);
+  }
+
+  @Post('/invite-accept')
+  @HttpCode(HttpStatus.OK)
+  async inviteAccept(@Body() data: InviteAcceptDTO) {
+    return this.usersService.passwordReset(data.code, data.password);
+  }
+
+  @Post('/password-reset')
+  @HttpCode(HttpStatus.OK)
+  async passwordReset(@Body() data: InviteAcceptDTO) {
+    return this.usersService.passwordReset(data.code, data.password);
   }
 }

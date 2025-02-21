@@ -3,6 +3,7 @@ import { userActions } from '@/entities/user';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { $api } from '../lib/$api';
+import { guestRoutes } from '@/app/router/config/routerItems';
 
 export const useAuthControl = () => {
   const user = useAppSelector((state) => state.user.user);
@@ -22,7 +23,11 @@ export const useAuthControl = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isMounted && !user) {
+    if (
+      isMounted &&
+      !user &&
+      !guestRoutes.find((e) => window.location.pathname.includes(e))
+    ) {
       navigate('/login');
     }
   }, [isMounted, user, navigate]);
