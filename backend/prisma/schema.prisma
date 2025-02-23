@@ -25,7 +25,6 @@ model User {
   assignedTests     User_Assigned_Test[]
   growthPlans       IndividualGrowthPlan[] @relation("UserGrowthPlans")
   growthPlansMentor IndividualGrowthPlan[] @relation("MentorGrowthPlans")
-  tasksToReview     Task[]
 
   Spec            Spec?              @relation(fields: [specId], references: [id])
   ratesToEvaluate Rate360Evaluator[]
@@ -60,13 +59,14 @@ model Rate360 {
   type             SkillType
   userComment     String?
   curatorComment  String?
+  
 
   userRates  UserRates[]
   evaluators Rate360Evaluator[]
   comments  UserComments[]
   spec       Spec               @relation(fields: [specId], references: [id])
   team       Team              @relation(fields: [teamId], references: [id])
-  
+  plan       IndividualGrowthPlan?
 }
 
 model UserComments {
@@ -215,6 +215,27 @@ model SkillsOnRate360 {
   @@id([skillId, rate360Id])
 }
 
+
+
+model GrowthPlanTask {
+  id        Int       @id @default(autoincrement())
+  deadline  DateTime?
+  status    TaskStatus
+  priority TaskPriority
+  type     TaskMaterialType
+  onBoard  Boolean @default(false)
+
+  planId    Int
+  comeptencyId Int?
+  indicatorId Int?
+  materialId Int
+
+  material Material @relation(fields: [materialId], references: [id])
+  competency Competency? @relation(fields: [comeptencyId], references: [id])
+  indicator Indicator? @relation(fields: [indicatorId], references: [id])
+  plan IndividualGrowthPlan? @relation(fields: [planId], references: [id])
+}
+
 // ИПР
 model IndividualGrowthPlan {
   id        Int       @id @default(autoincrement())
@@ -223,18 +244,21 @@ model IndividualGrowthPlan {
   endDate   DateTime?
   status    Status
   goal      String
-  // tasks     String
   result    Resut?
   specId    Int?
   mentorId  Int?
+  rate360Id Int?      @unique  // Добавляем @unique
 
   spec      Spec?           @relation(fields: [specId], references: [id])
   user      User            @relation("UserGrowthPlans", fields: [userId], references: [id])
   mentor    User?           @relation("MentorGrowthPlans", fields: [mentorId], references: [id])
-  tasks     Task[]
+  rates360  Rate360?        @relation(fields: [rate360Id], references: [id]) // Делаем опциональным
   materials Material[]
   logs      GrowthPlanLog[]
   archived  Boolean         @default(false)
+  tasks     GrowthPlanTask[]
+  version   DateTime        @default(now())
+  skillType SkillType
 }
 
 model GrowthPlanLog {
@@ -249,22 +273,6 @@ model GrowthPlanLog {
   changedBy User                 @relation(fields: [changedById], references: [id])
 }
 
-model Task {
-  id          Int              @id @default(autoincrement())
-  planId      Int
-  reviewerId  Int?
-  startDate   DateTime
-  endDate     DateTime?
-  status      TaskStatus
-  name        String
-  description String
-  priority    TaskPriority
-  url         String?
-  type        TaskMaterialType
-
-  reviewer User?                @relation(fields: [reviewerId], references: [id])
-  plan     IndividualGrowthPlan @relation(fields: [planId], references: [id])
-}
 
 model Notification {
   id          Int      @id @default(autoincrement())
@@ -338,6 +346,7 @@ model Competency {
   indicators Indicator[] // Связь с индикаторами
   materials  CompetencyMaterial[]
   comments   UserComments[]
+  task    GrowthPlanTask[]         
 }
 
 model Indicator {
@@ -349,6 +358,7 @@ model Indicator {
   materials    IndicatorMaterial[]
 
   userRates UserRates[]
+  task    GrowthPlanTask[]         
 }
 
 // Материалы 
@@ -365,6 +375,8 @@ model Material {
   plan                IndividualGrowthPlan? @relation(fields: [planId], references: [id])
   competencyMaterials CompetencyMaterial[]
   indicatorMaterials  IndicatorMaterial[]
+  task    GrowthPlanTask[]         
+
 }
 
 model CompetencyMaterial {
@@ -412,7 +424,8 @@ enum MaterialContentType {
 
 enum TaskMaterialType {
   GENERAL
-  AFTER_RATE
+  OBVIOUS
+  OTHER
 }
 
 enum TaskPriority {

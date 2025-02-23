@@ -26,7 +26,7 @@ export class MailService {
 
   async sendInviteEmail(to: string, user: User) {
     const html = `
-        div style="font-family:Arial,sans-serif;padding:20px;text-align: center;">
+        <div style="font-family:Arial,sans-serif;padding:20px;text-align: center;">
       <h2 style="max-width:560px;margin:30px auto;">Здраствуйте, ${user.firstName} ${user.lastName}.</h2>
         <p style="max-width:560px;margin:30px auto;">Вы стали сотрудником компании AYA Group</p>
         <h2 style="margin-left:30px;">Данные для входа:</h2>
