@@ -16,7 +16,7 @@ import { Competency, CompetencyBlock } from '@/entities/skill';
 import WorkSpace from './WorkSpace';
 import AyeChart from './ayeChart';
 import CommentItem from './comments/CommentItem';
-import { commentsMockData } from './comments/mock';
+import { teamsApi } from '@/shared/api/teamsApi';
 
 const evaluatorTypes = [
   'CURATOR',
@@ -49,6 +49,9 @@ const Report360: FC = () => {
   const rate = data?.find((report) => report.id === Number(id));
   const userRates = rate?.userRates;
 
+  const { data: teams, isFetching: teamsFetching } =
+    teamsApi.useGetTeamsQuery();
+
   const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
     {},
   );
@@ -59,11 +62,11 @@ const Report360: FC = () => {
     skillsApi.useGetSkillsQuery();
 
   const foundSpec = specs?.find((spec) => spec.id === rate?.spec?.id);
+
+  const curator = teams?.list.find((team) => team.id === rate?.teamId)?.curator;
   const foundUser = users?.users.find((user) => user.id === rate?.user?.id);
 
   const { avatar, firstName, lastName, role, id: userId } = foundUser || {};
-
-  const comments = commentsMockData; // TODO: replace with real data - rate?.comments
 
   const indicatorRatings = useCalculateAvgIndicatorRaitings(
     rate?.evaluators,
@@ -115,7 +118,13 @@ const Report360: FC = () => {
   return (
     <div className="h-full">
       <Dimmer
-        active={isLoading || usersFetching || specsFetching || skillsFetching}
+        active={
+          isLoading ||
+          usersFetching ||
+          specsFetching ||
+          skillsFetching ||
+          teamsFetching
+        }
       >
         <div className="mt-16 mb-5 flex items-center justify-between px-5">
           <h1 className="text-sm font-bold tracking-tight text-gray-900">
@@ -153,14 +162,14 @@ const Report360: FC = () => {
                         {blocksCompetencies?.name}
                       </h2>
                       {blocksCompetencies?.competencies?.map((competency) => {
-                        const competencyComments = comments.filter(
+                        const competencyComments = rate?.comments.filter(
                           (comment) => comment.competencyId === competency.id,
                         );
 
                         return (
                           <div
                             key={blocksCompetencies?.id}
-                            className="mb-4 last:mb-0"
+                            className="mb-6 last:mb-0"
                           >
                             <div
                               className={cva(
@@ -226,33 +235,36 @@ const Report360: FC = () => {
                                 </tbody>
                               </table>
                             </div>
-                            {isAdmin && competencyComments.length > 0 && (
-                              <div className="mt-4 pl-5">
-                                <h3>
-                                  <span className="text-black font-semibold">
-                                    Комментарии к компетенции:
-                                  </span>
-                                  <span className="text-gray-900 ml-2">
-                                    {competency?.name}
-                                  </span>
-                                </h3>
-                                {competencyComments.map((comment) => (
-                                  <CommentItem
-                                    key={comment.id}
-                                    user={users?.users.find(
-                                      (user) => user.id === comment.userId,
-                                    )}
-                                    comment={comment.comment}
-                                  />
-                                ))}
-                              </div>
-                            )}
+                            {isAdmin &&
+                              (competencyComments?.length ?? 0) > 0 && (
+                                <div className="mt-6 pl-5">
+                                  <h3>
+                                    <span className="text-black font-semibold">
+                                      Комментарии к компетенции:
+                                    </span>
+                                    <span className="text-gray-900 ml-2">
+                                      {competency?.name}
+                                    </span>
+                                  </h3>
+                                  <div className="pl-3">
+                                    {competencyComments?.map((comment) => (
+                                      <CommentItem
+                                        key={comment.id}
+                                        user={users?.users.find(
+                                          (user) => user.id === comment.userId,
+                                        )}
+                                        comment={comment.comment}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                           </div>
                         );
                       })}
                       <div
                         className={cva(
-                          'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mt-5',
+                          'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mt-6',
                         )}
                       >
                         <table className="min-w-full divide-y divide-gray-300">
@@ -335,17 +347,20 @@ const Report360: FC = () => {
             </div>
             <AyeChart data={overallAverage} label={foundSpec?.name} />
             {isAdmin && (rate?.userComment || rate?.curatorComment) && (
-              <div>
+              <>
                 <h2 className="text-2xl mt-10">Комментарии</h2>
-                {rate?.userComment && (
-                  <CommentItem user={foundUser} comment={rate?.userComment} />
-                )}
-                {rate?.curatorComment && (
-                  // TODO: understand Which curator
-                  // <CommentItem user={} comment={rate?.curatorComment} />
-                  <></>
-                )}
-              </div>
+                <div className="pl-3">
+                  {rate?.curatorComment && (
+                    <CommentItem
+                      user={curator}
+                      comment={rate?.curatorComment}
+                    />
+                  )}
+                  {rate?.userComment && (
+                    <CommentItem user={foundUser} comment={rate?.userComment} />
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
