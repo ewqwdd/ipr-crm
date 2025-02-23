@@ -7,6 +7,7 @@ import { usersApi } from '@/shared/api/usersApi';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { modalReducer } from './modalSlice';
 import { ratesReducer } from '@/entities/rates';
+import { iprApi } from '@/shared/api/iprApi';
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   [teamsApi.reducerPath]: teamsApi.reducer,
   [rate360Api.reducerPath]: rate360Api.reducer,
   [skillsApi.reducerPath]: skillsApi.reducer,
+  [iprApi.reducerPath]: iprApi.reducer,
 });
 
 export const store = configureStore({
@@ -27,7 +29,8 @@ export const store = configureStore({
       .concat(universalApi.middleware)
       .concat(teamsApi.middleware)
       .concat(rate360Api.middleware)
-      .concat(skillsApi.middleware),
+      .concat(skillsApi.middleware)
+      .concat(iprApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

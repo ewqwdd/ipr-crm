@@ -39,6 +39,7 @@ export interface Rate {
     comment: string;
     competencyId: number;
   }[];
+  plan?: any;
 }
 export type EvaluateUser = { userId: number; username?: string };
 

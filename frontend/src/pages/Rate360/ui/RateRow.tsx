@@ -1,6 +1,5 @@
 import { useModal } from '@/app/hooks/useModal';
 import { Rate } from '@/entities/rates';
-import { rate360Api } from '@/shared/api/rate360Api';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
@@ -11,6 +10,7 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { DocumentReportIcon, DocumentTextIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
+import IprButton from './IprButton';
 
 interface RateRowProps {
   rate: Rate;
@@ -20,7 +20,7 @@ interface RateRowProps {
 export default function RateRow({ rate, index }: RateRowProps) {
   const evaluatorsCount = rate.evaluators.length ?? 0;
   const ratesCount = rate.userRates.length ?? 0;
-  const [deleteFn] = rate360Api.useDeleteRateMutation();
+  // const [deleteFn] = rate360Api.useDeleteRateMutation();
   const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
     {},
   );
@@ -119,13 +119,14 @@ export default function RateRow({ rate, index }: RateRowProps) {
         {rate.startDate?.slice(0, 10)}
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-        <button
+        <IprButton rate={rate} />
+        {/* <button
           onClick={() => deleteFn({ id: rate.id })}
           className="text-indigo-600 hover:text-indigo-900"
           disabled
         >
           Edit<span className="sr-only">, {rate.id}</span>
-        </button>
+        </button> */}
       </td>
     </tr>
   );

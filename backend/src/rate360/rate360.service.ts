@@ -57,6 +57,7 @@ export class Rate360Service {
             approved: true,
           },
         },
+        plan: true,
       },
     });
     return rates;

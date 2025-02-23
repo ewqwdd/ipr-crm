@@ -221,17 +221,17 @@ model GrowthPlanTask {
   id        Int       @id @default(autoincrement())
   deadline  DateTime?
   status    TaskStatus
-  priority TaskPriority
+  priority TaskPriority? @default(MEDIUM)
   type     TaskMaterialType
   onBoard  Boolean @default(false)
 
   planId    Int
-  comeptencyId Int?
+  competencyId Int?
   indicatorId Int?
   materialId Int
 
   material Material @relation(fields: [materialId], references: [id])
-  competency Competency? @relation(fields: [comeptencyId], references: [id])
+  competency Competency? @relation(fields: [competencyId], references: [id])
   indicator Indicator? @relation(fields: [indicatorId], references: [id])
   plan IndividualGrowthPlan? @relation(fields: [planId], references: [id])
 }

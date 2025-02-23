@@ -15,6 +15,7 @@ import { Progress } from '@/pages/Progress';
 import { Rate360Assesment } from '@/pages/Rate360Assesment';
 import Report360 from '@/pages/Report360';
 import { ResetPassword } from '@/pages/ResetPassword';
+import { Ipr } from '@/pages/Ipr';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -39,6 +40,7 @@ export const routerItems: RouterItemType[] = [
   { path: '/progress', element: <Progress /> },
   { path: '/progress/:id', element: <Rate360Assesment /> },
   { path: '/', element: <Profile /> },
+  { path: '/ipr/360/:rateId', element: <Ipr /> },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];
