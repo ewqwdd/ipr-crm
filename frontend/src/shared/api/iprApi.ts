@@ -1,3 +1,4 @@
+import { Ipr } from '@/entities/ipr';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const iprApi = createApi({
@@ -15,7 +16,7 @@ const iprApi = createApi({
       }),
       invalidatesTags: ['ipr'],
     }),
-    findRate: build.query<void, number>({
+    findRate: build.query<Ipr, number>({
       query: (id) => ({
         url: '/ipr/360/' + id,
         method: 'GET',

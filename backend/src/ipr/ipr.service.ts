@@ -23,6 +23,15 @@ export class IprService {
             competency: true,
           },
         },
+        rate360: {
+            include: {
+                spec: {
+                    select: {
+                        name: true,
+                    }
+                }
+            }
+        },
         mentor: true,
         user: true,
       },

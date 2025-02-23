@@ -1,3 +1,4 @@
+import { IprEdit } from '@/entities/ipr';
 import { iprApi } from '@/shared/api/iprApi';
 import { useParams } from 'react-router';
 
@@ -7,5 +8,5 @@ export default function Ipr() {
 
   console.log(rateId);
 
-  return <div>Ipr</div>;
+  return <IprEdit ipr={data} loading={isFetching} />
 }

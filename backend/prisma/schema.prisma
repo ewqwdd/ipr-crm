@@ -252,7 +252,7 @@ model IndividualGrowthPlan {
   spec      Spec?           @relation(fields: [specId], references: [id])
   user      User            @relation("UserGrowthPlans", fields: [userId], references: [id])
   mentor    User?           @relation("MentorGrowthPlans", fields: [mentorId], references: [id])
-  rates360  Rate360?        @relation(fields: [rate360Id], references: [id]) // Делаем опциональным
+  rate360  Rate360?        @relation(fields: [rate360Id], references: [id]) // Делаем опциональным
   materials Material[]
   logs      GrowthPlanLog[]
   archived  Boolean         @default(false)
