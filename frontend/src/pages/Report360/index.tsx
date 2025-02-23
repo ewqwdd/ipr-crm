@@ -15,6 +15,8 @@ import { useAggregatedAverages } from './useAggregatedAverages';
 import { Competency, CompetencyBlock } from '@/entities/skill';
 import WorkSpace from './WorkSpace';
 import AyeChart from './ayeChart';
+import CommentItem from './comments/CommentItem';
+import { commentsMockData } from './comments/mock';
 
 const evaluatorTypes = [
   'CURATOR',
@@ -60,6 +62,8 @@ const Report360: FC = () => {
   const foundUser = users?.users.find((user) => user.id === rate?.user?.id);
 
   const { avatar, firstName, lastName, role, id: userId } = foundUser || {};
+
+  const comments = commentsMockData; // TODO: replace with real data - rate?.comments
 
   const indicatorRatings = useCalculateAvgIndicatorRaitings(
     rate?.evaluators,
@@ -149,6 +153,10 @@ const Report360: FC = () => {
                         {blocksCompetencies?.name}
                       </h2>
                       {blocksCompetencies?.competencies?.map((competency) => {
+                        const competencyComments = comments.filter(
+                          (comment) => comment.competencyId === competency.id,
+                        );
+
                         return (
                           <div
                             key={blocksCompetencies?.id}
@@ -218,6 +226,27 @@ const Report360: FC = () => {
                                 </tbody>
                               </table>
                             </div>
+                            {isAdmin && competencyComments.length > 0 && (
+                              <div className="mt-4 pl-5">
+                                <h3>
+                                  <span className="text-black font-semibold">
+                                    Комментарии к компетенции:
+                                  </span>
+                                  <span className="text-gray-900 ml-2">
+                                    {competency?.name}
+                                  </span>
+                                </h3>
+                                {competencyComments.map((comment) => (
+                                  <CommentItem
+                                    key={comment.id}
+                                    user={users?.users.find(
+                                      (user) => user.id === comment.userId,
+                                    )}
+                                    comment={comment.comment}
+                                  />
+                                ))}
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -305,6 +334,19 @@ const Report360: FC = () => {
               </div>
             </div>
             <AyeChart data={overallAverage} label={foundSpec?.name} />
+            {isAdmin && (rate?.userComment || rate?.curatorComment) && (
+              <div>
+                <h2 className="text-2xl mt-10">Комментарии</h2>
+                {rate?.userComment && (
+                  <CommentItem user={foundUser} comment={rate?.userComment} />
+                )}
+                {rate?.curatorComment && (
+                  // TODO: understand Which curator
+                  // <CommentItem user={} comment={rate?.curatorComment} />
+                  <></>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Dimmer>
