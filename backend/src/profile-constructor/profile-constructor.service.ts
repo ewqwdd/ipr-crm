@@ -77,6 +77,7 @@ export class ProfileConstructorService {
             id: data.competencyId,
           },
         },
+        boundary: data.boundary,
         description: data.description,
       },
     });
@@ -170,13 +171,14 @@ export class ProfileConstructorService {
     });
   }
 
-  async editIndicator(id: number, name?: string) {
+  async editIndicator(id: number, name?: string, boundary?: number) {
     return this.prismaService.indicator.update({
       where: {
         id,
       },
       data: {
         name,
+        boundary,
       },
     });
   }

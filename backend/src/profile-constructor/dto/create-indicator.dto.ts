@@ -12,4 +12,8 @@ export class CreateIndicatorDto {
   @IsNotEmpty()
   @IsNumber()
   competencyId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  boundary: number;
 }

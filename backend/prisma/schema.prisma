@@ -366,6 +366,7 @@ model Indicator {
   name         String
   description  String?
   competencyId Int
+  boundary     Int               @default(3)
   competency   Competency          @relation(fields: [competencyId], references: [id], onDelete: Cascade)
   materials    IndicatorMaterial[]
 

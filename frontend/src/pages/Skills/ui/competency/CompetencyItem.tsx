@@ -29,6 +29,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   openModal,
   id,
   materials,
+  boundary,
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
 
@@ -116,7 +117,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
           size="xs"
           onClick={(e) => {
             e.stopPropagation();
-            openModal('EDIT_SKILL', { id, name, type: listItemType });
+            openModal('EDIT_SKILL', { id, name, type: listItemType, boundary });
           }}
         >
           <PencilIcon className="h-5 w-5" />

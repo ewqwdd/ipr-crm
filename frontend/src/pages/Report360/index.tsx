@@ -31,11 +31,21 @@ const commonHeaders = [
   'Самооц.',
 ] as const;
 
-const RateCell = ({ rate }: { rate?: number }) => {
+const RateCell = ({
+  rate,
+  boundary = 3,
+}: {
+  rate?: number;
+  boundary?: number;
+}) => {
   if (!rate) return <td className="px-3 py-4 text-sm">N/D</td>;
 
   const color =
-    rate > 3 ? 'text-green-500' : rate > 2 ? 'text-black' : 'text-red-500';
+    rate > boundary
+      ? 'text-green-500'
+      : rate === boundary
+        ? 'text-black'
+        : 'text-red-500';
   return (
     <td className={`whitespace-nowrap px-3 py-4 text-sm ${color}`}>{rate}</td>
   );
@@ -219,6 +229,7 @@ const Report360: FC = () => {
                                         </td>
                                         {evaluatorTypes.map((evaluatorType) => (
                                           <RateCell
+                                            boundary={indicator.boundary}
                                             key={evaluatorType}
                                             rate={
                                               indicatorRatings?.[

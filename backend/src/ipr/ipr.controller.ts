@@ -23,13 +23,14 @@ export class IprController {
 
   @Get('/360/:id')
   @UseGuards(AuthGuard)
-  async findOneby360Id(id: number) {
+  async findOneby360Id(@Param('id') id: number) {
     return this.iprService.findOneby360Id(id);
   }
 
   @Post('/360/:rateId')
   @UseGuards(AdminGuard)
-  async create(rateId: number) {
+  async create(@Param('rateId') rateId: number) {
+    console.log('rateId', rateId);
     return this.iprService.create(rateId);
   }
 

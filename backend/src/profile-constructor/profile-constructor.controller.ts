@@ -19,6 +19,7 @@ import { AddBlockToSpecDto } from './dto/add-block-to-spec.dto';
 import { EditDto } from './dto/edi.dto';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { EditMaterialDto } from './dto/edit-material.dto';
+import { EditIndicatorDto } from './dto/edit-indicator.dto';
 
 @Controller('profile-constructor')
 export class ProfileConstructorController {
@@ -132,8 +133,12 @@ export class ProfileConstructorController {
   @UseGuards(AdminGuard)
   async updateIndicator(
     @Param('id', { transform: (v) => parseInt(v) }) id: number,
-    @Body() data: EditDto,
+    @Body() data: EditIndicatorDto,
   ) {
-    return this.profileConstructorService.editIndicator(id, data.name);
+    return this.profileConstructorService.editIndicator(
+      id,
+      data.name,
+      data.boundary,
+    );
   }
 }

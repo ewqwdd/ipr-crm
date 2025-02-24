@@ -17,6 +17,7 @@ export default function AddIndicatorModal({
   closeModal,
 }: AddIndicatorModalProps) {
   const [value, setValue] = useState('');
+  const [boundary, setBoundary] = useState<number>(3);
 
   const [createIndicator, indicatorProps] =
     skillsApi.useCreateIndicatorMutation();
@@ -27,7 +28,7 @@ export default function AddIndicatorModal({
     if (!id) {
       return toast.error('Не выбрана компетеннция');
     }
-    createIndicator({ name, competencyId: id });
+    createIndicator({ name, competencyId: id, boundary });
     closeModal();
   };
 
@@ -49,6 +50,22 @@ export default function AddIndicatorModal({
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
+        <div className="mt-4 flex flex-col gap-2">
+          <p className="text-gray-900 text-sm">
+            <span className="font-medium">Граница оценки: </span>
+            <span className="text-indigo-600">{boundary}</span>
+          </p>
+
+          <input
+            className="w-full"
+            type="range"
+            min="1"
+            max="5"
+            value={boundary}
+            step={1}
+            onChange={(e) => setBoundary(parseInt(e.target.value))}
+          />
+        </div>
       </div>
     </Modal>
   );

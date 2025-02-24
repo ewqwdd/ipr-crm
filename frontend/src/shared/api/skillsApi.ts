@@ -80,11 +80,14 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
-    editIndicator: build.mutation<void, { id: number; name: string }>({
-      query: ({ id, name }) => ({
+    editIndicator: build.mutation<
+      void,
+      { id: number; name: string; boundary: number }
+    >({
+      query: ({ id, name, boundary }) => ({
         url: `/indicator/${id}`,
         method: 'PUT',
-        body: { name },
+        body: { name, boundary },
       }),
       invalidatesTags: ['Skills'],
     }),

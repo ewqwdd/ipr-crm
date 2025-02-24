@@ -116,10 +116,12 @@ export class IprService {
               materialId: material.materialId,
               indicatorId: indicator.id,
               type:
-                avg <= 3 ? TaskMaterialType.OBVIOUS : TaskMaterialType.OTHER,
+                avg < (indicator.boundary ?? 3)
+                  ? TaskMaterialType.OBVIOUS
+                  : TaskMaterialType.OTHER,
               priority: TaskPriority.MEDIUM,
               status: TaskStatus.TO_DO,
-              onBoard: avg <= 3,
+              onBoard: avg < (indicator.boundary ?? 3),
             };
           });
         });

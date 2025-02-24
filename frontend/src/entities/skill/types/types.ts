@@ -16,6 +16,7 @@ export interface Indicator {
   description?: string;
   competencyId: number;
   materials: { material: Material }[];
+  boundary: number;
 }
 
 export interface CompetencyBlock {
@@ -40,6 +41,7 @@ export interface AddCompetencyDto {
 
 export interface AddIndicatorDto {
   name: string;
+  boundary: number;
   description?: string;
   competencyId: number;
 }

@@ -9,6 +9,7 @@ interface EditModalData {
   type: CompetencyType;
   id: number;
   name: string;
+  boundary?: number;
 }
 
 interface EditModalProps {
@@ -23,8 +24,9 @@ export default function EditSkillsModal({
   modalData,
 }: EditModalProps) {
   const { competency, competencyBlock, indicator } = useSkillsService();
-  const { id, name, type } = modalData as EditModalData;
+  const { id, name, type, boundary: boundaryInit } = modalData as EditModalData;
   const [value, setValue] = useState(name);
+  const [boundary, setBoundary] = useState<number>(boundaryInit ?? 3);
 
   const editCompetency = competency.edit[0];
   const editCompetencyBlock = competencyBlock.edit[0];
@@ -45,7 +47,7 @@ export default function EditSkillsModal({
         editCompetencyBlock({ id, name: value });
         break;
       case CompetencyType.INDICATOR:
-        editIndicator({ id, name: value });
+        editIndicator({ id, name: value, boundary });
         break;
     }
     closeModal();
@@ -65,6 +67,26 @@ export default function EditSkillsModal({
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
+      <div className="mt-4 flex flex-col gap-2">
+        {type === CompetencyType.INDICATOR && (
+          <>
+            <p className="text-gray-900 text-sm">
+              <span className="font-medium">Граница оценки: </span>
+              <span className="text-indigo-600">{boundary}</span>
+            </p>
+
+            <input
+              className="w-full"
+              type="range"
+              min="1"
+              max="5"
+              value={boundary}
+              step={1}
+              onChange={(e) => setBoundary(parseInt(e.target.value))}
+            />
+          </>
+        )}
+      </div>
     </Modal>
   );
 }
