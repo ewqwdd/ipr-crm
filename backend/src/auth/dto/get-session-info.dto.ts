@@ -3,5 +3,5 @@ export class GetSessionInfoDto {
 
   email: string;
 
-  roleId: number;
+  role: string;
 }

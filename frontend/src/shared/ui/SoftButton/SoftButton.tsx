@@ -7,6 +7,7 @@ type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 interface SoftButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   to?: string;
+  danger?: boolean;
 }
 
 export default memo(function SoftButton({
@@ -14,6 +15,7 @@ export default memo(function SoftButton({
   className,
   children,
   to,
+  danger,
   ...props
 }: SoftButtonProps) {
   const sizes: Record<ButtonSize, string> = {
@@ -29,6 +31,10 @@ export default memo(function SoftButton({
     className: cva(
       'transition-colors inline-flex justify-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-indigo-600 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
       sizes[size],
+      {
+        'bg-red-50 text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500':
+          !!danger,
+      },
       className,
     ),
     ...props,

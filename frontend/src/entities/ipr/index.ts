@@ -1,5 +1,14 @@
 import IprEdit from './ui/IprEdit';
+import Board from './ui/Board/Board';
+import { boardReducer, boardActions } from './model/boardSlice';
 
-export type {Ipr} from './model/types';
+export type {
+  Ipr,
+  Task,
+  TaskPriority,
+  TaskStatus,
+  TaskType,
+  CustomCard,
+} from './model/types';
 
-export {IprEdit}
+export { IprEdit, boardReducer, boardActions, Board };

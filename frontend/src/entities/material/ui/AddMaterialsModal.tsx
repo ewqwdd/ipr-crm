@@ -23,7 +23,7 @@ const materialTypes = [
   { text: 'Статья', id: 'ARTICLE' },
 ];
 
-const AddMaterialType: FC<{
+export const AddMaterialType: FC<{
   materialType: string;
   selectMaterialType: (type: MaterialType) => void;
 }> = memo(({ materialType, selectMaterialType }) => {

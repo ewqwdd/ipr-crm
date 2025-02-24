@@ -1,6 +1,9 @@
 import { Heading } from '@/shared/ui/Heading';
 import { Ipr } from '../../model/types';
 import { Avatar } from '@/shared/ui/Avatar';
+import { Link } from 'react-router';
+import { SecondaryButton } from '@/shared/ui/SecondaryButton';
+import { ArrowRightIcon } from '@heroicons/react/outline';
 
 interface IprHeadingProps {
   ipr?: Ipr;
@@ -23,6 +26,13 @@ export default function IprHeading({ ipr }: IprHeadingProps) {
           </h1>
           <p className="text-sm text-gray-600">{ipr?.user.username}</p>
         </div>
+
+        <Link to={`/board/${ipr?.user.id}`} className="ml-auto">
+          <SecondaryButton>
+            Доска задач
+            <ArrowRightIcon className="size-4 ml-2" />
+          </SecondaryButton>
+        </Link>
       </div>
     </>
   );

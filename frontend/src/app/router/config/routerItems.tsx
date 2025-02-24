@@ -16,6 +16,8 @@ import { Rate360Assesment } from '@/pages/Rate360Assesment';
 import Report360 from '@/pages/Report360';
 import { ResetPassword } from '@/pages/ResetPassword';
 import { Ipr } from '@/pages/Ipr';
+import { Board } from '@/pages/Board';
+import { AdminBoard } from '@/pages/AdminBoard';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -41,6 +43,8 @@ export const routerItems: RouterItemType[] = [
   { path: '/progress/:id', element: <Rate360Assesment /> },
   { path: '/', element: <Profile /> },
   { path: '/ipr/360/:rateId', element: <Ipr /> },
+  { path: '/board', element: <Board /> },
+  { path: '/board/:userId', element: <AdminBoard /> },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];

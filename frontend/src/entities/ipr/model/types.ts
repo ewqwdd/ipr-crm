@@ -1,14 +1,20 @@
-import { Material } from '@/entities/material';
+import { Material, MaterialType } from '@/entities/material';
 import { Rate } from '@/entities/rates';
 import { Competency, Indicator } from '@/entities/skill';
 import { User } from '@/entities/user';
+import { Badge } from '@/shared/ui/Badge';
+import { Card } from '@caldwell619/react-kanban';
+
+export type TaskStatus = 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED' | 'IN_REVIEW';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+export type TaskType = 'GENERAL' | 'OBVIOUS' | 'OTHER';
 
 export interface Task {
   id: number;
   deadline: string | null;
-  status: 'TO_DO' | 'IN_PROGRESS' | 'DONE';
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  type: 'GENERAL' | 'OBVIOUS';
+  status: TaskStatus;
+  priority: TaskPriority;
+  type: TaskType;
   onBoard: boolean;
   planId: number;
   competencyId: number | null;
@@ -37,4 +43,12 @@ export interface Ipr {
   mentor: User | null;
   user: User;
   rate360: Rate;
+}
+
+export interface CustomCard extends Card {
+  id: string;
+  priority: TaskPriority;
+  materialType: MaterialType;
+  badgeColor?: keyof typeof Badge.colors;
+  task: Task;
 }

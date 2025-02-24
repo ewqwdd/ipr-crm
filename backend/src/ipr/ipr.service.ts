@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,6 +11,7 @@ import {
   TaskPriority,
   TaskStatus,
 } from '@prisma/client';
+import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { PrismaService } from 'src/utils/db/prisma.service';
 
 @Injectable()
@@ -150,7 +152,25 @@ export class IprService {
     });
   }
 
-  update(id: number, data: Partial<GrowthPlanTask>) {
+  async update(
+    id: number,
+    data: Partial<GrowthPlanTask>,
+    session: GetSessionInfoDto,
+  ) {
+    const plan = await this.prismaService.individualGrowthPlan.findFirst({
+      where: {
+        tasks: {
+          some: {
+            id: id,
+          },
+        },
+      },
+    });
+
+    if (session.role !== 'admin' && plan.userId !== session.id) {
+      throw new ForbiddenException('You are not allowed to update this task');
+    }
+
     return this.prismaService.growthPlanTask.update({
       where: {
         id: id,
@@ -252,5 +272,41 @@ export class IprService {
         },
       },
     });
+  }
+
+  async findAllTasks(userId: number, session: GetSessionInfoDto) {
+    let result = () =>
+      this.prismaService.growthPlanTask.findMany({
+        where: {
+          plan: {
+            userId,
+            archived: false,
+          },
+        },
+        include: {
+          material: true,
+          competency: true,
+          indicator: true,
+        },
+      });
+
+    if (userId === session.id || session.role === 'admin') {
+      return await result();
+    }
+    const teamCurator = await this.prismaService.team.findFirst({
+      where: {
+        curatorId: session.id,
+        users: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+    });
+
+    if (teamCurator) {
+      return await result();
+    }
+    throw new ForbiddenException('У вас нет доступа к этому пользователю');
   }
 }

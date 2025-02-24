@@ -2,6 +2,7 @@ import {
   DocumentIcon,
   HomeIcon,
   InboxIcon,
+  MapIcon,
   UserIcon,
   UsersIcon,
 } from '@heroicons/react/outline';
@@ -28,6 +29,12 @@ export const adminNavigation: NavType[] = [
     icon: DocumentIcon,
     href: '/skills',
     current: false,
+  },
+  {
+    name: 'Доска задач',
+    icon: MapIcon,
+    current: false,
+    href: '/board',
   },
   {
     name: 'Мне назначено',

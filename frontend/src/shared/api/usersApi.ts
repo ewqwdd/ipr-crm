@@ -24,7 +24,7 @@ const usersApi = createApi({
       query: (id) => `/users/${id}`,
       providesTags: (_, __, id) => [{ type: 'User', id }],
     }),
-    updateUser: build.mutation<any, { id: number; formData: FormData }>({
+    updateUser: build.mutation<void, { id: number; formData: FormData }>({
       query: ({ id, formData }) => ({
         url: `/users/${id}`,
         method: 'PUT',

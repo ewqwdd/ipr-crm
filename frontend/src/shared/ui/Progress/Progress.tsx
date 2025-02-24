@@ -18,7 +18,7 @@ export default function Progress({
       {...props}
     >
       <figure
-        className="bg-green-500 h-full left-0 top-0"
+        className="bg-green-500 h-full left-0 top-0 transition-all duration-500"
         style={{
           width: `${percent * 100}%`,
         }}

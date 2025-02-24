@@ -14,6 +14,8 @@ import { SetPriorityStatusDto } from './dto/set-priority-status.dto';
 import { SetStatusDto } from './dto/set-status.dto';
 import { TransferToDto } from './dto/transfer/transfer-to.dto';
 import { SetGoalDto } from './dto/set-goal-dto';
+import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
+import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 
 @Controller('ipr')
 export class IprController {
@@ -42,14 +44,22 @@ export class IprController {
   async setPriority(
     @Param('id') id: number,
     @Body() data: SetPriorityStatusDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    return this.iprService.update(id, { priority: data.priority });
+    return this.iprService.update(id, { priority: data.priority }, sessionInfo);
   }
 
   @Post('/task/status')
-  @UseGuards(AdminGuard)
-  async setStatus(@Param('id') id: number, @Body() data: SetStatusDto) {
-    return this.iprService.update(id, { status: data.status });
+  @UseGuards(AuthGuard)
+  async setStatus(
+    @Body() data: SetStatusDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.update(
+      data.id,
+      { status: data.status },
+      sessionInfo,
+    );
   }
 
   @Post('/:id/transfer-to-general')
@@ -80,5 +90,26 @@ export class IprController {
   @UseGuards(AdminGuard)
   async addToBoard(@Body() data: TransferToDto) {
     return this.iprService.boardChange(data.ids, true);
+  }
+
+  @Post('/task/remove-from-board')
+  @UseGuards(AdminGuard)
+  async removeFromBoard(@Body() data: TransferToDto) {
+    return this.iprService.boardChange(data.ids, false);
+  }
+
+  @Get('/task/board')
+  @UseGuards(AuthGuard)
+  async getBoard(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return this.iprService.findAllTasks(sessionInfo.id, sessionInfo);
+  }
+
+  @Get('/task/board/:id')
+  @UseGuards(AuthGuard)
+  async getBoardByUserId(
+    @Param('id') id: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.findAllTasks(id, sessionInfo);
   }
 }

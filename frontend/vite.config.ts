@@ -7,4 +7,7 @@ import svgr from 'vite-plugin-svgr';
 export default defineConfig({
   plugins: [tsconfigPaths(), react(), svgr()],
   clearScreen: false,
+  define: {
+    'process.env': {},
+  },
 });

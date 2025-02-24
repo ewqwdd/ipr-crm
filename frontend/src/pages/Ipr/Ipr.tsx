@@ -8,5 +8,5 @@ export default function Ipr() {
 
   console.log(rateId);
 
-  return <IprEdit ipr={data} loading={isFetching} />
+  return <IprEdit ipr={data} loading={isFetching} />;
 }

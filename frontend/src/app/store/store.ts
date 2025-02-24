@@ -8,11 +8,13 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { modalReducer } from './modalSlice';
 import { ratesReducer } from '@/entities/rates';
 import { iprApi } from '@/shared/api/iprApi';
+import { boardReducer } from '@/entities/ipr';
 
 const rootReducer = combineReducers({
   user: userReducer,
   modal: modalReducer,
   rates: ratesReducer,
+  board: boardReducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [universalApi.reducerPath]: universalApi.reducer,
   [teamsApi.reducerPath]: teamsApi.reducer,

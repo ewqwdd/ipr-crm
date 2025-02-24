@@ -7,7 +7,7 @@ const iprApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['ipr'],
+  tagTypes: ['ipr', 'board'],
   endpoints: (build) => ({
     createIpr: build.mutation<void, number>({
       query: (id) => ({
@@ -22,6 +22,20 @@ const iprApi = createApi({
         method: 'GET',
       }),
       providesTags: ['ipr'],
+    }),
+    findBoard: build.query<Ipr['tasks'], void>({
+      query: () => ({
+        url: '/ipr/task/board',
+        method: 'GET',
+      }),
+      providesTags: ['board'],
+    }),
+    findBoardForUser: build.query<Ipr['tasks'], number>({
+      query: (id) => ({
+        url: '/ipr/task/board/' + id,
+        method: 'GET',
+      }),
+      providesTags: (_, __, id) => [{ type: 'board', id }],
     }),
   }),
 });
