@@ -3,7 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { TaskMaterialType, TaskPriority, TaskStatus } from '@prisma/client';
+import {
+  GrowthPlanTask,
+  IndividualGrowthPlan,
+  TaskMaterialType,
+  TaskPriority,
+  TaskStatus,
+} from '@prisma/client';
 import { PrismaService } from 'src/utils/db/prisma.service';
 
 @Injectable()
@@ -24,13 +30,13 @@ export class IprService {
           },
         },
         rate360: {
-            include: {
-                spec: {
-                    select: {
-                        name: true,
-                    }
-                }
-            }
+          include: {
+            spec: {
+              select: {
+                name: true,
+              },
+            },
+          },
         },
         mentor: true,
         user: true,
@@ -133,5 +139,118 @@ export class IprService {
     });
 
     return created;
+  }
+
+  updatePlan(id: number, data: Partial<IndividualGrowthPlan>) {
+    return this.prismaService.individualGrowthPlan.update({
+      where: {
+        id: id,
+      },
+      data: data,
+    });
+  }
+
+  update(id: number, data: Partial<GrowthPlanTask>) {
+    return this.prismaService.growthPlanTask.update({
+      where: {
+        id: id,
+      },
+      data: data,
+    });
+  }
+
+  transferToGeneral(ids: number[]) {
+    return this.prismaService.growthPlanTask.updateMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        competency: {
+          NOT: null,
+        },
+      },
+      data: {
+        type: TaskMaterialType.GENERAL,
+      },
+    });
+  }
+
+  transferToOther(ids: number[]) {
+    return this.prismaService.growthPlanTask.updateMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        indicator: {
+          NOT: null,
+        },
+      },
+      data: {
+        type: TaskMaterialType.OTHER,
+      },
+    });
+  }
+
+  transferToObvious(ids: number[]) {
+    return this.prismaService.growthPlanTask.updateMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        indicator: {
+          NOT: null,
+        },
+      },
+      data: {
+        type: TaskMaterialType.OBVIOUS,
+      },
+    });
+  }
+
+  deleteTasks(ids: number[]) {
+    return this.prismaService.growthPlanTask.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+
+  boardChange(ids: number[], onBoard: boolean) {
+    return this.prismaService.growthPlanTask.updateMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      data: {
+        onBoard,
+      },
+    });
+  }
+
+  async setCurator(id: number, curatorId: number, competencyId: number) {
+    await this.prismaService.growthPlanCurator.deleteMany({
+      where: {
+        competencyId,
+        userId: curatorId,
+        planId: id,
+      },
+    });
+
+    return this.prismaService.individualGrowthPlan.update({
+      where: {
+        id: id,
+      },
+      data: {
+        planCurators: {
+          connect: {
+            id: curatorId,
+            competencyId,
+          },
+        },
+      },
+    });
   }
 }

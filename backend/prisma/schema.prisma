@@ -35,6 +35,7 @@ model User {
   specsOnTeams    SpecsOnUserTeam[]
   userRates       UserRates[]
   userComments    UserComments[]
+  planCurators    GrowthPlanCurator[]
 
   // Self-relation fields
   mentees     User[] @relation("MentorMentees")
@@ -215,7 +216,16 @@ model SkillsOnRate360 {
   @@id([skillId, rate360Id])
 }
 
+model GrowthPlanCurator {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  planId    Int
+  competencyId Int
 
+  competency Competency @relation(fields: [competencyId], references: [id])
+  user User                  @relation(fields: [userId], references: [id])
+  plan IndividualGrowthPlan @relation(fields: [planId], references: [id])
+}
 
 model GrowthPlanTask {
   id        Int       @id @default(autoincrement())
@@ -259,6 +269,7 @@ model IndividualGrowthPlan {
   tasks     GrowthPlanTask[]
   version   DateTime        @default(now())
   skillType SkillType
+  planCurators GrowthPlanCurator[]
 }
 
 model GrowthPlanLog {
@@ -347,6 +358,7 @@ model Competency {
   materials  CompetencyMaterial[]
   comments   UserComments[]
   task    GrowthPlanTask[]         
+  planCurators GrowthPlanCurator[]
 }
 
 model Indicator {
