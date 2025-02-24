@@ -2,8 +2,8 @@ import { Task } from '@/entities/ipr/model/types';
 import { type Material } from '@/entities/material';
 import { materialTypes } from '@/entities/material/model/types';
 import { cva } from '@/shared/lib/cva';
+import { SelectLight } from '@/shared/ui/SelectLight';
 import { FC } from 'react';
-import Select, { SingleValue } from 'react-select';
 
 type Priority = Task['priority'];
 type Status = Task['status'];
@@ -40,25 +40,20 @@ const Priority: FC<{
   onChange: (status: Priority) => void;
   isLoading?: boolean;
 }> = ({ priority, onChange, isLoading }) => {
-  const onChangeHendler = (
-    newValue: SingleValue<{ value: string; label: string }>,
-  ) => {
-    if (newValue) {
-      onChange(newValue.value as Priority);
-    }
-  };
-
   return (
-    <Select
-      options={priorityOptions}
-      value={
-        priorityOptions.find((option) => option.value === priority) || null
-      }
-      onChange={onChangeHendler}
+    <SelectLight
+      value={priority}
+      onChange={(e) => onChange(e.target.value as Priority)}
       className={cva('basic-multi-select', {
         'animate-pulse': !!isLoading,
       })}
-    />
+    >
+      {priorityOptions.map(({ value, label }) => (
+        <option key={value} value={value}>
+          {label}
+        </option>
+      ))}
+    </SelectLight>
   );
 };
 
@@ -73,23 +68,20 @@ const Status: FC<{
   onChange: (status: Status) => void;
   isLoading?: boolean;
 }> = ({ status, onChange, isLoading }) => {
-  const onChangeHendler = (
-    newValue: SingleValue<{ value: string; label: string }>,
-  ) => {
-    if (newValue) {
-      onChange(newValue.value as Status);
-    }
-  };
-
   return (
-    <Select
-      onChange={onChangeHendler}
-      options={statusOptions}
-      value={statusOptions.find((option) => option.value === status) || null}
+    <SelectLight
+      value={status}
+      onChange={(e) => onChange(e.target.value as Status)}
       className={cva('basic-multi-select', {
         'animate-pulse': !!isLoading,
       })}
-    />
+    >
+      {statusOptions.map(({ value, label }) => (
+        <option key={value} value={value}>
+          {label}
+        </option>
+      ))}
+    </SelectLight>
   );
 };
 

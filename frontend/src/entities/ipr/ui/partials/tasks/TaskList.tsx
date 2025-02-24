@@ -3,6 +3,7 @@ import { Checkbox } from '@/shared/ui/Checkbox';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useCallback } from 'react';
 import TaskItem from './TaskItem';
+import { useModal } from '@/app/hooks/useModal';
 interface TaskListProps {
   competencyName?: string;
   indicatorName?: string;
@@ -10,6 +11,7 @@ interface TaskListProps {
   disableSelect: boolean;
   selected: number[];
   select: (taskId: number | number[]) => void;
+  type: 'COMPETENCY' | 'INDICATOR';
 }
 
 const headerItems = [
@@ -42,9 +44,20 @@ export const TaskList: FC<TaskListProps> = ({
   disableSelect,
   selected,
   select,
+  type,
 }) => {
+  const { openModal } = useModal();
   const createTask = () => {
-    console.log('create task');
+    switch (type) {
+      case 'COMPETENCY':
+        openModal('ADD_TASK_COMPETENCY');
+        break;
+      case 'INDICATOR':
+        openModal('ADD_TASK_INDICATOR');
+        break;
+      default:
+        break;
+    }
   };
 
   const onChangePriority = useCallback((priority: Task['priority']) => {

@@ -7,6 +7,7 @@ import { TextArea } from '@/shared/ui/TextArea';
 import { FC, memo, useCallback, useEffect, useState } from 'react';
 import { MaterialType } from '../model/types';
 import toast from 'react-hot-toast';
+import { checkLinkFormat } from './helpers';
 
 interface AddIndicatorModalProps {
   type: 'COMPETENCY' | 'INDICATOR';
@@ -15,11 +16,6 @@ interface AddIndicatorModalProps {
   modalData: unknown;
 }
 
-const checkLinkFormat = (link: string) => {
-  const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
-  return urlRegex.test(link) ? undefined : 'Неверный формат ссылки';
-};
-
 const materialTypes = [
   { text: 'Видео', id: 'VIDEO' },
   { text: 'Книга', id: 'BOOK' },
@@ -27,7 +23,7 @@ const materialTypes = [
   { text: 'Статья', id: 'ARTICLE' },
 ];
 
-export const AddMaterialType: FC<{
+const AddMaterialType: FC<{
   materialType: string;
   selectMaterialType: (type: MaterialType) => void;
 }> = memo(({ materialType, selectMaterialType }) => {

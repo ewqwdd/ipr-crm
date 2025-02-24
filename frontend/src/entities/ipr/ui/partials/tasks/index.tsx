@@ -92,8 +92,6 @@ const Tasks: FC<TasksProps> = ({
     );
   }, [tasks]);
 
-  console.log('groupedTasks => ', groupedTasks);
-
   const filteredGroupedCompetencies = groupedTasks.GENERAL.map((tasks) =>
     tasks.filter(
       (task) => generalFilters === 'ALL' || task.status === generalFilters,
@@ -106,7 +104,21 @@ const Tasks: FC<TasksProps> = ({
     ),
   ).filter((tasks) => tasks.length > 0);
 
-  console.log('selectedGeneral => ', selectedGeneral);
+  const selectedMaterials =
+    selectedGeneral.length > 0
+      ? selectedGeneral
+      : selectedObvious.length > 0
+        ? selectedObvious
+        : [];
+
+  const resetSelection = () => {
+    if (selectedGeneral.length > 0) {
+      return setSelectedGeneral([]);
+    }
+    if (selectedObvious.length > 0) {
+      return setSelectedObvious([]);
+    }
+  };
 
   return (
     <div>
@@ -129,6 +141,7 @@ const Tasks: FC<TasksProps> = ({
         </div>
         {filteredGroupedCompetencies.map((tasks) => (
           <TaskList
+            type="COMPETENCY"
             key={tasks[0]?.competencyId}
             competencyName={tasks[0]?.competency?.name}
             tasks={tasks}
@@ -156,6 +169,7 @@ const Tasks: FC<TasksProps> = ({
         </div>
         {filteredGroupedObvious?.map((tasks) => (
           <TaskList
+            type="INDICATOR"
             key={tasks[0]?.indicatorId}
             competencyName={tasks[0]?.indicator?.name}
             tasks={tasks}
@@ -170,7 +184,10 @@ const Tasks: FC<TasksProps> = ({
         <h3 className="font-semibold">Other</h3>
         <div className="mt-4">WIP</div>
       </div>
-      <ActionBar selectedMaterials={[]} />
+      <ActionBar
+        selectedMaterials={selectedMaterials}
+        resetSelection={resetSelection}
+      />
     </div>
   );
 };

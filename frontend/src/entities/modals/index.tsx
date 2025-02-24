@@ -21,6 +21,7 @@ import {
 } from '../rates';
 import { InviteModal } from '../user/ui/InviteModal';
 import { PasswordResetModal } from '@/widgets/PasswordResetModal';
+import AddTaskModal from '@/widgets/AddTaskModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -74,6 +75,10 @@ const ModalWrapper: FC = () => {
       return <InviteModal {...updatedModalProps} />;
     case 'PASSWORD_RESET':
       return <PasswordResetModal {...updatedModalProps} />;
+    case 'ADD_TASK_INDICATOR':
+      return <AddTaskModal type={'INDICATOR'} {...updatedModalProps} />;
+    case 'ADD_TASK_COMPETENCY':
+      return <AddTaskModal type="COMPETENCY" {...updatedModalProps} />;
     default:
       break;
   }
