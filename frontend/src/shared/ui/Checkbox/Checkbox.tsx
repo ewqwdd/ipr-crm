@@ -6,6 +6,7 @@ interface CheckboxProps extends HTMLAttributes<HTMLInputElement> {
   description?: string;
   name?: string;
   checked?: boolean;
+  disabled?: boolean;
 }
 
 export default function Checkbox({
