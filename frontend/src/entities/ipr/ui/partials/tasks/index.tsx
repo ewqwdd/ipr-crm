@@ -24,9 +24,11 @@ const Tasks: FC<TasksProps> = ({
 }) => {
   const [selectedGeneral, setSelectedGeneral] = useState<number[]>([]);
   const [selectedObvious, setSelectedObvious] = useState<number[]>([]);
+  const [selectedOther, setSelectedOther] = useState<number[]>([]);
 
   const [generalFilters, setGeneralFilters] = useState('ALL');
   const [obviousFilters, setObviousFilters] = useState('ALL');
+  const [otherFilters, setOtherFilters] = useState('ALL');
 
   const handleGeneralFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGeneralFilters(event.target.value);
@@ -34,6 +36,10 @@ const Tasks: FC<TasksProps> = ({
 
   const handleObviousFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     setObviousFilters(event.target.value);
+  };
+
+  const handleOtherFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOtherFilters(event.target.value);
   };
 
   const selectGeneralTask = (ids: number | number[]) => {
@@ -66,8 +72,23 @@ const Tasks: FC<TasksProps> = ({
     });
   };
 
+  const selectOtherTask = (ids: number | number[]) => {
+    setSelectedOther((prevSelected) => {
+      const idArray = Array.isArray(ids) ? ids : [ids];
+
+      if (idArray.every((id) => prevSelected.includes(id))) {
+        return prevSelected.filter((taskId) => !idArray.includes(taskId));
+      }
+
+      return [
+        ...prevSelected,
+        ...idArray.filter((id) => !prevSelected.includes(id)),
+      ];
+    });
+  };
+
   const groupedTasks = useMemo(() => {
-    return ['GENERAL', 'OBVIOUS'].reduce(
+    return ['GENERAL', 'OBVIOUS', 'OTHER'].reduce(
       (acc, type) => {
         const filteredTasks = tasks?.filter((task) => task.type === type) ?? [];
 
@@ -88,7 +109,7 @@ const Tasks: FC<TasksProps> = ({
 
         return { ...acc, [type]: groupedByKey };
       },
-      {} as Record<'GENERAL' | 'OBVIOUS', Task[][]>,
+      {} as Record<'GENERAL' | 'OBVIOUS' | 'OTHER', Task[][]>,
     );
   }, [tasks]);
 
@@ -101,6 +122,12 @@ const Tasks: FC<TasksProps> = ({
   const filteredGroupedObvious = groupedTasks.OBVIOUS.map((tasks) =>
     tasks.filter(
       (task) => obviousFilters === 'ALL' || task.status === obviousFilters,
+    ),
+  ).filter((tasks) => tasks.length > 0);
+
+  const filteredGroupedOther = groupedTasks.OTHER.map((tasks) =>
+    tasks.filter(
+      (task) => otherFilters === 'ALL' || task.status === otherFilters,
     ),
   ).filter((tasks) => tasks.length > 0);
 
@@ -117,6 +144,9 @@ const Tasks: FC<TasksProps> = ({
     }
     if (selectedObvious.length > 0) {
       return setSelectedObvious([]);
+    }
+    if (selectedOther.length > 0) {
+      return setSelectedOther([]);
     }
   };
 
@@ -152,6 +182,7 @@ const Tasks: FC<TasksProps> = ({
         ))}
         {filteredGroupedCompetencies?.length === 0 && <NoTasks />}
       </div>
+
       <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6 mb-5">
         <h3 className="font-semibold mb-4">Очевидные задачи</h3>
         <div className="flex gap-4 mb-4">
@@ -180,10 +211,36 @@ const Tasks: FC<TasksProps> = ({
         ))}
         {filteredGroupedObvious?.length === 0 && <NoTasks />}
       </div>
+
       <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-        <h3 className="font-semibold">Other</h3>
-        <div className="mt-4">WIP</div>
+        <h3 className="font-semibold mb-4">Other</h3>
+        <div className="flex gap-6 mb-4">
+          {filters.map(({ label, key }) => (
+            <Radio
+              key={key}
+              name="other"
+              value={key}
+              checked={otherFilters === key}
+              onChange={handleOtherFilter}
+            >
+              {label}
+            </Radio>
+          ))}
+        </div>
+        {filteredGroupedOther?.map((tasks) => (
+          <TaskList
+            type="INDICATOR"
+            key={tasks[0]?.indicatorId}
+            competencyName={tasks[0]?.indicator?.name}
+            tasks={tasks}
+            disableSelect={selectedGeneral.length > 0}
+            selected={selectedOther}
+            select={selectOtherTask}
+          />
+        ))}
+        {filteredGroupedOther?.length === 0 && <NoTasks />}
       </div>
+
       <ActionBar
         selectedMaterials={selectedMaterials}
         resetSelection={resetSelection}
