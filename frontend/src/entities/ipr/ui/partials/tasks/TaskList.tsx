@@ -1,10 +1,11 @@
 import { Task } from '@/entities/ipr/model/types';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { FC, useCallback } from 'react';
+import { FC } from 'react';
 import TaskItem from './TaskItem';
 import { useModal } from '@/app/hooks/useModal';
 import { formatDate } from './helpers';
+import { cva } from '@/shared/lib/cva';
 interface TaskListProps {
   competencyName?: string;
   indicatorName?: string;
@@ -13,6 +14,9 @@ interface TaskListProps {
   selected: number[];
   select: (taskId: number | number[]) => void;
   type: 'COMPETENCY' | 'INDICATOR';
+  loading?: boolean;
+  changeTaskPriority: (id: number, priority: Task['priority']) => void;
+  changeTaskStatus: (id: number, status: Task['status']) => void;
 }
 
 const headerItems = [
@@ -46,6 +50,9 @@ export const TaskList: FC<TaskListProps> = ({
   selected,
   select,
   type,
+  loading,
+  changeTaskPriority,
+  changeTaskStatus,
 }) => {
   const { openModal } = useModal();
   const createTask = () => {
@@ -63,13 +70,19 @@ export const TaskList: FC<TaskListProps> = ({
     }
   };
 
-  const onChangePriority = useCallback((priority: Task['priority']) => {
-    console.log('Change priority => ', priority);
-  }, []);
+  // const onChangePriority = useCallback(
+  //   (priority: Task['priority']) => {
+  //     changeTaskPriority(tasks[0].id, priority);
+  //   },
+  //   [changeTaskPriority],
+  // );
 
-  const onChangeStatus = useCallback((status: Task['status']) => {
-    console.log('Change status => ', status);
-  }, []);
+  // const onChangeStatus = useCallback(
+  //   (status: Task['status']) => {
+  //     changeTaskStatus(tasks[0].id, status);
+  //   },
+  //   [changeTaskStatus],
+  // );
 
   const isSelectedAll = tasks.every(({ id }) => selected.includes(id));
   const selectAll = () => {
@@ -77,7 +90,11 @@ export const TaskList: FC<TaskListProps> = ({
   };
 
   return (
-    <div>
+    <div
+      className={cva({
+        'animate-pulse': !!loading,
+      })}
+    >
       <div className="flex justify-between items-center mb-5">
         <div className="flex items-center gap-4 ">
           <h4>{(competencyName || indicatorName) ?? 'Без названия'}</h4>
@@ -104,14 +121,16 @@ export const TaskList: FC<TaskListProps> = ({
                     title={task.material?.name}
                   />
                 </td>
-                <td className="w-[18%] px-3 py-4 text-sm text-gray-500">
+                <td className="w-[18%] px-3 py-4 ">
                   <TaskItem.MaterialType
                     contentType={task.material?.contentType}
+                    url={task.material?.url}
                   />
                 </td>
                 <td className="w-[12%] px-3 py-4 text-sm text-gray-500">
                   <TaskItem.Priority
-                    onChange={onChangePriority}
+                    id={task.id}
+                    onChange={changeTaskPriority}
                     priority={task.priority}
                   />
                 </td>
@@ -120,7 +139,8 @@ export const TaskList: FC<TaskListProps> = ({
                 </td>
                 <td className="w-[12%] px-3 py-4 text-sm text-gray-500">
                   <TaskItem.Status
-                    onChange={onChangeStatus}
+                    id={task.id}
+                    onChange={changeTaskStatus}
                     status={task.status}
                   />
                 </td>

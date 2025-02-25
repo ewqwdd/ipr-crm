@@ -1,14 +1,15 @@
-import { TaskPriority } from '@/entities/ipr/model/types';
+import { Task, TaskPriority } from '@/entities/ipr/model/types';
 import { cva } from '@/shared/lib/cva';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import { FC } from 'react';
 
 type PrioritySelectorProps = {
   priority: TaskPriority;
-  onChange: (priority: TaskPriority) => void;
+  onChange: (id: number, priority: Task['priority']) => void;
   isLoading?: boolean;
   isLabel?: boolean;
   required?: boolean;
+  id: number;
 };
 
 const priorityOptions = [
@@ -23,13 +24,18 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
   isLoading,
   isLabel,
   required,
+  id,
 }) => {
   const label = isLabel ? 'Важность' : undefined;
+
+  const onChangeHandler = (priority: TaskPriority) => {
+    onChange(id, priority);
+  };
 
   return (
     <SelectLight
       value={priority}
-      onChange={(e) => onChange(e.target.value as TaskPriority)}
+      onChange={(e) => onChangeHandler(e.target.value as TaskPriority)}
       className={cva('basic-multi-select', {
         'animate-pulse': !!isLoading,
       })}

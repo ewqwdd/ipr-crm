@@ -1,4 +1,4 @@
-import { Ipr } from '@/entities/ipr';
+import { Ipr, TaskPriority, TaskStatus } from '@/entities/ipr';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const iprApi = createApi({
@@ -36,6 +36,59 @@ const iprApi = createApi({
         method: 'GET',
       }),
       providesTags: (_, __, id) => [{ type: 'board', id }],
+    }),
+    // TODO: to check
+    changeTaskStatus: build.mutation<void, { id: number; status: TaskStatus }>({
+      query: ({ id, status }) => ({
+        url: '/task/status',
+        method: 'POST',
+        body: { id, status },
+      }),
+    }),
+    changeTaskPriority: build.mutation<
+      void,
+      { id: number; priority: TaskPriority }
+    >({
+      query: ({ id, priority }) => ({
+        url: `/${id}/priority`,
+        method: 'POST',
+        body: { priority },
+      }),
+    }),
+    deleteTask: build.mutation<void, { ids: number[] }>({
+      query: ({ ids }) => ({
+        url: '/task',
+        method: 'DELETE',
+        body: { ids },
+      }),
+    }),
+    transferToGeneral: build.mutation<void, { ids: number[] }>({
+      query: ({ ids }) => ({
+        url: '/task/transfer-to-general',
+        method: 'POST',
+        body: { ids },
+      }),
+    }),
+    transferToOther: build.mutation<void, { ids: number[] }>({
+      query: ({ ids }) => ({
+        url: '/task/transfer-to-other',
+        method: 'POST',
+        body: { ids },
+      }),
+    }),
+    transferToObvious: build.mutation<void, { ids: number[] }>({
+      query: ({ ids }) => ({
+        url: '/task/transfer-to-obvious',
+        method: 'POST',
+        body: { ids },
+      }),
+    }),
+    addToBoard: build.mutation<void, { ids: number[] }>({
+      query: ({ ids }) => ({
+        url: '/task/add-to-board',
+        method: 'POST',
+        body: { ids },
+      }),
     }),
   }),
 });
