@@ -1,5 +1,5 @@
 import { FC, memo, useMemo, useState } from 'react';
-import { Task } from '@/entities/ipr/model/types';
+import { Task, TaskType } from '@/entities/ipr/model/types';
 import { ActionBar } from './ActionBar';
 import { TaskList } from './TaskList';
 import { toggleTaskSelection } from './helpers';
@@ -8,10 +8,14 @@ import TaskFilter from './TaskFilter';
 type TasksProps = {
   tasks?: Task[];
   loading?: boolean;
+  userId?: number;
+  planId?: number;
 };
 
 const Tasks: FC<TasksProps> = ({
   tasks,
+  planId,
+  userId,
   // loading // TODO: add loading
 }) => {
   const [selectedGeneral, setSelectedGeneral] = useState<number[]>([]);
@@ -67,6 +71,16 @@ const Tasks: FC<TasksProps> = ({
     }
   };
 
+  let typeSelected: TaskType = 'OTHER';
+  switch (true) {
+    case selectedGeneral.length > 0:
+      typeSelected = 'GENERAL';
+      break;
+    case selectedObvious.length > 0:
+      typeSelected = 'OBVIOUS';
+      break;
+  }
+
   return (
     <div>
       <TaskFilter
@@ -84,6 +98,9 @@ const Tasks: FC<TasksProps> = ({
               disableSelect={selectedObvious.length > 0}
               selected={selectedGeneral}
               select={selectGeneralTask}
+              taskType={'GENERAL'}
+              planId={planId}
+              userId={userId}
             />
           ))
         }
@@ -91,7 +108,7 @@ const Tasks: FC<TasksProps> = ({
       <TaskFilter
         tasks={groupedTasks.OBVIOUS}
         filterName={'obvious'}
-        title="Очевидные задачи"
+        title="Очевидные зоны роста"
       >
         {(filteredTasks) =>
           filteredTasks.map((tasks) => (
@@ -103,13 +120,16 @@ const Tasks: FC<TasksProps> = ({
               disableSelect={selectedGeneral.length > 0}
               selected={selectedObvious}
               select={selectObviousTask}
+              taskType={'OBVIOUS'}
+              planId={planId}
+              userId={userId}
             />
           ))
         }
       </TaskFilter>
       <TaskFilter
         tasks={groupedTasks.OTHER}
-        title="Другие задачи"
+        title="Прочие материалы и задачи для развития"
         filterName={'other'}
       >
         {(filteredTasks) =>
@@ -122,15 +142,23 @@ const Tasks: FC<TasksProps> = ({
               disableSelect={selectedGeneral.length > 0}
               selected={selectedOther}
               select={selectOtherTask}
+              taskType={'OTHER'}
+              planId={planId}
+              userId={userId}
             />
           ))
         }
       </TaskFilter>
 
-      <ActionBar
-        selectedMaterials={selectedMaterials}
-        resetSelection={resetSelection}
-      />
+      {planId && userId && (
+        <ActionBar
+          selectedMaterials={selectedMaterials}
+          resetSelection={resetSelection}
+          planId={planId}
+          userId={userId}
+          type={typeSelected}
+        />
+      )}
     </div>
   );
 };
