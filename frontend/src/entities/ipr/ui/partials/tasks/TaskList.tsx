@@ -1,4 +1,4 @@
-import { Task } from '@/entities/ipr/model/types';
+import { Ipr, Task } from '@/entities/ipr/model/types';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC } from 'react';
@@ -16,6 +16,7 @@ interface TaskListProps {
   planId?: number;
   userId?: number;
   taskType: Task['type'];
+  skillType?: Ipr['skillType'];
 }
 
 const headerItems = [
@@ -52,6 +53,7 @@ export const TaskList: FC<TaskListProps> = ({
   planId,
   userId,
   taskType,
+  skillType,
 }) => {
   const { openModal } = useModal();
   const createTask = () => {
@@ -62,6 +64,7 @@ export const TaskList: FC<TaskListProps> = ({
           planId,
           userId,
           taskType,
+          skillType,
         });
         break;
       case 'INDICATOR':
@@ -70,6 +73,7 @@ export const TaskList: FC<TaskListProps> = ({
           planId,
           userId,
           taskType,
+          skillType,
         });
         break;
       default:

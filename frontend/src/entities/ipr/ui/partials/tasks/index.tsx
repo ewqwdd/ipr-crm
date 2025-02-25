@@ -1,5 +1,5 @@
 import { FC, memo, useMemo, useState } from 'react';
-import { Task, TaskType } from '@/entities/ipr/model/types';
+import { Ipr, Task, TaskType } from '@/entities/ipr/model/types';
 import ActionBar from './ActionBar';
 import { TaskList } from './TaskList';
 import { toggleTaskSelection } from './helpers';
@@ -10,6 +10,7 @@ type TasksProps = {
   loading?: boolean;
   userId?: number;
   planId?: number;
+  skillType?: Ipr['skillType'];
 };
 
 const costyl = (
@@ -39,6 +40,7 @@ const Tasks: FC<TasksProps> = ({
   tasks,
   planId,
   userId,
+  skillType,
   // loading // TODO: add loading
 }) => {
   const [selectedGeneral, setSelectedGeneral] = useState<number[]>([]);
@@ -115,6 +117,7 @@ const Tasks: FC<TasksProps> = ({
               taskType={'GENERAL'}
               planId={planId}
               userId={userId}
+              skillType={skillType}
             />
           ))
         }
@@ -139,6 +142,7 @@ const Tasks: FC<TasksProps> = ({
               taskType={'OBVIOUS'}
               planId={planId}
               userId={userId}
+              skillType={skillType}
             />
           ))
         }
@@ -163,6 +167,7 @@ const Tasks: FC<TasksProps> = ({
               taskType={'OTHER'}
               planId={planId}
               userId={userId}
+              skillType={skillType}
             />
           ))
         }
