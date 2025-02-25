@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { AddMaterialType } from '../../../material/ui/AddMaterialsModal';
+import AddMaterialType from '@/entities/material/ui/AddMaterialType';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { TextArea } from '@/shared/ui/TextArea';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';

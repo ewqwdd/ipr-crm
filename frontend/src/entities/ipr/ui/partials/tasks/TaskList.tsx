@@ -4,6 +4,7 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useCallback } from 'react';
 import TaskItem from './TaskItem';
 import { useModal } from '@/app/hooks/useModal';
+import { formatDate } from './helpers';
 interface TaskListProps {
   competencyName?: string;
   indicatorName?: string;
@@ -50,10 +51,12 @@ export const TaskList: FC<TaskListProps> = ({
   const createTask = () => {
     switch (type) {
       case 'COMPETENCY':
-        openModal('ADD_TASK_COMPETENCY');
+        openModal('ADD_TASK_COMPETENCY', {
+          competencyId: tasks[0].competencyId,
+        });
         break;
       case 'INDICATOR':
-        openModal('ADD_TASK_INDICATOR');
+        openModal('ADD_TASK_INDICATOR', { indicatorId: tasks[0].indicatorId });
         break;
       default:
         break;
@@ -113,7 +116,7 @@ export const TaskList: FC<TaskListProps> = ({
                   />
                 </td>
                 <td className="w-[18%] px-3 py-4 text-sm text-gray-500">
-                  {task.deadline ?? 'Не указано'}
+                  {formatDate(task.deadline)}
                 </td>
                 <td className="w-[12%] px-3 py-4 text-sm text-gray-500">
                   <TaskItem.Status

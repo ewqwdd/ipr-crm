@@ -4,8 +4,8 @@ import { materialTypes } from '@/entities/material/model/types';
 import { cva } from '@/shared/lib/cva';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import { FC } from 'react';
+import { PrioritySelector } from './PrioritySelector';
 
-type Priority = Task['priority'];
 type Status = Task['status'];
 type MaterialType = Material['contentType'];
 
@@ -27,34 +27,6 @@ const getMaterialTypeLabel = (contentType?: MaterialType) => {
 
 const MaterialType: FC<{ contentType?: MaterialType }> = ({ contentType }) => {
   return <div>{getMaterialTypeLabel(contentType)}</div>;
-};
-
-const priorityOptions = [
-  { value: 'HIGH', label: 'Высокая' },
-  { value: 'MEDIUM', label: 'Средняя' },
-  { value: 'LOW', label: 'Низкая' },
-];
-
-const Priority: FC<{
-  priority: Priority;
-  onChange: (status: Priority) => void;
-  isLoading?: boolean;
-}> = ({ priority, onChange, isLoading }) => {
-  return (
-    <SelectLight
-      value={priority}
-      onChange={(e) => onChange(e.target.value as Priority)}
-      className={cva('basic-multi-select', {
-        'animate-pulse': !!isLoading,
-      })}
-    >
-      {priorityOptions.map(({ value, label }) => (
-        <option key={value} value={value}>
-          {label}
-        </option>
-      ))}
-    </SelectLight>
-  );
 };
 
 const statusOptions = [
@@ -87,7 +59,7 @@ const Status: FC<{
 
 const TaskItem = {
   MaterialType,
-  Priority,
+  Priority: PrioritySelector,
   Status,
 };
 

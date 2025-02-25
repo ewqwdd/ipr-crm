@@ -2,12 +2,13 @@ import { skillsApi } from '@/shared/api/skillsApi';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { Modal } from '@/shared/ui/Modal';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { SelectLight } from '@/shared/ui/SelectLight';
 import { TextArea } from '@/shared/ui/TextArea';
-import { FC, memo, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MaterialType } from '../model/types';
 import toast from 'react-hot-toast';
 import { checkLinkFormat } from './helpers';
+import AddMaterialType from './AddMaterialType';
+import AddLevel from './AddLevel';
 
 interface AddIndicatorModalProps {
   type: 'COMPETENCY' | 'INDICATOR';
@@ -15,61 +16,6 @@ interface AddIndicatorModalProps {
   closeModal: () => void;
   modalData: unknown;
 }
-
-const materialTypes = [
-  { text: 'Видео', id: 'VIDEO' },
-  { text: 'Книга', id: 'BOOK' },
-  { text: 'Курс', id: 'COURSE' },
-  { text: 'Статья', id: 'ARTICLE' },
-];
-
-export const AddMaterialType: FC<{
-  materialType: string;
-  selectMaterialType: (type: MaterialType) => void;
-}> = memo(({ materialType, selectMaterialType }) => {
-  return (
-    <SelectLight
-      label="Тип материала"
-      name="materialType"
-      value={materialType}
-      onChange={(e) => selectMaterialType(e.target.value as MaterialType)}
-      required
-    >
-      {materialTypes.map(({ id, text }) => (
-        <option key={id} value={id}>
-          {text}
-        </option>
-      ))}
-    </SelectLight>
-  );
-});
-
-const levels = [0, 1, 2, 3, 4];
-
-const AddLevel: FC<{ level: number; selectLevel: (level: number) => void }> =
-  memo(({ level, selectLevel }) => {
-    return (
-      <div>
-        <p className="text-sm font-medium text-gray-700 mb-1">
-          Уровень сложности
-          <span className="text-red-500 font-bold ml-1">*</span>
-        </p>
-        <div
-          className={`grid grid-cols-${levels.length} border border-gray-300 rounded-md overflow-hidden`}
-        >
-          {levels.map((levelItem) => (
-            <button
-              key={levelItem}
-              className={`p-2 text-center border-r last:border-r-0 border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 transition-all ${levelItem === level ? 'bg-gray-200' : ''}`}
-              onClick={() => selectLevel(levelItem)}
-            >
-              {levelItem}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  });
 
 type ErorrsType = { title?: string; link?: string };
 
