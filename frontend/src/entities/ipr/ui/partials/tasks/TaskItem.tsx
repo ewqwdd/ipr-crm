@@ -5,6 +5,7 @@ import { cva } from '@/shared/lib/cva';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import { FC } from 'react';
 import { PrioritySelector } from './PrioritySelector';
+import { columnNames, lane_names } from '@/entities/ipr/model/constants';
 
 type Status = Task['status'];
 type MaterialType = Material['contentType'];
@@ -29,11 +30,10 @@ const MaterialType: FC<{ contentType?: MaterialType }> = ({ contentType }) => {
   return <div>{getMaterialTypeLabel(contentType)}</div>;
 };
 
-const statusOptions = [
-  { value: 'TO_DO', label: 'Новая' },
-  { value: 'IN_PROGRESS', label: 'В работе' },
-  { value: 'DONE', label: 'Готово' },
-];
+const statusOptions = lane_names.map((status) => ({
+  value: status,
+  label: columnNames[status],
+}));
 
 const Status: FC<{
   status?: Status;
@@ -42,6 +42,7 @@ const Status: FC<{
 }> = ({ status, onChange, isLoading }) => {
   return (
     <SelectLight
+      name="status"
       value={status}
       onChange={(e) => onChange(e.target.value as Status)}
       className={cva('basic-multi-select', {
