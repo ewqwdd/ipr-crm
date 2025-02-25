@@ -17,6 +17,7 @@ import { SetGoalDto } from './dto/set-goal-dto';
 import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { AddTaskDto } from './dto/add-task.dto';
+import { SetDeadlineDto } from './dto/set-deadline.dto';
 
 @Controller('ipr')
 export class IprController {
@@ -60,6 +61,19 @@ export class IprController {
     return this.iprService.update(
       data.id,
       { status: data.status },
+      sessionInfo,
+    );
+  }
+
+  @Post('/task/deadline')
+  @UseGuards(AuthGuard)
+  async setDeadline(
+    @Body() data: SetDeadlineDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.update(
+      data.id,
+      { deadline: new Date(data.deadline) },
       sessionInfo,
     );
   }
