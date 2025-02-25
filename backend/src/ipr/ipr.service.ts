@@ -383,4 +383,52 @@ export class IprService {
     });
     return material;
   }
+
+  async findAll(sessionInfo: GetSessionInfoDto) {
+    if (sessionInfo.role === 'admin') {
+      return this.prismaService.individualGrowthPlan.findMany({
+        include: {
+          user: true,
+          mentor: true,
+          rate360: {
+            select: {
+              team: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+          tasks: true,
+          spec: true,
+        },
+      });
+    }
+    return this.prismaService.individualGrowthPlan.findMany({
+      where: {
+        OR: [
+          {
+            planCurators: {
+              some: {
+                userId: sessionInfo.id,
+              },
+            },
+          },
+          {
+            rate360: {
+              team: {
+                curatorId: sessionInfo.id,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        user: true,
+        mentor: true,
+        rate360: true,
+        tasks: true,
+      },
+    });
+  }
 }

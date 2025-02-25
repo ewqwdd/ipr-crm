@@ -117,6 +117,13 @@ const iprApi = createApi({
         { type: 'board', id: userId },
       ],
     }),
+    findAllIpr: build.query<Ipr[], void>({
+      query: () => ({
+        url: '/ipr',
+        method: 'GET',
+      }),
+      providesTags: ['ipr'],
+    }),
   }),
 });
 

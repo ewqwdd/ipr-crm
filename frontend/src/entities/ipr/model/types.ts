@@ -43,6 +43,7 @@ export interface Ipr {
   mentor: User | null;
   user: User;
   rate360: Rate;
+  team: { name: string };
 }
 
 export interface CustomCard extends Card {

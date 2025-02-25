@@ -117,4 +117,10 @@ export class IprController {
   ) {
     return this.iprService.addTask(data, sessionInfo);
   }
+
+  @Get('/')
+  @UseGuards(AuthGuard)
+  async findAll(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return this.iprService.findAll(sessionInfo);
+  }
 }

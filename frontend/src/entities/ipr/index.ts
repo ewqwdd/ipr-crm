@@ -1,6 +1,7 @@
 import IprEdit from './ui/IprEdit';
 import Board from './ui/Board/Board';
 import { boardReducer, boardActions } from './model/boardSlice';
+import IprTable from './ui/IprTable/IprTable';
 
 export type {
   Ipr,
@@ -11,4 +12,4 @@ export type {
   CustomCard,
 } from './model/types';
 
-export { IprEdit, boardReducer, boardActions, Board };
+export { IprEdit, boardReducer, boardActions, Board, IprTable };

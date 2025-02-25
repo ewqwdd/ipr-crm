@@ -18,6 +18,7 @@ import { ResetPassword } from '@/pages/ResetPassword';
 import { Ipr } from '@/pages/Ipr';
 import { Board } from '@/pages/Board';
 import { AdminBoard } from '@/pages/AdminBoard';
+import { IprList } from '@/pages/IprList';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -45,6 +46,7 @@ export const routerItems: RouterItemType[] = [
   { path: '/ipr/360/:rateId', element: <Ipr /> },
   { path: '/board', element: <Board /> },
   { path: '/board/:userId', element: <AdminBoard /> },
+  { path: '/ipr', element: <IprList /> },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];

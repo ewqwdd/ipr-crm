@@ -20,7 +20,7 @@ export default function Content() {
   const navigate = useNavigate();
 
   const navigation =
-    user?.role.name === 'admin' ? adminNavigation : userNavigation;
+    user?.role.name === 'admin' ? adminNavigation : userNavigation(user);
 
   const logout = () => {
     $api.post('/auth/sign-out').then(() => {

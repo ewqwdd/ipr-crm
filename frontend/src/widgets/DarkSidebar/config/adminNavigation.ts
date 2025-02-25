@@ -1,4 +1,5 @@
 import {
+  ChartBarIcon,
   DocumentIcon,
   HomeIcon,
   InboxIcon,
@@ -23,6 +24,12 @@ export const adminNavigation: NavType[] = [
     icon: InboxIcon,
     current: false,
     children: [{ name: 'Оценка 360', href: '/360rate', current: false }],
+  },
+  {
+    name: 'Планы развития',
+    icon: ChartBarIcon,
+    current: false,
+    href: '/ipr',
   },
   {
     name: 'Конструктор профилей',

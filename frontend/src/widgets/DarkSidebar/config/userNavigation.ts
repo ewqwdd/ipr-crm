@@ -1,7 +1,15 @@
-import { HomeIcon, InboxIcon, MapIcon } from '@heroicons/react/outline';
+import {
+  ChartBarIcon,
+  HomeIcon,
+  InboxIcon,
+  MapIcon,
+} from '@heroicons/react/outline';
 import { NavType } from './types';
+import { User } from '@/entities/user';
 
-export const userNavigation: NavType[] = [
+export const userNavigation: (user: User | null) => NavType[] = (
+  user: User | null,
+) => [
   { name: 'Главная', icon: HomeIcon, href: '/', current: true },
   {
     name: 'Мне назначено',
@@ -15,4 +23,14 @@ export const userNavigation: NavType[] = [
     current: false,
     href: '/board',
   },
+  ...((user?.teamCurator?.length ?? 0) > 0
+    ? [
+        {
+          name: 'Планы развития',
+          icon: ChartBarIcon,
+          current: false,
+          href: '/ipr',
+        },
+      ]
+    : []),
 ];
