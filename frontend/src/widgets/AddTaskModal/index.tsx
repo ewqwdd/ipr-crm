@@ -1,4 +1,4 @@
-import { TaskPriority } from '@/entities/ipr';
+import { TaskPriority, TaskType } from '@/entities/ipr';
 import { PrioritySelector } from '@/entities/ipr/ui/partials/tasks/PrioritySelector';
 import { MaterialType } from '@/entities/material';
 import AddMaterialType from '@/entities/material/ui/AddMaterialType';
@@ -7,17 +7,27 @@ import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { Modal } from '@/shared/ui/Modal';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { TextArea } from '@/shared/ui/TextArea';
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import SelectMaterialWrapper from './SelectMaterialWrapper';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { Competency, Indicator } from '@/entities/skill';
 import DatePickerLight from '@/shared/ui/DatePickerLight';
+import { iprApi } from '@/shared/api/iprApi';
+import toast from 'react-hot-toast';
 
 type AddTaskModalProps = {
   type: 'COMPETENCY' | 'INDICATOR';
   isOpen: boolean;
   modalData: unknown;
   closeModal: () => void;
+};
+
+type modalDataType = {
+  planId: number;
+  userId: number;
+  taskType: TaskType;
+  competencyId?: number;
+  indicatorId?: number;
 };
 
 type ErorrsType = { title?: string; link?: string };
@@ -30,9 +40,15 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
 }) => {
   const [title, setTitle] = useState('');
   const [link, setLink] = useState('');
+  const [mutate, { isLoading, isSuccess, isError }] =
+    iprApi.useAddTaskMutation();
+
+  const { competencyId, indicatorId, planId, taskType, userId } =
+    modalData as modalDataType;
+
   const [materialWrapperId, setMaterialWrapperId] = useState<
     number | undefined
-  >(modalData?.competencyId || modalData?.indicatorId);
+  >(competencyId || indicatorId);
   const [priority, setPriority] = useState<TaskPriority>('LOW');
   const [materialType, setMaterialType] = useState<MaterialType>('VIDEO');
   const [date, setDate] = useState<Date>(new Date());
@@ -54,8 +70,6 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
     });
     return { competencies, indicators };
   }, [skills]);
-
-  console.log('indicators => ', indicators);
 
   const selectMaterialType = useCallback(
     (type: MaterialType) => {
@@ -85,23 +99,26 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const payload = {
-    [type === 'COMPETENCY' ? 'competencyId' : 'indicatorId']: materialWrapperId,
-    title,
-    link,
-    materialType,
-    priority,
-    deadline: date, // TODO: format date to backand format
-  };
-
   const onSubmit = () => {
     if (!validate()) return;
+    const payload = {
+      [type === 'COMPETENCY' ? 'competencyId' : 'indicatorId']:
+        materialWrapperId,
+      name: title,
+      url: link,
+      contentType: materialType,
+      priority,
+      deadline: date.toISOString(),
+      planId,
+      taskType,
+      userId,
+    };
     switch (type) {
       case 'COMPETENCY':
-        console.log('payload => ', payload);
+        mutate(payload);
         break;
       case 'INDICATOR':
-        console.log('payload => ', payload);
+        mutate(payload);
         break;
       default:
         break;
@@ -110,13 +127,26 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
 
   const materialWrapperData = type === 'COMPETENCY' ? competencies : indicators;
 
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Материал успешно добавлен');
+      closeModal();
+    }
+  }, [isSuccess, closeModal]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Ошибка при добавлении материала');
+    }
+  }, [isError]);
+
   return (
     <Modal
       open={isOpen}
       setOpen={closeModal}
       title={'Новый материал'}
       footer={false}
-      loading={isLoadingSkills}
+      loading={isLoadingSkills || isLoading}
     >
       <div className="flex flex-col gap-4 mt-4">
         <TextArea

@@ -16,6 +16,7 @@ import { TransferToDto } from './dto/transfer/transfer-to.dto';
 import { SetGoalDto } from './dto/set-goal-dto';
 import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
+import { AddTaskDto } from './dto/add-task.dto';
 
 @Controller('ipr')
 export class IprController {
@@ -63,12 +64,6 @@ export class IprController {
     );
   }
 
-  @Post('/:id/transfer-to-general')
-  @UseGuards(AdminGuard)
-  async transferToGeneral(@Body() data: TransferToDto) {
-    return this.iprService.transferToGeneral(data.ids);
-  }
-
   @Post('/task/transfer-to-other')
   @UseGuards(AdminGuard)
   async transferToOther(@Body() data: TransferToDto) {
@@ -112,5 +107,14 @@ export class IprController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     return this.iprService.findAllTasks(id, sessionInfo);
+  }
+
+  @Post('/task')
+  @UseGuards(AuthGuard)
+  async addTask(
+    @Body() data: AddTaskDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.addTask(data, sessionInfo);
   }
 }

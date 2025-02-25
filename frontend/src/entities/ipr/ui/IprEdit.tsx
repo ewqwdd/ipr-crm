@@ -4,6 +4,9 @@ import IprHeading from './partials/IprHeading';
 import IprDetails from './partials/IprDetails';
 import IprGoal from './partials/IprGoal';
 import Tasks from './partials/tasks';
+import { useEffect } from 'react';
+import { useAppDispatch } from '@/app';
+import { iprApi } from '@/shared/api/iprApi';
 
 interface IprEditProps {
   ipr?: Ipr;
@@ -11,13 +14,23 @@ interface IprEditProps {
 }
 
 export default function IprEdit({ ipr, loading }: IprEditProps) {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    return () => {
+      if (ipr) {
+        dispatch(iprApi.util.invalidateTags([{ type: 'ipr', id: ipr.id }]));
+      }
+    };
+  }, [dispatch, ipr]);
+
   return (
     <Dimmer active={loading}>
       <div className="px-8 py-10 flex flex-col gap-4">
         <IprHeading ipr={ipr} />
         <IprDetails ipr={ipr} />
         <IprGoal ipr={ipr} />
-        <Tasks tasks={ipr?.tasks} />
+        <Tasks tasks={ipr?.tasks} userId={ipr?.userId} planId={ipr?.id} />
       </div>
     </Dimmer>
   );

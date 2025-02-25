@@ -5,7 +5,6 @@ import { FC } from 'react';
 import TaskItem from './TaskItem';
 import { useModal } from '@/app/hooks/useModal';
 import { formatDate } from './helpers';
-import { cva } from '@/shared/lib/cva';
 interface TaskListProps {
   competencyName?: string;
   indicatorName?: string;
@@ -14,9 +13,9 @@ interface TaskListProps {
   selected: number[];
   select: (taskId: number | number[]) => void;
   type: 'COMPETENCY' | 'INDICATOR';
-  loading?: boolean;
-  changeTaskPriority: (id: number, priority: Task['priority']) => void;
-  changeTaskStatus: (id: number, status: Task['status']) => void;
+  planId?: number;
+  userId?: number;
+  taskType: Task['type'];
 }
 
 const headerItems = [
@@ -50,9 +49,9 @@ export const TaskList: FC<TaskListProps> = ({
   selected,
   select,
   type,
-  loading,
-  changeTaskPriority,
-  changeTaskStatus,
+  planId,
+  userId,
+  taskType,
 }) => {
   const { openModal } = useModal();
   const createTask = () => {
@@ -60,29 +59,23 @@ export const TaskList: FC<TaskListProps> = ({
       case 'COMPETENCY':
         openModal('ADD_TASK_COMPETENCY', {
           competencyId: tasks[0].competencyId,
+          planId,
+          userId,
+          taskType,
         });
         break;
       case 'INDICATOR':
-        openModal('ADD_TASK_INDICATOR', { indicatorId: tasks[0].indicatorId });
+        openModal('ADD_TASK_INDICATOR', {
+          indicatorId: tasks[0].indicatorId,
+          planId,
+          userId,
+          taskType,
+        });
         break;
       default:
         break;
     }
   };
-
-  // const onChangePriority = useCallback(
-  //   (priority: Task['priority']) => {
-  //     changeTaskPriority(tasks[0].id, priority);
-  //   },
-  //   [changeTaskPriority],
-  // );
-
-  // const onChangeStatus = useCallback(
-  //   (status: Task['status']) => {
-  //     changeTaskStatus(tasks[0].id, status);
-  //   },
-  //   [changeTaskStatus],
-  // );
 
   const isSelectedAll = tasks.every(({ id }) => selected.includes(id));
   const selectAll = () => {
@@ -90,11 +83,7 @@ export const TaskList: FC<TaskListProps> = ({
   };
 
   return (
-    <div
-      className={cva({
-        'animate-pulse': !!loading,
-      })}
-    >
+    <div>
       <div className="flex justify-between items-center mb-5">
         <div className="flex items-center gap-4 ">
           <h4>{(competencyName || indicatorName) ?? 'Без названия'}</h4>
@@ -130,8 +119,8 @@ export const TaskList: FC<TaskListProps> = ({
                 <td className="w-[12%] px-3 py-4 text-sm text-gray-500">
                   <TaskItem.Priority
                     id={task.id}
-                    onChange={changeTaskPriority}
                     priority={task.priority}
+                    userId={userId}
                   />
                 </td>
                 <td className="w-[18%] px-3 py-4 text-sm text-gray-500">
@@ -140,8 +129,8 @@ export const TaskList: FC<TaskListProps> = ({
                 <td className="w-[12%] px-3 py-4 text-sm text-gray-500">
                   <TaskItem.Status
                     id={task.id}
-                    onChange={changeTaskStatus}
                     status={task.status}
+                    userId={userId}
                   />
                 </td>
               </tr>

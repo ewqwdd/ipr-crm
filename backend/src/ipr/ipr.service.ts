@@ -13,6 +13,7 @@ import {
 } from '@prisma/client';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { PrismaService } from 'src/utils/db/prisma.service';
+import { AddTaskDto } from './dto/add-task.dto';
 
 @Injectable()
 export class IprService {
@@ -203,8 +204,9 @@ export class IprService {
         id: {
           in: ids,
         },
+        type: 'OBVIOUS',
         indicator: {
-          NOT: null,
+          isNot: null,
         },
       },
       data: {
@@ -219,6 +221,7 @@ export class IprService {
         id: {
           in: ids,
         },
+        type: 'OTHER',
         indicator: {
           NOT: null,
         },
@@ -310,5 +313,74 @@ export class IprService {
       return await result();
     }
     throw new ForbiddenException('У вас нет доступа к этому пользователю');
+  }
+
+  async addTask(data: AddTaskDto, clientInfo: GetSessionInfoDto) {
+    const plan = await this.prismaService.individualGrowthPlan.findFirst({
+      where: {
+        id: data.planId,
+        userId: data.userId,
+      },
+      include: {
+        rate360: {
+          include: {
+            team: {
+              include: {
+                curator: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!plan) {
+      throw new NotFoundException('Plan not found');
+    }
+
+    if (
+      plan.rate360.team.curator.id !== clientInfo.id ||
+      clientInfo.role !== 'admin'
+    ) {
+      throw new ForbiddenException(
+        'You are not allowed to add tasks to this plan',
+      );
+    }
+
+    const material = await this.prismaService.material.create({
+      data: {
+        name: data.name,
+        contentType: data.contentType,
+        description: '',
+        level: 3,
+        url: data.url,
+        ...(data.competencyId
+          ? {
+              competencyMaterials: {
+                create: { competencyId: data.competencyId },
+              },
+            }
+          : {}),
+        ...(data.indicatorId
+          ? {
+              indicatorMaterials: { create: { indicatorId: data.indicatorId } },
+            }
+          : {}),
+        task: {
+          create: {
+            status: TaskStatus.TO_DO,
+            priority: data.priority,
+            type: data.taskType,
+            competencyId: data.competencyId,
+            planId: plan.id,
+            ...(data.competencyId ? { competencyId: data.competencyId } : {}),
+            ...(data.indicatorId ? { indicatorId: data.indicatorId } : {}),
+            deadline: data.deadline,
+            onBoard: data.taskType === TaskMaterialType.OBVIOUS,
+          },
+        },
+      },
+    });
+    return material;
   }
 }

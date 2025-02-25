@@ -1,15 +1,20 @@
-import { Task, TaskPriority } from '@/entities/ipr/model/types';
+import { useAppDispatch } from '@/app';
+import { TaskPriority } from '@/entities/ipr/model/types';
+import { iprApi } from '@/shared/api/iprApi';
+import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { SelectLight } from '@/shared/ui/SelectLight';
-import { FC } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type PrioritySelectorProps = {
   priority: TaskPriority;
-  onChange: (id: number, priority: Task['priority']) => void;
   isLoading?: boolean;
   isLabel?: boolean;
   required?: boolean;
-  id: number;
+  id?: number;
+  userId?: number;
+  onChange?: (priority: TaskPriority) => void;
 };
 
 const priorityOptions = [
@@ -19,23 +24,45 @@ const priorityOptions = [
 ];
 
 export const PrioritySelector: FC<PrioritySelectorProps> = ({
-  priority,
-  onChange,
+  priority: priority_,
   isLoading,
   isLabel,
   required,
   id,
+  userId,
+  onChange: onChange_,
 }) => {
   const label = isLabel ? 'Важность' : undefined;
 
-  const onChangeHandler = (priority: TaskPriority) => {
-    onChange(id, priority);
+  const [priority, setPriority] = useState<TaskPriority>(priority_);
+  const dispatch = useAppDispatch();
+
+  const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    if (onChange_) {
+      onChange_(e.target.value as TaskPriority);
+      return;
+    }
+    const prev = priority;
+    setPriority(e.target.value as TaskPriority);
+
+    $api
+      .post(`/ipr/${id}/priority`, { priority: e.target.value })
+      .catch(() => {
+        setPriority(prev);
+        toast.error('Не удалось обновить приоритет');
+      })
+      .then(() => {
+        dispatch(iprApi.util.invalidateTags([{ type: 'board', id: userId }]));
+      })
+      .then(() => {
+        toast.success('Приоритет успешно обновлен');
+      });
   };
 
   return (
     <SelectLight
-      value={priority}
-      onChange={(e) => onChangeHandler(e.target.value as TaskPriority)}
+      value={onChange_ ? priority_ : priority}
+      onChange={onChange}
       className={cva('basic-multi-select', {
         'animate-pulse': !!isLoading,
       })}

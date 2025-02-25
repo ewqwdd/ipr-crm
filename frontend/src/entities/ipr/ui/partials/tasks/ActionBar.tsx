@@ -1,28 +1,27 @@
+import { TaskType } from '@/entities/ipr/model/types';
 import { iprApi } from '@/shared/api/iprApi';
 import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useEffect } from 'react';
 import toast from 'react-hot-toast';
+
 type ActionBarProps = {
-  type: string;
   selectedMaterials: number[];
   resetSelection: () => void;
+  userId: number;
+  planId: number;
+  type: TaskType;
 };
 
 const successHandling = (
   addToBoard: boolean,
-  transferToGeneral: boolean,
   transferToObvious: boolean,
   transferToOther: boolean,
   deleteTasks: boolean,
 ) => {
   switch (true) {
     case addToBoard:
-      console.log('addToBoard_success => ', addToBoard);
       toast.success('Материалы успешно добавлены на доску');
-      break;
-    case transferToGeneral:
-      toast.success('Материалы успешно перенесены в общие зоны роста');
       break;
     case transferToObvious:
       toast.success('Материалы успешно перенесены в очевидные зоны роста');
@@ -39,7 +38,6 @@ const successHandling = (
 };
 const errorHandling = (
   addToBoard: boolean,
-  transferToGeneral: boolean,
   transferToObvious: boolean,
   transferToOther: boolean,
   deleteTasks: boolean,
@@ -47,9 +45,6 @@ const errorHandling = (
   switch (true) {
     case addToBoard:
       toast.error('АУЕ Ошибка добавления материалов на доску');
-      break;
-    case transferToGeneral:
-      toast.error('АУЕ Ошибка переноса материалов в общие зоны роста');
       break;
     case transferToObvious:
       toast.error('АУЕ Ошибка переноса материалов в очевидные зоны роста');
@@ -69,116 +64,84 @@ const ActionBar: FC<ActionBarProps> = ({
   type,
   selectedMaterials,
   resetSelection,
+  planId,
+  userId,
 }) => {
   const selectedMatterialsLength = selectedMaterials.length;
+  const [deleteFn, deleteOptions] = iprApi.useDeleteTasksMutation();
+  const [addBoardFn, addBoardOptions] = iprApi.useAddToBoardMutation();
+  const [transferToObviousFn, transferToObviousOptions] =
+    iprApi.useTransferToObviousMutation();
+  const [transferToOtherFn, transferToOtherOptions] =
+    iprApi.useTransferToOtherMutation();
 
-  const [
-    addToBoard_mutate,
-    {
-      isLoading: addToBoard_Loading,
-      isSuccess: addToBoard_success,
-      isError: addToBoard_error,
-    },
-  ] = iprApi.useAddToBoardMutation();
-
-  const [
-    transferToGeneral_mutate,
-    {
-      isLoading: transferToGeneral_Loading,
-      isSuccess: transferToGeneral_success,
-      isError: transferToGeneral_error,
-    },
-  ] = iprApi.useTransferToGeneralMutation();
-
-  const [
-    transferToObvious_mutate,
-    {
-      isLoading: transferToObvious_Loading,
-      isSuccess: transferToObvious_success,
-      isError: transferToObvious_error,
-    },
-  ] = iprApi.useTransferToObviousMutation();
-
-  const [
-    transferToOther_mutate,
-    {
-      isLoading: transferToOther_Loading,
-      isSuccess: transferToOther_success,
-      isError: transferToOther_error,
-    },
-  ] = iprApi.useTransferToOtherMutation();
-
-  const [
-    deleteTasks_mutate,
-    {
-      isLoading: deleteTasks_Loading,
-      isSuccess: deleteTasks_success,
-      isError: deleteTasks_error,
-    },
-  ] = iprApi.useDeleteTaskMutation();
-
-  // Erorr handling
+  // Error handling
   useEffect(() => {
-    errorHandling(
-      addToBoard_error,
-      transferToGeneral_error,
-      transferToObvious_error,
-      transferToOther_error,
-      deleteTasks_error,
-    );
+    if (
+      addBoardOptions.isError ||
+      transferToObviousOptions.isError ||
+      transferToOtherOptions.isError ||
+      deleteOptions.isError
+    ) {
+      errorHandling(
+        addBoardOptions.isError,
+        transferToObviousOptions.isError,
+        transferToOtherOptions.isError,
+        deleteOptions.isError,
+      );
+    }
   }, [
-    addToBoard_error,
-    transferToGeneral_error,
-    transferToObvious_error,
-    transferToOther_error,
-    deleteTasks_error,
+    addBoardOptions.isError,
+    transferToObviousOptions.isError,
+    transferToOtherOptions.isError,
+    deleteOptions.isError,
   ]);
 
   // Success handling
   useEffect(() => {
-    //
-    successHandling(
-      addToBoard_success,
-      transferToGeneral_success,
-      transferToObvious_success,
-      transferToOther_success,
-      deleteTasks_success,
-    );
+    if (
+      addBoardOptions.isSuccess ||
+      transferToObviousOptions.isSuccess ||
+      transferToOtherOptions.isSuccess ||
+      deleteOptions.isSuccess
+    ) {
+      successHandling(
+        addBoardOptions.isSuccess,
+        transferToObviousOptions.isSuccess,
+        transferToOtherOptions.isSuccess,
+        deleteOptions.isSuccess,
+      );
+      resetSelection();
+    }
   }, [
-    addToBoard_success,
-    transferToGeneral_success,
-    transferToObvious_success,
-    transferToOther_success,
-    deleteTasks_success,
+    addBoardOptions.isSuccess,
+    transferToObviousOptions.isSuccess,
+    transferToOtherOptions.isSuccess,
+    deleteOptions.isSuccess,
+    resetSelection,
   ]);
 
-  const addToBoard = () => {
-    addToBoard_mutate({ ids: selectedMaterials });
-  };
-
-  // TODO: understand why?
-  const moveToGeneral = () => {
-    transferToGeneral_mutate({ ids: selectedMaterials });
-  };
-
-  const moveToObvious = () => {
-    transferToObvious_mutate({ ids: selectedMaterials });
-  };
-
-  const moveToOthers = () => {
-    transferToOther_mutate({ ids: selectedMaterials });
-  };
-
   const removeTasks = () => {
-    deleteTasks_mutate({ ids: selectedMaterials });
+    deleteFn({ ids: selectedMaterials, planId, userId });
+  };
+
+  const addOnBoard = () => {
+    addBoardFn({ ids: selectedMaterials, planId, userId });
+  };
+
+  const transferToObvious = () => {
+    transferToObviousFn({ ids: selectedMaterials, planId, userId });
+  };
+
+  const transferToOther = () => {
+    transferToOtherFn({ ids: selectedMaterials, planId, userId });
   };
 
   const isLoading =
-    addToBoard_Loading ||
-    transferToGeneral_Loading ||
-    transferToObvious_Loading ||
-    transferToOther_Loading ||
-    deleteTasks_Loading;
+    deleteOptions.isLoading ||
+    addBoardOptions.isLoading ||
+    transferToObviousOptions.isLoading ||
+    transferToOtherOptions.isLoading;
 
   return (
     <div
@@ -189,7 +152,7 @@ const ActionBar: FC<ActionBarProps> = ({
       className={cva(
         `fixed bottom-0 p-2 bg-gray-300 flex items-center ${selectedMatterialsLength > 0 ? 'visible' : 'invisible'}`,
         {
-          'animate-pulse': !!isLoading,
+          'animate-pulse pointer-events-none': !!isLoading,
         },
       )}
     >
@@ -197,27 +160,27 @@ const ActionBar: FC<ActionBarProps> = ({
       <SoftButton className="ml-2" onClick={resetSelection}>
         Снять выбор
       </SoftButton>
-      <div className="ml-auto">
+      <div className="ml-auto flex gap-2">
         {type === 'GENERAL' && (
-          <SoftButton className="ml-2" onClick={addToBoard}>
+          <SoftButton className="ml-2" onClick={addOnBoard}>
             Добавить на доску
           </SoftButton>
         )}
-        {type === 'OBVIOUS' && (
-          <SoftButton className="ml-2" onClick={moveToOthers}>
-            Перенести в прочие навыки развития
+        {type === 'OTHER' && (
+          <SoftButton className="ml-2" onClick={transferToObvious}>
+            Переместить в очевидные зоны роста
           </SoftButton>
         )}
-        {type === 'OTHER' && (
+        {type === 'OBVIOUS' && (
           <div className="flex gap-2">
-            <SoftButton onClick={moveToObvious}>
-              Перенести в очеведные зоны роста
+            <SoftButton className="ml-2" onClick={transferToOther}>
+              Переместить в прочие зоны роста
             </SoftButton>
-            <SoftButton onClick={addToBoard}>Добавить на доску</SoftButton>
+            <SoftButton onClick={addOnBoard}>Добавить на доску</SoftButton>
           </div>
         )}
       </div>
-      <SoftButton className="ml-2" onClick={removeTasks}>
+      <SoftButton className="ml-2" onClick={removeTasks} danger>
         Удалить
       </SoftButton>
     </div>
