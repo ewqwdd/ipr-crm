@@ -1,6 +1,6 @@
 import { FC, memo, useMemo, useState } from 'react';
-import { Task, TaskType } from '@/entities/ipr/model/types';
-import { ActionBar } from './ActionBar';
+import { Ipr, Task, TaskType } from '@/entities/ipr/model/types';
+import ActionBar from './ActionBar';
 import { TaskList } from './TaskList';
 import { toggleTaskSelection } from './helpers';
 import TaskFilter from './TaskFilter';
@@ -10,12 +10,37 @@ type TasksProps = {
   loading?: boolean;
   userId?: number;
   planId?: number;
+  skillType?: Ipr['skillType'];
+};
+
+const costyl = (
+  selectedGeneral: number[],
+  selectedObvious: number[],
+  selectedOther: number[],
+) => {
+  const selectedMaterials =
+    selectedGeneral.length > 0
+      ? selectedGeneral
+      : selectedObvious.length > 0
+        ? selectedObvious
+        : selectedOther.length > 0
+          ? selectedOther
+          : [];
+  const selectedType: TaskType =
+    selectedGeneral.length > 0
+      ? 'GENERAL'
+      : selectedObvious.length > 0
+        ? 'OBVIOUS'
+        : 'OTHER';
+
+  return { selectedMaterials, selectedType };
 };
 
 const Tasks: FC<TasksProps> = ({
   tasks,
   planId,
   userId,
+  skillType,
   // loading // TODO: add loading
 }) => {
   const [selectedGeneral, setSelectedGeneral] = useState<number[]>([]);
@@ -52,12 +77,11 @@ const Tasks: FC<TasksProps> = ({
     );
   }, [tasks]);
 
-  const selectedMaterials =
-    selectedGeneral.length > 0
-      ? selectedGeneral
-      : selectedObvious.length > 0
-        ? selectedObvious
-        : [];
+  const { selectedMaterials, selectedType } = costyl(
+    selectedGeneral,
+    selectedObvious,
+    selectedOther,
+  );
 
   const resetSelection = () => {
     if (selectedGeneral.length > 0) {
@@ -70,16 +94,6 @@ const Tasks: FC<TasksProps> = ({
       return setSelectedOther([]);
     }
   };
-
-  let typeSelected: TaskType = 'OTHER';
-  switch (true) {
-    case selectedGeneral.length > 0:
-      typeSelected = 'GENERAL';
-      break;
-    case selectedObvious.length > 0:
-      typeSelected = 'OBVIOUS';
-      break;
-  }
 
   return (
     <div>
@@ -95,12 +109,15 @@ const Tasks: FC<TasksProps> = ({
               key={tasks[0]?.competencyId}
               competencyName={tasks[0]?.competency?.name}
               tasks={tasks}
-              disableSelect={selectedObvious.length > 0}
+              disableSelect={
+                selectedObvious.length > 0 || selectedOther.length > 0
+              }
               selected={selectedGeneral}
               select={selectGeneralTask}
               taskType={'GENERAL'}
               planId={planId}
               userId={userId}
+              skillType={skillType}
             />
           ))
         }
@@ -117,12 +134,15 @@ const Tasks: FC<TasksProps> = ({
               key={tasks[0]?.indicatorId}
               competencyName={tasks[0]?.indicator?.name}
               tasks={tasks}
-              disableSelect={selectedGeneral.length > 0}
+              disableSelect={
+                selectedGeneral.length > 0 || selectedOther.length > 0
+              }
               selected={selectedObvious}
               select={selectObviousTask}
               taskType={'OBVIOUS'}
               planId={planId}
               userId={userId}
+              skillType={skillType}
             />
           ))
         }
@@ -139,12 +159,15 @@ const Tasks: FC<TasksProps> = ({
               key={tasks[0]?.indicatorId}
               competencyName={tasks[0]?.indicator?.name}
               tasks={tasks}
-              disableSelect={selectedGeneral.length > 0}
+              disableSelect={
+                selectedGeneral.length > 0 || selectedObvious.length > 0
+              }
               selected={selectedOther}
               select={selectOtherTask}
               taskType={'OTHER'}
               planId={planId}
               userId={userId}
+              skillType={skillType}
             />
           ))
         }
@@ -156,7 +179,7 @@ const Tasks: FC<TasksProps> = ({
           resetSelection={resetSelection}
           planId={planId}
           userId={userId}
-          type={typeSelected}
+          type={selectedType}
         />
       )}
     </div>

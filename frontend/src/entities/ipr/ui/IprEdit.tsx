@@ -30,7 +30,12 @@ export default function IprEdit({ ipr, loading }: IprEditProps) {
         <IprHeading ipr={ipr} />
         <IprDetails ipr={ipr} />
         <IprGoal ipr={ipr} />
-        <Tasks tasks={ipr?.tasks} userId={ipr?.userId} planId={ipr?.id} />
+        <Tasks
+          tasks={ipr?.tasks}
+          userId={ipr?.userId}
+          planId={ipr?.id}
+          skillType={ipr?.skillType}
+        />
       </div>
     </Dimmer>
   );

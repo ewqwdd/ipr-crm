@@ -6,6 +6,7 @@ import { SelectLight } from '@/shared/ui/SelectLight';
 import { ChangeEvent, FC, useState } from 'react';
 import { PrioritySelector } from './PrioritySelector';
 import { columnNames, lane_names } from '@/entities/ipr/model/constants';
+import { Link } from 'react-router';
 import { $api } from '@/shared/lib/$api';
 import toast from 'react-hot-toast';
 import { useAppDispatch } from '@/app';
@@ -30,8 +31,22 @@ const getMaterialTypeLabel = (contentType?: MaterialType) => {
   }
 };
 
-const MaterialType: FC<{ contentType?: MaterialType }> = ({ contentType }) => {
-  return <div>{getMaterialTypeLabel(contentType)}</div>;
+const MaterialType: FC<{ contentType?: MaterialType; url?: string }> = ({
+  contentType,
+  url,
+}) => {
+  const children = getMaterialTypeLabel(contentType);
+  return (
+    <div className="text-sm text-gray-500">
+      {url ? (
+        <Link to={url} target="_blank" className="text-indigo-500">
+          {children}
+        </Link>
+      ) : (
+        children
+      )}
+    </div>
+  );
 };
 
 const statusOptions = lane_names.map((status) => ({
@@ -57,8 +72,11 @@ const Status: FC<{
         setStatus(previous);
         toast.error('Не удалось обновить статус');
       })
-      .catch(() => {
+      .then(() => {
         dispatch(iprApi.util.invalidateTags([{ type: 'board', id: userId }]));
+      })
+      .then(() => {
+        toast.success('Статус успешно обновлен');
       });
   };
 

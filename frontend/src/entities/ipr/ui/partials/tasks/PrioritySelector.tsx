@@ -53,6 +53,9 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
       })
       .then(() => {
         dispatch(iprApi.util.invalidateTags([{ type: 'board', id: userId }]));
+      })
+      .then(() => {
+        toast.success('Приоритет успешно обновлен');
       });
   };
 

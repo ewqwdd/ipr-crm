@@ -1,4 +1,4 @@
-import { TaskPriority, TaskType } from '@/entities/ipr';
+import { Ipr, TaskPriority, TaskType } from '@/entities/ipr';
 import { PrioritySelector } from '@/entities/ipr/ui/partials/tasks/PrioritySelector';
 import { MaterialType } from '@/entities/material';
 import AddMaterialType from '@/entities/material/ui/AddMaterialType';
@@ -22,12 +22,13 @@ type AddTaskModalProps = {
   closeModal: () => void;
 };
 
-type modalDataType = {
+type ModalDataType = {
   planId: number;
   userId: number;
   taskType: TaskType;
   competencyId?: number;
   indicatorId?: number;
+  skillType?: Ipr['skillType'];
 };
 
 type ErorrsType = { title?: string; link?: string };
@@ -43,8 +44,8 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
   const [mutate, { isLoading, isSuccess, isError }] =
     iprApi.useAddTaskMutation();
 
-  const { competencyId, indicatorId, planId, taskType, userId } =
-    modalData as modalDataType;
+  const { competencyId, indicatorId, planId, taskType, userId, skillType } =
+    modalData as ModalDataType;
 
   const [materialWrapperId, setMaterialWrapperId] = useState<
     number | undefined
@@ -61,17 +62,18 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
     const competencies: Competency[] = [];
     const indicators: Indicator[] = [];
     skills?.forEach((skill) => {
-      skill.competencies.forEach((competency) => {
-        competencies.push(competency);
-        competency.indicators.forEach((indicator) => {
-          indicators.push(indicator);
+      console.log('skill => ', skill);
+      if (!skillType || skillType === skill.type) {
+        skill.competencies.forEach((competency) => {
+          competencies.push(competency);
+          competency.indicators.forEach((indicator) => {
+            indicators.push(indicator);
+          });
         });
-      });
+      }
     });
     return { competencies, indicators };
-  }, [skills]);
-
-  console.log('indicators => ', indicators);
+  }, [skills, skillType]);
 
   const selectMaterialType = useCallback(
     (type: MaterialType) => {
