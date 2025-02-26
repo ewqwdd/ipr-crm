@@ -11,6 +11,7 @@ import { $api } from '@/shared/lib/$api';
 import toast from 'react-hot-toast';
 import { useAppDispatch } from '@/app';
 import { iprApi } from '@/shared/api/iprApi';
+import Deadline from './Deadline';
 
 type Status = Task['status'];
 type MaterialType = Material['contentType'];
@@ -102,6 +103,7 @@ const TaskItem = {
   MaterialType,
   Priority: PrioritySelector,
   Status,
+  Deadline,
 };
 
 export default TaskItem;

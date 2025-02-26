@@ -4,7 +4,6 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC } from 'react';
 import TaskItem from './TaskItem';
 import { useModal } from '@/app/hooks/useModal';
-import { formatDate } from './helpers';
 interface TaskListProps {
   competencyName?: string;
   indicatorName?: string;
@@ -128,7 +127,11 @@ export const TaskList: FC<TaskListProps> = ({
                   />
                 </td>
                 <td className="w-[18%] px-3 py-4 text-sm text-gray-500">
-                  {formatDate(task.deadline)}
+                  <TaskItem.Deadline
+                    deadline={task.deadline}
+                    status={task.status}
+                    id={task.id}
+                  />
                 </td>
                 <td className="w-[12%] px-3 py-4 text-sm text-gray-500">
                   <TaskItem.Status
