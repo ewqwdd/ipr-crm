@@ -1,4 +1,4 @@
-import { FC, memo, useMemo, useState } from 'react';
+import { FC, memo, useEffect, useMemo, useState } from 'react';
 import { Ipr, Task, TaskType } from '@/entities/ipr/model/types';
 import ActionBar from './ActionBar';
 import { TaskList } from './TaskList';
@@ -94,6 +94,10 @@ const Tasks: FC<TasksProps> = ({
       return setSelectedOther([]);
     }
   };
+
+  useEffect(() => {
+    resetSelection();
+  }, [tasks]);
 
   return (
     <div>

@@ -16,7 +16,12 @@ export default function AdminBoard() {
   useEffect(() => {
     return () => {
       if (data) {
-        dispatch(iprApi.util.invalidateTags(['ipr']));
+        dispatch(
+          iprApi.util.invalidateTags([
+            'ipr',
+            { type: 'board', id: Number(userId) },
+          ]),
+        );
       }
     };
   }, [dispatch, data]);

@@ -7,11 +7,18 @@ import { memo } from 'react';
 export default memo(function AppRouter() {
   const renderRoute = (item: RouterItemType) => {
     const { element, path, children, onlyAdmin } = item;
+
     return (
       <Route
         key={path}
         path={path}
-        element={onlyAdmin ? <AdminWrapper>{element}</AdminWrapper> : element}
+        element={
+          onlyAdmin ? (
+            <AdminWrapper curator={item.curator}>{element}</AdminWrapper>
+          ) : (
+            element
+          )
+        }
         children={children?.map((child) => renderRoute(child))}
       />
     );

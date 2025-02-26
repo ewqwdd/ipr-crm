@@ -32,7 +32,11 @@ export default function UserItem({
               key={spec.specId}
               title={data?.find((s) => s.id === spec.specId)?.name}
               className="[&_label]:text-base [&_input]:size-5 h-8"
-              checked={!!selected?.find((s) => s.specId === spec.specId)}
+              checked={
+                !!selected?.find(
+                  (s) => s.specId === spec.specId && s.userId === user.id,
+                )
+              }
               onChange={() => onChange?.(teamId, spec.specId, user.id)}
             />
           ))}

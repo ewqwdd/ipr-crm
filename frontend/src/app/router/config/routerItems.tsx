@@ -35,9 +35,14 @@ export const routerItems: RouterItemType[] = [
   { path: '/addUser', element: <AddUser />, onlyAdmin: true },
   { path: '/structure', element: <Structure />, onlyAdmin: true },
   { path: '/teams', element: <Teams />, onlyAdmin: true },
-  { path: '/teams/:id', element: <TeamPage />, onlyAdmin: true },
-  { path: '/360rate', element: <Rate360 />, onlyAdmin: true },
-  { path: '/360rate/report/:id', element: <Report360 />, onlyAdmin: true },
+  { path: '/teams/:id', element: <TeamPage />, onlyAdmin: true, curator: true },
+  { path: '/360rate', element: <Rate360 />, onlyAdmin: true, curator: true },
+  {
+    path: '/360rate/report/:id',
+    element: <Report360 />,
+    onlyAdmin: true,
+    curator: true,
+  },
   { path: '/skills', element: <Skills />, onlyAdmin: true },
   { path: '/profile', element: <Profile /> },
   { path: '/progress', element: <Progress /> },
@@ -46,7 +51,7 @@ export const routerItems: RouterItemType[] = [
   { path: '/ipr/360/:rateId', element: <Ipr /> },
   { path: '/board', element: <Board /> },
   { path: '/board/:userId', element: <AdminBoard /> },
-  { path: '/ipr', element: <IprList /> },
+  { path: '/ipr', element: <IprList />, onlyAdmin: true, curator: true },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];

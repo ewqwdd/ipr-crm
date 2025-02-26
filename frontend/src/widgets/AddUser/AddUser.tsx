@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 
 export default function AddUser() {
   const navigate = useNavigate();
-  const { closeModal, openModal } = useModal();
+  const { openModal } = useModal();
 
   return (
     <Dropdown

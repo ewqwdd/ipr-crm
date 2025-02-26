@@ -20,7 +20,7 @@ const priorityColors: Record<TaskPriority, BadgeProps['color']> = {
 export default function BoardCard({ card, deletable }: BoardCardProps) {
   const { openModal } = useModal();
 
-  const onDelete = () => openModal('deleteTask', { card: card.task });
+  const onDelete = () => openModal('DELETE_TASK', { task: card.task });
 
   return (
     <div className="mt-4 bg-white p-4 rounded-md shadow-md flex flex-col gap-2 min-h-24 relative">

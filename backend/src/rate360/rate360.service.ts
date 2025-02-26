@@ -13,8 +13,9 @@ import { ConfirmRateDto } from './dto/confirm-rate.dto';
 export class Rate360Service {
   constructor(private prismaService: PrismaService) {}
 
-  async findAll() {
+  async findAll(curatorId?: number) {
     const rates = await this.prismaService.rate360.findMany({
+      ...(curatorId ? { where: { team: { curatorId } } } : {}),
       include: {
         evaluators: {
           select: {

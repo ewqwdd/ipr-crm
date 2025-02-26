@@ -65,7 +65,7 @@ const iprApi = createApi({
       void,
       { ids: number[]; userId: number; planId: number }
     >({
-      query: (ids) => ({
+      query: ({ ids }) => ({
         url: '/ipr/task',
         method: 'DELETE',
         body: { ids },

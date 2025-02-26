@@ -15,12 +15,14 @@ export default function RateRow({ index, task }: RateRowProps) {
     (task) => task.status === 'IN_PROGRESS',
   );
 
-  const obviousTasks = task.tasks.filter((task) => task.type === 'OBVIOUS');
-  const obviousTasksCompleted = obviousTasks.filter((task) =>
+  const requiredTasks = task.tasks.filter(
+    (task) => ['OBVIOUS', 'GENERAL'].includes(task.type) && task.onBoard,
+  );
+  const obviousTasksCompleted = requiredTasks.filter((task) =>
     ['COMPLETED', 'IN_REVIEW'].includes(task.status),
   ).length;
 
-  const percent = obviousTasksCompleted / obviousTasks.length || 0;
+  const percent = obviousTasksCompleted / requiredTasks.length || 0;
 
   return (
     <tr

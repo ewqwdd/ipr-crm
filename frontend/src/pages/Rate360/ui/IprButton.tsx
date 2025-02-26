@@ -32,7 +32,7 @@ export default function IprButton({ rate }: IprButtonProps) {
 
   return (
     <Link
-      to={`/ipr/360/${rate.id}`}
+      to={`/ipr/360/${rate.plan.id}`}
       className="font-medium text-indigo-600 text-sm hover:text-violet-600 transition-all"
     >
       ИПР

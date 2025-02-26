@@ -23,10 +23,13 @@ export class Rate360Controller {
   constructor(private readonly rate360Service: Rate360Service) {}
 
   @Get('/')
-  @UseGuards(AdminGuard)
-  async rates() {
-    const rates = await this.rate360Service.findAll();
-    return rates;
+  @UseGuards(AuthGuard)
+  async rates(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    if (sessionInfo.role === 'admin') {
+      return await this.rate360Service.findAll();
+    } else {
+      return await this.rate360Service.findAll(sessionInfo.id);
+    }
   }
 
   @Post('/')

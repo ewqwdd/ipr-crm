@@ -31,6 +31,12 @@ export const userNavigation: (user: User | null) => NavType[] = (
           current: false,
           href: '/ipr',
         },
+        {
+          name: 'Оценка',
+          icon: InboxIcon,
+          current: false,
+          children: [{ name: 'Оценка 360', href: '/360rate', current: false }],
+        },
       ]
     : []),
 ];

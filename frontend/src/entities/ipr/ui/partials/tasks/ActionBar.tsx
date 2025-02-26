@@ -13,29 +13,6 @@ type ActionBarProps = {
   type: TaskType;
 };
 
-const successHandling = (
-  addToBoard: boolean,
-  transferToObvious: boolean,
-  transferToOther: boolean,
-  deleteTasks: boolean,
-) => {
-  switch (true) {
-    case addToBoard:
-      toast.success('Материалы успешно добавлены на доску');
-      break;
-    case transferToObvious:
-      toast.success('Материалы успешно перенесены в очевидные зоны роста');
-      break;
-    case transferToOther:
-      toast.success('Материалы успешно перенесены в прочие зоны роста');
-      break;
-    case deleteTasks:
-      toast.success('Материалы успешно удалены');
-      break;
-    default:
-      break;
-  }
-};
 const errorHandling = (
   addToBoard: boolean,
   transferToObvious: boolean,
@@ -44,16 +21,16 @@ const errorHandling = (
 ) => {
   switch (true) {
     case addToBoard:
-      toast.error('АУЕ Ошибка добавления материалов на доску');
+      toast.error('Ошибка добавления материалов на доску');
       break;
     case transferToObvious:
-      toast.error('АУЕ Ошибка переноса материалов в очевидные зоны роста');
+      toast.error('Ошибка переноса материалов в очевидные зоны роста');
       break;
     case transferToOther:
-      toast.error('АУЕ Ошибка переноса материалов в прочие зоны роста');
+      toast.error('Ошибка переноса материалов в прочие зоны роста');
       break;
     case deleteTasks:
-      toast.error('АУЕ Ошибка удаления материалов');
+      toast.error('Ошибка удаления материалов');
       break;
     default:
       break;
@@ -97,30 +74,6 @@ const ActionBar: FC<ActionBarProps> = ({
     deleteOptions.isError,
   ]);
 
-  // Success handling
-  useEffect(() => {
-    if (
-      addBoardOptions.isSuccess ||
-      transferToObviousOptions.isSuccess ||
-      transferToOtherOptions.isSuccess ||
-      deleteOptions.isSuccess
-    ) {
-      successHandling(
-        addBoardOptions.isSuccess,
-        transferToObviousOptions.isSuccess,
-        transferToOtherOptions.isSuccess,
-        deleteOptions.isSuccess,
-      );
-      resetSelection();
-    }
-  }, [
-    addBoardOptions.isSuccess,
-    transferToObviousOptions.isSuccess,
-    transferToOtherOptions.isSuccess,
-    deleteOptions.isSuccess,
-    resetSelection,
-  ]);
-
   const removeTasks = () => {
     deleteFn({ ids: selectedMaterials, planId, userId });
   };
@@ -150,7 +103,7 @@ const ActionBar: FC<ActionBarProps> = ({
         width: `calc(100% - min(33.3%, 24rem))`,
       }}
       className={cva(
-        `fixed bottom-0 p-2 bg-gray-300 flex items-center ${selectedMatterialsLength > 0 ? 'visible' : 'invisible'}`,
+        `fixed bottom-0 p-2 bg-white border-t-black/10 border-t shadow-2xl flex items-center ${selectedMatterialsLength > 0 ? 'visible' : 'invisible'}`,
         {
           'animate-pulse pointer-events-none': !!isLoading,
         },
@@ -167,17 +120,17 @@ const ActionBar: FC<ActionBarProps> = ({
           </SoftButton>
         )}
         {type === 'OTHER' && (
-          <SoftButton className="ml-2" onClick={transferToObvious}>
-            Переместить в очевидные зоны роста
-          </SoftButton>
-        )}
-        {type === 'OBVIOUS' && (
           <div className="flex gap-2">
-            <SoftButton className="ml-2" onClick={transferToOther}>
-              Переместить в прочие зоны роста
+            <SoftButton className="ml-2" onClick={transferToObvious}>
+              Переместить в очевидные зоны роста
             </SoftButton>
             <SoftButton onClick={addOnBoard}>Добавить на доску</SoftButton>
           </div>
+        )}
+        {type === 'OBVIOUS' && (
+          <SoftButton className="ml-2" onClick={transferToOther}>
+            Переместить в прочие зоны роста
+          </SoftButton>
         )}
       </div>
       <SoftButton className="ml-2" onClick={removeTasks} danger>

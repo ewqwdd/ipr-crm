@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -18,6 +19,7 @@ import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { AddTaskDto } from './dto/add-task.dto';
 import { SetDeadlineDto } from './dto/set-deadline.dto';
+import { RemoveFromBoardDto } from './dto/remove-from-board.dto';
 
 @Controller('ipr')
 export class IprController {
@@ -25,15 +27,20 @@ export class IprController {
 
   @Get('/360/:id')
   @UseGuards(AuthGuard)
-  async findOneby360Id(@Param('id') id: number) {
-    return this.iprService.findOneby360Id(id);
+  async findOneby360Id(
+    @Param('id') id: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.findOneby360Id(id, sessionInfo);
   }
 
   @Post('/360/:rateId')
-  @UseGuards(AdminGuard)
-  async create(@Param('rateId') rateId: number) {
-    console.log('rateId', rateId);
-    return this.iprService.create(rateId);
+  @UseGuards(AuthGuard)
+  async create(
+    @Param('rateId') rateId: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.create(rateId, sessionInfo);
   }
 
   @Post('360/:id/goal')
@@ -73,39 +80,59 @@ export class IprController {
   ) {
     return this.iprService.update(
       data.id,
-      { deadline: new Date(data.deadline) },
+      { deadline: data.deadline ? new Date(data.deadline) : null },
       sessionInfo,
     );
   }
 
   @Post('/task/transfer-to-other')
-  @UseGuards(AdminGuard)
-  async transferToOther(@Body() data: TransferToDto) {
-    return this.iprService.transferToOther(data.ids);
+  @UseGuards(AuthGuard)
+  async transferToOther(
+    @Body() data: TransferToDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.transferToOther(data.ids, sessionInfo);
   }
 
   @Post('/task/transfer-to-obvious')
-  @UseGuards(AdminGuard)
-  async transferToObvious(@Body() data: TransferToDto) {
-    return this.iprService.transferToObvious(data.ids);
+  @UseGuards(AuthGuard)
+  async transferToObvious(
+    @Body() data: TransferToDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.transferToObvious(data.ids, sessionInfo);
   }
 
   @Delete('/task')
-  @UseGuards(AdminGuard)
-  async deleteTask(@Body() data: TransferToDto) {
-    return this.iprService.deleteTasks(data.ids);
+  @UseGuards(AuthGuard)
+  async deleteTask(
+    @Body() data: TransferToDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.deleteTasks(data.ids, sessionInfo);
   }
 
   @Post('/task/add-to-board')
-  @UseGuards(AdminGuard)
-  async addToBoard(@Body() data: TransferToDto) {
-    return this.iprService.boardChange(data.ids, true);
+  @UseGuards(AuthGuard)
+  async addToBoard(
+    @Body() data: TransferToDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.boardChange(data.ids, true, sessionInfo);
   }
 
   @Post('/task/remove-from-board')
   @UseGuards(AdminGuard)
-  async removeFromBoard(@Body() data: TransferToDto) {
-    return this.iprService.boardChange(data.ids, false);
+  async removeFromBoard(
+    @Body() data: RemoveFromBoardDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    const isAccess = await this.iprService.checkBoardAccess(
+      data.id,
+      sessionInfo,
+    );
+    if (!isAccess) throw new ForbiddenException();
+    return this.iprService.boardChangeSingle(data.id, false);
   }
 
   @Get('/task/board')

@@ -21,7 +21,17 @@ export class UsersService {
   async findOneByEmail(email: string) {
     const user = await this.prisma.user.findFirst({
       where: { email },
-      include: { role: true, Spec: true },
+      include: {
+        role: true,
+        Spec: true,
+
+        teams: {
+          select: { teamId: true, team: { select: { name: true } } },
+        },
+        teamCurator: {
+          select: { id: true, name: true },
+        },
+      },
       omit: { roleId: true, specId: true, authCode: true },
     });
     return user;

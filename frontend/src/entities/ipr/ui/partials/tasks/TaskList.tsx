@@ -87,7 +87,7 @@ export const TaskList: FC<TaskListProps> = ({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex justify-between items-center mb-3 mt-5">
         <div className="flex items-center gap-4 ">
           <h4>{(competencyName || indicatorName) ?? 'Без названия'}</h4>
           <Checkbox

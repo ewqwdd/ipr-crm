@@ -19,10 +19,19 @@ import { AddTaskDto } from './dto/add-task.dto';
 export class IprService {
   constructor(private prismaService: PrismaService) {}
 
-  async findOneby360Id(id: number) {
-    return this.prismaService.individualGrowthPlan.findFirst({
+  async findOneby360Id(id: number, sessionInfo: GetSessionInfoDto) {
+    return await this.prismaService.individualGrowthPlan.findFirst({
       where: {
         id: id,
+        ...(sessionInfo.role !== 'admin'
+          ? {
+              rate360: {
+                team: {
+                  curatorId: sessionInfo.id,
+                },
+              },
+            }
+          : {}),
       },
       include: {
         tasks: {
@@ -47,10 +56,17 @@ export class IprService {
     });
   }
 
-  async create(rateId: number) {
+  async create(rateId: number, sessionInfo: GetSessionInfoDto) {
     const rate360 = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
+        ...(sessionInfo.role !== 'admin'
+          ? {
+              team: {
+                curatorId: sessionInfo.id,
+              },
+            }
+          : {}),
       },
       include: {
         spec: {
@@ -73,6 +89,7 @@ export class IprService {
         },
         userRates: true,
         plan: true,
+        evaluators: true,
       },
     });
 
@@ -132,7 +149,7 @@ export class IprService {
     const created = await this.prismaService.individualGrowthPlan.create({
       data: {
         rate360Id: rate360.id,
-        goal: 'Goal',
+        goal: '',
         skillType: rate360.type,
         startDate: new Date(),
         status: 'ACTIVE',
@@ -182,14 +199,12 @@ export class IprService {
     });
   }
 
-  transferToGeneral(ids: number[]) {
+  transferToGeneral(ids: number[], sessionInfo: GetSessionInfoDto) {
     return this.prismaService.growthPlanTask.updateMany({
       where: {
-        id: {
-          in: ids,
-        },
+        ...this.taskMultiupleQuery(ids, sessionInfo),
         competency: {
-          NOT: null,
+          isNot: null,
         },
       },
       data: {
@@ -198,12 +213,10 @@ export class IprService {
     });
   }
 
-  transferToOther(ids: number[]) {
+  transferToOther(ids: number[], sessionInfo: GetSessionInfoDto) {
     return this.prismaService.growthPlanTask.updateMany({
       where: {
-        id: {
-          in: ids,
-        },
+        ...this.taskMultiupleQuery(ids, sessionInfo),
         type: 'OBVIOUS',
         indicator: {
           isNot: null,
@@ -215,42 +228,46 @@ export class IprService {
     });
   }
 
-  transferToObvious(ids: number[]) {
+  transferToObvious(ids: number[], sessionInfo: GetSessionInfoDto) {
     return this.prismaService.growthPlanTask.updateMany({
       where: {
-        id: {
-          in: ids,
-        },
+        ...this.taskMultiupleQuery(ids, sessionInfo),
         type: 'OTHER',
         indicator: {
-          NOT: null,
+          isNot: null,
         },
       },
       data: {
         type: TaskMaterialType.OBVIOUS,
+        onBoard: true,
       },
     });
   }
 
-  deleteTasks(ids: number[]) {
+  deleteTasks(ids: number[], sessionInfo: GetSessionInfoDto) {
     return this.prismaService.growthPlanTask.deleteMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
+      where: this.taskMultiupleQuery(ids, sessionInfo),
     });
   }
 
-  boardChange(ids: number[], onBoard: boolean) {
+  boardChange(ids: number[], onBoard: boolean, sessionInfo: GetSessionInfoDto) {
     return this.prismaService.growthPlanTask.updateMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
+      where: this.taskMultiupleQuery(ids, sessionInfo),
       data: {
         onBoard,
+      },
+    });
+  }
+
+  boardChangeSingle(id: number, onBoard: boolean) {
+    return this.prismaService.growthPlanTask.update({
+      where: {
+        id,
+      },
+      data: {
+        onBoard: {
+          set: onBoard,
+        },
       },
     });
   }
@@ -280,13 +297,25 @@ export class IprService {
   }
 
   async findAllTasks(userId: number, session: GetSessionInfoDto) {
+    const isAllTasksAccess = userId === session.id || session.role === 'admin';
+
     let result = () =>
       this.prismaService.growthPlanTask.findMany({
         where: {
           plan: {
             userId,
             archived: false,
+            ...(isAllTasksAccess
+              ? {}
+              : {
+                  rate360: {
+                    team: {
+                      curatorId: session.id,
+                    },
+                  },
+                }),
           },
+          onBoard: true,
         },
         include: {
           material: true,
@@ -295,24 +324,7 @@ export class IprService {
         },
       });
 
-    if (userId === session.id || session.role === 'admin') {
-      return await result();
-    }
-    const teamCurator = await this.prismaService.team.findFirst({
-      where: {
-        curatorId: session.id,
-        users: {
-          some: {
-            id: userId,
-          },
-        },
-      },
-    });
-
-    if (teamCurator) {
-      return await result();
-    }
-    throw new ForbiddenException('У вас нет доступа к этому пользователю');
+    return await result();
   }
 
   async addTask(data: AddTaskDto, clientInfo: GetSessionInfoDto) {
@@ -426,9 +438,78 @@ export class IprService {
       include: {
         user: true,
         mentor: true,
-        rate360: true,
+        rate360: {
+          select: {
+            team: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
         tasks: true,
       },
     });
+  }
+
+  async checkBoardAccess(taskId: number, sessionInfo: GetSessionInfoDto) {
+    if (sessionInfo.role === 'admin') {
+      return true;
+    }
+    const foundTask = await this.prismaService.growthPlanTask.findFirst({
+      where: {
+        id: taskId,
+      },
+      include: {
+        plan: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    if (
+      sessionInfo.id === foundTask.plan.userId &&
+      foundTask.type !== TaskMaterialType.OBVIOUS
+    ) {
+      return true;
+    } else if (sessionInfo.id === foundTask.plan.userId) return false;
+
+    const curator = await this.prismaService.team.findFirst({
+      where: {
+        curatorId: sessionInfo.id,
+        users: {
+          some: {
+            id: foundTask.plan.userId,
+          },
+        },
+      },
+    });
+
+    if (curator) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // access checks
+  taskMultiupleQuery(taskIds: number[], sessionInfo: GetSessionInfoDto) {
+    return {
+      id: {
+        in: taskIds,
+      },
+      ...(sessionInfo.role !== 'admin'
+        ? {
+            plan: {
+              rate360: {
+                team: {
+                  curatorId: sessionInfo.id,
+                },
+              },
+            },
+          }
+        : {}),
+    };
   }
 }

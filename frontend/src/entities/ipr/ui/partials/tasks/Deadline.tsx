@@ -2,7 +2,7 @@ import { Task } from '@/entities/ipr/model/types';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { PencilIcon, TrashIcon, XCircleIcon } from '@heroicons/react/outline';
+import { PencilIcon, TrashIcon } from '@heroicons/react/outline';
 import { FC, memo, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Calendar } from 'react-multi-date-picker';
@@ -66,11 +66,12 @@ const DeadlineTooltip: FC<{
           'animate-pulse pointer-events-none': !!loading,
         },
       )}
+      onClick={closeHandler}
     >
-      <div className="flex flex-col items-end gap-2">
-        <button className="rounded-md bg-white" onClick={closeHandler}>
-          <XCircleIcon className="text-black w-5 h-5" />
-        </button>
+      <div
+        className="flex flex-col items-end gap-2 bg-white pt-4 rounded-md"
+        onClick={(e) => e.stopPropagation()}
+      >
         <Calendar
           value={date}
           onChange={(date) => {
@@ -79,10 +80,13 @@ const DeadlineTooltip: FC<{
             }
           }}
           minDate={new Date()}
+          className="!shadow-none  px-6"
         />
-        <SoftButton className="ml-auto" onClick={submitDeadline}>
-          Ok
-        </SoftButton>
+        <div className="flex justify-end border-t border-t-black/5 px-6 py-2">
+          <SoftButton size="sm" onClick={submitDeadline}>
+            Выбрать
+          </SoftButton>
+        </div>
       </div>
     </div>
   );
@@ -151,7 +155,7 @@ const Deadline: FC<{ deadline: string | null; status: Status; id: number }> = ({
   ) : (
     <>
       <SoftButton className="" size="xs" onClick={openModal}>
-        Add
+        Добавить
       </SoftButton>
       <DeadlineTooltip
         closeModal={closeModal}

@@ -119,7 +119,7 @@ export default function RateRow({ rate, index }: RateRowProps) {
         {rate.startDate?.slice(0, 10)}
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-        <IprButton rate={rate} />
+        {percent >= 1 && <IprButton rate={rate} />}
         {/* <button
           onClick={() => deleteFn({ id: rate.id })}
           className="text-indigo-600 hover:text-indigo-900"
