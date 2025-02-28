@@ -14,7 +14,7 @@ const Dimmer: FC<DimmerProps> = ({ children, active }) => {
     >
       {children}
       {active && (
-        <div className="absolute inset-0 flex justify-center items-center bg-white">
+        <div className="absolute inset-0 flex justify-center items-center">
           <Loading />
         </div>
       )}
