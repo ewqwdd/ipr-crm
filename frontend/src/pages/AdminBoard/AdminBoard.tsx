@@ -34,7 +34,7 @@ export default function AdminBoard() {
         <Heading title="Доска задач" description={plan?.user.username} />
         <PrimaryButton>Добавить задачу</PrimaryButton>
       </div>
-      <Dimmer active={isLoading}>{data && <Board data={data} />}</Dimmer>
+      <Dimmer active={isLoading}>{data && <Board userId={Number(userId)} data={data} />}</Dimmer>
     </div>
   );
 }

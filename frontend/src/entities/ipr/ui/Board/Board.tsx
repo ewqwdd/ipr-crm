@@ -15,14 +15,14 @@ import { columnNames, lane_names, typeColors } from '../../model/constants';
 
 interface BoardProps {
   data: Task[];
+  userId?: number;
 }
 
-export default function Board({ data }: BoardProps) {
+export default function Board({ data, userId }: BoardProps) {
   const dispatch = useAppDispatch();
   const controlledBoard = useAppSelector((state) => state.board.board);
-  const role = useAppSelector((state) => state.user.user?.role);
+  const id = useAppSelector((state) => state.user.user?.id);
 
-  const isAdmin = role?.name === 'admin';
 
   const handleCardMove: OnDragEndNotification<CustomCard> = (
     _card,
@@ -138,7 +138,7 @@ export default function Board({ data }: BoardProps) {
             </div>
           )}
           renderCard={(card) => {
-            return <BoardCard deletable={isAdmin} card={card} />;
+            return <BoardCard deletable={userId !== id} card={card} />;
           }}
         >
           {controlledBoard}
