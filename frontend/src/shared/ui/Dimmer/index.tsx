@@ -8,13 +8,13 @@ type DimmerProps = PropsWithChildren<{ active: boolean }>;
 const Dimmer: FC<DimmerProps> = ({ children, active }) => {
   return (
     <div
-      className={cva('relative grow width-full height-full', {
+      className={cva('relative grow w-full h-full', {
         'pointer-events-none': active,
       })}
     >
       {children}
       {active && (
-        <div className="absolute inset-0 flex justify-center items-center">
+        <div className="absolute inset-0 flex justify-center items-center bg-white">
           <Loading />
         </div>
       )}

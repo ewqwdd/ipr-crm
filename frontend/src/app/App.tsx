@@ -3,12 +3,17 @@ import './App.css';
 import AppRouter from './router/AppRouter';
 import { DarkSidebar } from '@/widgets/DarkSidebar';
 import ModalWrapper from '@/entities/modals';
+import Loading from '@/shared/ui/Loading';
 
 function App() {
   const { isMounted } = useAuthControl();
 
   if (!isMounted) {
-    return <main className="flex h-full bg-gray-600" />;
+    return (
+      <main className="flex items-center justify-center h-full bg-white">
+        <Loading />
+      </main>
+    );
   }
 
   return (

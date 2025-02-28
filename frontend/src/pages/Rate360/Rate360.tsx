@@ -21,20 +21,14 @@ export default function Rate360() {
 
   return (
     <Dimmer active={isLoading}>
-      <div className="px-8 py-10 flex flex-col">
+      <div className="px-8 py-10 flex flex-col h-full">
         <div className="flex justify-between items-center">
           <Heading title="Командные отчёты" description="Список 360 оценок" />
           <PrimaryButton onClick={() => setOpen(true)} className="self-start">
             Добавить
           </PrimaryButton>
         </div>
-        {data && data?.length > 0 ? (
-          <RatesTable data={data} isLoading={isLoading} />
-        ) : (
-          <div className="min-h-60 flex justify-center items-center">
-            Нет данных
-          </div>
-        )}
+        <RatesTable data={data} isLoading={isLoading} />
       </div>
       <Modal
         open={open}
