@@ -1,0 +1,15 @@
+.open {
+  transform-origin: 0% 100%;
+  animation: openAnimation 0.3s ease-out;
+}
+
+@keyframes openAnimation {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}

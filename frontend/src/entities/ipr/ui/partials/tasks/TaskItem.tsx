@@ -59,14 +59,16 @@ const Status: FC<{
   status?: Status;
   isLoading?: boolean;
   id: number;
+  onChange?: (status: Status) => void;
   userId?: number;
-}> = ({ status: status_, isLoading, id, userId }) => {
+}> = ({ status: status_, isLoading, id, userId, onChange: onChange_ }) => {
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState<Status | undefined>(status_);
 
   const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const previous = status;
     setStatus(e.target.value as Status);
+    if (onChange_) onChange_(e.target.value as Status);
     $api
       .post(`/ipr/task/status`, { status, id })
       .catch(() => {
@@ -75,9 +77,6 @@ const Status: FC<{
       })
       .then(() => {
         dispatch(iprApi.util.invalidateTags([{ type: 'board', id: userId }]));
-      })
-      .then(() => {
-        toast.success('Статус успешно обновлен');
       });
   };
 

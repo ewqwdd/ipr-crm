@@ -4,6 +4,8 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC } from 'react';
 import TaskItem from './TaskItem';
 import { useModal } from '@/app/hooks/useModal';
+import { MapIcon } from '@heroicons/react/outline';
+import { Overlay } from '@/shared/ui/Overlay';
 interface TaskListProps {
   competencyName?: string;
   indicatorName?: string;
@@ -106,12 +108,19 @@ export const TaskList: FC<TaskListProps> = ({
             {tasks.map((task) => (
               <tr key={task.id}>
                 <td className="w-[40%] py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
-                  <Checkbox
-                    disabled={disableSelect}
-                    checked={selected.includes(task.id)}
-                    onChange={() => select(task.id)}
-                    title={task.material?.name}
-                  />
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      disabled={disableSelect}
+                      checked={selected.includes(task.id)}
+                      onChange={() => select(task.id)}
+                      title={task.material?.name}
+                    />
+                    {task.onBoard && (
+                      <Overlay overlay="Добавлен на доску">
+                        <MapIcon className="size-5 text-indigo-500" />
+                      </Overlay>
+                    )}
+                  </div>
                 </td>
                 <td className="w-[18%] px-3 py-4 ">
                   <TaskItem.MaterialType

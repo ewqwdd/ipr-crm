@@ -92,11 +92,12 @@ const DeadlineTooltip: FC<{
   );
 });
 
-const Deadline: FC<{ deadline: string | null; status: Status; id: number }> = ({
-  deadline: initialDeadline,
-  status,
-  id,
-}) => {
+const Deadline: FC<{
+  deadline: string | null;
+  status: Status;
+  id: number;
+  className?: string;
+}> = ({ deadline: initialDeadline, status, id, className }) => {
   const [deadline, setDeadline] = useState<string | null>(initialDeadline);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -129,7 +130,7 @@ const Deadline: FC<{ deadline: string | null; status: Status; id: number }> = ({
 
   return deadline ? (
     <div
-      className={cva('flex gap-2 items-center', {
+      className={cva('flex gap-2 items-center', className, {
         'animate-pulse pointer-events-none': !!loading,
       })}
     >

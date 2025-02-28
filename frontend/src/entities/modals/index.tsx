@@ -22,7 +22,7 @@ import {
 import { InviteModal } from '../user/ui/InviteModal';
 import { PasswordResetModal } from '@/widgets/PasswordResetModal';
 import AddTaskModal from '@/widgets/AddTaskModal';
-import { DeleteTaskModal } from '../ipr';
+import { DeleteTaskModal, TaskPreviewModal } from '../ipr';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -82,6 +82,8 @@ const ModalWrapper: FC = () => {
       return <AddTaskModal type="COMPETENCY" {...updatedModalProps} />;
     case 'DELETE_TASK':
       return <DeleteTaskModal {...updatedModalProps} />;
+    case 'PREVIEW_TASK':
+      return <TaskPreviewModal {...updatedModalProps} />;
     default:
       break;
   }

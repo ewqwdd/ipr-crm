@@ -9,6 +9,7 @@ import { priorityNames } from '../../model/constants';
 interface BoardCardProps {
   card: CustomCard;
   deletable?: boolean;
+  userId?: number;
 }
 
 const priorityColors: Record<TaskPriority, BadgeProps['color']> = {
@@ -17,13 +18,14 @@ const priorityColors: Record<TaskPriority, BadgeProps['color']> = {
   LOW: 'gray',
 };
 
-export default function BoardCard({ card, deletable }: BoardCardProps) {
+export default function BoardCard({ card, deletable, userId }: BoardCardProps) {
   const { openModal } = useModal();
 
   const onDelete = () => openModal('DELETE_TASK', { task: card.task });
+  const onOpen = () => openModal('PREVIEW_TASK', { card: card, userId });
 
   return (
-    <div className="mt-4 bg-white p-4 rounded-md shadow-md flex flex-col gap-2 min-h-24 relative">
+    <div className="mt-4 bg-white p-4 rounded-md shadow-md flex flex-col gap-2 min-h-24 relative cursor-grab">
       <Badge
         color={priorityColors[card.priority]}
         className=" absolute top-2 right-2"
@@ -31,7 +33,12 @@ export default function BoardCard({ card, deletable }: BoardCardProps) {
       >
         {priorityNames[card.priority]}
       </Badge>
-      <h2 className=" font-medium text-gray-800">{card.title}</h2>
+      <button
+        className=" font-medium text-gray-800 cursor-pointer hover:text-indigo-600 transition-all self-start"
+        onClick={onOpen}
+      >
+        {card.title}
+      </button>
       <Badge
         className="rounded-full self-start px-2"
         size="sm"

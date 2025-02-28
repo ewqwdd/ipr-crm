@@ -3,6 +3,7 @@ import Board from './ui/Board/Board';
 import { boardReducer, boardActions } from './model/boardSlice';
 import IprTable from './ui/IprTable/IprTable';
 import DeleteTaskModal from './ui/DeleteTaskModal/DeleteTaskModal';
+import TaskPreviewModal from './ui/TaskPreviewModal/TaskPreviewModal';
 
 export type {
   Ipr,
@@ -20,4 +21,5 @@ export {
   Board,
   IprTable,
   DeleteTaskModal,
+  TaskPreviewModal,
 };
