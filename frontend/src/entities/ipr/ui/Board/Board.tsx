@@ -23,7 +23,6 @@ export default function Board({ data, userId }: BoardProps) {
   const controlledBoard = useAppSelector((state) => state.board.board);
   const id = useAppSelector((state) => state.user.user?.id);
 
-
   const handleCardMove: OnDragEndNotification<CustomCard> = (
     _card,
     source,

@@ -4,6 +4,7 @@ import {
   AddCompetencyDto,
   AddIndicatorDto,
   CompetencyBlock,
+  Version,
 } from '@/entities/skill';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
@@ -13,7 +14,7 @@ const skillsApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL + '/profile-constructor',
     credentials: 'include',
   }),
-  tagTypes: ['Skills'],
+  tagTypes: ['Skills', 'Version'],
   endpoints: (build) => ({
     getSkills: build.query<CompetencyBlock[], void>({
       query: () => '',
@@ -132,6 +133,20 @@ const skillsApi = createApi({
         body,
       }),
       invalidatesTags: ['Skills'],
+    }),
+    archiveAll: build.mutation<void, void>({
+      query: () => ({
+        url: '/archive',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Skills', 'Version'],
+    }),
+    getVersion: build.query<Version, void>({
+      query: () => '/version',
+      transformResponse: (response: { date: string }) => ({
+        date: new Date(response.date),
+      }),
+      providesTags: ['Version'],
     }),
   }),
 });

@@ -7,6 +7,7 @@ import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { CompetencyBlock, SkillsSwitcher } from '@/entities/skill';
 import Dimmer from '@/shared/ui/Dimmer';
 import { useModal } from '@/app/hooks/useModal';
+import ArchiveButton from '../ArchiveButton';
 
 const Competency: FC = () => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');
@@ -50,11 +51,14 @@ const Competency: FC = () => {
   // TODO: update active state
   return (
     <Dimmer active={isFetching}>
-      <InputWithLabelLight
-        placeholder="Поиск..."
-        value={search}
-        onChange={searchFn}
-      />
+      <div className="flex justify-between gap-4">
+        <InputWithLabelLight
+          placeholder="Поиск..."
+          value={search}
+          onChange={searchFn}
+        />
+        <ArchiveButton />
+      </div>
       <div className="flex gap-4 my-4">
         <SkillsSwitcher value={skillsFilter} setValue={setSkillsFilter} />
         <SoftButton

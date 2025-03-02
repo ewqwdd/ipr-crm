@@ -42,7 +42,7 @@ export default function Rate360Assesment() {
 
   const blocks = useMemo(
     () =>
-      skills?.filter(
+      data?.competencyBlocks?.filter(
         (skill) => skill.specId === data?.specId && skill.type === data.type,
       ) ?? [],
     [skills, data],

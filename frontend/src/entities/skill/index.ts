@@ -7,6 +7,7 @@ import type {
   AddCompetencyDto,
   AddIndicatorDto,
   SkillCombineType,
+  Version,
 } from './types/types';
 import { CompetencyType } from './types/types';
 import AddCompetencyBlockModal from './ui/AddCompetencyBlockModal';
@@ -26,6 +27,7 @@ export type {
   AddCompetencyDto,
   AddIndicatorDto,
   SkillCombineType,
+  Version,
 };
 
 export {

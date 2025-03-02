@@ -69,20 +69,17 @@ export class IprService {
           : {}),
       },
       include: {
-        spec: {
+        spec: true,
+        competencyBlocks: {
           include: {
-            competencyBlocks: {
+            competencies: {
               include: {
-                competencies: {
+                indicators: {
                   include: {
-                    indicators: {
-                      include: {
-                        materials: true,
-                      },
-                    },
                     materials: true,
                   },
                 },
+                materials: true,
               },
             },
           },
@@ -110,7 +107,7 @@ export class IprService {
       rates[userRate.indicatorId].count++;
     });
 
-    const competencyTasks = rate360.spec.competencyBlocks.flatMap((block) => {
+    const competencyTasks = rate360.competencyBlocks.flatMap((block) => {
       return block.competencies.flatMap((competency) => {
         return competency.materials.map((material) => {
           return {
@@ -124,7 +121,7 @@ export class IprService {
       });
     });
 
-    const indicatorTasks = rate360.spec.competencyBlocks.flatMap((block) => {
+    const indicatorTasks = rate360.competencyBlocks.flatMap((block) => {
       return block.competencies.flatMap((competency) => {
         return competency.indicators.flatMap((indicator) => {
           return indicator.materials.map((material) => {

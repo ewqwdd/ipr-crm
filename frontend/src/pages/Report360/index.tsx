@@ -6,7 +6,6 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useRef } from 'react';
 import { useParams } from 'react-router';
 import ProgressBarBlock from './ProgressBarBlock';
-import { skillsApi } from '@/shared/api/skillsApi';
 import { cva } from '@/shared/lib/cva';
 import { dateFormatter } from './helpers';
 import Dimmer from '@/shared/ui/Dimmer';
@@ -68,8 +67,7 @@ const Report360: FC = () => {
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
 
-  const { data: skills, isFetching: skillsFetching } =
-    skillsApi.useGetSkillsQuery();
+  const skills = rate?.competencyBlocks;
 
   const foundSpec = specs?.find((spec) => spec.id === rate?.spec?.id);
 
@@ -128,13 +126,7 @@ const Report360: FC = () => {
   return (
     <div className="h-full">
       <Dimmer
-        active={
-          isLoading ||
-          usersFetching ||
-          specsFetching ||
-          skillsFetching ||
-          teamsFetching
-        }
+        active={isLoading || usersFetching || specsFetching || teamsFetching}
       >
         <div className="mt-16 mb-5 flex items-center justify-between px-5">
           <h1 className="text-sm font-bold tracking-tight text-gray-900">

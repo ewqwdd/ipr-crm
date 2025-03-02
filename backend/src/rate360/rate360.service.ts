@@ -31,16 +31,19 @@ export class Rate360Service {
         user: {
           select: {
             id: true,
+            username: true,
           },
         },
         spec: {
           select: {
             id: true,
+            name: true,
           },
         },
         team: {
           select: {
             id: true,
+            name: true,
           },
         },
         comments: {
@@ -56,6 +59,15 @@ export class Rate360Service {
           },
           where: {
             approved: true,
+          },
+        },
+        competencyBlocks: {
+          include: {
+            competencies: {
+              include: {
+                indicators: true,
+              },
+            },
           },
         },
         plan: true,
@@ -81,6 +93,18 @@ export class Rate360Service {
         }));
       }),
     );
+
+    const competencyBlocks = await this.prismaService.competencyBlock.findMany({
+      where: {
+        specId: {
+          in: ratesToCreate.map((rate) => rate.specId),
+        },
+        type: {
+          in: skill,
+        },
+      },
+      select: { id: true },
+    });
 
     const createdRates = await this.prismaService.rate360.createManyAndReturn({
       data: ratesToCreate.map((rate) => ({
@@ -115,6 +139,9 @@ export class Rate360Service {
                   })),
                 ],
               },
+            },
+            competencyBlocks: {
+              connect: competencyBlocks.map(({ id }) => ({ id })),
             },
           },
         });
@@ -162,6 +189,15 @@ export class Rate360Service {
             userId,
           },
         },
+        competencyBlocks: {
+          include: {
+            competencies: {
+              include: {
+                indicators: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -196,6 +232,15 @@ export class Rate360Service {
             userId,
           },
         },
+        competencyBlocks: {
+          include: {
+            competencies: {
+              include: {
+                indicators: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -225,6 +270,15 @@ export class Rate360Service {
         curatorConfirmed: true,
       },
       include: {
+        competencyBlocks: {
+          include: {
+            competencies: {
+              include: {
+                indicators: true,
+              },
+            },
+          },
+        },
         spec: true,
         userRates: {
           where: {
@@ -323,15 +377,11 @@ export class Rate360Service {
             userId,
           },
         },
-        spec: {
+        competencyBlocks: {
           include: {
-            competencyBlocks: {
+            competencies: {
               include: {
-                competencies: {
-                  include: {
-                    indicators: true,
-                  },
-                },
+                indicators: true,
               },
             },
           },
@@ -343,9 +393,10 @@ export class Rate360Service {
       throw new NotFoundException('Оценка не найдена');
     }
 
-    const indicators = rate.spec.competencyBlocks.flatMap((block) =>
+    const indicators = rate.competencyBlocks.flatMap((block) =>
       block.competencies.flatMap((competency) => competency.indicators),
     );
+    console.log(indicators.length, rate.userRates.length);
     const userRates = rate.userRates;
     if (userRates.length < indicators.length) {
       throw new ForbiddenException('Оценка не завершена');
@@ -381,15 +432,12 @@ export class Rate360Service {
             userId,
           },
         },
-        spec: {
+        spec: true,
+        competencyBlocks: {
           include: {
-            competencyBlocks: {
+            competencies: {
               include: {
-                competencies: {
-                  include: {
-                    indicators: true,
-                  },
-                },
+                indicators: true,
               },
             },
           },
@@ -401,9 +449,10 @@ export class Rate360Service {
       throw new NotFoundException('Оценка не найдена');
     }
 
-    const indicators = rate.spec.competencyBlocks.flatMap((block) =>
+    const indicators = rate.competencyBlocks.flatMap((block) =>
       block.competencies.flatMap((competency) => competency.indicators),
     );
+    console.log(indicators, rate.userRates);
     const userRates = rate.userRates;
     if (userRates.length < indicators.length) {
       throw new ForbiddenException('Оценка не завершена');
@@ -510,6 +559,15 @@ export class Rate360Service {
             },
           },
         },
+        competencyBlocks: {
+          include: {
+            competencies: {
+              include: {
+                indicators: true,
+              },
+            },
+          },
+        },
         team: {
           select: {
             name: true,
@@ -533,6 +591,15 @@ export class Rate360Service {
         user: {
           select: {
             username: true,
+          },
+        },
+        competencyBlocks: {
+          include: {
+            competencies: {
+              include: {
+                indicators: true,
+              },
+            },
           },
         },
         evaluators: {

@@ -14,6 +14,9 @@ export class ProfileConstructorService {
 
   async findAll() {
     return this.prismaService.competencyBlock.findMany({
+      where: {
+        archived: false,
+      },
       include: {
         competencies: {
           include: {
@@ -202,6 +205,130 @@ export class ProfileConstructorService {
         id,
       },
       data,
+    });
+  }
+
+  async archiveAndCloneAll() {
+    await this.prismaService.$transaction(async (tx) => {
+      const date = new Date();
+
+      await tx.profileVersion.create({
+        data: {
+          date,
+        },
+      });
+
+      // Архивируем все блоки компетенций
+      await tx.competencyBlock.updateMany({
+        where: { archived: false },
+        data: { archived: true, archivedDate: date },
+      });
+
+      // Архивируем компетенции
+      await tx.competency.updateMany({
+        where: { archived: false },
+        data: { archived: true, archivedDate: date },
+      });
+
+      // Архивируем индикаторы
+      await tx.indicator.updateMany({
+        where: { archived: false },
+        data: { archived: true, archivedDate: date },
+      });
+
+      // Получаем данные для копирования
+      const blocksToClone = await tx.competencyBlock.findMany({
+        where: { archived: true, archivedDate: date },
+        include: {
+          competencies: {
+            include: { indicators: true },
+          },
+        },
+      });
+
+      // Подготовка данных для массовой вставки
+      const newBlocksData = blocksToClone.map((block) => ({
+        name: block.name,
+        specId: block.specId,
+        type: block.type,
+        archived: false,
+      }));
+
+      // Создаём новые блоки компетенций
+      const newBlocks = await tx.competencyBlock.createMany({
+        data: newBlocksData,
+        skipDuplicates: true, // Предотвращаем дубли
+      });
+
+      // Получаем созданные блоки (Prisma не возвращает id при `createMany`)
+      const createdBlocks = await tx.competencyBlock.findMany({
+        where: { archived: false },
+      });
+
+      // Словарь соответствий старых и новых блоков
+      const blockIdMap = new Map(
+        blocksToClone.map((oldBlock, index) => [
+          oldBlock.id,
+          createdBlocks[index]?.id,
+        ]),
+      );
+
+      // Подготовка данных для новых компетенций
+      const newCompetenciesData = blocksToClone.flatMap((block) =>
+        block.competencies.map((comp) => ({
+          name: comp.name,
+          blockId: blockIdMap.get(block.id) || undefined,
+          archived: false,
+        })),
+      );
+
+      // Создаём новые компетенции
+      const newCompetencies = await tx.competency.createMany({
+        data: newCompetenciesData,
+        skipDuplicates: true,
+      });
+
+      // Получаем созданные компетенции
+      const createdCompetencies = await tx.competency.findMany({
+        where: { archived: false },
+      });
+
+      // Словарь соответствий старых и новых компетенций
+      const competencyIdMap = new Map(
+        newCompetenciesData.map((oldComp, index) => [
+          oldComp.name,
+          createdCompetencies[index]?.id,
+        ]),
+      );
+
+      // Подготовка данных для индикаторов
+      const newIndicatorsData = blocksToClone.flatMap((block) =>
+        block.competencies.flatMap((comp) =>
+          comp.indicators.map((indicator) => ({
+            name: indicator.name,
+            description: indicator.description,
+            competencyId: competencyIdMap.get(comp.name) || undefined,
+            boundary: indicator.boundary,
+            archived: false,
+          })),
+        ),
+      );
+
+      // Создаём индикаторы
+      if (newIndicatorsData.length > 0) {
+        await tx.indicator.createMany({
+          data: newIndicatorsData,
+          skipDuplicates: true,
+        });
+      }
+    });
+  }
+
+  async getVersion() {
+    return this.prismaService.profileVersion.findFirst({
+      orderBy: {
+        date: 'desc',
+      },
     });
   }
 }

@@ -46,6 +46,10 @@ export interface AddIndicatorDto {
   competencyId: number;
 }
 
+export interface Version {
+  date: Date;
+}
+
 export type SkillCombineType = Competency | Indicator | CompetencyBlock;
 
 export enum CompetencyType {

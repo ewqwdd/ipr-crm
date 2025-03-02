@@ -1,6 +1,5 @@
 import { useModal } from '@/app/hooks/useModal';
 import { Rate } from '@/entities/rates';
-import { skillsApi } from '@/shared/api/skillsApi';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
 import { usersApi } from '@/shared/api/usersApi';
@@ -28,19 +27,15 @@ export default function RateRow({ rate, index }: RateRowProps) {
     teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
-  const { data: skills, isFetching: skillsFetching } =
-    skillsApi.useGetSkillsQuery();
 
   const foundUser = users?.users.find((user) => user.id === rate.user.id);
   const foundTeam = teams?.list.find((team) => team.id === rate.team.id);
   const foundSpec = specs?.find((spec) => spec.id === rate.spec.id);
-  const indicators = foundSpec?.competencyBlocks
-    .map((block) => skills?.find((skill) => skill.id === block.id))
-    .filter(Boolean)
-    .flatMap((skill) => skill!.competencies.flatMap((comp) => comp.indicators));
+  const indicators = rate?.competencyBlocks.flatMap((skill) =>
+    skill!.competencies.flatMap((comp) => comp.indicators),
+  );
 
-  const isLoading =
-    usersFetching || teamsFetching || specsFetching || skillsFetching;
+  const isLoading = usersFetching || teamsFetching || specsFetching;
   const { openModal } = useModal();
   const navigate = useNavigate();
 

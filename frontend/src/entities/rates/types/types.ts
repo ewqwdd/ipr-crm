@@ -1,3 +1,6 @@
+import { Ipr } from '@/entities/ipr';
+import { CompetencyBlock } from '@/entities/skill';
+
 type RateEveloper = {
   userId: number;
   type: EvaulatorType;
@@ -39,7 +42,8 @@ export interface Rate {
     comment: string;
     competencyId: number;
   }[];
-  plan?: any;
+  plan?: Ipr;
+  competencyBlocks: CompetencyBlock[];
 }
 export type EvaluateUser = { userId: number; username?: string };
 
