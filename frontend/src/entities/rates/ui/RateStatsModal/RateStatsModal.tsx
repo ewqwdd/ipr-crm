@@ -4,6 +4,7 @@ import { Modal } from '@/shared/ui/Modal';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import EvaluatorsList from './partials/EvaluatorsList';
 import { Indicator } from '@/entities/skill';
+import { useMemo } from 'react';
 
 interface RateStatsModalData {
   rate: Rate;
@@ -22,10 +23,20 @@ export default function RateStatsModal({
   isOpen,
   modalData,
 }: RateStatsModalProps) {
-  const { rate, spec, user, indicators } = modalData as RateStatsModalData;
+  const { rate, spec, user } = modalData as RateStatsModalData;
 
   const selfRates = rate.userRates.filter((r) => r.userId === user.id);
+  const indicators = useMemo(
+    () =>
+      rate.competencyBlocks.flatMap((block) =>
+        block.competencies.flatMap((comp) => comp.indicators),
+      ),
+    [rate],
+  );
+
   const isSelfRated = selfRates.length < indicators.length;
+  const percent =
+    rate.userRates.length / (indicators.length * (rate.evaluators.length + 1));
 
   const icon = isSelfRated ? (
     <XCircleIcon className="size-5 text-red-500" />
@@ -46,7 +57,9 @@ export default function RateStatsModal({
             </p>
           </div>
           {/* CHANGE TO VALID STATS LATER */}
-          <span className="text-xl text-gray-800">0</span>
+          <span className="text-xl text-gray-800">
+            {Math.round(percent * 100)}%
+          </span>
         </div>
         <EvaluatorsList
           evaluators={rate.evaluators}

@@ -5,7 +5,6 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { rateTypeNames } from '../../model/rateTypeNames';
 import { universalApi } from '@/shared/api/universalApi';
 import DetailItem from './DetailItem';
-import { skillsApi } from '@/shared/api/skillsApi';
 import BlockList from './BlockList';
 import { useEffect } from 'react';
 import { useAppSelector } from '@/app';
@@ -36,8 +35,7 @@ export default function EvaluateModal({
     teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
-  const { data: skills, isFetching: skillsFetching } =
-    skillsApi.useGetSkillsQuery();
+  const skills = rate.competencyBlocks;
 
   const [
     mutateApproveSelf,
@@ -58,7 +56,7 @@ export default function EvaluateModal({
   const foundSkills = foundSpec?.competencyBlocks
     .map(
       (block) =>
-        skills?.find(
+        skills.find(
           (skill) => skill.id === block.id && skill.type === rate.type,
         )!,
     )
@@ -121,7 +119,6 @@ export default function EvaluateModal({
         usersFetching ||
         teamsFetching ||
         specsFetching ||
-        skillsFetching ||
         approveLoading ||
         approveSelfLoading
       }

@@ -141,4 +141,16 @@ export class ProfileConstructorController {
       data.boundary,
     );
   }
+
+  @Post('/archive')
+  @UseGuards(AdminGuard)
+  async arcihve() {
+    return this.profileConstructorService.archiveAndCloneAll();
+  }
+
+  @Get('/version')
+  @UseGuards(AuthGuard)
+  async version() {
+    return this.profileConstructorService.getVersion();
+  }
 }
