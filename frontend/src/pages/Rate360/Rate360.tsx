@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useState } from 'react';
 import Dimmer from '@/shared/ui/Dimmer';
 import RatesTable from './ui/RatesTable';
+import { cva } from '@/shared/lib/cva';
 
 export default function Rate360() {
   const { data, isLoading } = rate360Api.useGetRatesQuery();
@@ -22,7 +23,9 @@ export default function Rate360() {
   return (
     <Dimmer active={isLoading}>
       <div className="px-8 py-10 flex flex-col h-full">
-        <div className="flex justify-between items-center">
+        <div className={cva("flex justify-between items-center", {
+          'pointer-events-none': open,
+        })}>
           <Heading title="Командные отчёты" description="Список 360 оценок" />
           <PrimaryButton onClick={() => setOpen(true)} className="self-start">
             Добавить
