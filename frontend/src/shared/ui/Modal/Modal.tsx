@@ -3,7 +3,6 @@ import { Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationIcon } from '@heroicons/react/outline';
 import { cva } from '@/shared/lib/cva';
-import { createPortal } from 'react-dom';
 
 type Variant = 'success' | 'error' | 'warning' | 'info';
 
@@ -38,7 +37,6 @@ export default function Modal({
   className,
   childrenFlex = true,
 }: ModalProps) {
-  const cancelButtonRef = useRef(null);
   const btnColors: Record<Variant, string> = {
     error: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
     warning: 'bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-500',
@@ -52,13 +50,13 @@ export default function Modal({
     success: 'text-green-600',
     info: 'text-indigo-600',
   };
+  const cancelButtonRef = useRef(null);
 
-  return createPortal(
+  return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
         className="fixed z-10 inset-0 overflow-y-auto"
-        initialFocus={cancelButtonRef}
         onClose={setOpen}
       >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -155,7 +153,6 @@ export default function Modal({
           </Transition.Child>
         </div>
       </Dialog>
-    </Transition.Root>,
-    document.getElementById('root')!,
-  );
+    </Transition.Root>
+)  
 }
