@@ -37,7 +37,7 @@ export default function RateRow({ rate, index }: RateRowProps) {
   const indicators = foundSpec?.competencyBlocks
     .map((block) => skills?.find((skill) => skill.id === block.id))
     .filter(Boolean)
-    .flatMap((skill) => skill!.competencies.flatMap((comp) => comp.indicators));
+    ?.flatMap((skill) => skill!.competencies?.flatMap((comp) => comp.indicators)) ?? [];
 
   const isLoading =
     usersFetching || teamsFetching || specsFetching || skillsFetching;
