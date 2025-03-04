@@ -401,7 +401,7 @@ export class Rate360Service {
       throw new NotFoundException('Оценка не найдена');
     }
 
-    const indicators = rate.spec.competencyBlocks.flatMap((block) =>
+    const indicators = rate.spec.competencyBlocks.filter(e => e.type === rate.type).flatMap((block) =>
       block.competencies.flatMap((competency) => competency.indicators),
     );
     const userRates = rate.userRates;
