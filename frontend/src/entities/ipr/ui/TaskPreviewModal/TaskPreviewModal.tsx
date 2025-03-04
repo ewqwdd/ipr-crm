@@ -37,6 +37,10 @@ export default function TaskPreviewModal({
     );
   };
 
+  const updateDeadline = (newDeadline: string | null) => {
+    dispatch(boardActions.updateCard({ card: { ...card, task: {...task, deadline: newDeadline} }, column: task.status }));
+  };
+
   return (
     <Modal open={isOpen} setOpen={closeModal} title="Задача" footer={false}>
       <div className="flex flex-col py-4 gap-4">
@@ -84,6 +88,7 @@ export default function TaskPreviewModal({
             deadline={task.deadline}
             status={task.status}
             id={task.id}
+            onUdpate={updateDeadline}
           />
         </div>
       </div>

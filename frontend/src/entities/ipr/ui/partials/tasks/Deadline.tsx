@@ -97,7 +97,8 @@ const Deadline: FC<{
   status: Status;
   id: number;
   className?: string;
-}> = ({ deadline: initialDeadline, status, id, className }) => {
+  onUdpate?: (newDeadline: string | null) => void;
+}> = ({ deadline: initialDeadline, status, id, className, onUdpate }) => {
   const [deadline, setDeadline] = useState<string | null>(initialDeadline);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -119,7 +120,7 @@ const Deadline: FC<{
       .post('/ipr/task/deadline', { id, deadline: null })
       .then(() => {
         setLoading(false);
-        setDeadline(null);
+        updateDeadline(null);
         toast.success('Дедлайн успешно удален');
       })
       .catch(() => {
@@ -127,6 +128,11 @@ const Deadline: FC<{
         toast.error('Ошибка при удалении дедлайна');
       });
   };
+
+  const updateDeadline = (newDeadline: string | null) => {
+    setDeadline(newDeadline);
+    onUdpate?.(newDeadline);
+  }
 
   return deadline ? (
     <div
@@ -150,7 +156,7 @@ const Deadline: FC<{
         isOpen={isOpen}
         defaultValue={deadline}
         id={id}
-        onUpdate={setDeadline}
+        onUpdate={updateDeadline}
       />
     </div>
   ) : (
@@ -162,7 +168,7 @@ const Deadline: FC<{
         closeModal={closeModal}
         isOpen={isOpen}
         id={id}
-        onUpdate={setDeadline}
+        onUpdate={updateDeadline}
       />
     </>
   );

@@ -5,6 +5,8 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { TrashIcon } from '@heroicons/react/outline';
 import { useModal } from '@/app/hooks/useModal';
 import { priorityNames } from '../../model/constants';
+import { materialTypes } from '@/entities/material/model/types';
+import MaterialIcon from '@/entities/material/ui/MaterialIcon';
 
 interface BoardCardProps {
   card: CustomCard;
@@ -40,11 +42,12 @@ export default function BoardCard({ card, deletable, userId }: BoardCardProps) {
         {card.title}
       </button>
       <Badge
-        className="rounded-full self-start px-2"
+        className="rounded-full self-start px-2 flex gap-2"
         size="sm"
         color={card.badgeColor}
       >
-        {card.materialType}
+        <MaterialIcon type={card.materialType} className="w-4 h-4" />
+        {materialTypes[card.materialType]}
       </Badge>
       <p className="text-sm text-gray-500 mt-1">{card.description}</p>
       {deletable && (
