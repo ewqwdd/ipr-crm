@@ -35,6 +35,7 @@ export default function RateRow({ rate, index }: RateRowProps) {
   const foundTeam = teams?.list.find((team) => team.id === rate.team.id);
   const foundSpec = specs?.find((spec) => spec.id === rate.spec.id);
   const indicators = foundSpec?.competencyBlocks
+    .filter((block) => block.type === rate.type)
     .map((block) => skills?.find((skill) => skill.id === block.id))
     .filter(Boolean)
     ?.flatMap((skill) => skill!.competencies?.flatMap((comp) => comp.indicators)) ?? [];

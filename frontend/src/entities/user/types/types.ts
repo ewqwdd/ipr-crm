@@ -3,7 +3,7 @@ import { MultiValue } from 'react-select';
 type IdName = { id: number; name: string };
 export type Role = IdName;
 export type Spec = IdName & {
-  competencyBlocks: { id: number; name: string }[];
+  competencyBlocks: { id: number; name: string, type: 'HARD' | 'SOFT' }[];
   materials?: { id: number }[];
   description?: string;
 };
