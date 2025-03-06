@@ -6,7 +6,6 @@ import { TextArea } from '@/shared/ui/TextArea';
 import { useCallback, useEffect, useState } from 'react';
 import { MaterialType } from '../model/types';
 import toast from 'react-hot-toast';
-import { checkLinkFormat } from './helpers';
 import AddMaterialType from './AddMaterialType';
 import AddLevel from './AddLevel';
 
@@ -37,8 +36,6 @@ export default function AddMaterialsModal({
   const validate = () => {
     const newErrors: ErorrsType = {};
     if (!title.trim()) newErrors.title = 'Поле не может быть пустым';
-    const linkError = checkLinkFormat(link);
-    if (linkError) newErrors.link = linkError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -163,9 +160,6 @@ export default function AddMaterialsModal({
           placeholder="https://example.com/"
           value={link}
           onChange={(e) => setLink(e.target.value)}
-          onBlur={() => validate()}
-          required
-          error={errors.link}
         />
 
         <AddMaterialType {...{ selectMaterialType, materialType }} />

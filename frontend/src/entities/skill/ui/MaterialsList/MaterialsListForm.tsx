@@ -20,11 +20,6 @@ interface IMaterialsListFormProps extends Partial<Material> {
   parentType?: CompetencyType;
 }
 
-const checkLinkFormat = (link: string) => {
-  const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
-  return urlRegex.test(link) ? undefined : 'Неверный формат ссылки';
-};
-
 export const MaterialsListForm: FC<IMaterialsListFormProps> = ({
   type,
   name,
@@ -63,8 +58,6 @@ export const MaterialsListForm: FC<IMaterialsListFormProps> = ({
   const validate = () => {
     const newErrors: { title?: string; link?: string } = {};
     if (!newTitle.trim()) newErrors.title = 'Поле не может быть пустым';
-    const linkError = checkLinkFormat(newLink);
-    if (linkError) newErrors.link = linkError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -208,9 +201,6 @@ export const MaterialsListForm: FC<IMaterialsListFormProps> = ({
         placeholder="https://example.com/"
         value={newLink}
         onChange={(e) => setNewLink(e.target.value)}
-        onBlur={() => validate()}
-        required
-        error={errors.link}
       />
       <SelectLight
         label="Сложность"

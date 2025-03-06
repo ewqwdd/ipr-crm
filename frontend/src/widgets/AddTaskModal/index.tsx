@@ -2,7 +2,6 @@ import { Ipr, TaskPriority, TaskType } from '@/entities/ipr';
 import { PrioritySelector } from '@/entities/ipr/ui/partials/tasks/PrioritySelector';
 import { MaterialType } from '@/entities/material';
 import AddMaterialType from '@/entities/material/ui/AddMaterialType';
-import { checkLinkFormat } from '@/entities/material/ui/helpers';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { Modal } from '@/shared/ui/Modal';
 import { SoftButton } from '@/shared/ui/SoftButton';
@@ -97,8 +96,6 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
   const validate = () => {
     const newErrors: ErorrsType = {};
     if (!title.trim()) newErrors.title = 'Поле не может быть пустым';
-    const linkError = checkLinkFormat(link);
-    if (linkError) newErrors.link = linkError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -179,9 +176,6 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
           placeholder="https://example.com/"
           value={link}
           onChange={(e) => setLink(e.target.value)}
-          onBlur={() => validate()}
-          required
-          error={errors.link}
         />
         <AddMaterialType {...{ selectMaterialType, materialType }} />
         <PrioritySelector
