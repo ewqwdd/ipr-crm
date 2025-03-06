@@ -132,7 +132,7 @@ const Deadline: FC<{
   const updateDeadline = (newDeadline: string | null) => {
     setDeadline(newDeadline);
     onUdpate?.(newDeadline);
-  }
+  };
 
   return deadline ? (
     <div

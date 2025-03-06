@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { CreateCompetencyBlockDto } from './dto/create-competency-block.dto';
 import { CreateCompetencyDto } from './dto/create-competency.dto';
@@ -209,119 +209,177 @@ export class ProfileConstructorService {
   }
 
   async archiveAndCloneAll() {
-    await this.prismaService.$transaction(async (tx) => {
-      const date = new Date();
+    await this.prismaService.$transaction(
+      async (tx) => {
+        const date = new Date();
 
-      await tx.profileVersion.create({
-        data: {
-          date,
-        },
-      });
-
-      // Архивируем все блоки компетенций
-      await tx.competencyBlock.updateMany({
-        where: { archived: false },
-        data: { archived: true, archivedDate: date },
-      });
-
-      // Архивируем компетенции
-      await tx.competency.updateMany({
-        where: { archived: false },
-        data: { archived: true, archivedDate: date },
-      });
-
-      // Архивируем индикаторы
-      await tx.indicator.updateMany({
-        where: { archived: false },
-        data: { archived: true, archivedDate: date },
-      });
-
-      // Получаем данные для копирования
-      const blocksToClone = await tx.competencyBlock.findMany({
-        where: { archived: true, archivedDate: date },
-        include: {
-          competencies: {
-            include: { indicators: true },
+        await tx.profileVersion.create({
+          data: {
+            date,
           },
-        },
-      });
+        });
 
-      // Подготовка данных для массовой вставки
-      const newBlocksData = blocksToClone.map((block) => ({
-        name: block.name,
-        specId: block.specId,
-        type: block.type,
-        archived: false,
-      }));
+        // Архивируем все блоки компетенций
+        await tx.competencyBlock.updateMany({
+          where: { archived: false },
+          data: { archived: true, archivedDate: date },
+        });
 
-      // Создаём новые блоки компетенций
-      const newBlocks = await tx.competencyBlock.createMany({
-        data: newBlocksData,
-        skipDuplicates: true, // Предотвращаем дубли
-      });
+        // Архивируем компетенции
+        await tx.competency.updateMany({
+          where: { archived: false },
+          data: { archived: true, archivedDate: date },
+        });
 
-      // Получаем созданные блоки (Prisma не возвращает id при `createMany`)
-      const createdBlocks = await tx.competencyBlock.findMany({
-        where: { archived: false },
-      });
+        // Архивируем индикаторы
+        await tx.indicator.updateMany({
+          where: { archived: false },
+          data: { archived: true, archivedDate: date },
+        });
 
-      // Словарь соответствий старых и новых блоков
-      const blockIdMap = new Map(
-        blocksToClone.map((oldBlock, index) => [
-          oldBlock.id,
-          createdBlocks[index]?.id,
-        ]),
-      );
+        // Получаем данные для копирования
+        const blocksToClone = await tx.competencyBlock.findMany({
+          where: { archived: true, archivedDate: date },
+          include: {
+            competencies: {
+              include: { indicators: true },
+            },
+          },
+        });
 
-      // Подготовка данных для новых компетенций
-      const newCompetenciesData = blocksToClone.flatMap((block) =>
-        block.competencies.map((comp) => ({
-          name: comp.name,
-          blockId: blockIdMap.get(block.id) || undefined,
+        // Подготовка данных для массовой вставки
+        const newBlocksData = blocksToClone.map((block) => ({
+          name: block.name,
+          specId: block.specId,
+          type: block.type,
           archived: false,
-        })),
-      );
+        }));
 
-      // Создаём новые компетенции
-      const newCompetencies = await tx.competency.createMany({
-        data: newCompetenciesData,
-        skipDuplicates: true,
-      });
+        // Создаём новые блоки компетенций
+        const newBlocks = await tx.competencyBlock.createMany({
+          data: newBlocksData,
+          skipDuplicates: true, // Предотвращаем дубли
+        });
 
-      // Получаем созданные компетенции
-      const createdCompetencies = await tx.competency.findMany({
-        where: { archived: false },
-      });
+        // Получаем созданные блоки (Prisma не возвращает id при `createMany`)
+        const createdBlocks = await tx.competencyBlock.findMany({
+          where: { archived: false },
+        });
 
-      // Словарь соответствий старых и новых компетенций
-      const competencyIdMap = new Map(
-        newCompetenciesData.map((oldComp, index) => [
-          oldComp.name,
-          createdCompetencies[index]?.id,
-        ]),
-      );
+        // Словарь соответствий старых и новых блоков
+        const blockIdMap = new Map(
+          blocksToClone.map((oldBlock, index) => [
+            oldBlock.id,
+            createdBlocks[index]?.id,
+          ]),
+        );
 
-      // Подготовка данных для индикаторов
-      const newIndicatorsData = blocksToClone.flatMap((block) =>
-        block.competencies.flatMap((comp) =>
-          comp.indicators.map((indicator) => ({
-            name: indicator.name,
-            description: indicator.description,
-            competencyId: competencyIdMap.get(comp.name) || undefined,
-            boundary: indicator.boundary,
+        // Подготовка данных для новых компетенций
+        const newCompetenciesData = blocksToClone.flatMap((block) =>
+          block.competencies.map((comp) => ({
+            name: comp.name,
+            blockId: blockIdMap.get(comp.blockId) || undefined,
             archived: false,
+            id: comp.id,
           })),
-        ),
-      );
+        );
 
-      // Создаём индикаторы
-      if (newIndicatorsData.length > 0) {
-        await tx.indicator.createMany({
-          data: newIndicatorsData,
+        // Создаём новые компетенции
+        const newCompetencies = await tx.competency.createMany({
+          data: newCompetenciesData.map(({ id, ...rest }) => rest),
           skipDuplicates: true,
         });
-      }
-    });
+
+        // Получаем созданные компетенции
+        const createdCompetencies = await tx.competency.findMany({
+          where: { archived: false },
+        });
+
+        // Словарь соответствий старых и новых компетенций
+        const competencyIdMap = new Map(
+          newCompetenciesData.map((oldComp, index) => [
+            oldComp.id,
+            createdCompetencies[index]?.id,
+          ]),
+        );
+        const competencyMaterials = await tx.competencyMaterial.findMany({
+          where: {
+            competencyId: {
+              in: Array.from(competencyIdMap.keys()),
+            },
+          },
+        });
+
+        console.log(competencyMaterials, Array.from(competencyIdMap.keys()));
+
+        await tx.competencyMaterial.createMany({
+          data: competencyMaterials.map((material) => ({
+            materialId: material.materialId,
+            competencyId:
+              competencyIdMap.get(material.competencyId) || undefined,
+          })),
+        });
+
+        // Подготовка данных для индикаторов
+        const newIndicatorsData = blocksToClone.flatMap((block) =>
+          block.competencies.flatMap((comp) =>
+            comp.indicators.map((indicator) => ({
+              name: indicator.name,
+              description: indicator.description,
+              competencyId: competencyIdMap.get(comp.id) || undefined,
+              boundary: indicator.boundary,
+              archived: false,
+              id: indicator.id,
+            })),
+          ),
+        );
+
+        console.log('newIndicatorsData', newIndicatorsData);
+
+        // Создаём индикаторы
+        if (newIndicatorsData.length > 0) {
+          await tx.indicator.createMany({
+            data: newIndicatorsData.map(({ id, ...rest }) => rest),
+            skipDuplicates: true,
+          });
+        }
+
+        // Получаем созданные индикаторы
+        const createdIndicators = await tx.indicator.findMany({
+          where: { archived: false },
+        });
+
+        console.log(createdIndicators);
+
+        // Словарь соответствий старых и новых индикаторов
+        const indicatorIdMap = new Map(
+          newIndicatorsData.map((oldInd, index) => [
+            oldInd.id,
+            createdIndicators[index]?.id,
+          ]),
+        );
+
+        const indicatorMaterials = await tx.indicatorMaterial.findMany({
+          where: {
+            indicatorId: {
+              in: Array.from(indicatorIdMap.keys()),
+            },
+          },
+        });
+
+        await tx.indicatorMaterial.createMany({
+          skipDuplicates: true,
+          data: indicatorMaterials.map((material) => ({
+            materialId: material.materialId,
+            indicatorId: indicatorIdMap.get(material.indicatorId) || undefined,
+          })),
+        });
+      },
+      {
+        timeout: 60000,
+        maxWait: 60000,
+      },
+    );
   }
 
   async getVersion() {
@@ -330,5 +388,57 @@ export class ProfileConstructorService {
         date: 'desc',
       },
     });
+  }
+
+  async getVersions() {
+    return this.prismaService.profileVersion.findMany({
+      orderBy: {
+        date: 'desc',
+      },
+    });
+  }
+
+  async getVersionById(id: number) {
+    const version = await this.prismaService.profileVersion.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!version) {
+      throw new NotFoundException('Version not found');
+    }
+
+    const blocks = await this.prismaService.competencyBlock.findMany({
+      where: {
+        archived: true,
+        archivedDate: version.date,
+      },
+      include: {
+        competencies: {
+          include: {
+            indicators: {
+              include: {
+                materials: {
+                  include: {
+                    material: true,
+                  },
+                },
+              },
+            },
+            materials: {
+              include: {
+                material: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      blocks,
+      date: version.date,
+    };
   }
 }

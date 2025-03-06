@@ -12,4 +12,5 @@ export type CompetencyListItemProps = CombineType & {
   listItemType: CompetencyType;
   openModal: (type: string, data?: unknown) => void;
   boundary?: number;
+  disabled?: boolean;
 };

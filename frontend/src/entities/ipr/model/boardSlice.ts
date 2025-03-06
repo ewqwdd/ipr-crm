@@ -47,14 +47,21 @@ const boardSlice = createSlice({
     setPlan(state, action: PayloadAction<Ipr>) {
       state.plan = action.payload;
     },
-    updateCard(state, action: PayloadAction<{card: CustomCard, column: string}>) {
-      const column = state.board?.columns.find((column) => column.id === action.payload.column);
+    updateCard(
+      state,
+      action: PayloadAction<{ card: CustomCard; column: string }>,
+    ) {
+      const column = state.board?.columns.find(
+        (column) => column.id === action.payload.column,
+      );
       if (!column) return;
-      const cardIndex = column.cards.findIndex((card) => card.id === action.payload.card.id);
+      const cardIndex = column.cards.findIndex(
+        (card) => card.id === action.payload.card.id,
+      );
       if (cardIndex === -1) return;
-      const prev = column.cards[cardIndex]
-      column.cards[cardIndex] = {...prev, ...action.payload.card};
-    }
+      const prev = column.cards[cardIndex];
+      column.cards[cardIndex] = { ...prev, ...action.payload.card };
+    },
   },
 });
 

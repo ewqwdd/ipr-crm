@@ -14,7 +14,7 @@ const skillsApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL + '/profile-constructor',
     credentials: 'include',
   }),
-  tagTypes: ['Skills', 'Version'],
+  tagTypes: ['Skills', 'Version', 'Versions-history'],
   endpoints: (build) => ({
     getSkills: build.query<CompetencyBlock[], void>({
       query: () => '',
@@ -139,14 +139,38 @@ const skillsApi = createApi({
         url: '/archive',
         method: 'POST',
       }),
-      invalidatesTags: ['Skills', 'Version'],
+      invalidatesTags: ['Skills', 'Version', 'Versions-history'],
     }),
     getVersion: build.query<Version, void>({
       query: () => '/version',
-      transformResponse: (response: { date: string }) => ({
+      transformResponse: (response: { date: string; id: number }) => ({
         date: new Date(response.date),
+        id: response.id,
       }),
       providesTags: ['Version'],
+    }),
+    getVersions: build.query<Version[], void>({
+      query: () => '/versions',
+      transformResponse: (response: { date: string; id: number }[]) =>
+        response.map((version) => ({
+          date: new Date(version.date),
+          id: version.id,
+        })),
+      providesTags: ['Versions-history'],
+    }),
+    getVersionById: build.query<
+      { date: Date; blocks: CompetencyBlock[] },
+      number
+    >({
+      query: (id) => `/version/${id}`,
+      transformResponse: (response: {
+        date: string;
+        blocks: CompetencyBlock[];
+      }) => ({
+        date: new Date(response.date),
+        blocks: response.blocks,
+      }),
+      providesTags: (_, __, id) => [{ type: 'Version', id }],
     }),
   }),
 });

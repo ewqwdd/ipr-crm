@@ -17,14 +17,14 @@ const backgrounds: Record<TaskStatus, string> = {
   COMPLETED: 'rgb(187 247 208)',
   IN_PROGRESS: 'rgb(125 211 252)',
   IN_REVIEW: 'rgb(254 240 138)',
-TO_DO: 'rgb(209 213 219)',
+  TO_DO: 'rgb(209 213 219)',
 };
 
 const textColor: Record<TaskStatus, string> = {
   COMPLETED: 'rgb(22 101 52)',
   IN_PROGRESS: 'rgb(12 74 110)',
   IN_REVIEW: 'rgb(113 63 18)',
-TO_DO: 'rgb(31 41 55)',
+  TO_DO: 'rgb(31 41 55)',
 };
 
 interface BoardProps {
@@ -125,18 +125,20 @@ export default function Board({ data, userId }: BoardProps) {
           disableColumnDrag
           allowRenameColumn={false}
           renderColumnHeader={(column) => (
-            <div className="ext-sm font-medium flex justify-between items-center pr-2 p-2 rounded-t-lg" style={{
-              backgroundColor: backgrounds[column.id as TaskStatus] ?? 'white',
-              color: textColor[column.id as TaskStatus] ?? 'black',
-            }}>
-              <h2 className='text-lg font-semibold'>
+            <div
+              className="ext-sm font-medium flex justify-between items-center pr-2 p-2 rounded-t-lg"
+              style={{
+                backgroundColor:
+                  backgrounds[column.id as TaskStatus] ?? 'white',
+                color: textColor[column.id as TaskStatus] ?? 'black',
+              }}
+            >
+              <h2 className="text-lg font-semibold">
                 {column.title}:{' '}
-                <span className="text-gray-600">
-                  {column.cards.length}
-                </span>
+                <span className="text-gray-600">{column.cards.length}</span>
               </h2>
               {['TO_DO', 'IN_PROGRESS'].includes(column.id.toString()) && (
-                <p className='text-xs'>
+                <p className="text-xs">
                   Просрочено:
                   <span className="text-gray-600 font-normal">
                     {' '}

@@ -18,6 +18,7 @@ interface MaterialsListData {
   name: string;
   id: number;
   type: CompetencyType;
+  disabled?: boolean;
 }
 
 interface MaterialsListProps {
@@ -44,7 +45,8 @@ export default function MaterialsList({
   closeModal,
 }: MaterialsListProps) {
   const [form, setForm] = useState<Form>(defaultForm);
-  const { name, materials, id, type } = modalData as MaterialsListData;
+  const { name, materials, id, type, disabled } =
+    modalData as MaterialsListData;
   const [removeMaterial, { isLoading }] = skillsApi.useRemoveMaterialMutation();
   const dispatch = useDispatch();
 
@@ -96,10 +98,12 @@ export default function MaterialsList({
           <h3 className="font-bold">
             Общие материалы для развития по специализации
           </h3>
-          <SoftButton className="space-2" onClick={addNewMaterial}>
-            <PlusCircleIcon className="h-5 w-5" />
-            Добавить
-          </SoftButton>
+          {!disabled && (
+            <SoftButton className="space-2" onClick={addNewMaterial}>
+              <PlusCircleIcon className="h-5 w-5" />
+              Добавить
+            </SoftButton>
+          )}
         </div>
         <div className="overflow-x-auto w-full mt-5">
           <table className="w-full">
@@ -143,20 +147,24 @@ export default function MaterialsList({
                     </td>
                     <td className="p-3 text-sm text-gray-700">
                       <div className="flex space-x-2">
-                        <SoftButton
-                          className="rounded-full p-2"
-                          size="xs"
-                          onClick={() => editMaterial(row.material)}
-                        >
-                          <PencilIcon className="h-5 w-5" />
-                        </SoftButton>
-                        <SoftButton
-                          className="rounded-full p-2"
-                          size="xs"
-                          onClick={() => deleteMaterial(row.material.id)}
-                        >
-                          <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
-                        </SoftButton>
+                        {!disabled && (
+                          <>
+                            <SoftButton
+                              className="rounded-full p-2"
+                              size="xs"
+                              onClick={() => editMaterial(row.material)}
+                            >
+                              <PencilIcon className="h-5 w-5" />
+                            </SoftButton>
+                            <SoftButton
+                              className="rounded-full p-2"
+                              size="xs"
+                              onClick={() => deleteMaterial(row.material.id)}
+                            >
+                              <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
+                            </SoftButton>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -1,5 +1,4 @@
 import { FC, useMemo, useState } from 'react';
-import CompetencyList from './CompetencyList';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { PlusCircleIcon } from '@heroicons/react/outline';
 import { skillsApi } from '@/shared/api/skillsApi';
@@ -8,6 +7,7 @@ import { CompetencyBlock, SkillsSwitcher } from '@/entities/skill';
 import Dimmer from '@/shared/ui/Dimmer';
 import { useModal } from '@/app/hooks/useModal';
 import ArchiveButton from '../ArchiveButton';
+import { CompetencyList } from '@/widgets/CompetencyList';
 
 const Competency: FC = () => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');

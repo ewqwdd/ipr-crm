@@ -8,12 +8,14 @@ type ICompetencyListProps = {
   data: CompetencyBlock[] | undefined;
   openModal: (type: string, data?: unknown) => void;
   loading?: boolean;
+  disabled?: boolean;
 };
 
 const CompetencyList: FC<ICompetencyListProps> = ({
   data,
   openModal,
   loading,
+  disabled,
 }) => {
   return (
     <div
@@ -31,6 +33,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                 {...skill}
                 listItemType={CompetencyType.COMPETENCY_BLOCK}
                 openModal={openModal}
+                disabled={disabled}
               />
             </>
           }
@@ -47,6 +50,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                       {...competency}
                       listItemType={CompetencyType.COMPETENCY}
                       openModal={openModal}
+                      disabled={disabled}
                     />
                   }
                 >
@@ -56,6 +60,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                       {...indicator}
                       listItemType={CompetencyType.INDICATOR}
                       openModal={openModal}
+                      disabled={disabled}
                     />
                   ))}
                 </Accordion>

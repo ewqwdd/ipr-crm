@@ -154,5 +154,5 @@ export default function Modal({
         </div>
       </Dialog>
     </Transition.Root>
-)  
+  );
 }

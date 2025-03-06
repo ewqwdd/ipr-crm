@@ -1,6 +1,7 @@
 import {
   ChartBarIcon,
   DocumentIcon,
+  FolderIcon,
   HomeIcon,
   InboxIcon,
   MapIcon,
@@ -10,43 +11,51 @@ import {
 import { NavType } from './types';
 
 export const adminNavigation: NavType[] = [
-  { name: 'Dashboard', icon: HomeIcon, href: '/', current: true },
-  { name: 'Users', icon: UserIcon, href: '/users', current: false },
+  { name: 'Дашборд', icon: HomeIcon, href: '/' },
   {
-    name: 'Орагнизационная структура',
-    icon: UsersIcon,
-    href: '/structure',
-    current: false,
+    name: 'Доска задач',
+    icon: MapIcon,
+    href: '/board',
   },
-  { name: 'Команды', icon: UsersIcon, href: '/teams', current: false },
+  {
+    name: 'Мне назначено',
+    icon: InboxIcon,
+    children: [{ name: 'Оценка 360', href: '/progress' }],
+  },
+  {
+    name: 'Администрирование',
+  },
+  {
+    name: 'Сотрудники',
+    icon: UserIcon,
+    children: [
+      { name: 'Сотрудники', href: '/users' },
+      {
+        name: 'Орагнизационная структура',
+        href: '/structure',
+      },
+    ],
+  },
+
+  { name: 'Команды', icon: UsersIcon, href: '/teams' },
   {
     name: 'Оценка',
     icon: InboxIcon,
-    current: false,
-    children: [{ name: 'Оценка 360', href: '/360rate', current: false }],
+    children: [{ name: 'Оценка 360', href: '/360rate' }],
   },
   {
     name: 'Планы развития',
     icon: ChartBarIcon,
-    current: false,
     href: '/ipr',
   },
   {
     name: 'Конструктор профилей',
     icon: DocumentIcon,
     href: '/skills',
-    current: false,
   },
   {
-    name: 'Доска задач',
-    icon: MapIcon,
-    current: false,
-    href: '/board',
-  },
-  {
-    name: 'Мне назначено',
-    icon: InboxIcon,
-    current: false,
-    children: [{ name: 'Оценка 360', href: '/progress', current: false }],
+    name: 'История версий',
+    icon: FolderIcon,
+    href: '/skills/history',
   },
 ];

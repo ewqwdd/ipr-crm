@@ -19,6 +19,8 @@ import { Ipr } from '@/pages/Ipr';
 import { Board } from '@/pages/Board';
 import { AdminBoard } from '@/pages/AdminBoard';
 import { IprList } from '@/pages/IprList';
+import { SkillsHistory } from '@/pages/SkillsHistory';
+import { SkillsHistoryElement } from '@/pages/SkillsHistoryElement';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -52,6 +54,12 @@ export const routerItems: RouterItemType[] = [
   { path: '/board', element: <Board /> },
   { path: '/board/:userId', element: <AdminBoard /> },
   { path: '/ipr', element: <IprList />, onlyAdmin: true, curator: true },
+  { path: '/skills/history', element: <SkillsHistory />, onlyAdmin: true },
+  {
+    path: '/skills/history/:id',
+    element: <SkillsHistoryElement />,
+    onlyAdmin: true,
+  },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];

@@ -149,8 +149,22 @@ export class ProfileConstructorController {
   }
 
   @Get('/version')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   async version() {
     return this.profileConstructorService.getVersion();
+  }
+
+  @Get('/versions')
+  @UseGuards(AdminGuard)
+  async versions() {
+    return this.profileConstructorService.getVersions();
+  }
+
+  @Get('/version/:id')
+  @UseGuards(AdminGuard)
+  async versionByDate(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+  ) {
+    return this.profileConstructorService.getVersionById(id);
   }
 }

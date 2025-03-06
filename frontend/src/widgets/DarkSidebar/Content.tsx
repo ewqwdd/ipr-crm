@@ -45,49 +45,59 @@ export default function Content() {
         >
           {navigation.map((item) =>
             !item.children ? (
-              <div key={item.name}>
-                <NavLink
+              !item.href ? (
+                <div
+                  className="flex items-center px-2 py-2 text-sm font-medium rounded-md"
                   key={item.name}
-                  to={item.href!}
-                  className={({ isActive }) =>
-                    classNames(
-                      isActive
-                        ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                      'group flex items-center px-2 py-2 text-sm font-medium rounded-md',
-                    )
-                  }
                 >
-                  {item.icon && (
-                    <item.icon
-                      className={
-                        'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'
-                      }
-                      aria-hidden="true"
-                    />
-                  )}
-                  <span className="flex-1">{item.name}</span>
-                  {item.count ? (
-                    <p
-                      className={classNames(
-                        'bg-gray-900 group-hover:bg-gray-800',
-                        'ml-3 inline-block py-0.5 px-3 text-xs font-medium rounded-full',
-                      )}
-                    >
-                      {item.count}
-                    </p>
-                  ) : null}
-                </NavLink>
-              </div>
+                  <span className="font-semibold text-gray-500 text-base">
+                    {item.name}
+                  </span>
+                </div>
+              ) : (
+                <div key={item.name}>
+                  <NavLink
+                    key={item.name}
+                    to={item.href!}
+                    end
+                    className={({ isActive }) =>
+                      classNames(
+                        isActive
+                          ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'group flex items-center px-2 py-2 text-sm font-medium rounded-md',
+                      )
+                    }
+                  >
+                    {item.icon && (
+                      <item.icon
+                        className={
+                          'mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-300'
+                        }
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className="flex-1">{item.name}</span>
+                    {item.count ? (
+                      <p
+                        className={classNames(
+                          'bg-gray-900 group-hover:bg-gray-800',
+                          'ml-3 inline-block py-0.5 px-3 text-xs font-medium rounded-full',
+                        )}
+                      >
+                        {item.count}
+                      </p>
+                    ) : null}
+                  </NavLink>
+                </div>
+              )
             ) : (
               <Disclosure as="div" key={item.name} className="space-y-1">
                 {() => (
                   <>
                     <Disclosure.Button
                       className={classNames(
-                        item.current
-                          ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'text-gray-300 hover:bg-gray-700 hover:text-white',
                         'group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full',
                       )}
                     >

@@ -30,6 +30,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   id,
   materials,
   boundary,
+  disabled,
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
 
@@ -60,6 +61,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
                 name,
                 id,
                 type: listItemType,
+                disabled,
               });
               return;
             }}
@@ -67,7 +69,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
             {materials.length} Материалов
           </button>
         )}
-        {listItemType === CompetencyType.COMPETENCY_BLOCK && (
+        {listItemType === CompetencyType.COMPETENCY_BLOCK && !disabled && (
           <SoftButton
             size="xs"
             className="gap-2 whitespace-nowrap"
@@ -80,7 +82,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
             Добавить компетенцию
           </SoftButton>
         )}
-        {listItemType === CompetencyType.COMPETENCY && (
+        {listItemType === CompetencyType.COMPETENCY && !disabled && (
           <SoftButton
             size="xs"
             className="gap-2 whitespace-nowrap"
@@ -94,7 +96,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
           </SoftButton>
         )}
 
-        {listItemType !== CompetencyType.COMPETENCY_BLOCK && (
+        {listItemType !== CompetencyType.COMPETENCY_BLOCK && !disabled && (
           <SoftButton
             size="xs"
             className="whitespace-nowrap"
@@ -112,41 +114,50 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
             Добавить Материалы
           </SoftButton>
         )}
-        <SoftButton
-          className="rounded-full p-2"
-          size="xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            openModal('EDIT_SKILL', { id, name, type: listItemType, boundary });
-          }}
-        >
-          <PencilIcon className="h-5 w-5" />
-        </SoftButton>
+        {!disabled && (
+          <>
+            <SoftButton
+              className="rounded-full p-2"
+              size="xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                openModal('EDIT_SKILL', {
+                  id,
+                  name,
+                  type: listItemType,
+                  boundary,
+                });
+              }}
+            >
+              <PencilIcon className="h-5 w-5" />
+            </SoftButton>
 
-        <SoftButton
-          size="xs"
-          className="rounded-full text-red p-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            let onSubmit = null;
-            switch (listItemType) {
-              case CompetencyType.COMPETENCY_BLOCK:
-                onSubmit = () => deleteCompetencyBlock({ id });
-                break;
-              case CompetencyType.COMPETENCY:
-                onSubmit = () => deleteCompetency({ id });
-                break;
-              case CompetencyType.INDICATOR:
-                onSubmit = () => deleteIndicator({ id });
-                break;
-              default:
-                break;
-            }
-            openModal('CONFIRM', { onSubmit });
-          }}
-        >
-          <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
-        </SoftButton>
+            <SoftButton
+              size="xs"
+              className="rounded-full text-red p-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                let onSubmit = null;
+                switch (listItemType) {
+                  case CompetencyType.COMPETENCY_BLOCK:
+                    onSubmit = () => deleteCompetencyBlock({ id });
+                    break;
+                  case CompetencyType.COMPETENCY:
+                    onSubmit = () => deleteCompetency({ id });
+                    break;
+                  case CompetencyType.INDICATOR:
+                    onSubmit = () => deleteIndicator({ id });
+                    break;
+                  default:
+                    break;
+                }
+                openModal('CONFIRM', { onSubmit });
+              }}
+            >
+              <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
+            </SoftButton>
+          </>
+        )}
       </div>
     </div>
   );
