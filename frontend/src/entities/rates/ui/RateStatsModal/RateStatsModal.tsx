@@ -36,7 +36,10 @@ export default function RateStatsModal({
 
   const isSelfRated = selfRates.length < indicators.length;
   const percent =
-    rate.userRates.length / (indicators.length * (rate.evaluators.length + 1));
+    indicators.length === 0
+      ? 1
+      : rate.userRates.length /
+        (indicators.length * (rate.evaluators.length + 1));
 
   const icon = isSelfRated ? (
     <XCircleIcon className="size-5 text-red-500" />

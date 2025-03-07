@@ -29,6 +29,7 @@ const rate360Api = createApi({
         skill: string[];
         confirmCurator: boolean;
         confirmUser: boolean;
+        rateType: Rate['rateType'];
       }
     >({
       query: (body) => ({
@@ -109,6 +110,20 @@ const rate360Api = createApi({
         body: data,
       }),
       invalidatesTags: ['Rate360', 'ConfirmUser', 'Self'],
+    }),
+    deleteRates: build.mutation<void, { ids: number[] }>({
+      query: ({ ids }) => ({
+        url: '/rate360/delete-rates',
+        method: 'POST',
+        body: { ids },
+      }),
+      invalidatesTags: [
+        'Rate360',
+        'Assigned',
+        'Self',
+        'ConfirmCurator',
+        'ConfirmUser',
+      ],
     }),
   }),
 });

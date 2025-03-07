@@ -44,6 +44,8 @@ export interface Rate {
   }[];
   plan?: Ipr;
   competencyBlocks: CompetencyBlock[];
+  rateType: 'Rate180' | 'Rate360';
+  finished: boolean;
 }
 export type EvaluateUser = { userId: number; username?: string };
 

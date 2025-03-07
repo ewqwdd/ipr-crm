@@ -8,9 +8,11 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useState } from 'react';
 import Dimmer from '@/shared/ui/Dimmer';
 import RatesTable from './ui/RatesTable';
+import Settings from './ui/Settings';
 
 export default function Rate360() {
   const { data, isLoading } = rate360Api.useGetRatesQuery();
+  const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -18,17 +20,24 @@ export default function Rate360() {
     setOpen(false);
     dispatch(ratesActions.clear());
   };
+  console.log(selected);
 
   return (
     <Dimmer active={isLoading}>
-      <div className="px-8 py-10 flex flex-col h-full">
+      <div className="px-8 py-10 flex flex-col h-full realtive">
         <div className="flex justify-between items-center">
           <Heading title="Командные отчёты" description="Список 360 оценок" />
           <PrimaryButton onClick={() => setOpen(true)} className="self-start">
             Добавить
           </PrimaryButton>
         </div>
-        <RatesTable data={data} isLoading={isLoading} />
+        <RatesTable
+          selected={selected}
+          data={data}
+          isLoading={isLoading}
+          setSelected={setSelected}
+        />
+        <Settings selected={selected} setSelected={setSelected} />
       </div>
       <Modal
         open={open}

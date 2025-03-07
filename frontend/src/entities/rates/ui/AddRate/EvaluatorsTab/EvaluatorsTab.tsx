@@ -4,7 +4,7 @@ import { TabType } from '../AddRate';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import TeamItem from './TeamItem';
 import { useEffect, useLayoutEffect, useMemo } from 'react';
-import { EvaluateUser } from '@/entities/rates/types/types';
+import { EvaluateUser, Rate } from '@/entities/rates/types/types';
 import { ratesActions } from '@/entities/rates/model/rateSlice';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
@@ -15,6 +15,7 @@ interface EvaluatorsTabProps {
   setTab: (tab: TabType) => void;
   skillTypes: string[];
   closeModal: () => void;
+  rateType: Rate['rateType'];
 }
 
 export interface TeamItemIds {
@@ -30,6 +31,7 @@ export default function EvaluatorsTab({
   setTab,
   skillTypes,
   closeModal,
+  rateType,
 }: EvaluatorsTabProps) {
   const { data, isFetching } = teamsApi.useGetTeamsQuery();
   const [addRate, { isLoading, isSuccess, isError }] =
@@ -62,7 +64,10 @@ export default function EvaluatorsTab({
       const updatedSpecs = s.specs.map((spec) => ({
         ...spec,
         evaluateCurators: teamCurators.filter((c) => c.userId !== spec.userId),
-        evaluateTeam: teamUsers.filter((c) => c.userId !== spec.userId),
+        evaluateTeam:
+          rateType === 'Rate360'
+            ? teamUsers.filter((c) => c.userId !== spec.userId)
+            : [],
         evaluateSubbordinate: [],
       }));
       return {
@@ -120,6 +125,7 @@ export default function EvaluatorsTab({
                 skill: skillTypes,
                 confirmCurator,
                 confirmUser,
+                rateType,
               })
             }
             disabled={isLoading}

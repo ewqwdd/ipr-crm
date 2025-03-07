@@ -155,9 +155,13 @@ export class TeamsService {
             userId: { equals: curatorId },
             teamId: { equals: teamId },
           },
-          create: {
-            userId: team.curatorId,
-          },
+          ...(team.curatorId
+            ? {
+                create: {
+                  userId: team.curatorId,
+                },
+              }
+            : {}),
         },
       },
     });
@@ -259,5 +263,11 @@ export class TeamsService {
     });
 
     return;
+  }
+
+  async removeTeamUsers(teamId: number, userId: number) {
+    return this.prisma.userTeam.deleteMany({
+      where: { teamId, userId },
+    });
   }
 }

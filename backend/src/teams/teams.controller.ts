@@ -90,4 +90,10 @@ export class TeamsController {
   async remove(@Param('id') id: number) {
     return this.teamsService.remove(id);
   }
+
+  @Delete('/:id/users/:userId')
+  @UseGuards(AdminGuard)
+  async removeUser(@Param('id') id: number, @Param('userId') userId: number) {
+    return this.teamsService.removeTeamUsers(id, userId);
+  }
 }

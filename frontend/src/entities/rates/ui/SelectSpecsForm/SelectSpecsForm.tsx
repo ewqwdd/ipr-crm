@@ -5,8 +5,9 @@ import SkillsFilter from './partials/SkillsFilter';
 import { useMemo } from 'react';
 import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
-import { AddRateDto } from '../../types/types';
+import { AddRateDto, Rate } from '../../types/types';
 import ConfirmCheckbox from '../AddRate/ConfirmCheckbox/ConfirmCheckbox';
+import RateTypeRadio from './partials/RateTypeRadio';
 
 interface SelectSpecsFormProps {
   skillTypes: string[];
@@ -18,10 +19,12 @@ interface SelectSpecsFormProps {
   search: string;
   confirmCurator?: boolean;
   confirmUser?: boolean;
+  rateType?: Rate['rateType'];
 
   setTeams: React.Dispatch<React.SetStateAction<MultiValue<Option>>>;
   setSpecs: React.Dispatch<React.SetStateAction<MultiValue<Option>>>;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
+  setRateType?: (rateType: Rate['rateType']) => void;
 
   onChangeConfirmCurator?: (v: boolean) => void;
   onChageConfirmUser?: (v: boolean) => void;
@@ -44,6 +47,8 @@ export default function SelectSpecsForm({
   confirmUser,
   onChageConfirmUser,
   onChangeConfirmCurator,
+  rateType,
+  setRateType,
 }: SelectSpecsFormProps) {
   const selectedCount = useMemo(
     () => selectedSpecs.reduce((acc, s) => acc + s.specs.length, 0),
@@ -56,12 +61,23 @@ export default function SelectSpecsForm({
         {setSkillTypes && (
           <>
             <div className="flex gap-3 flex-col">
-              <h3 className="text-lg font-medium text-gray-600">Вид оценки</h3>
+              <h3 className="text-lg font-medium text-gray-600">Навыки</h3>
               <div className="flex gap-2">
                 <SkillsFilter skills={skillTypes} setSkills={setSkillTypes} />
               </div>
             </div>
-            <div className="col-span-2 flex justify-end">
+            <div className="flex gap-3 flex-col">
+              <h3 className="text-lg font-medium text-gray-600">Вид оценки</h3>
+              <div className="flex gap-2">
+                {rateType && setRateType && (
+                  <RateTypeRadio
+                    rateType={rateType}
+                    setRateType={setRateType}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="col-span-1 flex justify-end">
               <PrimaryButton
                 className="self-start"
                 disabled={selectedCount === 0 || !skillTypes.length}
@@ -74,6 +90,7 @@ export default function SelectSpecsForm({
         )}
         {onChageConfirmUser && onChangeConfirmCurator && (
           <ConfirmCheckbox
+            rateType={rateType ?? 'Rate360'}
             onChageConfirmUser={onChageConfirmUser}
             onChangeConfirmCurator={onChangeConfirmCurator}
             confirmCurator={confirmCurator}

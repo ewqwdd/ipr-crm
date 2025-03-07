@@ -157,6 +157,15 @@ export class IprService {
       },
     });
 
+    await this.prismaService.rate360.update({
+      where: {
+        id: rate360.id,
+      },
+      data: {
+        finished: true,
+      },
+    });
+
     return created;
   }
 

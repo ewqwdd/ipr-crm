@@ -7,9 +7,16 @@ import Dimmer from '@/shared/ui/Dimmer';
 interface RatesTableProps {
   data?: Rate[];
   isLoading: boolean;
+  setSelected?: React.Dispatch<React.SetStateAction<number[]>>;
+  selected: number[];
 }
 
-export default function RatesTable({ data, isLoading }: RatesTableProps) {
+export default function RatesTable({
+  data,
+  isLoading,
+  setSelected,
+  selected,
+}: RatesTableProps) {
   return (
     <Dimmer active={isLoading}>
       <div className="overflow-x-auto">
@@ -22,7 +29,13 @@ export default function RatesTable({ data, isLoading }: RatesTableProps) {
               })}
             >
               {data?.map((rate, index) => (
-                <RateRow key={rate.id} rate={rate} index={index} />
+                <RateRow
+                  key={rate.id}
+                  rate={rate}
+                  index={index}
+                  selected={selected.includes(rate.id)}
+                  setSelected={setSelected}
+                />
               ))}
             </tbody>
           </table>

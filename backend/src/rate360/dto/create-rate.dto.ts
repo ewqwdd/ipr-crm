@@ -7,6 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Rate360Type } from '@prisma/client';
 
 type SkillType = 'SOFT' | 'HARD';
 
@@ -60,6 +61,9 @@ export class CreateRateDto {
   @IsArray()
   @IsEnum(['SOFT', 'HARD'], { each: true })
   skill: SkillType[];
+
+  @IsEnum([Rate360Type.Rate180, Rate360Type.Rate360])
+  rateType: Rate360Type;
 
   @IsBoolean()
   confirmUser: boolean;

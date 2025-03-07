@@ -60,7 +60,8 @@ model Rate360 {
   type             SkillType
   userComment     String?
   curatorComment  String?
-  
+  finished         Boolean   @default(false)
+  rateType          Rate360Type @default(Rate360)
 
   competencyBlocks CompetencyBlock[]
   userRates  UserRates[]
@@ -69,6 +70,7 @@ model Rate360 {
   spec       Spec               @relation(fields: [specId], references: [id])
   team       Team              @relation(fields: [teamId], references: [id])
   plan       IndividualGrowthPlan?
+  createdAt          DateTime  @default(now())
 }
 
 model UserComments {
@@ -95,6 +97,7 @@ model UserRates {
   indicator Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   rate360   Rate360   @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
+  createdAt          DateTime  @default(now())
 }
 
 model Role {
@@ -241,7 +244,7 @@ model GrowthPlanTask {
   indicatorId Int?
   materialId Int
 
-  material Material @relation(fields: [materialId], references: [id])
+  material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
   competency Competency? @relation(fields: [competencyId], references: [id])
   indicator Indicator? @relation(fields: [indicatorId], references: [id])
   plan IndividualGrowthPlan? @relation(fields: [planId], references: [id])
@@ -476,4 +479,9 @@ enum EvaluatorType {
   CURATOR
   TEAM_MEMBER
   SUBORDINATE
+}
+
+enum Rate360Type {
+  Rate360
+  Rate180
 }

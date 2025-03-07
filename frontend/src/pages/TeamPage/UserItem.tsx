@@ -7,10 +7,11 @@ import { SelectOption } from '@/shared/types/SelectType';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Badge } from '@/shared/ui/Badge';
 import AddSpecModal from '@/widgets/AddSpecModal/AddSpecModal';
-import { BriefcaseIcon, PencilIcon } from '@heroicons/react/outline';
+import { BriefcaseIcon, PencilIcon, TrashIcon } from '@heroicons/react/outline';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import LeaderDropdown from './LeaderDropdown';
+import { SoftButton } from '@/shared/ui/SoftButton';
 
 interface UserItemProps {
   userId: number;
@@ -35,6 +36,7 @@ export default function UserItem({
   const { data: specsData, isLoading: isSpecsLoading } =
     universalApi.useGetSpecsQuery();
   const [spec, setSpec] = useState<SelectOption[]>([]);
+  const [remove, removeOptions] = teamsApi.useRemoveUserMutation();
 
   useEffect(() => {
     if (isSuccess) {
@@ -58,7 +60,14 @@ export default function UserItem({
 
   return (
     <>
-      <div className="flex justify-between py-5 border-b-gray-300 border-b">
+      <div
+        className={cva(
+          'flex justify-between py-5 border-b-gray-300 border-b items-center',
+          {
+            'animate-pulse pointer-events-none': removeOptions.isLoading,
+          },
+        )}
+      >
         <div className="flex flex-col gap-2">
           <div className="flex gap-3">
             <Avatar src={user?.avatar} className="size-8" />
@@ -101,6 +110,13 @@ export default function UserItem({
             </div>
           )}
         </div>
+        <SoftButton
+          size="xs"
+          className="rounded-full p-2"
+          onClick={() => remove({ teamId, userId })}
+        >
+          <TrashIcon className="h-5 w-5 text-red-600" />
+        </SoftButton>
       </div>
       <AddSpecModal
         loading={mutateLoading}

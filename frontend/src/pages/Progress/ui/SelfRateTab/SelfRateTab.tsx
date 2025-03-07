@@ -5,11 +5,6 @@ export default function SelfRateTab() {
   const { data, isLoading } = rate360Api.useSelfRatesQuery();
 
   return (
-    <RateList
-      data={data}
-      isLoading={isLoading}
-      heading="Самооценка 360
-"
-    />
+    <RateList data={data} isLoading={isLoading} heading="Самооценка 360" />
   );
 }

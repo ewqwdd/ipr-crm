@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import SpecsTab from './SpecsTab/SpecsTab';
 import EvaluatorsTab from './EvaluatorsTab/EvaluatorsTab';
+import { Rate } from '../../types/types';
 
 export type TabType = 'specs' | 'evaluators';
 
@@ -11,6 +12,7 @@ interface AddRateProps {
 export default function AddRate({ closeModal }: AddRateProps) {
   const [tab, setTab] = useState<TabType>('specs');
   const [skillTypes, setSkillTypes] = useState<string[]>([]);
+  const [rateType, setRateType] = useState<Rate['rateType']>('Rate360');
 
   const onClose = () => {
     if (closeModal) {
@@ -25,6 +27,8 @@ export default function AddRate({ closeModal }: AddRateProps) {
           skillTypes={skillTypes}
           setSkillTypes={setSkillTypes}
           setTab={setTab}
+          rateType={rateType}
+          setRateType={setRateType}
         />
       )}
       {tab === 'evaluators' && (
@@ -32,6 +36,7 @@ export default function AddRate({ closeModal }: AddRateProps) {
           closeModal={onClose}
           skillTypes={skillTypes}
           setTab={setTab}
+          rateType={rateType}
         />
       )}
     </div>

@@ -72,6 +72,9 @@ export class Rate360Service {
         },
         plan: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
     return rates;
   }
@@ -102,6 +105,7 @@ export class Rate360Service {
         type: {
           in: skill,
         },
+        archived: false,
       },
       select: { id: true },
     });
@@ -114,6 +118,7 @@ export class Rate360Service {
         teamId: rate.teamId,
         userConfirmed: !confirmUser,
         curatorConfirmed: !confirmCurator,
+        rateType: data.rateType,
       })),
     });
 
@@ -150,30 +155,14 @@ export class Rate360Service {
   }
 
   async findAssignedRates(userId: number) {
-    return await this.prismaService.rate360.findMany({
+    const rate360 = await this.prismaService.rate360.findMany({
       where: {
+        finished: false,
         evaluators: {
           some: {
             userId,
           },
         },
-        OR: [
-          {
-            userRates: {
-              some: {
-                approved: false,
-                userId,
-              },
-            },
-          },
-          {
-            userRates: {
-              none: {
-                userId,
-              },
-            },
-          },
-        ],
         curatorConfirmed: true,
         userConfirmed: true,
       },
@@ -200,28 +189,24 @@ export class Rate360Service {
         },
       },
     });
+
+    const filtered = rate360.filter((rate) => {
+      const indicators = rate.competencyBlocks.flatMap((block) =>
+        block.competencies.flatMap((competency) => competency.indicators),
+      );
+      const userRates = rate.userRates.filter(
+        (rate) => rate.userId === userId && rate.approved,
+      );
+      return userRates.length < indicators.length;
+    });
+    return filtered;
   }
 
   async findSelfRates(userId: number) {
-    return await this.prismaService.rate360.findMany({
+    const rate360 = await this.prismaService.rate360.findMany({
       where: {
+        finished: false,
         userId,
-        OR: [
-          {
-            userRates: {
-              some: {
-                approved: false,
-              },
-            },
-          },
-          {
-            userRates: {
-              none: {
-                userId,
-              },
-            },
-          },
-        ],
         userConfirmed: true,
         curatorConfirmed: true,
       },
@@ -243,29 +228,23 @@ export class Rate360Service {
         },
       },
     });
+    const filtered = rate360.filter((rate) => {
+      const indicators = rate.competencyBlocks.flatMap((block) =>
+        block.competencies.flatMap((competency) => competency.indicators),
+      );
+      const userRates = rate.userRates.filter(
+        (rate) => rate.userId === userId && rate.approved,
+      );
+      return userRates.length < indicators.length;
+    });
+    return filtered;
   }
 
   async findForUser(userId: number, rateId: number) {
     const rate = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
-        OR: [
-          {
-            userRates: {
-              some: {
-                userId,
-                approved: false,
-              },
-            },
-          },
-          {
-            userRates: {
-              none: {
-                userId,
-              },
-            },
-          },
-        ],
+        finished: false,
         userConfirmed: true,
         curatorConfirmed: true,
       },
@@ -307,7 +286,17 @@ export class Rate360Service {
     ) {
       throw new NotFoundException('Rate not found');
     }
-    return rate;
+    const indicators = rate.competencyBlocks.flatMap((block) =>
+      block.competencies.flatMap((competency) => competency.indicators),
+    );
+    const userRates = rate.userRates.filter(
+      (rate) => rate.userId === userId && rate.approved,
+    );
+    if (userRates.length < indicators.length) {
+      return rate;
+    } else {
+      throw new ForbiddenException('Rate already approved');
+    }
   }
 
   async userAssessment(
@@ -732,5 +721,15 @@ export class Rate360Service {
         },
       }),
     ]);
+  }
+
+  deleteRates(ids: number[]) {
+    return this.prismaService.rate360.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
   }
 }

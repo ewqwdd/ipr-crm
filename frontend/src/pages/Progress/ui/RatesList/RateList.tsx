@@ -17,7 +17,14 @@ export default function RateList({ isLoading, data, heading }: RateListProps) {
   const { data: specsData, isLoading: specsLoading } =
     universalApi.useGetSpecsQuery();
 
-  const teamIds = Array.from(new Set(data?.map((rate) => rate.teamId)));
+  const filtered =
+    data?.filter(
+      (t) =>
+        t.competencyBlocks.flatMap((cb) =>
+          cb.competencies.flatMap((cp) => cp.indicators),
+        ).length > 0,
+    ) ?? [];
+  const teamIds = Array.from(new Set(filtered?.map((rate) => rate.teamId)));
   const teams = teamData?.list.filter((team) => teamIds.includes(team.id));
 
   return (
@@ -33,7 +40,7 @@ export default function RateList({ isLoading, data, heading }: RateListProps) {
             {team.name}
           </span>
           <div className="flex flex-col bg-gray-50 py-2">
-            {data
+            {filtered
               ?.filter((t) => t.teamId === team.id)
               .map((rate) => (
                 <RateItem specs={specsData ?? []} key={rate.id} rate={rate} />

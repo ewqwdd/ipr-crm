@@ -10,13 +10,22 @@ import { DocumentReportIcon, DocumentTextIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
 import IprButton from './IprButton';
+import { SetStateAction } from 'react';
+import { Checkbox } from '@/shared/ui/Checkbox';
 
 interface RateRowProps {
   rate: Rate;
   index: number;
+  setSelected?: React.Dispatch<SetStateAction<number[]>>;
+  selected?: boolean;
 }
 
-export default function RateRow({ rate, index }: RateRowProps) {
+export default function RateRow({
+  rate,
+  index,
+  setSelected,
+  selected,
+}: RateRowProps) {
   const evaluatorsCount = rate.evaluators.length ?? 0;
   const ratesCount = rate.userRates.length ?? 0;
   // const [deleteFn] = rate360Api.useDeleteRateMutation();
@@ -61,7 +70,17 @@ export default function RateRow({ rate, index }: RateRowProps) {
         'bg-gray-50': index % 2 === 0,
       })}
     >
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 flex gap-2 items-center">
+        <Checkbox
+          onChange={() => {
+            if (!selected) {
+              setSelected?.((prev) => [...prev, rate.id]);
+            } else {
+              setSelected?.((prev) => prev.filter((id) => id !== rate.id));
+            }
+          }}
+          checked={selected}
+        />
         <Link
           className="font-medium text-gray-900  hover:text-violet-900 transition-all"
           to={'/users/' + foundUser?.id}

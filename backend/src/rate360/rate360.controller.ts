@@ -17,6 +17,7 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
+import { DeleteRatesDto } from './dto/delete-rates.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -150,5 +151,11 @@ export class Rate360Controller {
   ) {
     console.log(data);
     return await this.rate360Service.confirmByUser(data, sessionInfo.id);
+  }
+
+  @Post('/delete-rates')
+  @UseGuards(AdminGuard)
+  async deleteRates(@Body() data: DeleteRatesDto) {
+    return await this.rate360Service.deleteRates(data.ids);
   }
 }

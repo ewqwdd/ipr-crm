@@ -91,6 +91,13 @@ const teamsApi = createApi({
       }),
       invalidatesTags: ['Team'],
     }),
+    removeUser: build.mutation<null, { teamId: number; userId: number }>({
+      query: ({ teamId, userId }) => ({
+        url: `/teams/${teamId}/users/${userId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Team'],
+    }),
   }),
 });
 
