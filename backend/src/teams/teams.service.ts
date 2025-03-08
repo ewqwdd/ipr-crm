@@ -28,6 +28,12 @@ export class TeamsService {
     const teams = await this.prisma.team.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
+        curatorSpecs: {
+          select: {
+            specId: true,
+            spec: { select: { name: true } },
+          },
+        },
         users: {
           select: {
             user: {
@@ -36,7 +42,7 @@ export class TeamsService {
                 id: true,
                 username: true,
                 specsOnTeams: {
-                  select: { specId: true },
+                  select: { specId: true, spec: { select: { name: true } } },
                 },
               },
             },
@@ -52,6 +58,12 @@ export class TeamsService {
     const team = await this.prisma.team.findUnique({
       where: { id },
       include: {
+        curatorSpecs: {
+          select: {
+            specId: true,
+            spec: { select: { name: true } },
+          },
+        },
         users: {
           select: {
             userId: true,
@@ -89,7 +101,6 @@ export class TeamsService {
   }
 
   async leaveTeam(userId: number, teamId: number) {
-    console.log(userId, teamId);
     await this.prisma.userTeam.deleteMany({ where: { userId, teamId } });
     return;
   }
@@ -123,7 +134,16 @@ export class TeamsService {
   }
 
   async curatorRemove(teamId: number) {
-    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        curatorSpecs: {
+          select: {
+            specId: true,
+          },
+        },
+      },
+    });
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }
@@ -136,16 +156,44 @@ export class TeamsService {
             userId: team.curatorId,
           },
         },
+        curatorSpecs: {
+          deleteMany: {
+            teamId,
+          },
+        },
       },
+    });
+    await this.prisma.specsOnUserTeam.createMany({
+      data: team.curatorSpecs.map((spec) => ({
+        teamId,
+        userId: team.curatorId,
+        specId: spec.specId,
+      })),
     });
     return;
   }
 
   async setCurator(teamId: number, curatorId: number) {
-    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        curatorSpecs: true,
+      },
+    });
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }
+    const specs = await this.prisma.specsOnUserTeam.findMany({
+      where: { teamId, userId: curatorId },
+    });
+
+    const specsToAdd = specs
+      .map((spec) => spec.specId)
+      .filter((spec) => !team.curatorSpecs.find((e) => e.specId === spec));
+    const specsToDelete = team.curatorSpecs
+      .map((spec) => spec.specId)
+      .filter((spec) => !specs.find((e) => e.specId === spec));
+
     await this.prisma.team.update({
       where: { id: teamId },
       data: {
@@ -155,6 +203,7 @@ export class TeamsService {
             userId: { equals: curatorId },
             teamId: { equals: teamId },
           },
+
           ...(team.curatorId
             ? {
                 create: {
@@ -163,8 +212,29 @@ export class TeamsService {
               }
             : {}),
         },
+        curatorSpecs: {
+          createMany: {
+            data: specsToAdd.map((specId) => ({
+              specId,
+            })),
+          },
+          deleteMany: {
+            specId: { in: specsToDelete },
+          },
+        },
       },
     });
+
+    if (team.curatorId) {
+      await this.prisma.specsOnUserTeam.createMany({
+        data: team.curatorSpecs.map((spec) => ({
+          teamId,
+          userId: team.curatorId,
+          specId: spec.specId,
+        })),
+      });
+    }
+
     return;
   }
 
@@ -176,9 +246,14 @@ export class TeamsService {
     await this.prisma.team.delete({ where: { id } });
     return;
   }
-  async setTeamUserSpecs({ specs, teamId, userId }: SetTeamUserSpecs) {
+  async setTeamUserSpecs({ specs, teamId, userId, curator }: SetTeamUserSpecs) {
     // Проверяем, существует ли команда
-    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        curatorSpecs: true,
+      },
+    });
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }
@@ -189,17 +264,22 @@ export class TeamsService {
       throw new NotFoundException('Пользователь не найден.');
     }
 
-    // Получаем текущие спецификации пользователя в команде
-    const userTeam = await this.prisma.userTeam.findUnique({
-      where: { userId_teamId: { userId, teamId } },
-      include: { specs: true }, // Включаем связанные спецификации
-    });
+    let currentSpecs;
+    if (curator) {
+      currentSpecs = team.curatorSpecs.map((spec) => spec.specId);
+    } else {
+      // Получаем текущие спецификации пользователя в команде
+      const userTeam = await this.prisma.userTeam.findUnique({
+        where: { userId_teamId: { userId, teamId } },
+        include: { specs: true }, // Включаем связанные спецификации
+      });
 
-    if (!userTeam) {
-      throw new NotFoundException('Пользователь не состоит в команде.');
+      if (!userTeam) {
+        throw new NotFoundException('Пользователь не состоит в команде.');
+      }
+
+      currentSpecs = userTeam.specs.map((spec) => spec.specId);
     }
-
-    const currentSpecs = userTeam.specs.map((spec) => spec.specId);
 
     // Определяем, какие спецификации нужно добавить
     const specsToAdd = specs.filter((spec) => !currentSpecs.includes(spec));
@@ -208,14 +288,33 @@ export class TeamsService {
     const specsToRemove = currentSpecs.filter((spec) => !specs.includes(spec));
 
     if (specsToRemove.length > 0) {
-      // Удаляем лишние спецификации
-      await this.prisma.specsOnUserTeam.deleteMany({
-        where: {
+      if (curator) {
+        await this.prisma.curatorSpecs.deleteMany({
+          where: {
+            teamId,
+            specId: { in: specsToRemove },
+          },
+        });
+      } else {
+        // Удаляем лишние спецификации
+        await this.prisma.specsOnUserTeam.deleteMany({
+          where: {
+            teamId,
+            userId,
+            specId: { in: specsToRemove },
+          },
+        });
+      }
+    }
+
+    if (curator) {
+      await this.prisma.curatorSpecs.createMany({
+        data: specsToAdd.map((specId) => ({
+          specId,
           teamId,
-          userId,
-          specId: { in: specsToRemove },
-        },
+        })),
       });
+      return;
     }
 
     const data = specsToAdd.map((specId) => ({

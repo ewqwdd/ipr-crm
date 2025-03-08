@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 
 export class SetTeamUserSpecs {
   @IsNotEmpty()
@@ -11,4 +17,8 @@ export class SetTeamUserSpecs {
 
   @IsArray()
   specs: number[];
+
+  @IsBoolean()
+  @IsOptional()
+  curator: boolean;
 }

@@ -3,12 +3,17 @@ import { TeamUser } from '@/entities/team';
 import { universalApi } from '@/shared/api/universalApi';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Checkbox } from '@/shared/ui/Checkbox';
+import { ModalStateType } from './TeamList/TeamList';
+import { SoftButton } from '@/shared/ui/SoftButton';
+import { PencilAltIcon } from '@heroicons/react/outline';
 
 interface UserItemProps {
   user: TeamUser;
   selected?: AddRateDto['specs'];
   onChange?: (teamId: number, specId: number, userId: number) => void;
   teamId: number;
+  setOpen?: (v: ModalStateType) => void;
+  curatorSpecs?: { specId: number; spec: { name: string } }[];
 }
 
 export default function UserItem({
@@ -16,18 +21,26 @@ export default function UserItem({
   selected,
   onChange,
   teamId,
+  setOpen,
+  curatorSpecs,
 }: UserItemProps) {
   const { data } = universalApi.useGetSpecsQuery();
+
+  const userSpecsExist = user.specsOnTeams && user.specsOnTeams?.length > 0;
+  const curatorSpecsExist = curatorSpecs && curatorSpecs?.length > 0;
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <Avatar src={user.avatar} />
         <span>{user.username}</span>
+        <SoftButton className="p-1" onClick={() => setOpen?.({ teamId, user })}>
+          <PencilAltIcon className="size-4" />
+        </SoftButton>
       </div>
-      {user.specsOnTeams?.length > 0 ? (
+      {userSpecsExist || curatorSpecsExist ? (
         <div className="flex flex-col pl-2 bg-violet-50 pt-2 pb-3">
-          {user.specsOnTeams?.map((spec) => (
+          {(user.specsOnTeams || curatorSpecs)?.map((spec) => (
             <Checkbox
               key={spec.specId}
               title={data?.find((s) => s.id === spec.specId)?.name}

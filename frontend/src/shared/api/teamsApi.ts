@@ -74,7 +74,7 @@ const teamsApi = createApi({
     }),
     setTeamSpecs: build.mutation<
       null,
-      { teamId: number; userId: number; specs: number[] }
+      { teamId: number; userId: number; specs: number[]; curator?: boolean }
     >({
       query: (body) => ({
         url: '/teams/specs',

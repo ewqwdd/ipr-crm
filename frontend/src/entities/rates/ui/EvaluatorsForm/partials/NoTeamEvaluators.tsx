@@ -2,6 +2,7 @@ import { usersApi } from '@/shared/api/usersApi';
 import EvaluatorTeam from './EvaluatorTeam';
 import { useMemo } from 'react';
 import { EvaluateUser } from '@/entities/rates/types/types';
+import { Team } from '@/entities/team';
 
 interface EvaluatorTeamProps {
   excluded?: EvaluateUser[];
@@ -21,12 +22,12 @@ export default function NoTeamEvaluators(props: EvaluatorTeamProps) {
 
   if (!users) return null;
 
-  const renderUsers =
+  const renderUsers: Team['users'] =
     users?.map((u) => ({
       user: {
         avatar: u.avatar,
         id: u.id,
-        specsOnTeams: u.Spec?.id ? [{ specId: u.Spec.id }] : [],
+        specsOnTeams: u.Spec?.id ? [{ specId: u.Spec.id, spec: {name: ''} }] : [],
         username: u.username,
       },
     })) ?? [];
@@ -37,6 +38,7 @@ export default function NoTeamEvaluators(props: EvaluatorTeamProps) {
         id: -1,
         name: 'Без команды',
         users: renderUsers,
+        curatorSpecs: [],
       }}
       {...props}
     />

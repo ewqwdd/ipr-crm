@@ -8,10 +8,11 @@ import { Avatar } from '@/shared/ui/Avatar';
 import { Badge } from '@/shared/ui/Badge';
 import AddSpecModal from '@/widgets/AddSpecModal/AddSpecModal';
 import { BriefcaseIcon, PencilIcon, TrashIcon } from '@heroicons/react/outline';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import LeaderDropdown from './LeaderDropdown';
 import { SoftButton } from '@/shared/ui/SoftButton';
+import { SpecOnUser } from '@/entities/team/types/types';
 
 interface UserItemProps {
   userId: number;
@@ -19,14 +20,16 @@ interface UserItemProps {
   specs?: TeamSingle['users'][0]['user']['specsOnTeams'];
   teamId: number;
   setOpenNew?: React.Dispatch<React.SetStateAction<boolean>>;
+  curatorSpecs?: SpecOnUser[];
 }
 
-export default function UserItem({
+export default memo(function UserItem({
   userId,
   leader,
   specs,
   teamId,
   setOpenNew,
+  curatorSpecs,
 }: UserItemProps) {
   const { data } = usersApi.useGetUsersQuery({});
   const [open, setOpen] = useState(false);
@@ -55,8 +58,15 @@ export default function UserItem({
             },
         ),
       );
+    } else if (curatorSpecs) {
+      setSpec(
+        curatorSpecs.map((spec) => ({
+          id: spec.specId,
+          name: specsData?.find((e) => e.id === spec.specId)?.name ?? '',
+        })),
+      );
     }
-  }, [specs]);
+  }, [specs, curatorSpecs]);
 
   return (
     <>
@@ -83,40 +93,41 @@ export default function UserItem({
               </Badge>
             )}
           </div>
-          {!leader && (
-            <div
-              className={cva(
-                'text-gray-500 text-sm flex gap-2 items-center mt-2',
-                {
-                  'animate-pulse pointer-events-none': isSpecsLoading,
-                },
-              )}
+
+          <div
+            className={cva(
+              'text-gray-500 text-sm flex gap-2 items-center mt-2',
+              {
+                'animate-pulse pointer-events-none': isSpecsLoading,
+              },
+            )}
+          >
+            <BriefcaseIcon className="size-4" />
+            <p className="-ml-1 mr-2 font-medium text-sm text-gray-500">
+              Специализация
+            </p>{' '}
+            {(leader ? curatorSpecs : specs)?.map((e, i) => (
+              <Badge key={i} size="sm" border color="gray">
+                {specsData?.find((spec) => spec.id === e.specId)?.name}
+              </Badge>
+            ))}
+            <button
+              className="rounded-full p-1 hover:bg-gray-300 ml-1"
+              onClick={() => setOpen(true)}
             >
-              <BriefcaseIcon className="size-4" />
-              <p className="-ml-1 mr-2 font-medium text-sm text-gray-500">
-                Специализация
-              </p>{' '}
-              {specs?.map((e, i) => (
-                <Badge key={i} size="sm" border color="gray">
-                  {specsData?.find((spec) => spec.id === e.specId)?.name}
-                </Badge>
-              ))}
-              <button
-                className="rounded-full p-1 hover:bg-gray-300 ml-1"
-                onClick={() => setOpen(true)}
-              >
-                <PencilIcon className="size-4 text-indigo-500" />
-              </button>
-            </div>
-          )}
+              <PencilIcon className="size-4 text-indigo-500" />
+            </button>
+          </div>
         </div>
-        <SoftButton
-          size="xs"
-          className="rounded-full p-2"
-          onClick={() => remove({ teamId, userId })}
-        >
-          <TrashIcon className="h-5 w-5 text-red-600" />
-        </SoftButton>
+        {!leader && (
+          <SoftButton
+            size="xs"
+            className="rounded-full p-2"
+            onClick={() => remove({ teamId, userId })}
+          >
+            <TrashIcon className="h-5 w-5 text-red-600" />
+          </SoftButton>
+        )}
       </div>
       <AddSpecModal
         loading={mutateLoading}
@@ -125,9 +136,14 @@ export default function UserItem({
         setOpen={setOpen}
         open={open}
         onSubmit={() =>
-          mutate({ specs: spec.map((e) => e.id), teamId: teamId, userId })
+          mutate({
+            specs: spec.map((e) => e.id),
+            teamId: teamId,
+            userId,
+            curator: leader,
+          })
         }
       />
     </>
   );
-}
+});
