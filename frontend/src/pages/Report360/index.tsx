@@ -16,6 +16,7 @@ import WorkSpace from './WorkSpace';
 import AyeChart from './ayeChart';
 import CommentItem from './comments/CommentItem';
 import { teamsApi } from '@/shared/api/teamsApi';
+import { useAppSelector } from '@/app';
 
 const evaluatorTypes = [
   'CURATOR',
@@ -74,7 +75,7 @@ const Report360: FC = () => {
   const curator = teams?.list.find((team) => team.id === rate?.teamId)?.curator;
   const foundUser = users?.users.find((user) => user.id === rate?.user?.id);
 
-  const { avatar, firstName, lastName, role, id: userId } = foundUser || {};
+  const { avatar, firstName, lastName, id: userId } = foundUser || {};
 
   const indicatorRatings = useCalculateAvgIndicatorRaitings(
     rate?.evaluators,
@@ -83,7 +84,8 @@ const Report360: FC = () => {
   );
 
   const ref = useRef<HTMLDivElement>(null);
-  const isAdmin = role?.name === 'admin';
+  const currentUser = useAppSelector((state) => state.user.user);
+  const isAdmin = currentUser?.role?.name === 'admin';
 
   const neededIndicatorIdsSet = new Set(
     userRates?.map((rate) => rate.indicatorId),
