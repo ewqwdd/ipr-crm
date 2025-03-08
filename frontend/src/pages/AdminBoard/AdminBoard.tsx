@@ -1,8 +1,8 @@
 import { useAppDispatch, useAppSelector } from '@/app';
+import { useLoading } from '@/app/hooks/useLoading';
 import { Board } from '@/entities/ipr';
 import { iprApi } from '@/shared/api/iprApi';
 import { cva } from '@/shared/lib/cva';
-import Dimmer from '@/shared/ui/Dimmer';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useEffect } from 'react';
@@ -12,6 +12,7 @@ export default function AdminBoard() {
   const { userId } = useParams<{ userId: string }>();
   const { data, isLoading } = iprApi.useFindBoardForUserQuery(Number(userId));
   const dispatch = useAppDispatch();
+  const { showLoading, hideLoading } = useLoading();
 
   useEffect(() => {
     return () => {
@@ -26,6 +27,14 @@ export default function AdminBoard() {
     };
   }, [dispatch, data]);
 
+  useEffect(() => {
+    if (isLoading) {
+      showLoading();
+    } else {
+      hideLoading();
+    }
+  }, [isLoading, showLoading, hideLoading]);
+
   const plan = useAppSelector((state) => state.board.plan);
 
   return (
@@ -34,9 +43,7 @@ export default function AdminBoard() {
         <Heading title="Доска задач" description={plan?.user.username} />
         <PrimaryButton>Добавить задачу</PrimaryButton>
       </div>
-      <Dimmer active={isLoading}>
-        {data && <Board userId={Number(userId)} data={data} />}
-      </Dimmer>
+      {data && <Board userId={Number(userId)} data={data} />}
     </div>
   );
 }

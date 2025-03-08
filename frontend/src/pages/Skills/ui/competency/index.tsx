@@ -1,13 +1,13 @@
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { PlusCircleIcon } from '@heroicons/react/outline';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { CompetencyBlock, SkillsSwitcher } from '@/entities/skill';
-import Dimmer from '@/shared/ui/Dimmer';
 import { useModal } from '@/app/hooks/useModal';
 import ArchiveButton from '../ArchiveButton';
 import { CompetencyList } from '@/widgets/CompetencyList';
+import { useLoading } from '@/app/hooks/useLoading';
 
 const Competency: FC = () => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');
@@ -15,6 +15,16 @@ const Competency: FC = () => {
 
   const { data, isFetching } = skillsApi.useGetSkillsQuery();
   const { openModal } = useModal();
+
+  const { showLoading, hideLoading } = useLoading();
+
+  useEffect(() => {
+    if (isFetching) {
+      showLoading();
+    } else {
+      hideLoading();
+    }
+  }, [isFetching, showLoading, hideLoading]);
 
   const searchFn = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -46,11 +56,9 @@ const Competency: FC = () => {
     return filteredData as CompetencyBlock[] | undefined;
   }, [data, skillsFilter, search]);
 
-  console.log(filtereedData);
-
   // TODO: update active state
   return (
-    <Dimmer active={isFetching}>
+    <>
       <div className="flex justify-between gap-4">
         <InputWithLabelLight
           placeholder="Поиск..."
@@ -77,7 +85,7 @@ const Competency: FC = () => {
         openModal={openModal}
         loading={isFetching}
       />
-    </Dimmer>
+    </>
   );
 };
 
