@@ -1,5 +1,71 @@
-import { Task, TaskStatus } from '@/entities/ipr/model/types';
+import { Task, TaskStatus, TaskType } from '@/entities/ipr/model/types';
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
+
+export const groupTasksByType = (tasks?: Task[]) => {
+  if (!tasks || tasks.length === 0) {
+    return {
+      GENERAL: { grouped: [], notAssigned: [] },
+      OBVIOUS: { grouped: [], notAssigned: [] },
+      OTHER: { grouped: [], notAssigned: [] },
+    };
+  }
+
+  return ['GENERAL', 'OBVIOUS', 'OTHER'].reduce(
+    (acc, type) => {
+      const filteredTasks = tasks?.filter((task) => task.type === type) ?? [];
+
+      const groupKey = type === 'GENERAL' ? 'competencyId' : 'indicatorId';
+
+      const groupedByKey = filteredTasks.reduce<Record<number, Task[]>>(
+        (grouped, task) => {
+          const key = task[groupKey];
+          if (key) {
+            if (!grouped[key]) {
+              grouped[key] = [];
+            }
+            grouped[key].push(task);
+          }
+          return grouped;
+        },
+        {},
+      );
+
+      const notAssignedTasks = filteredTasks.filter((task) => !task[groupKey]);
+
+      return {
+        ...acc,
+        [type]: {
+          grouped: Object.values(groupedByKey),
+          notAssigned: notAssignedTasks,
+        },
+      };
+    },
+    {} as Record<
+      'GENERAL' | 'OBVIOUS' | 'OTHER',
+      { grouped: Task[][]; notAssigned: Task[] }
+    >,
+  );
+};
+
+export const getSelectedMaterials = (
+  selectedGeneral: number[],
+  selectedObvious: number[],
+  selectedOther: number[],
+): { selectedMaterials: number[]; selectedType?: TaskType } => {
+  if (selectedGeneral.length > 0) {
+    return { selectedMaterials: selectedGeneral, selectedType: 'GENERAL' };
+  }
+
+  if (selectedObvious.length > 0) {
+    return { selectedMaterials: selectedObvious, selectedType: 'OBVIOUS' };
+  }
+
+  if (selectedOther.length > 0) {
+    return { selectedMaterials: selectedOther, selectedType: 'OTHER' };
+  }
+
+  return { selectedMaterials: [], selectedType: undefined };
+};
 
 export const formatDate = (date?: string | null) => {
   if (!date) return 'Не указано';
@@ -10,15 +76,22 @@ export const formatDate = (date?: string | null) => {
   return `${day}.${month}.${year}`;
 };
 
-export const filterTasksByStatus = (
-  tasksGroup: Task[][],
+export const filterTasksByStatus = <T extends Task[][] | Task[]>(
+  tasksGroup: T,
   filter: TaskStatus | 'ALL',
-) =>
-  tasksGroup
-    .map((tasks) =>
-      tasks.filter((task) => filter === 'ALL' || task.status === filter),
-    )
-    .filter((tasks) => tasks.length > 0);
+) => {
+  if (Array.isArray(tasksGroup[0])) {
+    return (tasksGroup as Task[][])
+      .map((tasks) =>
+        tasks.filter((task) => filter === 'ALL' || task.status === filter),
+      )
+      .filter((tasks) => tasks.length > 0) as T;
+  } else {
+    return (tasksGroup as Task[]).filter(
+      (task) => filter === 'ALL' || task.status === filter,
+    ) as T;
+  }
+};
 
 export const handleFilterChange =
   (setFilter: Dispatch<SetStateAction<TaskStatus>>) =>

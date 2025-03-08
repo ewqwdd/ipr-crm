@@ -4,28 +4,47 @@ import { Radio } from '@/shared/ui/Radio';
 import { Task, TaskStatus } from '@/entities/ipr/model/types';
 import { filterTasksByStatus, handleFilterChange } from './helpers';
 import NoTasks from './NoTasks';
+import { SoftButton } from '@/shared/ui/SoftButton';
+import { PlusCircleIcon } from '@heroicons/react/outline';
 
 interface TaskFilterProps {
-  tasks: Task[][];
+  groupedTasks: Task[][];
+  notAssignedTasks: Task[];
   title: string;
   filterName: string;
-  children: (tasks: Task[][]) => React.ReactNode;
+  createTask: () => void;
+  children: (props: {
+    filteredGroupedTasks: Task[][];
+    filteredNotAssignedTasks: Task[];
+  }) => React.ReactNode;
 }
 
 const TaskFilter: FC<TaskFilterProps> = ({
-  tasks,
+  groupedTasks,
+  notAssignedTasks,
   title,
   filterName,
+  createTask,
   children,
 }) => {
   const [filter, setFilter] = useState<TaskStatus>('ALL' as TaskStatus);
 
   const handleFilter = handleFilterChange(setFilter);
-  const filteredTasks = filterTasksByStatus(tasks, filter);
+  const filteredGroupedTasks = filterTasksByStatus(groupedTasks, filter);
+  const filteredNotAssignedTasks = filterTasksByStatus(
+    notAssignedTasks,
+    filter,
+  );
 
   return (
     <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6 mb-5">
-      <h3 className="font-semibold mb-4">{title}</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">{title}</h3>
+        <SoftButton onClick={createTask}>
+          <PlusCircleIcon className="w-5 h-5 mr-1" />
+          Добавить задачу
+        </SoftButton>
+      </div>
       <div className="flex gap-6 mb-4">
         {filters.map(({ label, key }) => (
           <Radio
@@ -39,8 +58,9 @@ const TaskFilter: FC<TaskFilterProps> = ({
           </Radio>
         ))}
       </div>
-      {children(filteredTasks)}
-      {filteredTasks.length === 0 && <NoTasks />}
+      {children({ filteredGroupedTasks, filteredNotAssignedTasks })}
+      {filteredGroupedTasks.length === 0 &&
+        filteredNotAssignedTasks.length === 0 && <NoTasks />}
     </div>
   );
 };

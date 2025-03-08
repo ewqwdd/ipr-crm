@@ -1,6 +1,6 @@
 import { Modal } from '@/shared/ui/Modal';
 import { CustomCard, TaskStatus } from '../../model/types';
-import Deadline from '../partials/tasks/Deadline';
+import Deadline from '../partials/tasks/TaskItem/Deadline';
 import TaskItem from '../partials/tasks/TaskItem';
 import { addCard, removeCard } from '@caldwell619/react-kanban';
 import { useAppDispatch } from '@/app';

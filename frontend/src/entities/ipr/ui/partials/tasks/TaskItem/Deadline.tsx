@@ -6,7 +6,9 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/outline';
 import { FC, memo, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Calendar } from 'react-multi-date-picker';
-import { formatDate } from './helpers';
+import { formatDate } from '../helpers';
+import { iprApi } from '@/shared/api/iprApi';
+import { useAppDispatch } from '@/app';
 
 type Status = Task['status'];
 
@@ -20,7 +22,7 @@ const DeadlineTooltip: FC<{
   const [date, setDate] = useState<Date | null>(
     defaultValue ? new Date(defaultValue) : null,
   );
-  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setDate(defaultValue ? new Date(defaultValue) : null);
@@ -39,18 +41,16 @@ const DeadlineTooltip: FC<{
       toast.error('Измени дедлайн');
       return;
     }
-    setLoading(true);
     $api
       .post('/ipr/task/deadline', { id, deadline: date?.toISOString() })
       .then(() => {
-        setLoading(false);
         const newDeadline = date?.toISOString() ?? null;
         onUpdate(newDeadline);
         closeModal();
+        dispatch(iprApi.util.invalidateTags(['ipr']));
         toast.success('Дедлайн успешно обновлен');
       })
       .catch(() => {
-        setLoading(false);
         closeModal();
         toast.error('Ошибка при обновлении дедлайна');
       });
@@ -63,7 +63,6 @@ const DeadlineTooltip: FC<{
         {
           visible: isOpen,
           hidden: !isOpen,
-          'animate-pulse pointer-events-none': !!loading,
         },
       )}
       onClick={closeHandler}
@@ -99,9 +98,9 @@ const Deadline: FC<{
   className?: string;
   onUdpate?: (newDeadline: string | null) => void;
 }> = ({ deadline: initialDeadline, status, id, className, onUdpate }) => {
-  const [deadline, setDeadline] = useState<string | null>(initialDeadline);
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  const dispatch = useAppDispatch();
 
   const openModal = () => {
     setIsOpen(true);
@@ -111,36 +110,31 @@ const Deadline: FC<{
   }, []);
 
   if (status === 'COMPLETED') {
-    return <div className="text-sm text-gray-500">{formatDate(deadline)}</div>;
+    return (
+      <div className="text-sm text-gray-500">{formatDate(initialDeadline)}</div>
+    );
   }
 
   const deleteDeadline = () => {
-    setLoading(true);
     $api
       .post('/ipr/task/deadline', { id, deadline: null })
       .then(() => {
-        setLoading(false);
+        dispatch(iprApi.util.invalidateTags(['ipr']));
         updateDeadline(null);
         toast.success('Дедлайн успешно удален');
       })
       .catch(() => {
-        setLoading(false);
         toast.error('Ошибка при удалении дедлайна');
       });
   };
 
   const updateDeadline = (newDeadline: string | null) => {
-    setDeadline(newDeadline);
     onUdpate?.(newDeadline);
   };
 
-  return deadline ? (
-    <div
-      className={cva('flex gap-2 items-center', className, {
-        'animate-pulse pointer-events-none': !!loading,
-      })}
-    >
-      <div>{formatDate(deadline)}</div>
+  return initialDeadline ? (
+    <div className={cva('flex gap-2 items-center', className)}>
+      <div>{formatDate(initialDeadline)}</div>
       <SoftButton className="rounded-full p-2" size="xs" onClick={openModal}>
         <PencilIcon className="size-5" />
       </SoftButton>
@@ -154,7 +148,7 @@ const Deadline: FC<{
       <DeadlineTooltip
         closeModal={closeModal}
         isOpen={isOpen}
-        defaultValue={deadline}
+        defaultValue={initialDeadline}
         id={id}
         onUpdate={updateDeadline}
       />

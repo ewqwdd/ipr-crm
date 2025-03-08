@@ -1,5 +1,5 @@
 import { Ipr, TaskPriority, TaskType } from '@/entities/ipr';
-import { PrioritySelector } from '@/entities/ipr/ui/partials/tasks/PrioritySelector';
+import { PrioritySelector } from '@/entities/ipr/ui/partials/tasks/TaskItem/PrioritySelector';
 import { MaterialType } from '@/entities/material';
 import AddMaterialType from '@/entities/material/ui/AddMaterialType';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
@@ -11,11 +11,11 @@ import SelectMaterialWrapper from './SelectMaterialWrapper';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { Competency, Indicator } from '@/entities/skill';
 import DatePickerLight from '@/shared/ui/DatePickerLight';
-import { iprApi } from '@/shared/api/iprApi';
+import { AddTaskDto, iprApi } from '@/shared/api/iprApi';
 import toast from 'react-hot-toast';
 
 type AddTaskModalProps = {
-  type: 'COMPETENCY' | 'INDICATOR';
+  type?: 'COMPETENCY' | 'INDICATOR';
   isOpen: boolean;
   modalData: unknown;
   closeModal: () => void;
@@ -46,9 +46,9 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
   const { competencyId, indicatorId, planId, taskType, userId, skillType } =
     modalData as ModalDataType;
 
-  const [materialWrapperId, setMaterialWrapperId] = useState<
-    number | undefined
-  >(competencyId || indicatorId);
+  const [materialWrapperId, setMaterialWrapperId] = useState<number>(
+    competencyId || indicatorId || -1,
+  );
   const [priority, setPriority] = useState<TaskPriority>('LOW');
   const [materialType, setMaterialType] = useState<MaterialType>('VIDEO');
   const [date, setDate] = useState<Date>(new Date());
@@ -61,7 +61,6 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
     const competencies: Competency[] = [];
     const indicators: Indicator[] = [];
     skills?.forEach((skill) => {
-      console.log('skill => ', skill);
       if (!skillType || skillType === skill.type) {
         skill.competencies.forEach((competency) => {
           competencies.push(competency);
@@ -85,13 +84,13 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
     setPriority(priority);
   }, []);
 
-  const selectMaterialWrapper = (id: number) => {
+  const selectMaterialWrapper = useCallback((id: number) => {
     setMaterialWrapperId(id);
-  };
+  }, []);
 
-  const onChangeDate = (date: Date) => {
+  const onChangeDate = useCallback((date: Date) => {
     setDate(date);
-  };
+  }, []);
 
   const validate = () => {
     const newErrors: ErorrsType = {};
@@ -102,9 +101,11 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
 
   const onSubmit = () => {
     if (!validate()) return;
-    const payload = {
-      [type === 'COMPETENCY' ? 'competencyId' : 'indicatorId']:
-        materialWrapperId,
+    const payload: AddTaskDto = {
+      ...(materialWrapperId > 0 && {
+        [type === 'COMPETENCY' ? 'competencyId' : 'indicatorId']:
+          materialWrapperId,
+      }),
       name: title,
       url: link,
       contentType: materialType,
@@ -114,16 +115,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
       taskType,
       userId,
     };
-    switch (type) {
-      case 'COMPETENCY':
-        mutate(payload);
-        break;
-      case 'INDICATOR':
-        mutate(payload);
-        break;
-      default:
-        break;
-    }
+    mutate(payload);
   };
 
   const materialWrapperData = type === 'COMPETENCY' ? competencies : indicators;
@@ -159,11 +151,16 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
           required
           error={errors.title}
         />
-        <SelectMaterialWrapper
-          data={materialWrapperData}
-          selected={materialWrapperId}
-          select={selectMaterialWrapper}
-        />
+        <div>
+          <p className="block text-sm font-medium text-gray-700 mb-1">
+            {type === 'COMPETENCY' ? 'Компетенция' : 'Индикатор'}
+          </p>
+          <SelectMaterialWrapper
+            data={materialWrapperData}
+            selected={materialWrapperId}
+            select={selectMaterialWrapper}
+          />
+        </div>
         <DatePickerLight
           value={date}
           onChange={onChangeDate}

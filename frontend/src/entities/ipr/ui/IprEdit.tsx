@@ -3,7 +3,7 @@ import Dimmer from '@/shared/ui/Dimmer';
 import IprHeading from './partials/IprHeading';
 import IprDetails from './partials/IprDetails';
 import IprGoal from './partials/IprGoal';
-import Tasks from './partials/tasks';
+import TasksSection from './partials/tasks';
 import { useEffect } from 'react';
 import { useAppDispatch } from '@/app';
 import { iprApi } from '@/shared/api/iprApi';
@@ -30,7 +30,7 @@ export default function IprEdit({ ipr, loading }: IprEditProps) {
         <IprHeading ipr={ipr} />
         <IprDetails ipr={ipr} />
         <IprGoal ipr={ipr} />
-        <Tasks
+        <TasksSection
           tasks={ipr?.tasks}
           userId={ipr?.userId}
           planId={ipr?.id}
