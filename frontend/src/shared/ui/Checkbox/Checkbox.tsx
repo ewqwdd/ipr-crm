@@ -1,8 +1,8 @@
 import { cva } from '@/shared/lib/cva';
-import { HTMLAttributes, useId } from 'react';
+import { HTMLAttributes, ReactNode, useId } from 'react';
 
-interface CheckboxProps extends HTMLAttributes<HTMLInputElement> {
-  title?: string;
+interface CheckboxProps extends Omit<HTMLAttributes<HTMLInputElement>, 'title'> {
+  title?: ReactNode;
   description?: string;
   name?: string;
   checked?: boolean;

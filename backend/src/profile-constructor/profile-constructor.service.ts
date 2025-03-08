@@ -7,6 +7,7 @@ import { createMaterialCompetencyDto } from './dto/create-material-competency.dt
 import { createMaterialIndicatorDto } from './dto/create-material-indicator.dto';
 import { AddBlockToSpecDto } from './dto/add-block-to-spec.dto';
 import { EditMaterialDto } from './dto/edit-material.dto';
+import { HintsDto } from './dto/hints.dto';
 
 @Injectable()
 export class ProfileConstructorService {
@@ -33,9 +34,18 @@ export class ProfileConstructorService {
                   },
                 },
               },
+              orderBy: {
+                id: 'asc',
+              },
             },
           },
+          orderBy: {
+            id: 'asc',
+          },
         },
+      },
+      orderBy: {
+        id: 'asc',
       },
     });
   }
@@ -82,6 +92,11 @@ export class ProfileConstructorService {
         },
         boundary: data.boundary,
         description: data.description,
+        hint1: data.hints?.[1],
+        hint2: data.hints?.[2],
+        hint3: data.hints?.[3],
+        hint4: data.hints?.[4],
+        hint5: data.hints?.[5],
       },
     });
   }
@@ -174,16 +189,28 @@ export class ProfileConstructorService {
     });
   }
 
-  async editIndicator(id: number, name?: string, boundary?: number) {
-    return this.prismaService.indicator.update({
+  async editIndicator(
+    id: number,
+    name?: string,
+    boundary?: number,
+    hints?: HintsDto,
+  ) {
+    const indicator = await this.prismaService.indicator.update({
       where: {
         id,
       },
       data: {
         name,
         boundary,
+        hint1: hints?.[1],
+        hint2: hints?.[2],
+        hint3: hints?.[3],
+        hint4: hints?.[4],
+        hint5: hints?.[5],
       },
     });
+
+    return indicator;
   }
 
   async addBlockToSpec({ specId, blockIds }: AddBlockToSpecDto) {
@@ -310,8 +337,6 @@ export class ProfileConstructorService {
           },
         });
 
-        console.log(competencyMaterials, Array.from(competencyIdMap.keys()));
-
         await tx.competencyMaterial.createMany({
           data: competencyMaterials.map((material) => ({
             materialId: material.materialId,
@@ -330,11 +355,14 @@ export class ProfileConstructorService {
               boundary: indicator.boundary,
               archived: false,
               id: indicator.id,
+              hint1: indicator.hint1,
+              hint2: indicator.hint2,
+              hint3: indicator.hint3,
+              hint4: indicator.hint4,
+              hint5: indicator.hint5,
             })),
           ),
         );
-
-        console.log('newIndicatorsData', newIndicatorsData);
 
         // Создаём индикаторы
         if (newIndicatorsData.length > 0) {
@@ -348,8 +376,6 @@ export class ProfileConstructorService {
         const createdIndicators = await tx.indicator.findMany({
           where: { archived: false },
         });
-
-        console.log(createdIndicators);
 
         // Словарь соответствий старых и новых индикаторов
         const indicatorIdMap = new Map(

@@ -1,7 +1,7 @@
 import { teamsApi } from '@/shared/api/teamsApi';
 import { cva } from '@/shared/lib/cva';
 import { UsersIcon } from '@heroicons/react/outline';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { TeamItemIds } from './EvaluatorsTab';
 import { universalApi } from '@/shared/api/universalApi';
 import EvaluatorsItem from './EvaluatorsItem';
@@ -11,7 +11,7 @@ interface TeamItemProps {
   teamId: TeamItemIds;
 }
 
-export default function TeamItem({ teamId }: TeamItemProps) {
+export default memo(function TeamItem({ teamId }: TeamItemProps) {
   const { data, isFetching } = teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
@@ -83,4 +83,4 @@ export default function TeamItem({ teamId }: TeamItemProps) {
       </div>
     </div>
   );
-}
+});

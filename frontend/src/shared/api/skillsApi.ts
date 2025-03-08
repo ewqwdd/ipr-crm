@@ -6,6 +6,7 @@ import {
   CompetencyBlock,
   Version,
 } from '@/entities/skill';
+import { Hints } from '@/entities/skill/types/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const skillsApi = createApi({
@@ -83,12 +84,12 @@ const skillsApi = createApi({
     }),
     editIndicator: build.mutation<
       void,
-      { id: number; name: string; boundary: number }
+      { id: number; name: string; boundary: number; hints?: Hints }
     >({
-      query: ({ id, name, boundary }) => ({
+      query: ({ id, name, boundary, hints }) => ({
         url: `/indicator/${id}`,
         method: 'PUT',
-        body: { name, boundary },
+        body: { name, boundary, hints },
       }),
       invalidatesTags: ['Skills'],
     }),

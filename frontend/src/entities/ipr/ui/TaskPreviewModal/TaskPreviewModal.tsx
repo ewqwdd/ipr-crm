@@ -67,7 +67,7 @@ export default function TaskPreviewModal({
         <h3>{task.material?.name}</h3>
 
         <a
-          href={task.material?.url}
+          href={task.material?.url ? task.material?.url : undefined}
           target="_blank"
           rel="noreferrer"
           className="text-indigo-600 font-medium flex gap-2 items-center text-sm mb-6"

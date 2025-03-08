@@ -27,7 +27,9 @@ export default function NoTeamEvaluators(props: EvaluatorTeamProps) {
       user: {
         avatar: u.avatar,
         id: u.id,
-        specsOnTeams: u.Spec?.id ? [{ specId: u.Spec.id, spec: {name: ''} }] : [],
+        specsOnTeams: u.Spec?.id
+          ? [{ specId: u.Spec.id, spec: { name: '' } }]
+          : [],
         username: u.username,
       },
     })) ?? [];

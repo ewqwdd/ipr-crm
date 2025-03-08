@@ -57,6 +57,7 @@ const rate360Api = createApi({
     findForUser: build.query<Rate, number>({
       query: (id) => `/rate360/rate/${id}`,
       providesTags: (_, __, id) => [{ type: 'Rate360', id }],
+      keepUnusedDataFor: 60 * 3 * 1000,
     }),
     assesment: build.mutation<
       void,

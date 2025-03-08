@@ -10,6 +10,7 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { tranformAssesment } from '@/shared/lib/transformAssesment';
+import Dimmer from '@/shared/ui/Dimmer';
 
 export default function Rate360Assesment() {
   const { id } = useParams();
@@ -83,29 +84,30 @@ export default function Rate360Assesment() {
   if (!id) return null;
 
   return (
-    <div
-      className={cva('flex flex-col gap-4 h-full max-h-full pb-6', {
-        'animate-pulse pointer-events-none':
-          isFetching || skillsFetching || mutateAssesmentLoading,
-        invisible: isFetching || skillsFetching,
-      })}
-    >
-      <TabsHeader blocks={blocks} />
-      {currentBlock && (
-        <Assesment
-          comments={comments}
-          setComments={setComments}
-          assesment={assessment}
-          setAssesment={setAssessment}
-          block={currentBlock}
-        />
-      )}
-      <div className="flex justify-between px-6">
-        <Link to={'/progress'}>
-          <SecondaryButton>Назад</SecondaryButton>
-        </Link>
-        <PrimaryButton onClick={() => onSave()}>Сохранить</PrimaryButton>
+    <Dimmer active={isFetching || skillsFetching}>
+      <div
+        className={cva('flex flex-col gap-4 h-full max-h-full pb-6', {
+          'animate-pulse pointer-events-none': mutateAssesmentLoading,
+          invisible: isFetching || skillsFetching,
+        })}
+      >
+        <TabsHeader blocks={blocks} />
+        {currentBlock && (
+          <Assesment
+            comments={comments}
+            setComments={setComments}
+            assesment={assessment}
+            setAssesment={setAssessment}
+            block={currentBlock}
+          />
+        )}
+        <div className="flex justify-between px-6">
+          <Link to={'/progress'}>
+            <SecondaryButton>Назад</SecondaryButton>
+          </Link>
+          <PrimaryButton onClick={() => onSave()}>Сохранить</PrimaryButton>
+        </div>
       </div>
-    </div>
+    </Dimmer>
   );
 }

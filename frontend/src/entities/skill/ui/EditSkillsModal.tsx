@@ -4,12 +4,21 @@ import { CompetencyType } from '../types/types';
 import { useState } from 'react';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import toast from 'react-hot-toast';
+import { EditHints } from './EditHints';
+import { hintsDescription } from '../config/hints';
 
 interface EditModalData {
   type: CompetencyType;
   id: number;
   name: string;
   boundary?: number;
+  hints?: {
+    hint1: string;
+    hint2: string;
+    hint3: string;
+    hint4: string;
+    hint5: string;
+  };
 }
 
 interface EditModalProps {
@@ -24,9 +33,22 @@ export default function EditSkillsModal({
   modalData,
 }: EditModalProps) {
   const { competency, competencyBlock, indicator } = useSkillsService();
-  const { id, name, type, boundary: boundaryInit } = modalData as EditModalData;
+  const {
+    id,
+    name,
+    type,
+    boundary: boundaryInit,
+    hints: hintsInit,
+  } = modalData as EditModalData;
   const [value, setValue] = useState(name);
   const [boundary, setBoundary] = useState<number>(boundaryInit ?? 3);
+  const [hints, setHints] = useState<string[]>([
+    hintsInit?.hint1 ?? hintsDescription[1],
+    hintsInit?.hint2 ?? hintsDescription[2],
+    hintsInit?.hint3 ?? hintsDescription[3],
+    hintsInit?.hint4 ?? hintsDescription[4],
+    hintsInit?.hint5 ?? hintsDescription[5],
+  ]);
 
   const editCompetency = competency.edit[0];
   const editCompetencyBlock = competencyBlock.edit[0];
@@ -47,7 +69,18 @@ export default function EditSkillsModal({
         editCompetencyBlock({ id, name: value });
         break;
       case CompetencyType.INDICATOR:
-        editIndicator({ id, name: value, boundary });
+        editIndicator({
+          id,
+          name: value,
+          boundary,
+          hints: {
+            1: hints[0],
+            2: hints[1],
+            3: hints[2],
+            4: hints[3],
+            5: hints[4],
+          },
+        });
         break;
     }
     closeModal();
@@ -84,6 +117,7 @@ export default function EditSkillsModal({
               step={1}
               onChange={(e) => setBoundary(parseInt(e.target.value))}
             />
+            <EditHints data={hints} setData={setHints} />
           </>
         )}
       </div>
