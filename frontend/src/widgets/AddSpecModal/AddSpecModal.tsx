@@ -7,7 +7,7 @@ import { SearchSelectMultiple } from '@/shared/ui/SearchSelectMultiple';
 interface AddSpecModalProps {
   open?: boolean;
   name?: string;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: (v: boolean) => void;
   value: SelectOption[];
   setValue: React.Dispatch<React.SetStateAction<SelectOption[]>>;
   onSubmit?: () => void;

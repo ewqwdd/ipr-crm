@@ -143,6 +143,7 @@ model Spec {
   growthPlans      IndividualGrowthPlan[]
   usersTeams       SpecsOnUserTeam[]
   competencyBlocks CompetencyBlock[]
+  curatorSpecs            CuratorSpecs[]
 }
 
 // назначенные тесты юзеру
@@ -314,6 +315,18 @@ model Team {
   curator      User?      @relation(fields: [curatorId], references: [id])
   createdAt    DateTime   @default(now())
   Rate360      Rate360[]
+  curatorSpecs CuratorSpecs[]
+}
+
+model CuratorSpecs {
+  specId Int
+  teamId Int
+
+  spec Spec @relation(fields: [specId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([specId, teamId])
+
 }
 
 model UserTeam {

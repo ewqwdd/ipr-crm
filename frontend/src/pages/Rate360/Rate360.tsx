@@ -20,7 +20,6 @@ export default function Rate360() {
     setOpen(false);
     dispatch(ratesActions.clear());
   };
-  console.log(selected);
 
   return (
     <Dimmer active={isLoading}>

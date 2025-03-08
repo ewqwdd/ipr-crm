@@ -82,6 +82,7 @@ export default function TeamPage() {
               leader
               userId={data?.curator?.id}
               setOpenNew={setOpenNewCurator}
+              curatorSpecs={data.curatorSpecs}
             />
           )}
           {filtered?.map((user) => (

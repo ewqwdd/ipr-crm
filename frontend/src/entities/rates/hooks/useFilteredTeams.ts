@@ -27,7 +27,7 @@ export const useFilteredTeams = ({
               ? t.curator
               : undefined,
             users: t.users?.filter((u) =>
-              u.user.specsOnTeams.find((s) =>
+              u.user.specsOnTeams?.find((s) =>
                 specs.find((sp) => sp.value === s.specId),
               ),
             ),

@@ -3,17 +3,20 @@ import { Team } from '@/entities/team';
 import { Accordion } from '@/shared/ui/Accordion';
 import { UsersIcon } from '@heroicons/react/outline';
 import UserItem from '../UserItem';
+import { ModalStateType } from './TeamList';
 
 interface TeamListItemProps {
   team: Team;
   selectedSpecs: AddRateDto[];
   onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
+  setOpen?: (v: ModalStateType) => void;
 }
 
 export default function TeamListItem({
   onChangeSpecs,
   selectedSpecs,
   team,
+  setOpen,
 }: TeamListItemProps) {
   const specs = selectedSpecs.find((s) => s.teamId === team.id)?.specs ?? [];
   return (
@@ -34,7 +37,15 @@ export default function TeamListItem({
               user={team.curator}
               selected={specs}
               teamId={team.id}
+              setOpen={(v: ModalStateType) =>
+                setOpen?.({
+                  ...v,
+                  curator: true,
+                  user: { ...team.curator!, specsOnTeams: team.curatorSpecs },
+                })
+              }
               onChange={onChangeSpecs}
+              curatorSpecs={team.curatorSpecs}
             />
           )}
           {team.users?.map((user) => (
@@ -43,6 +54,7 @@ export default function TeamListItem({
               key={user.user.id}
               selected={specs}
               teamId={team.id}
+              setOpen={setOpen}
               onChange={onChangeSpecs}
             />
           ))}

@@ -1,8 +1,10 @@
+export type SpecOnUser = { specId: number; spec: { name: string } };
+
 export type TeamUser = {
   id: number;
   username: string;
   avatar?: string;
-  specsOnTeams: { specId: number }[];
+  specsOnTeams?: SpecOnUser[];
 };
 
 interface Team {
@@ -13,6 +15,7 @@ interface Team {
   subTeams?: Team[];
   users?: { user: TeamUser }[];
   curator?: TeamUser;
+  curatorSpecs: SpecOnUser[];
 }
 
 interface CreateTeamDto {
