@@ -19,6 +19,7 @@ export class createMaterialIndicatorDto {
   @IsEnum(['VIDEO', 'BOOK', 'COURSE', 'ARTICLE'])
   contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
 
+  @IsOptional()
   @IsString()
   url?: string;
 
