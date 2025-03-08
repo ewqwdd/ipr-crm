@@ -1,5 +1,5 @@
 import { Ipr, Task } from '@/entities/ipr/model/types';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import TaskListNotAssignedHeader from './TaskListNotAssignedHeader';
 import { TaskListHeader } from './TaskListHeader';
 import TaskListTable from '../TaskListTable';
@@ -68,4 +68,4 @@ const TaskList: FC<TaskListProps> = ({
   );
 };
 
-export default TaskList;
+export default memo(TaskList);

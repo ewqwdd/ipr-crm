@@ -4,8 +4,9 @@ import { iprApi } from '@/shared/api/iprApi';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { SelectLight } from '@/shared/ui/SelectLight';
-import { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, FC } from 'react';
 import toast from 'react-hot-toast';
+import { taskPriorityOptions } from '../constants';
 
 type PrioritySelectorProps = {
   priority: TaskPriority;
@@ -16,12 +17,6 @@ type PrioritySelectorProps = {
   userId?: number;
   onChange?: (priority: TaskPriority) => void;
 };
-
-const priorityOptions = [
-  { value: 'HIGH', label: 'Высокая' },
-  { value: 'MEDIUM', label: 'Средняя' },
-  { value: 'LOW', label: 'Низкая' },
-];
 
 export const PrioritySelector: FC<PrioritySelectorProps> = ({
   priority: priority_,
@@ -34,7 +29,6 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
 }) => {
   const label = isLabel ? 'Важность' : undefined;
 
-  const [priority, setPriority] = useState<TaskPriority>(priority_);
   const dispatch = useAppDispatch();
 
   const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -42,26 +36,24 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
       onChange_(e.target.value as TaskPriority);
       return;
     }
-    const prev = priority;
-    setPriority(e.target.value as TaskPriority);
 
     $api
       .post(`/ipr/${id}/priority`, { priority: e.target.value })
-      .catch(() => {
-        setPriority(prev);
-        toast.error('Не удалось обновить приоритет');
-      })
       .then(() => {
         dispatch(iprApi.util.invalidateTags([{ type: 'board', id: userId }]));
+        dispatch(iprApi.util.invalidateTags(['ipr']));
       })
       .then(() => {
         toast.success('Приоритет успешно обновлен');
+      })
+      .catch(() => {
+        toast.error('Не удалось обновить приоритет');
       });
   };
 
   return (
     <SelectLight
-      value={onChange_ ? priority_ : priority}
+      value={priority_}
       onChange={onChange}
       className={cva('basic-multi-select', {
         'animate-pulse': !!isLoading,
@@ -69,7 +61,7 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
       label={label}
       required={required}
     >
-      {priorityOptions.map(({ value, label }) => (
+      {taskPriorityOptions.map(({ value, label }) => (
         <option key={value} value={value}>
           {label}
         </option>

@@ -1,5 +1,5 @@
 import { Ipr, TaskPriority, TaskType } from '@/entities/ipr';
-import { PrioritySelector } from '@/entities/ipr/ui/partials/tasks/PrioritySelector';
+import { PrioritySelector } from '@/entities/ipr/ui/partials/tasks/TaskItem/PrioritySelector';
 import { MaterialType } from '@/entities/material';
 import AddMaterialType from '@/entities/material/ui/AddMaterialType';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';

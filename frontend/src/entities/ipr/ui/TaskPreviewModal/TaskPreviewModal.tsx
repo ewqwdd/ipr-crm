@@ -1,6 +1,6 @@
 import { Modal } from '@/shared/ui/Modal';
 import { CustomCard, TaskStatus } from '../../model/types';
-import Deadline from '../partials/tasks/Deadline';
+import Deadline from '../partials/tasks/TaskItem/Deadline';
 import TaskItem from '../partials/tasks/TaskItem';
 import { addCard, removeCard } from '@caldwell619/react-kanban';
 import { useAppDispatch } from '@/app';
@@ -38,7 +38,12 @@ export default function TaskPreviewModal({
   };
 
   const updateDeadline = (newDeadline: string | null) => {
-    dispatch(boardActions.updateCard({ card: { ...card, task: {...task, deadline: newDeadline} }, column: task.status }));
+    dispatch(
+      boardActions.updateCard({
+        card: { ...card, task: { ...task, deadline: newDeadline } },
+        column: task.status,
+      }),
+    );
   };
 
   return (
