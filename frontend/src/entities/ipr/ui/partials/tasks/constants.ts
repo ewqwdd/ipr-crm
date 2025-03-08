@@ -7,3 +7,9 @@ export const filters = [
     key: status,
   })),
 ];
+
+export const taskTypeMap = {
+  GENERAL: 'ADD_TASK_COMPETENCY',
+  OBVIOUS: 'ADD_TASK_INDICATOR',
+  OTHER: 'ADD_TASK_INDICATOR',
+};

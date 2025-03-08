@@ -1,7 +1,7 @@
 import { Ipr, TaskPriority, TaskType } from '@/entities/ipr';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-interface AddTaskDto {
+export interface AddTaskDto {
   planId: number;
   name: string;
   competencyId?: number;

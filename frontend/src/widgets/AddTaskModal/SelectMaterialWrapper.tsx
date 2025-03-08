@@ -4,7 +4,7 @@ import Select, { SingleValue } from 'react-select';
 
 type SelectMaterialWrapperProps = {
   data: Competency[] | Indicator[];
-  selected?: number;
+  selected: number;
   select: (wrapperId: number) => void;
 };
 
@@ -18,11 +18,15 @@ const SelectMaterialWrapper: FC<SelectMaterialWrapperProps> = ({
   selected,
   select,
 }) => {
-  const options =
-    data?.map((item) => ({
-      value: item.id,
-      label: item.name,
-    })) ?? [];
+  const options = data?.length
+    ? [
+        ...data.map((item) => ({
+          value: item.id,
+          label: item.name,
+        })),
+        { value: -1, label: 'Не выбрано' },
+      ]
+    : [];
 
   const selectHendler = (newValue: SingleValue<OptionType>) => {
     if (newValue) {
@@ -35,10 +39,13 @@ const SelectMaterialWrapper: FC<SelectMaterialWrapperProps> = ({
       name="colors"
       onChange={selectHendler}
       options={options}
-      value={options.find((option) => option.value === selected)}
-      //   className={cva('basic-multi-select', {
-      //     'animate-pulse': !!loading,
-      //   })}
+      value={
+        options.find((option) => option.value === selected) ?? {
+          value: -1,
+          label: 'Не выбрано',
+        }
+      }
+      // TODO: ADD LOADING
       classNamePrefix="select"
     />
   );

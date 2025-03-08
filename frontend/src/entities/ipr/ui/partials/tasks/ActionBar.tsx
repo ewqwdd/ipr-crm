@@ -10,7 +10,7 @@ type ActionBarProps = {
   resetSelection: () => void;
   userId: number;
   planId: number;
-  type: TaskType;
+  type?: TaskType;
 };
 
 const errorHandling = (

@@ -1,9 +1,15 @@
-import { FC, memo, useEffect, useMemo, useState } from 'react';
-import { Ipr, Task, TaskType } from '@/entities/ipr/model/types';
+import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Ipr, Task } from '@/entities/ipr/model/types';
 import ActionBar from './ActionBar';
-import { TaskList } from './TaskList';
-import { toggleTaskSelection } from './helpers';
+import {
+  getSelectedMaterials,
+  groupTasksByType,
+  toggleTaskSelection,
+} from './helpers';
 import TaskFilter from './TaskFilter';
+import { useModal } from '@/app/hooks/useModal';
+import TaskList from './TaskList/TaskList';
+import { taskTypeMap } from './constants';
 
 type TasksProps = {
   tasks?: Task[];
@@ -11,29 +17,6 @@ type TasksProps = {
   userId?: number;
   planId?: number;
   skillType?: Ipr['skillType'];
-};
-
-const costyl = (
-  selectedGeneral: number[],
-  selectedObvious: number[],
-  selectedOther: number[],
-) => {
-  const selectedMaterials =
-    selectedGeneral.length > 0
-      ? selectedGeneral
-      : selectedObvious.length > 0
-        ? selectedObvious
-        : selectedOther.length > 0
-          ? selectedOther
-          : [];
-  const selectedType: TaskType =
-    selectedGeneral.length > 0
-      ? 'GENERAL'
-      : selectedObvious.length > 0
-        ? 'OBVIOUS'
-        : 'OTHER';
-
-  return { selectedMaterials, selectedType };
 };
 
 const Tasks: FC<TasksProps> = ({
@@ -47,37 +30,15 @@ const Tasks: FC<TasksProps> = ({
   const [selectedObvious, setSelectedObvious] = useState<number[]>([]);
   const [selectedOther, setSelectedOther] = useState<number[]>([]);
 
+  const { openModal } = useModal();
+
   const selectGeneralTask = toggleTaskSelection(setSelectedGeneral);
   const selectObviousTask = toggleTaskSelection(setSelectedObvious);
   const selectOtherTask = toggleTaskSelection(setSelectedOther);
 
-  const groupedTasks = useMemo(() => {
-    return ['GENERAL', 'OBVIOUS', 'OTHER'].reduce(
-      (acc, type) => {
-        const filteredTasks = tasks?.filter((task) => task.type === type) ?? [];
+  const groupedTasks = useMemo(() => groupTasksByType(tasks), [tasks]);
 
-        const groupKey = type === 'GENERAL' ? 'competencyId' : 'indicatorId';
-
-        const groupedByKey = Object.values(
-          filteredTasks.reduce<Record<number, Task[]>>((acc, task) => {
-            const key = task[groupKey];
-            if (key) {
-              if (!acc[key]) {
-                acc[key] = [];
-              }
-              acc[key].push(task);
-            }
-            return acc;
-          }, {}),
-        );
-
-        return { ...acc, [type]: groupedByKey };
-      },
-      {} as Record<'GENERAL' | 'OBVIOUS' | 'OTHER', Task[][]>,
-    );
-  }, [tasks]);
-
-  const { selectedMaterials, selectedType } = costyl(
+  const { selectedMaterials, selectedType } = getSelectedMaterials(
     selectedGeneral,
     selectedObvious,
     selectedOther,
@@ -99,82 +60,161 @@ const Tasks: FC<TasksProps> = ({
     resetSelection();
   }, [tasks]);
 
+  const createTask = useCallback(
+    (taskType: Task['type']) => {
+      openModal(taskTypeMap[taskType], {
+        planId,
+        userId,
+        skillType,
+        taskType,
+      });
+    },
+    [openModal, planId, userId, skillType],
+  );
+
+  const createTask_GENERAL = useCallback(
+    () => createTask('GENERAL'),
+    [createTask],
+  );
+  const createTask_OBVIOUS = useCallback(
+    () => createTask('OBVIOUS'),
+    [createTask],
+  );
+  const createTask_OTHER = useCallback(() => createTask('OTHER'), [createTask]);
+
   return (
     <div>
       <TaskFilter
-        tasks={groupedTasks.GENERAL}
+        groupedTasks={groupedTasks.GENERAL.grouped}
+        notAssignedTasks={groupedTasks.GENERAL.notAssigned}
         filterName={'general'}
         title="Общие материалы и задачи для развития"
+        createTask={createTask_GENERAL}
       >
-        {(filteredTasks) =>
-          filteredTasks.map((tasks) => (
-            <TaskList
-              type="COMPETENCY"
-              key={tasks[0]?.competencyId}
-              competencyName={tasks[0]?.competency?.name}
-              tasks={tasks}
-              disableSelect={
-                selectedObvious.length > 0 || selectedOther.length > 0
-              }
-              selected={selectedGeneral}
-              select={selectGeneralTask}
-              taskType={'GENERAL'}
-              planId={planId}
-              userId={userId}
-              skillType={skillType}
-            />
-          ))
-        }
+        {({ filteredGroupedTasks, filteredNotAssignedTasks }) => {
+          return (
+            <>
+              {filteredGroupedTasks.map((tasks) => (
+                <TaskList
+                  key={tasks[0].competencyId}
+                  type="COMPETENCY"
+                  taskType={'GENERAL'}
+                  selected={selectedGeneral}
+                  select={selectGeneralTask}
+                  disableSelect={
+                    selectedObvious.length > 0 || selectedOther.length > 0
+                  }
+                  {...{
+                    tasks,
+                    planId,
+                    userId,
+                    skillType,
+                  }}
+                />
+              ))}
+              <TaskList
+                isNotAssigned={true}
+                type="COMPETENCY"
+                taskType="GENERAL"
+                tasks={filteredNotAssignedTasks}
+                selected={selectedGeneral}
+                select={selectGeneralTask}
+                disableSelect={
+                  selectedObvious.length > 0 || selectedOther.length > 0
+                }
+                userId={userId}
+              />
+            </>
+          );
+        }}
       </TaskFilter>
       <TaskFilter
-        tasks={groupedTasks.OBVIOUS}
+        groupedTasks={groupedTasks.OBVIOUS.grouped}
+        notAssignedTasks={groupedTasks.OBVIOUS.notAssigned}
         filterName={'obvious'}
         title="Очевидные зоны роста"
+        createTask={createTask_OBVIOUS}
       >
-        {(filteredTasks) =>
-          filteredTasks.map((tasks) => (
-            <TaskList
-              type="INDICATOR"
-              key={tasks[0]?.indicatorId}
-              competencyName={tasks[0]?.indicator?.name}
-              tasks={tasks}
-              disableSelect={
-                selectedGeneral.length > 0 || selectedOther.length > 0
-              }
-              selected={selectedObvious}
-              select={selectObviousTask}
-              taskType={'OBVIOUS'}
-              planId={planId}
-              userId={userId}
-              skillType={skillType}
-            />
-          ))
-        }
+        {({ filteredGroupedTasks, filteredNotAssignedTasks }) => {
+          return (
+            <>
+              {filteredGroupedTasks.map((tasks) => (
+                <TaskList
+                  key={tasks[0].indicatorId}
+                  type="INDICATOR"
+                  taskType={'OBVIOUS'}
+                  selected={selectedObvious}
+                  select={selectObviousTask}
+                  disableSelect={
+                    selectedGeneral.length > 0 || selectedOther.length > 0
+                  }
+                  {...{
+                    tasks,
+                    planId,
+                    userId,
+                    skillType,
+                  }}
+                />
+              ))}
+              <TaskList
+                isNotAssigned={true}
+                type="INDICATOR"
+                taskType="OBVIOUS"
+                tasks={filteredNotAssignedTasks}
+                selected={selectedObvious}
+                select={selectObviousTask}
+                disableSelect={
+                  selectedGeneral.length > 0 || selectedOther.length > 0
+                }
+                userId={userId}
+              />
+            </>
+          );
+        }}
       </TaskFilter>
       <TaskFilter
-        tasks={groupedTasks.OTHER}
+        createTask={createTask_OTHER}
+        groupedTasks={groupedTasks.OTHER.grouped}
+        notAssignedTasks={groupedTasks.OTHER.notAssigned}
         title="Прочие материалы и задачи для развития"
         filterName={'other'}
       >
-        {(filteredTasks) =>
-          filteredTasks.map((tasks) => (
-            <TaskList
-              type="INDICATOR"
-              key={tasks[0]?.indicatorId}
-              competencyName={tasks[0]?.indicator?.name}
-              tasks={tasks}
-              disableSelect={
-                selectedGeneral.length > 0 || selectedObvious.length > 0
-              }
-              selected={selectedOther}
-              select={selectOtherTask}
-              taskType={'OTHER'}
-              planId={planId}
-              userId={userId}
-              skillType={skillType}
-            />
-          ))
-        }
+        {({ filteredGroupedTasks, filteredNotAssignedTasks }) => {
+          return (
+            <>
+              {filteredGroupedTasks.map((tasks) => (
+                <TaskList
+                  key={tasks[0].indicatorId}
+                  type="INDICATOR"
+                  taskType={'OTHER'}
+                  selected={selectedOther}
+                  select={selectOtherTask}
+                  disableSelect={
+                    selectedGeneral.length > 0 || selectedObvious.length > 0
+                  }
+                  {...{
+                    tasks,
+                    planId,
+                    userId,
+                    skillType,
+                  }}
+                />
+              ))}
+              <TaskList
+                isNotAssigned={true}
+                type="INDICATOR"
+                taskType="OTHER"
+                tasks={filteredNotAssignedTasks}
+                selected={selectedOther}
+                select={selectOtherTask}
+                disableSelect={
+                  selectedGeneral.length > 0 || selectedObvious.length > 0
+                }
+                userId={userId}
+              />
+            </>
+          );
+        }}
       </TaskFilter>
 
       {planId && userId && (
