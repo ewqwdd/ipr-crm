@@ -4,6 +4,8 @@ import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { skillsApi } from '@/shared/api/skillsApi';
+import { EditHints } from './EditHints';
+import { hintsDescription } from '../config/hints';
 
 interface AddIndicatorModalProps {
   isOpen: boolean;
@@ -18,6 +20,15 @@ export default function AddIndicatorModal({
 }: AddIndicatorModalProps) {
   const [value, setValue] = useState('');
   const [boundary, setBoundary] = useState<number>(3);
+  const [valueError, setValueError] = useState<string | undefined>();
+
+  const [hints, setHints] = useState<string[]>([
+    hintsDescription[1],
+    hintsDescription[2],
+    hintsDescription[3],
+    hintsDescription[4],
+    hintsDescription[5],
+  ]);
 
   const [createIndicator, indicatorProps] =
     skillsApi.useCreateIndicatorMutation();
@@ -28,7 +39,21 @@ export default function AddIndicatorModal({
     if (!id) {
       return toast.error('Не выбрана компетеннция');
     }
-    createIndicator({ name, competencyId: id, boundary });
+    if (!name) {
+      return setValueError('Поле не может быть пустым');
+    }
+    createIndicator({
+      name,
+      competencyId: id,
+      boundary,
+      hints: {
+        1: hints[0],
+        2: hints[1],
+        3: hints[2],
+        4: hints[3],
+        5: hints[4],
+      },
+    });
     closeModal();
   };
 
@@ -48,7 +73,11 @@ export default function AddIndicatorModal({
         <InputWithLabelLight
           placeholder="Название индикатора"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setValueError(undefined);
+            setValue(e.target.value);
+          }}
+          error={valueError}
         />
         <div className="mt-4 flex flex-col gap-2">
           <p className="text-gray-900 text-sm">
@@ -65,6 +94,8 @@ export default function AddIndicatorModal({
             step={1}
             onChange={(e) => setBoundary(parseInt(e.target.value))}
           />
+
+          <EditHints data={hints} setData={setHints} />
         </div>
       </div>
     </Modal>

@@ -139,6 +139,7 @@ export class ProfileConstructorController {
       id,
       data.name,
       data.boundary,
+      data.hints,
     );
   }
 

@@ -50,6 +50,7 @@ export default function EvaluatorsTab({
     [selectedSpecs],
   );
 
+  console.log(teamIds);
   useLayoutEffect(() => {
     const updated = selectedSpecs.map((s) => {
       const team = data?.list.find((t) => t.id === s.teamId);

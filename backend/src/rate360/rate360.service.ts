@@ -178,6 +178,12 @@ export class Rate360Service {
             userId,
           },
         },
+        user: {
+          select: {
+            username: true,
+            id: true,
+          },
+        },
         competencyBlocks: {
           include: {
             competencies: {
@@ -191,9 +197,11 @@ export class Rate360Service {
     });
 
     const filtered = rate360.filter((rate) => {
-      const indicators = rate.competencyBlocks.flatMap((block) =>
-        block.competencies.flatMap((competency) => competency.indicators),
-      );
+      const indicators = rate.competencyBlocks
+        .filter((c) => c.type === rate.type)
+        .flatMap((block) =>
+          block.competencies.flatMap((competency) => competency.indicators),
+        );
       const userRates = rate.userRates.filter(
         (rate) => rate.userId === userId && rate.approved,
       );
@@ -217,6 +225,12 @@ export class Rate360Service {
             userId,
           },
         },
+        user: {
+          select: {
+            username: true,
+            id: true,
+          },
+        },
         competencyBlocks: {
           include: {
             competencies: {
@@ -229,9 +243,11 @@ export class Rate360Service {
       },
     });
     const filtered = rate360.filter((rate) => {
-      const indicators = rate.competencyBlocks.flatMap((block) =>
-        block.competencies.flatMap((competency) => competency.indicators),
-      );
+      const indicators = rate.competencyBlocks
+        .filter((c) => c.type === rate.type)
+        .flatMap((block) =>
+          block.competencies.flatMap((competency) => competency.indicators),
+        );
       const userRates = rate.userRates.filter(
         (rate) => rate.userId === userId && rate.approved,
       );
@@ -382,9 +398,11 @@ export class Rate360Service {
       throw new NotFoundException('Оценка не найдена');
     }
 
-    const indicators = rate.competencyBlocks.flatMap((block) =>
-      block.competencies.flatMap((competency) => competency.indicators),
-    );
+    const indicators = rate.competencyBlocks
+      .filter((e) => e.type === rate.type)
+      .flatMap((block) =>
+        block.competencies.flatMap((competency) => competency.indicators),
+      );
     console.log(indicators.length, rate.userRates.length);
     const userRates = rate.userRates;
     if (userRates.length < indicators.length) {
@@ -438,10 +456,12 @@ export class Rate360Service {
       throw new NotFoundException('Оценка не найдена');
     }
 
-    const indicators = rate.competencyBlocks.flatMap((block) =>
-      block.competencies.flatMap((competency) => competency.indicators),
-    );
-    console.log(indicators, rate.userRates);
+    const indicators = rate.competencyBlocks
+      .filter((e) => e.type === rate.type)
+      .flatMap((block) =>
+        block.competencies.flatMap((competency) => competency.indicators),
+      );
+    console.log(indicators.length, rate.userRates.length);
     const userRates = rate.userRates;
     if (userRates.length < indicators.length) {
       throw new ForbiddenException('Оценка не завершена');

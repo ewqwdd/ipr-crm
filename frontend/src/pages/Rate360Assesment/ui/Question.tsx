@@ -18,6 +18,14 @@ export default function Question({
 }: QuestionProps) {
   const { rate, comment } = current;
 
+  const descriptions = {
+    1: indicator.hint1 ?? rateDescriptions[1],
+    2: indicator.hint2 ?? rateDescriptions[2],
+    3: indicator.hint3 ?? rateDescriptions[3],
+    4: indicator.hint4 ?? rateDescriptions[4],
+    5: indicator.hint5 ?? rateDescriptions[5],
+  };
+
   return (
     <div className="flex gap-2 flex-col">
       <p className="text-gray-800 font-medium">
@@ -25,7 +33,7 @@ export default function Question({
       </p>
 
       <div className="lg:grid-cols-5 grid grid-cols-2 max-[520px]:grid-cols-1 gap-2">
-        {Object.entries(rateDescriptions).map(([value, description]) => (
+        {Object.entries(descriptions).map(([value, description]) => (
           <SecondaryButton
             key={value}
             onClick={() => onChange(+value, comment)}

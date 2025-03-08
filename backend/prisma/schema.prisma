@@ -396,6 +396,12 @@ model Indicator {
   task    GrowthPlanTask[]         
   archived     Boolean?      @default(false)
   archivedDate DateTime?
+
+    hint1       String?
+  hint2       String?
+  hint3       String?
+  hint4       String?
+  hint5       String?
 }
 
 // Материалы 

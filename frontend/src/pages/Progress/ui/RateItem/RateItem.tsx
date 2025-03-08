@@ -16,9 +16,14 @@ export default function RateItem({ rate, specs }: RateItemProps) {
   return (
     <div className="flex items-center justify-between p-3  rounded-sm border-t border-gray-300 first:border-transparent">
       <div className="flex flex-col gap-1">
-        <Badge color="pink" size="sm" className="self-start">
-          {spec?.name}
-        </Badge>
+        <div className="flex items-center gap-4 text-gray-800 text-sm">
+          <Badge color="pink" size="sm" className="self-start">
+            {spec?.name}
+          </Badge>
+          <span className="text-gray-700 font-medium text-lbaseg">
+            {rate.user.username}
+          </span>
+        </div>
         <div className="flex items-center gap-4 text-gray-800 text-sm">
           <span className="font-semibold">{rateTypeNames[rate.type]}</span>
           <span className="text-xs">{rate.startDate?.slice(0, 10)}</span>

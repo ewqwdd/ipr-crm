@@ -88,6 +88,9 @@ export class IprService {
         plan: true,
         evaluators: true,
       },
+      orderBy: {
+        startDate: 'desc',
+      },
     });
 
     if (!rate360) {
