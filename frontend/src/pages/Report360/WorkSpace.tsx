@@ -1,7 +1,6 @@
 import { Team } from '@/entities/team';
 import { User } from '@/entities/user';
 import { teamsApi } from '@/shared/api/teamsApi';
-import Dimmer from '@/shared/ui/Dimmer';
 import { FC, memo } from 'react';
 import { getCuratorsAndMembers, getTeamMembers } from './helpers';
 type WorkSpaceProps = {
@@ -29,42 +28,42 @@ const WorkSpace: FC<WorkSpaceProps> = ({ user }) => {
     }[],
   );
 
+  // TODO: add updated Dimmer
+
   return (
-    <Dimmer active={teamsFetching || !user}>
-      <div className="flex border border-solid border-gray-300 rounded-md">
-        <div className="border-r border-solid border-gray-300 p-3 font-medium">
-          Окружение
-        </div>
-        <div className="w-full">
-          <div className="border-b border-solid border-gray-300 p-3">
-            <h4 className="font-medium">Руководители</h4>
-            <ul>
-              {curators &&
-                curators.map((curator) => (
-                  <li key={curator?.toString()}>{curator}</li>
-                ))}
-            </ul>
-          </div>
-          <div className="border-b border-solid border-gray-300 p-3">
-            <h4 className="font-medium">Коллеги</h4>
-            <ul>
-              {members &&
-                members.map((member) => {
-                  return <li key={member?.toString()}>{member}</li>;
-                })}
-            </ul>
-          </div>
-          <div className="p-3">
-            <h4 className="font-medium">Подчиненные</h4>
-            <ul>
-              {teamMembers?.map((member) => (
-                <li key={member?.toString()}>{member}</li>
+    <div className="flex border border-solid border-gray-300 rounded-md">
+      <div className="border-r border-solid border-gray-300 p-3 font-medium">
+        Окружение
+      </div>
+      <div className="w-full">
+        <div className="border-b border-solid border-gray-300 p-3">
+          <h4 className="font-medium">Руководители</h4>
+          <ul>
+            {curators &&
+              curators.map((curator) => (
+                <li key={curator?.toString()}>{curator}</li>
               ))}
-            </ul>
-          </div>
+          </ul>
+        </div>
+        <div className="border-b border-solid border-gray-300 p-3">
+          <h4 className="font-medium">Коллеги</h4>
+          <ul>
+            {members &&
+              members.map((member) => {
+                return <li key={member?.toString()}>{member}</li>;
+              })}
+          </ul>
+        </div>
+        <div className="p-3">
+          <h4 className="font-medium">Подчиненные</h4>
+          <ul>
+            {teamMembers?.map((member) => (
+              <li key={member?.toString()}>{member}</li>
+            ))}
+          </ul>
         </div>
       </div>
-    </Dimmer>
+    </div>
   );
 };
 
