@@ -25,7 +25,7 @@ export default function UserItem({
         <Avatar src={user.avatar} />
         <span>{user.username}</span>
       </div>
-      {user.specsOnTeams?.length > 0 ? (
+      {user.specsOnTeams && user.specsOnTeams?.length > 0 ? (
         <div className="flex flex-col pl-2 bg-violet-50 pt-2 pb-3">
           {user.specsOnTeams?.map((spec) => (
             <Checkbox
