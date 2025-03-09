@@ -51,7 +51,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
   );
   const [priority, setPriority] = useState<TaskPriority>('LOW');
   const [materialType, setMaterialType] = useState<MaterialType>('VIDEO');
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date | null>(null);
   const [errors, setErrors] = useState<ErorrsType>({});
 
   const { data: skills, isLoading: isLoadingSkills } =
@@ -110,7 +110,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
       url: link,
       contentType: materialType,
       priority,
-      deadline: date.toISOString(),
+      deadline: date ? date.toISOString() : null,
       planId,
       taskType,
       userId,
@@ -164,7 +164,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
         <DatePickerLight
           value={date}
           onChange={onChangeDate}
-          required={true}
+          placeholder={'Выберите дату'}
           minDate={new Date()}
           label={'Дедлайн'}
         />
