@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import RatesTable from './ui/RatesTable';
 import Settings from './ui/Settings';
 import { useLoading } from '@/app/hooks/useLoading';
+import RatesFiltersWrapper from './ui/RatesFilters';
 
 export default function Rate360() {
   const { data, isLoading } = rate360Api.useGetRatesQuery();
@@ -39,12 +40,16 @@ export default function Rate360() {
             Добавить
           </PrimaryButton>
         </div>
-        <RatesTable
-          selected={selected}
-          data={data}
-          isLoading={isLoading}
-          setSelected={setSelected}
-        />
+        <RatesFiltersWrapper data={data}>
+          {(filteredData) => (
+            <RatesTable
+              selected={selected}
+              data={filteredData}
+              isLoading={isLoading}
+              setSelected={setSelected}
+            />
+          )}
+        </RatesFiltersWrapper>
         <Settings selected={selected} setSelected={setSelected} />
       </div>
       <Modal

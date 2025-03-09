@@ -13,6 +13,7 @@ import { Competency, Indicator } from '@/entities/skill';
 import DatePickerLight from '@/shared/ui/DatePickerLight';
 import { AddTaskDto, iprApi } from '@/shared/api/iprApi';
 import toast from 'react-hot-toast';
+import { DateObject } from 'react-multi-date-picker';
 
 type AddTaskModalProps = {
   type?: 'COMPETENCY' | 'INDICATOR';
@@ -51,7 +52,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
   );
   const [priority, setPriority] = useState<TaskPriority>('LOW');
   const [materialType, setMaterialType] = useState<MaterialType>('VIDEO');
-  const [date, setDate] = useState<Date | null>(null);
+  const [date, setDate] = useState<Date | undefined>();
   const [errors, setErrors] = useState<ErorrsType>({});
 
   const { data: skills, isLoading: isLoadingSkills } =
@@ -88,8 +89,9 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
     setMaterialWrapperId(id);
   }, []);
 
-  const onChangeDate = useCallback((date: Date) => {
-    setDate(date);
+  const onChangeDate = useCallback((date?: DateObject | DateObject[]) => {
+    if (Array.isArray(date)) return;
+    setDate(date ? date.toDate() : undefined);
   }, []);
 
   const validate = () => {

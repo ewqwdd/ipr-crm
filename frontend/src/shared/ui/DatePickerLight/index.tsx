@@ -1,13 +1,15 @@
-import { FC } from 'react';
-import DatePicker from 'react-multi-date-picker';
+import { FC, ReactNode } from 'react';
+import DatePicker, { DateObject, type Value } from 'react-multi-date-picker';
 
 type DatePickerLightProps = {
-  value?: Date | null;
-  onChange: (date: Date) => void;
+  value?: Value | Value[];
+  onChange: (date?: DateObject | DateObject[]) => void;
   required?: boolean;
-  minDate?: Date;
+  minDate?: Exclude<Value, null>;
   label?: string;
   placeholder?: string;
+  range?: boolean;
+  children?: ReactNode;
 };
 
 const DatePickerLight: FC<DatePickerLightProps> = ({
@@ -17,7 +19,17 @@ const DatePickerLight: FC<DatePickerLightProps> = ({
   minDate,
   label,
   placeholder,
+  range,
+  children,
 }) => {
+  const onChangeHandler = (date: DateObject | DateObject[] | null) => {
+    if (date === null) {
+      onChange(undefined);
+    } else {
+      onChange(date);
+    }
+  };
+
   return (
     <div>
       {label && (
@@ -33,14 +45,13 @@ const DatePickerLight: FC<DatePickerLightProps> = ({
         inputClass={
           'shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md'
         }
-        onChange={(date) => {
-          if (date) {
-            onChange(date.toDate());
-          }
-        }}
+        onChange={onChangeHandler}
         required={required}
         minDate={minDate}
-      />
+        range={range}
+      >
+        {children}
+      </DatePicker>
     </div>
   );
 };
