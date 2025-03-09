@@ -1,9 +1,9 @@
 import { Team } from '@/entities/team';
 import { User } from '@/entities/user';
 import { teamsApi } from '@/shared/api/teamsApi';
-import Dimmer from '@/shared/ui/Dimmer';
 import { FC, memo } from 'react';
 import { getCuratorsAndMembers, getTeamMembers } from './helpers';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 type WorkSpaceProps = {
   user?: User;
 };
@@ -30,7 +30,7 @@ const WorkSpace: FC<WorkSpaceProps> = ({ user }) => {
   );
 
   return (
-    <Dimmer active={teamsFetching || !user}>
+    <LoadingOverlay active={teamsFetching}>
       <div className="flex border border-solid border-gray-300 rounded-md">
         <div className="border-r border-solid border-gray-300 p-3 font-medium">
           Окружение
@@ -64,7 +64,7 @@ const WorkSpace: FC<WorkSpaceProps> = ({ user }) => {
           </div>
         </div>
       </div>
-    </Dimmer>
+    </LoadingOverlay>
   );
 };
 

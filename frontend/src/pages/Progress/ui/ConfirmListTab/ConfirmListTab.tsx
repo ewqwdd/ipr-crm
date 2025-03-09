@@ -3,8 +3,9 @@ import { universalApi } from '@/shared/api/universalApi';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import { Radio } from '@/shared/ui/Radio';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ConfirmListItem from '../ConfirmListItem/ConfirmListItem';
+import { useLoading } from '@/app/hooks/useLoading';
 
 type RatesFilter = 'self' | 'curator';
 
@@ -20,6 +21,16 @@ export default function ConfirmListTab() {
     ratesFilter === 'self'
       ? confirmByUser.isLoading
       : confirmByCurator.isLoading;
+
+  const { showLoading, hideLoading } = useLoading();
+
+  useEffect(() => {
+    if (loadingToShow) {
+      showLoading();
+    } else {
+      hideLoading();
+    }
+  }, [loadingToShow, showLoading, hideLoading]);
 
   return (
     <div

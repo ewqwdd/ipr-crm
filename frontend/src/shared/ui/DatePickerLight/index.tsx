@@ -2,11 +2,12 @@ import { FC } from 'react';
 import DatePicker from 'react-multi-date-picker';
 
 type DatePickerLightProps = {
-  value: Date;
+  value?: Date | null;
   onChange: (date: Date) => void;
   required?: boolean;
   minDate?: Date;
   label?: string;
+  placeholder?: string;
 };
 
 const DatePickerLight: FC<DatePickerLightProps> = ({
@@ -15,6 +16,7 @@ const DatePickerLight: FC<DatePickerLightProps> = ({
   required,
   minDate,
   label,
+  placeholder,
 }) => {
   return (
     <div>
@@ -26,6 +28,7 @@ const DatePickerLight: FC<DatePickerLightProps> = ({
       )}
       <DatePicker
         value={value}
+        placeholder={placeholder}
         containerClassName="w-full"
         inputClass={
           'shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md'

@@ -4,6 +4,7 @@ import AppRouter from './router/AppRouter';
 import { DarkSidebar } from '@/widgets/DarkSidebar';
 import ModalWrapper from '@/entities/modals';
 import Loading from '@/shared/ui/Loading';
+import GlobalLoader from '@/shared/ui/GlobalLoader';
 
 function App() {
   const { isMounted } = useAuthControl();
@@ -19,8 +20,10 @@ function App() {
   return (
     <main className="flex h-full bg-gray-100">
       <DarkSidebar />
-      <div className="flex-1 overflow-y-auto">
-        <AppRouter />
+      <div className="relative flex-1 overflow-y-auto">
+        <GlobalLoader>
+          <AppRouter />
+        </GlobalLoader>
       </div>
       <ModalWrapper />
     </main>
