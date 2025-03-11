@@ -1,9 +1,7 @@
 import { FC, useState } from 'react';
 import SpecializationsTableWrapper from './SpecializationsTableWrapper';
-// import Competency from '../competency';
 import CompetencyBlock from './Competency';
 import ArchiveButton from '../ArchiveButton';
-// import { Spec } from '@/entities/user';
 
 const SpecializationsWrapper: FC = () => {
   const [selectedSpec, setSelectedSpec] = useState<number | null>(null);

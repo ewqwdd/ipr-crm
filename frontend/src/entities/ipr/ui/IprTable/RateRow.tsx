@@ -41,7 +41,7 @@ export default function RateRow({ index, task }: RateRowProps) {
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
         <Link
           className="font-medium text-violet-500 hover:text-violet-700 transition-all"
-          to={'/teams/' + task.rate360.teamId}
+          to={'/teams/' + task.rate360?.teamId}
         >
           {task.rate360?.team.name}
         </Link>

@@ -10,7 +10,7 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { tranformAssesment } from '@/shared/lib/transformAssesment';
-import Dimmer from '@/shared/ui/Dimmer';
+import { useLoading } from '@/app/hooks/useLoading';
 
 export default function Rate360Assesment() {
   const { id } = useParams();
@@ -33,6 +33,17 @@ export default function Rate360Assesment() {
   const [urlSearchParams] = useSearchParams();
 
   const tab = urlSearchParams.get('tab');
+
+  const { showLoading, hideLoading } = useLoading();
+
+  useEffect(() => {
+    if (isFetching || skillsFetching) {
+      showLoading();
+    }
+    if (!isFetching && !skillsFetching) {
+      hideLoading();
+    }
+  }, [isFetching, skillsFetching, showLoading, hideLoading]);
 
   useEffect(() => {
     if (isError) {
@@ -84,30 +95,27 @@ export default function Rate360Assesment() {
   if (!id) return null;
 
   return (
-    <Dimmer active={isFetching || skillsFetching}>
-      <div
-        className={cva('flex flex-col gap-4 h-full max-h-full pb-6', {
-          'animate-pulse pointer-events-none': mutateAssesmentLoading,
-          invisible: isFetching || skillsFetching,
-        })}
-      >
-        <TabsHeader blocks={blocks} />
-        {currentBlock && (
-          <Assesment
-            comments={comments}
-            setComments={setComments}
-            assesment={assessment}
-            setAssesment={setAssessment}
-            block={currentBlock}
-          />
-        )}
-        <div className="flex justify-between px-6">
-          <Link to={'/progress'}>
-            <SecondaryButton>Назад</SecondaryButton>
-          </Link>
-          <PrimaryButton onClick={() => onSave()}>Сохранить</PrimaryButton>
-        </div>
+    <div
+      className={cva('flex flex-col gap-4 h-full max-h-full pb-6', {
+        'animate-pulse pointer-events-none': mutateAssesmentLoading,
+      })}
+    >
+      <TabsHeader blocks={blocks} />
+      {currentBlock && (
+        <Assesment
+          comments={comments}
+          setComments={setComments}
+          assesment={assessment}
+          setAssesment={setAssessment}
+          block={currentBlock}
+        />
+      )}
+      <div className="flex justify-between px-6">
+        <Link to={'/progress'}>
+          <SecondaryButton>Назад</SecondaryButton>
+        </Link>
+        <PrimaryButton onClick={() => onSave()}>Сохранить</PrimaryButton>
       </div>
-    </Dimmer>
+    </div>
   );
 }

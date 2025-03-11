@@ -1,6 +1,6 @@
+import { useLoading } from '@/app/hooks/useLoading';
 import { AddTeamModal, StructureItem, Team, TeamEdit } from '@/entities/team';
 import { teamsApi } from '@/shared/api/teamsApi';
-import Dimmer from '@/shared/ui/Dimmer';
 import { Heading } from '@/shared/ui/Heading';
 import { Modal } from '@/shared/ui/Modal';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
@@ -15,6 +15,7 @@ export default function Structure() {
 
   const [mutate, { isLoading: deleteLoading, isSuccess }] =
     teamsApi.useRemoveTeamMutation();
+  const { showLoading, hideLoading } = useLoading();
 
   const openModal = (e: MouseEvent, parentId: number) => {
     e.stopPropagation();
@@ -39,8 +40,17 @@ export default function Structure() {
     }
   }, [isSuccess]);
 
+  useEffect(() => {
+    if (isLoading || isFetching) {
+      showLoading();
+    }
+    if (!isLoading && !isFetching) {
+      hideLoading();
+    }
+  }, [isLoading, isFetching, showLoading, hideLoading]);
+
   return (
-    <Dimmer active={isLoading || isFetching}>
+    <>
       <div className="px-8 py-10 flex flex-col">
         <div className="flex justify-between items-center">
           <Heading
@@ -87,6 +97,6 @@ export default function Structure() {
         variant="error"
         onSubmit={() => mutate(deleteItem!.id)}
       />
-    </Dimmer>
+    </>
   );
 }

@@ -1,11 +1,22 @@
+import { useLoading } from '@/app/hooks/useLoading';
 import { AddTeamModal, TeamItem } from '@/entities/team';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Teams() {
-  const { data } = teamsApi.useGetTeamsQuery();
+  const { data, isFetching } = teamsApi.useGetTeamsQuery();
+
+  const { showLoading, hideLoading } = useLoading();
+
+  useEffect(() => {
+    if (isFetching) {
+      showLoading();
+    } else {
+      hideLoading();
+    }
+  }, [isFetching, showLoading, hideLoading]);
 
   const list = data?.list ?? [];
   const [addAopen, setAddOpen] = useState(false);
