@@ -9,10 +9,12 @@ import { modalReducer } from './modalSlice';
 import { ratesReducer } from '@/entities/rates';
 import { iprApi } from '@/shared/api/iprApi';
 import { boardReducer } from '@/entities/ipr';
+import { loadingReducer } from './loadingSlice';
 
 const rootReducer = combineReducers({
   user: userReducer,
   modal: modalReducer,
+  loading: loadingReducer,
   rates: ratesReducer,
   board: boardReducer,
   [usersApi.reducerPath]: usersApi.reducer,

@@ -2,7 +2,7 @@ import { cva } from '@/shared/lib/cva';
 import ColumnsHeading from './ColumnsHeading';
 import { Rate } from '@/entities/rates';
 import RateRow from './RateRow';
-import Dimmer from '@/shared/ui/Dimmer';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 interface RatesTableProps {
   data?: Rate[];
@@ -18,7 +18,7 @@ export default function RatesTable({
   selected,
 }: RatesTableProps) {
   return (
-    <Dimmer active={isLoading}>
+    <LoadingOverlay active={isLoading}>
       <div className="overflow-x-auto">
         {data?.length !== 0 ? (
           <table className="min-w-full divide-y divide-gray-300 mt-10">
@@ -45,6 +45,6 @@ export default function RatesTable({
           </div>
         )}
       </div>
-    </Dimmer>
+    </LoadingOverlay>
   );
 }

@@ -6,6 +6,7 @@ import { Checkbox } from '@/shared/ui/Checkbox';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { MinusCircleIcon, PencilIcon } from '@heroicons/react/outline';
 import { FC } from 'react';
+import SpecializationTableSkeleton from './SpecializationTableSkeleton';
 
 interface ISpecializationsTableProps {
   selectedSpec: number | null;
@@ -17,7 +18,7 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
   setSelectedSpec,
 }) => {
   const { openModal } = useModal();
-  const { data } = universalApi.useGetSpecsQuery();
+  const { data, isFetching } = universalApi.useGetSpecsQuery();
   const [deleteFn, { isLoading }] = universalApi.useDeleteSpecMutation();
 
   const selectSpecialization = (data: Spec) => {
@@ -119,6 +120,7 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
                 </td>
               </tr>
             ))}
+            {isFetching && <SpecializationTableSkeleton />}
           </tbody>
         </table>
       </div>
