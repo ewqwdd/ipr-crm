@@ -8,10 +8,14 @@ import { CreateRateDto } from './dto/create-rate.dto';
 import { EvaluatorType } from '@prisma/client';
 import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
+import { NotificationsService } from 'src/utils/notifications/notifications.service';
 
 @Injectable()
 export class Rate360Service {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   async findAll(curatorId?: number) {
     const rates = await this.prismaService.rate360.findMany({
@@ -124,6 +128,40 @@ export class Rate360Service {
 
     return await Promise.all(
       ratesToCreate.map(async (rate, index) => {
+        if (data.confirmUser) {
+          const team = await this.prismaService.team.findUnique({
+            where: {
+              id: rate.teamId,
+            },
+            select: {
+              curatorId: true,
+            },
+          });
+          await this.notificationsService.sendRateConfirmNotification(
+            team.curatorId,
+            createdRates[index].id,
+          );
+        } else if (data.confirmCurator) {
+          await this.notificationsService.sendRateConfirmNotification(
+            rate.userId,
+            createdRates[index].id,
+          );
+        } else {
+          await this.notificationsService.sendRateAssignedNotification(
+            rate.userId,
+            createdRates[index].id,
+          );
+          for (const evaluator of [
+            ...rate.evaluateCurators,
+            ...rate.evaluateSubbordinate,
+            ...rate.evaluateTeam,
+          ]) {
+            await this.notificationsService.sendRateAssignedNotification(
+              evaluator.userId,
+              createdRates[index].id,
+            );
+          }
+        }
         return await this.prismaService.rate360.update({
           where: { id: createdRates[index].id },
           data: {
@@ -521,9 +559,22 @@ export class Rate360Service {
       data: {
         curatorConfirmed: true,
       },
+      include: {
+        evaluators: true,
+      },
     });
     if (!data) {
       throw new NotFoundException('Rate not found');
+    }
+    await this.notificationsService.sendRateSelfAssignedNotification(
+      data.userId,
+      rateId,
+    );
+    for (const evaluator of data.evaluators) {
+      await this.notificationsService.sendRateAssignedNotification(
+        evaluator.userId,
+        rateId,
+      );
     }
     return data;
   }
@@ -537,9 +588,19 @@ export class Rate360Service {
       data: {
         userConfirmed: true,
       },
+      include: {
+        team: true,
+      },
     });
+
     if (!data) {
       throw new NotFoundException('Rate not found');
+    }
+    if (data.team) {
+      await this.notificationsService.sendRateConfirmNotification(
+        data.team.curatorId,
+        rateId,
+      );
     }
     return data;
   }

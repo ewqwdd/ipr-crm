@@ -17,6 +17,18 @@ const userSlice = createSlice({
       state.user = action.payload;
       state.isMounted = true;
     },
+    setNotificationRead: (state, action: PayloadAction<number>) => {
+      if (state.user) {
+        state.user.notifications = state.user.notifications.map(
+          (notification) => {
+            if (notification.id === action.payload) {
+              return { ...notification, watched: true };
+            }
+            return notification;
+          },
+        );
+      }
+    },
   },
 });
 

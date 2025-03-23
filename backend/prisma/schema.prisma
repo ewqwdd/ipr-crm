@@ -42,6 +42,7 @@ model User {
   mentor      User?  @relation("MentorMentees", fields: [mentorId], references: [id])
   mentorId    Int?
   teamCurator Team[]
+  
 
   createdAt DateTime @default(now())
 }
@@ -71,6 +72,7 @@ model Rate360 {
   team       Team              @relation(fields: [teamId], references: [id])
   plan       IndividualGrowthPlan?
   createdAt          DateTime  @default(now())
+  notifications   Notification[]
 }
 
 model UserComments {
@@ -275,6 +277,7 @@ model IndividualGrowthPlan {
   version   DateTime        @default(now())
   skillType SkillType
   planCurators GrowthPlanCurator[]
+  notifications Notification[]
 }
 
 model GrowthPlanLog {
@@ -295,11 +298,17 @@ model Notification {
   userId      Int
   title       String
   description String?
-  date        DateTime
-  watched     Boolean
-  type        String // todo: enum
+  date        DateTime  @default(now())
+  watched     Boolean @default(false)
+  type        NotificationType
   url         String?
 
+  rateId Int?
+  rate   Rate360? @relation(fields: [rateId], references: [id])
+
+  iprId Int?
+  ipr IndividualGrowthPlan? @relation(fields: [iprId], references: [id])
+  
   user User @relation(fields: [userId], references: [id])
 }
 
@@ -503,4 +512,12 @@ enum EvaluatorType {
 enum Rate360Type {
   Rate360
   Rate180
+}
+
+enum NotificationType {
+  RATE_ASSIGNED_SELF
+  RATE_ASSIGNED
+  RATE_CONFIRM
+  TASK_ASSIGNED
+  IPR_ASSIGNED
 }

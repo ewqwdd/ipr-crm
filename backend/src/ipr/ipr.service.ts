@@ -14,10 +14,14 @@ import {
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { AddTaskDto } from './dto/add-task.dto';
+import { NotificationsService } from 'src/utils/notifications/notifications.service';
 
 @Injectable()
 export class IprService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   async findOneby360Id(id: number, sessionInfo: GetSessionInfoDto) {
     return await this.prismaService.individualGrowthPlan.findFirst({
@@ -168,6 +172,11 @@ export class IprService {
         finished: true,
       },
     });
+
+    await this.notificationsService.sendIprAssignedNotification(
+      created.userId,
+      created.id,
+    );
 
     return created;
   }
@@ -354,13 +363,12 @@ export class IprService {
         },
       },
     });
-
     if (!plan) {
       throw new NotFoundException('Plan not found');
     }
 
     if (
-      plan.rate360.team.curator.id !== clientInfo.id ||
+      plan.rate360.team.curator.id !== clientInfo.id &&
       clientInfo.role !== 'admin'
     ) {
       throw new ForbiddenException(

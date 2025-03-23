@@ -1,7 +1,9 @@
 import { cva } from '@/shared/lib/cva';
+import React, { memo } from 'react';
 
 interface Tab {
   name: string;
+  element?: React.ReactNode;
   key: string;
 }
 
@@ -12,7 +14,7 @@ interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   tabClassName?: string;
 }
 
-export default function Tabs({
+export default memo(function Tabs({
   tabs,
   currentTab,
   setCurrentTab,
@@ -43,7 +45,7 @@ export default function Tabs({
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
             {tabs.map((tab) => (
               <button
-                key={tab.name}
+                key={tab.key}
                 className={cva(
                   'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all',
                   {
@@ -54,7 +56,7 @@ export default function Tabs({
                 )}
                 onClick={() => setCurrentTab(tab.key)}
               >
-                {tab.name}
+                {tab.element}
               </button>
             ))}
           </nav>
@@ -62,4 +64,4 @@ export default function Tabs({
       </div>
     </div>
   );
-}
+});
