@@ -8,6 +8,8 @@ import { userNavigation } from './config/userNavigation';
 import { LogoutIcon } from '@heroicons/react/outline';
 import { $api } from '@/shared/lib/$api';
 import { userActions } from '@/entities/user';
+import { NotificationBell } from '@/entities/notifications';
+import { Badge } from '@/shared/ui/Badge';
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
@@ -20,7 +22,7 @@ export default function Content() {
   const navigate = useNavigate();
 
   const navigation =
-    user?.role.name === 'admin' ? adminNavigation : userNavigation(user);
+    user?.role.name === 'admin' ? adminNavigation(user) : userNavigation(user);
 
   const logout = () => {
     $api.post('/auth/sign-out').then(() => {
@@ -32,12 +34,13 @@ export default function Content() {
   return (
     <>
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-        <div className="flex items-center flex-shrink-0 px-4">
+        <div className="flex items-center flex-shrink-0 px-4 justify-between">
           <img
             className="h-8 w-auto"
             src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
             alt="Workflow"
           />
+          <NotificationBell />
         </div>
         <nav
           className="mt-5 flex-1 px-2 bg-gray-800 space-y-1"
@@ -53,6 +56,14 @@ export default function Content() {
                   <span className="font-semibold text-gray-500 text-base">
                     {item.name}
                   </span>
+                  {!!item.count && item.count > 0 && (
+                    <Badge
+                      className="rounded-full size-4 justify-center ml-4"
+                      color="red"
+                    >
+                      {item.count}
+                    </Badge>
+                  )}
                 </div>
               ) : (
                 <div key={item.name}>
@@ -78,16 +89,14 @@ export default function Content() {
                       />
                     )}
                     <span className="flex-1">{item.name}</span>
-                    {item.count ? (
-                      <p
-                        className={classNames(
-                          'bg-gray-900 group-hover:bg-gray-800',
-                          'ml-3 inline-block py-0.5 px-3 text-xs font-medium rounded-full',
-                        )}
+                    {!!item.count && item.count > 0 && (
+                      <Badge
+                        className="rounded-full size-4 justify-center ml-4"
+                        color="red"
                       >
                         {item.count}
-                      </p>
-                    ) : null}
+                      </Badge>
+                    )}
                   </NavLink>
                 </div>
               )
@@ -125,6 +134,14 @@ export default function Content() {
                           )}
                         >
                           {subItem.name}
+                          {!!subItem.count && subItem.count > 0 && (
+                            <Badge
+                              className="rounded-full size-4 justify-center ml-4"
+                              color="red"
+                            >
+                              {subItem.count}
+                            </Badge>
+                          )}
                         </Disclosure.Button>
                       ))}
                     </Disclosure.Panel>

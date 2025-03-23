@@ -1,3 +1,5 @@
+import { NotificationType } from '@/entities/notifications';
+
 export type NavType = {
   name: string;
   icon?: (props: React.ComponentProps<'svg'>) => JSX.Element;
@@ -5,3 +7,10 @@ export type NavType = {
   count?: number;
   children?: NavType[];
 };
+
+export const types360: NotificationType[] = [
+  'RATE_ASSIGNED_SELF',
+  'RATE_ASSIGNED',
+  'RATE_CONFIRM',
+];
+export const typesTasks: NotificationType[] = ['IPR_ASSIGNED', 'TASK_ASSIGNED'];

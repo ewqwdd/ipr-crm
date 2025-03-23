@@ -8,6 +8,26 @@ export type Spec = IdName & {
   description?: string;
 };
 
+export type NotificationType =
+  | 'RATE_ASSIGNED_SELF'
+  | 'RATE_ASSIGNED'
+  | 'RATE_CONFIRM'
+  | 'TASK_ASSIGNED'
+  | 'IPR_ASSIGNED';
+
+export interface Notification {
+  id: number;
+  userId: number;
+  title: string;
+  description?: string;
+  date: string;
+  watched: boolean;
+  type: NotificationType;
+  url?: string;
+  rateId?: number;
+  iprId?: number;
+}
+
 export interface User {
   id: number;
   email: string;
@@ -21,6 +41,7 @@ export interface User {
   teams?: { teamId: number; team: { name: string } }[];
   mentorId?: number;
   teamCurator?: { id: number; name: string }[];
+  notifications: Notification[];
 }
 
 export interface UserStoreSchema {

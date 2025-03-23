@@ -15,6 +15,7 @@ import { Rate360Module } from './rate360/rate360.module';
 import { ProfileConstructorModule } from './profile-constructor/profile-constructor.module';
 import { MailService } from './utils/mailer/mailer';
 import { IprModule } from './ipr/ipr.module';
+import { NotificationModule } from './notification/notification.module';
 
 console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
 
@@ -31,6 +32,7 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
     Rate360Module,
     ProfileConstructorModule,
     IprModule,
+    NotificationModule,
   ],
   controllers: [],
   providers: [
