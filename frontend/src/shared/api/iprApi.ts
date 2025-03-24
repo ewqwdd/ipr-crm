@@ -7,7 +7,7 @@ export interface AddTaskDto {
   competencyId?: number;
   indicatorId?: number;
   url?: string;
-  deadline: string;
+  deadline: string | null;
   contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
   priority: TaskPriority;
   taskType: TaskType;

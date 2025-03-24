@@ -14,7 +14,7 @@ export default function Users() {
           <AddUser />
         </div>
       </div>
-      <div className="mt-8 flex flex-col">
+      <div className="mt-2 flex flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <WithAvatarsAndMultiLineContent />
