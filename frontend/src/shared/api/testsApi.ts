@@ -1,4 +1,4 @@
-import { TestCreate } from '@/entities/test';
+import { Test, TestCreate } from '@/entities/test';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const testsApi = createApi({
@@ -9,7 +9,7 @@ const testsApi = createApi({
   }),
   tagTypes: ['Test'],
   endpoints: (build) => ({
-    getTests: build.query<any[], void>({
+    getTests: build.query<Test[], void>({
       query: () => '/test',
       providesTags: ['Test'],
     }),

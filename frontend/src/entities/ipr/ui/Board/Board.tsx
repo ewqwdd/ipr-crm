@@ -49,7 +49,7 @@ export default function Board({ data, userId }: BoardProps) {
       }
       if (filters.period && Array.isArray(filters.period)) {
         if (!task.deadline) return false;
-        
+
         const taskDate = new Date(task.deadline);
         const [startDate, endDate] = filters.period;
         if (startDate && endDate) {
@@ -58,7 +58,7 @@ export default function Board({ data, userId }: BoardProps) {
           const taskTimestamp = taskDate.getTime();
           const startTimestamp = start.getTime();
           const endTimestamp = end.getTime();
-          
+
           if (taskTimestamp < startTimestamp || taskTimestamp > endTimestamp) {
             return false;
           }
@@ -68,7 +68,6 @@ export default function Board({ data, userId }: BoardProps) {
       return true;
     });
   }, [data, filters]);
-  
 
   const handleCardMove: OnDragEndNotification<CustomCard> = (
     _card,
@@ -152,10 +151,7 @@ export default function Board({ data, userId }: BoardProps) {
 
   return (
     <>
-      <BoardFilters
-        filters={filters}
-        updateFilters={updateFilters}
-      />
+      <BoardFilters filters={filters} updateFilters={updateFilters} />
       <div className="boardPage flex-1 flex flex-col">
         {data.length > 0 && (
           <Card className="mb-8 [&>div]:py-4 self-start [&>div]:flex [&>div]:gap-8 [&>div]:items-center">

@@ -66,7 +66,13 @@ export class TestService {
     return created;
   }
 
-  async getTests() {
+  async getTests(name?: string, startDate?: Date, endDate?: Date) {
+    const filters = {
+      ...(name ? { name: { contains: name } } : {}),
+      ...(startDate ? { startDate: { gte: startDate } } : {}),
+      ...(endDate ? { endDate: { lte: endDate } } : {}),
+    };
+
     return this.prismaService.test.findMany({
       include: {
         testQuestions: {
@@ -75,6 +81,7 @@ export class TestService {
           },
         },
       },
+      ...(Object.keys(filters).length > 0 ? { where: filters } : {}),
     });
   }
 }

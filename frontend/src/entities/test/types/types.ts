@@ -17,7 +17,7 @@ export interface TestOption {
   isCorrect?: boolean;
 }
 
-export interface CreateQuestion {
+export interface Question {
   type: QuestionType;
   label: string;
   description?: string;
@@ -29,7 +29,9 @@ export interface CreateQuestion {
   numberCorrectValue?: number;
   textCorrectValue?: string;
   allowDecimal?: boolean;
+}
 
+export interface CreateQuestion extends Question {
   error?: string;
 }
 
@@ -54,4 +56,23 @@ export interface TestCreate {
 
 export interface TestCreateStoreSchema extends TestCreate {
   errors: Partial<Record<keyof TestCreate, string>>;
+}
+
+export interface Test {
+  name?: string;
+  description?: string;
+  passedMessage?: string;
+  failedMessage?: string;
+  showScoreToUser?: boolean;
+
+  startDate?: Date;
+  endDate?: Date;
+  access?: TestAccessType;
+  anonymous?: boolean;
+
+  questions: Question[];
+
+  limitedByTime?: boolean;
+  timeLimit?: number;
+  minimumScore?: number;
 }
