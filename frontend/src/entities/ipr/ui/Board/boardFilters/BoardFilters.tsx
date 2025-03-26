@@ -12,17 +12,13 @@ interface BoardFiltersProps {
   updateFilters: (key: keyof BoardFiltersType, value: unknown) => void;
 }
 
-const BoardFilters: FC<BoardFiltersProps> = ({
-  filters,
-  updateFilters,
-}) => {
+const BoardFilters: FC<BoardFiltersProps> = ({ filters, updateFilters }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const resetFilters = () => {
     updateFilters('priority', initialFilters.priority);
     updateFilters('period', initialFilters.period);
   };
-
 
   const changedFiltersCount = [
     filters.priority !== initialFilters.priority,
@@ -33,7 +29,8 @@ const BoardFilters: FC<BoardFiltersProps> = ({
     updateFilters('priority', value as Task['priority']);
   };
 
-  const onChangePeriod = (value?: DateObject | DateObject[]) => updateFilters('period', value as DateObject[]);
+  const onChangePeriod = (value?: DateObject | DateObject[]) =>
+    updateFilters('period', value as DateObject[]);
 
   return (
     <div>
@@ -61,17 +58,14 @@ const BoardFilters: FC<BoardFiltersProps> = ({
         )}
       </div>
       {isOpen && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">          
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-lg shadow-sm">
           <StaticSelectFilter
             label="Важность"
             options={taskPriorityOptions}
             onChange={onChangePriority}
             value={filters.priority}
           />
-          <PeriodSelector 
-            onChange={onChangePeriod}
-            value={filters.period}
-          />
+          <PeriodSelector onChange={onChangePeriod} value={filters.period} />
         </div>
       )}
     </div>

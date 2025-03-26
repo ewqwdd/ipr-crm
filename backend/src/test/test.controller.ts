@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
 } from '@nestjs/common';
 import { TestService } from './test.service';
 import { CreateTestDTO } from './dto/create-test.dto';
@@ -21,7 +22,11 @@ export class TestController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getTests() {
-    return this.testService.getTests();
+  async getTests(
+    @Query('name') name: string,
+    @Query('startDate', { transform: (d) => new Date(d) }) startDate: Date,
+    @Query('endDate', { transform: (d) => new Date(d) }) endDate: Date,
+  ) {
+    return this.testService.getTests(name, startDate, endDate);
   }
 }
