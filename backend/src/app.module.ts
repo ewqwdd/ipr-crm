@@ -16,6 +16,7 @@ import { ProfileConstructorModule } from './profile-constructor/profile-construc
 import { MailService } from './utils/mailer/mailer';
 import { IprModule } from './ipr/ipr.module';
 import { NotificationModule } from './notification/notification.module';
+import { TestModule } from './test/test.module';
 
 console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
 
@@ -33,6 +34,7 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
     ProfileConstructorModule,
     IprModule,
     NotificationModule,
+    TestModule,
   ],
   controllers: [],
   providers: [

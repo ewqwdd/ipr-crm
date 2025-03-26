@@ -1,0 +1,27 @@
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
+import { TestService } from './test.service';
+import { CreateTestDTO } from './dto/create-test.dto';
+
+@Controller('test')
+export class TestController {
+  constructor(private readonly testService: TestService) {}
+
+  @Post()
+  @HttpCode(HttpStatus.OK)
+  async createTest(@Body() data: CreateTestDTO) {
+    return this.testService.createTest(data);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getTests() {
+    return this.testService.getTests();
+  }
+}

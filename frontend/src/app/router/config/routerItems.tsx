@@ -21,6 +21,8 @@ import { AdminBoard } from '@/pages/AdminBoard';
 import { IprList } from '@/pages/IprList';
 import { SkillsHistory } from '@/pages/SkillsHistory';
 import { SkillsHistoryElement } from '@/pages/SkillsHistoryElement';
+import { Tests } from '@/pages/Tests';
+import { TestCreate } from '@/pages/TestCreate';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -59,6 +61,13 @@ export const routerItems: RouterItemType[] = [
     path: '/skills/history/:id',
     element: <SkillsHistoryElement />,
     onlyAdmin: true,
+  },
+  { path: '/tests', element: <Tests />, onlyAdmin: true, curator: true },
+  {
+    path: '/tests/create',
+    element: <TestCreate />,
+    onlyAdmin: true,
+    curator: true,
   },
 ];
 

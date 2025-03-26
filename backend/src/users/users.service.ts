@@ -24,7 +24,11 @@ export class UsersService {
       include: {
         role: true,
         Spec: true,
-
+        notifications: {
+          where: {
+            watched: false,
+          },
+        },
         teams: {
           select: { teamId: true, team: { select: { name: true } } },
         },
