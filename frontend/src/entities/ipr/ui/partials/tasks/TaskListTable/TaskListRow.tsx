@@ -24,8 +24,6 @@ const TaskListRow: FC<Task & TaskListRowProps> = ({
   onChange,
   userId,
 }) => {
-  console.log('TaskListRow render');
-
   return (
     <tr>
       <td className="w-[40%] py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
