@@ -140,7 +140,6 @@ model Spec {
   description      String?
   users            User[]
   courses          Course[]
-  Test             Test[]
   rate360          Rate360[]
   growthPlans      IndividualGrowthPlan[]
   usersTeams       SpecsOnUserTeam[]
@@ -165,32 +164,42 @@ model User_Assigned_Test {
 // тесты
 model Test {
   id             Int      @id @default(autoincrement())
-  skillId        Int
-  specId         Int?
   name           String
-  anonymous      Boolean  @default(false)
-  description    String
-  access         String
-  slug           String
-  previewImage   String?
-  successMessage String?
+  description    String?
+  finishMessage  String?
   startDate      DateTime
-  endDate        DateTime
+  endDate        DateTime?
+  access         TestAccess @default(PRIVATE)
+  anonymous      Boolean  @default(false)
+  limitedByTime  Boolean  @default(false)
+  timeLimit      Int?
+  minimumScore   Int?
+  passedMessage  String?
+  failedMessage  String?
+  showScoreToUser Boolean  @default(false)
 
   testQuestions Question[]
   usersAssigned User_Assigned_Test[]
 
-  Spec     Spec?   @relation(fields: [specId], references: [id])
   archived Boolean @default(false)
+  hidden   Boolean @default(true)
 }
 
 model Question {
   id          Int      @id @default(autoincrement())
-  type        String
-  description String
+  type        QuestionType
+  label        String
+  description String?
   testId      Int
   order       Int
   options     Option[]
+  maxLength  Int?
+  maxNumber Int?
+  minNumber Int?
+  required  Boolean @default(true)
+  numberCorrectValue Int?
+  allowDecimal Boolean @default(false)
+  textCorrectValue String?
 
   Test Test @relation(fields: [testId], references: [id])
 }
@@ -520,4 +529,17 @@ enum NotificationType {
   RATE_CONFIRM
   TASK_ASSIGNED
   IPR_ASSIGNED
+}
+
+enum TestAccess {
+  PUBLIC
+  PRIVATE
+  LINK_ONLY
+}
+
+enum QuestionType {
+  SINGLE
+  MULTIPLE
+  NUMBER
+  TEXT
 }

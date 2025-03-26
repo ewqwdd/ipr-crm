@@ -3,6 +3,7 @@ import {
   HomeIcon,
   InboxIcon,
   MapIcon,
+  QuestionMarkCircleIcon,
 } from '@heroicons/react/outline';
 import { NavType, types360, typesTasks } from './types';
 import { User } from '@/entities/user';
@@ -46,6 +47,11 @@ export const userNavigation: (user: User | null) => NavType[] = (
           icon: InboxIcon,
           current: false,
           children: [{ name: 'Оценка 360', href: '/360rate', current: false }],
+        },
+        {
+          name: 'Тесты',
+          icon: QuestionMarkCircleIcon,
+          href: '/tests',
         },
       ]
     : []),

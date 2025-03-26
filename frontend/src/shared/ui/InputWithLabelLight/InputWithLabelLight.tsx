@@ -13,6 +13,7 @@ interface InputWithLabelProps extends InputHTMLAttributes<HTMLInputElement> {
   right?: ReactNode;
   error?: string;
   required?: boolean;
+  inputClassName?: string;
 }
 
 export default forwardRef(function InputWithLabel(
@@ -23,6 +24,7 @@ export default forwardRef(function InputWithLabel(
     right,
     error,
     required,
+    inputClassName,
     ...props
   }: InputWithLabelProps,
   ref: ForwardedRef<HTMLInputElement>,
@@ -50,7 +52,10 @@ export default forwardRef(function InputWithLabel(
         <input
           ref={ref}
           name={name}
-          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+          className={cva(
+            'shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md',
+            inputClassName,
+          )}
           {...props}
         />
         {error && (

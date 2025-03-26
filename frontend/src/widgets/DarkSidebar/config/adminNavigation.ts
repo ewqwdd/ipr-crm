@@ -5,6 +5,7 @@ import {
   HomeIcon,
   InboxIcon,
   MapIcon,
+  QuestionMarkCircleIcon,
   UserIcon,
   UsersIcon,
 } from '@heroicons/react/outline';
@@ -67,5 +68,10 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
     name: 'История версий',
     icon: FolderIcon,
     href: '/skills/history',
+  },
+  {
+    name: 'Тесты',
+    icon: QuestionMarkCircleIcon,
+    href: '/tests',
   },
 ];

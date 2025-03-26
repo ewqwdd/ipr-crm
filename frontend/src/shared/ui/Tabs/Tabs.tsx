@@ -56,7 +56,7 @@ export default memo(function Tabs({
                 )}
                 onClick={() => setCurrentTab(tab.key)}
               >
-                {tab.element}
+                {tab.element ?? tab.name}
               </button>
             ))}
           </nav>
