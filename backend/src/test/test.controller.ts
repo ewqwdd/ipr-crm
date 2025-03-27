@@ -30,8 +30,8 @@ export class TestController {
   @HttpCode(HttpStatus.OK)
   async getTests(
     @Query('name') name: string,
-    @Query('startDate', { transform: (d) => new Date(d) }) startDate: Date,
-    @Query('endDate', { transform: (d) => new Date(d) }) endDate: Date,
+    @Query('startDate', { transform: (d) => d ? new Date(d) : undefined }) startDate: Date,
+    @Query('endDate', { transform: (d) => d ? new Date(d) : undefined }) endDate: Date,
   ) {
     return this.testService.getTests(name, startDate, endDate);
   }
