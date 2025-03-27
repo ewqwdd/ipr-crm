@@ -7,7 +7,7 @@ const testsApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Test'],
+  tagTypes: ['Test', 'Assigned'],
   endpoints: (build) => ({
     getTests: build.query<Test[], void>({
       query: () => '/test',
@@ -20,6 +20,10 @@ const testsApi = createApi({
         body,
       }),
       invalidatesTags: ['Test'],
+    }),
+    getAssignedTests: build.query<Test[], void>({
+      query: () => '/test/assigned',
+      providesTags: ['Assigned'],
     }),
   }),
 });

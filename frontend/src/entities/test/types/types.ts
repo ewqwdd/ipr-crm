@@ -13,11 +13,13 @@ export type QuestionType = (typeof questionTypes)[number];
 export type TestAccessType = (typeof testAccessTypes)[number];
 
 export interface TestOption {
+  id: number;
   value: string;
   isCorrect?: boolean;
 }
 
 export interface Question {
+  id: number;
   type: QuestionType;
   label: string;
   description?: string;
@@ -31,8 +33,9 @@ export interface Question {
   allowDecimal?: boolean;
 }
 
-export interface CreateQuestion extends Question {
+export interface CreateQuestion extends Omit<Question, 'id' | 'options'> {
   error?: string;
+  options?: Omit<TestOption, 'id'>[];
 }
 
 export interface TestCreate {
@@ -59,6 +62,7 @@ export interface TestCreateStoreSchema extends TestCreate {
 }
 
 export interface Test {
+  id: number;
   name?: string;
   description?: string;
   passedMessage?: string;

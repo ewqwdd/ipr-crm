@@ -24,6 +24,11 @@ export const userNavigation: (user: User | null) => NavType[] = (
         count: user?.notifications.filter((n) => types360.includes(n.type))
           .length,
       },
+      {
+        name: 'Тесты',
+        href: '/assigned-tests',
+        icon: QuestionMarkCircleIcon,
+      },
     ],
   },
   {

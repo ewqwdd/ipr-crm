@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { CreateTestDTO } from './dto/create-test.dto';
+import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
+import { access } from 'fs';
 
 @Injectable()
 export class TestService {
@@ -82,6 +84,49 @@ export class TestService {
         },
       },
       ...(Object.keys(filters).length > 0 ? { where: filters } : {}),
+    });
+  }
+
+  async getTest(id: number, sessionInfo: GetSessionInfoDto) {
+    return this.prismaService.test.findUnique({
+      where: {
+        id,
+        OR: [
+          {
+            access: 'PUBLIC',
+          },
+          {
+            access: 'LINK_ONLY',
+          },
+          {
+            access: 'PRIVATE',
+            usersAssigned: {
+              some: {
+                userId: sessionInfo.id,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        testQuestions: {
+          include: {
+            options: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getAssignedTests(sessionInfo: GetSessionInfoDto) {
+    return await this.prismaService.test.findMany({
+      where: {
+        usersAssigned: {
+          some: {
+            userId: sessionInfo.id,
+          },
+        },
+      },
     });
   }
 }

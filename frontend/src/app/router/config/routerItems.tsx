@@ -23,6 +23,8 @@ import { SkillsHistory } from '@/pages/SkillsHistory';
 import { SkillsHistoryElement } from '@/pages/SkillsHistoryElement';
 import { Tests } from '@/pages/Tests';
 import { TestCreate } from '@/pages/TestCreate';
+import { TestAssesment } from '@/pages/TestAssesment';
+import { AssignedTests } from '@/pages/AssignedTests';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -68,6 +70,14 @@ export const routerItems: RouterItemType[] = [
     element: <TestCreate />,
     onlyAdmin: true,
     curator: true,
+  },
+  {
+    path: '/tests/:id',
+    element: <TestAssesment />,
+  },
+  {
+    path: '/assigned-tests',
+    element: <AssignedTests />,
   },
 ];
 
