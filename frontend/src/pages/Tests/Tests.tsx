@@ -1,3 +1,4 @@
+import { useModal } from '@/app/hooks/useModal';
 import { $api } from '@/shared/lib/$api';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
@@ -6,9 +7,13 @@ import { useNavigate } from 'react-router';
 
 export default function Tests() {
   const navigate = useNavigate();
+  const { openModal } = useModal();
 
   useEffect(() => {
     $api.get('/test');
+    openModal('TEST_ASSIGN_USERS', {
+      testId: 3,
+    });
   }, []);
 
   return (
