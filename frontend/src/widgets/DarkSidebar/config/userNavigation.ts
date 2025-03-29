@@ -28,6 +28,8 @@ export const userNavigation: (user: User | null) => NavType[] = (
         name: 'Тесты',
         href: '/assigned-tests',
         icon: QuestionMarkCircleIcon,
+        count: user?.notifications.filter((n) => n.type === 'TEST_ASSIGNED')
+          .length,
       },
     ],
   },

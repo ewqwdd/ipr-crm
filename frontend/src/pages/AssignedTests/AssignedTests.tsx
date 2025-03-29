@@ -1,20 +1,36 @@
-import { testsApi } from '@/shared/api/testsApi';
 import { Heading } from '@/shared/ui/Heading';
-import LoadingOverlay from '@/shared/ui/LoadingOverlay';
-import AssignedTestItem from './AssignedTestItem';
+import { Tabs } from '@/shared/ui/Tabs';
+import { useSearchParams } from 'react-router';
+import AssignedLists from './tabs/AssignedLists';
+import FinishedList from './tabs/FinishedList';
+
+const tabs = [
+  {
+    name: 'Назначенные',
+    key: 'tests',
+  },
+  {
+    name: 'Пройденные',
+    key: 'finished',
+  },
+];
 
 export default function AssignedTests() {
-  const { data, isLoading } = testsApi.useGetAssignedTestsQuery();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || tabs[0].key;
+  const setTab = (tab: string) => {
+    setSearchParams(`?tab=${tab}`);
+  };
 
   return (
-    <LoadingOverlay active={isLoading}>
-      <div className="px-8 py-10 flex flex-col h-full relative">
+    <div className="px-8 py-10 flex flex-col h-full relative">
+      <div className="flex justify-between">
         <Heading title="Назначено тесты" />
-
-        <div className="flex flex-col gap-1.5 mt-4">
-          {data?.map((test) => <AssignedTestItem key={test.id} test={test} />)}
-        </div>
+        <Tabs tabs={tabs} setCurrentTab={setTab} currentTab={activeTab} />
       </div>
-    </LoadingOverlay>
+
+      {activeTab === 'tests' && <AssignedLists />}
+      {activeTab === 'finished' && <FinishedList />}
+    </div>
   );
 }

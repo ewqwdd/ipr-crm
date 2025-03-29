@@ -1,3 +1,4 @@
+import { NotificationType } from '@/entities/notifications';
 import { MultiValue } from 'react-select';
 
 type IdName = { id: number; name: string };
@@ -7,13 +8,6 @@ export type Spec = IdName & {
   materials?: { id: number }[];
   description?: string;
 };
-
-export type NotificationType =
-  | 'RATE_ASSIGNED_SELF'
-  | 'RATE_ASSIGNED'
-  | 'RATE_CONFIRM'
-  | 'TASK_ASSIGNED'
-  | 'IPR_ASSIGNED';
 
 export interface Notification {
   id: number;

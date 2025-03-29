@@ -36,6 +36,7 @@ model User {
   userRates       UserRates[]
   userComments    UserComments[]
   planCurators    GrowthPlanCurator[]
+  answeredQuestions UserAnsweredQuestion[]
 
   // Self-relation fields
   mentees     User[] @relation("MentorMentees")
@@ -156,9 +157,40 @@ model User_Assigned_Test {
   startDate DateTime?
   endDate   DateTime?
   result    Resut?
+  finished  Boolean   @default(false)
+  availableFrom DateTime? @default(now())
 
   user User @relation(fields: [userId], references: [id])
   test Test @relation(fields: [testId], references: [id])
+  answeredQUestions UserAnsweredQuestion[]
+  notifications Notification[]
+}
+
+model UserAnsweredQuestion {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  questionId  Int
+  assignedTestId      Int
+  correct     Boolean?  
+
+      textAnswer String? 
+    numberAnswer Int?
+
+  user     User     @relation(fields: [userId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+  test     User_Assigned_Test     @relation(fields: [assignedTestId], references: [id])
+
+  options  UserAnsweredQuestionOption[]
+}
+
+model UserAnsweredQuestionOption {
+  id                 Int      @id @default(autoincrement())
+  userAnsweredQuestionId Int
+  optionId           Int
+  correct            Boolean?
+
+  userAnsweredQuestion UserAnsweredQuestion @relation(fields: [userAnsweredQuestionId], references: [id])
+  option               Option              @relation(fields: [optionId], references: [id])
 }
 
 // тесты
@@ -202,6 +234,7 @@ model Question {
   textCorrectValue String?
 
   Test Test @relation(fields: [testId], references: [id])
+  answeredQuestions UserAnsweredQuestion[]
 }
 
 model Option {
@@ -211,6 +244,7 @@ model Option {
   isCorrect  Boolean @default(false)
 
   Question Question @relation(fields: [questionId], references: [id])
+  pickedOptions UserAnsweredQuestionOption[]
 }
 
 // оценивающий 360
@@ -310,6 +344,7 @@ model Notification {
   date        DateTime  @default(now())
   watched     Boolean @default(false)
   type        NotificationType
+  assignedTestId Int?
   url         String?
 
   rateId Int?
@@ -319,6 +354,7 @@ model Notification {
   ipr IndividualGrowthPlan? @relation(fields: [iprId], references: [id])
   
   user User @relation(fields: [userId], references: [id])
+  assignedTest User_Assigned_Test? @relation(fields: [assignedTestId], references: [id])
 }
 
 model Team {
@@ -529,6 +565,7 @@ enum NotificationType {
   RATE_CONFIRM
   TASK_ASSIGNED
   IPR_ASSIGNED
+  TEST_ASSIGNED
 }
 
 enum TestAccess {
