@@ -1,14 +1,18 @@
+import { DateObject } from 'react-multi-date-picker';
 
-type TestTableFilter = {
-    // name: string;
-    // description: string;
-    // createdAt: string;
-    // updatedAt: string;
+export type TestTableFilterType = {
+  name: string;
+  status: 'VISSIBLE' | 'HIDDEN' | 'ALL';
+  period?: DateObject | DateObject[];
 };
 
-export const initialFilters: TestTableFilter = {
-    // name: '',
-    // description: '',
-    // createdAt: '',
-    // updatedAt: '',
+export const initialFilters: TestTableFilterType = {
+  name: '',
+  status: 'ALL',
+  period: undefined,
 };
+
+export const testStatusOptions = [
+  { value: 'VISSIBLE', label: 'Опубликован' },
+  { value: 'HIDDEN', label: 'Черновик' },
+];

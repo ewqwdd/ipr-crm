@@ -75,6 +75,7 @@ export interface Test {
   id: number;
   hidden?: boolean;
   name?: string;
+  archived?: boolean;
   description?: string;
   passedMessage?: string;
   failedMessage?: string;

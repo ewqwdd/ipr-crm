@@ -41,6 +41,7 @@ export interface User {
 export interface UserStoreSchema {
   user: User | null;
   isMounted: boolean;
+  isAdmin: boolean;
 }
 
 export interface UserFormData {

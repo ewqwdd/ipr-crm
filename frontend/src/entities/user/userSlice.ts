@@ -4,6 +4,7 @@ import { User, UserStoreSchema } from './types/types';
 const initialState: UserStoreSchema = {
   user: null,
   isMounted: false,
+  isAdmin: false,
 };
 
 const userSlice = createSlice({
@@ -16,6 +17,7 @@ const userSlice = createSlice({
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
       state.isMounted = true;
+      state.isAdmin = action.payload?.role.name === 'admin';
     },
     setNotificationRead: (state, action: PayloadAction<number>) => {
       if (state.user) {
@@ -28,6 +30,9 @@ const userSlice = createSlice({
           },
         );
       }
+    },
+    setIsAdmin: (state, action: PayloadAction<boolean>) => {
+      state.isAdmin = action.payload;
     },
   },
 });

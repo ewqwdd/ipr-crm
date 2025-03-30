@@ -24,6 +24,7 @@ import { PasswordResetModal } from '@/widgets/PasswordResetModal';
 import AddTaskModal from '@/widgets/AddTaskModal';
 import { DeleteTaskModal, TaskPreviewModal } from '../ipr';
 import { TestAssignUsersModal } from '../test';
+import RateTestsModal from '../test/ui/RateTestsModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -87,6 +88,8 @@ const ModalWrapper: FC = () => {
       return <TaskPreviewModal {...updatedModalProps} />;
     case 'TEST_ASSIGN_USERS':
       return <TestAssignUsersModal {...updatedModalProps} />;
+    case 'RATE_TESTS':
+      return <RateTestsModal {...updatedModalProps} />;
     default:
       break;
   }

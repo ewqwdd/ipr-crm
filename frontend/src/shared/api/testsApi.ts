@@ -1,7 +1,7 @@
 import { AssignedTest, Test, TestCreate } from '@/entities/test';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const testsApi = createApi({
+export const testsApi = createApi({
   reducerPath: 'testsApi',
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_URL,
@@ -58,4 +58,13 @@ const testsApi = createApi({
   }),
 });
 
-export { testsApi };
+export const {
+  useGetTestsQuery,
+  useCreateTestMutation,
+  useGetAssignedTestsQuery,
+  useGetTestQuery,
+  useGetAssignedTestQuery,
+  useAssignUsersMutation,
+  useFinishTestMutation,
+  useGetFinishedTestsQuery,
+} = testsApi;

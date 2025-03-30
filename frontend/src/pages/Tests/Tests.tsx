@@ -4,13 +4,15 @@ import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useNavigate } from 'react-router';
 import TestTable from './table';
-import { testsApi } from '@/shared/api/testsApi';
+// import { testsApi } from '@/shared/api/testsApi';
 import { useEffect } from 'react';
 import { useLoading } from '@/app/hooks/useLoading';
+import { useGetTests } from '@/shared/hooks/useGetTests';
 
 export default function Tests() {
   const navigate = useNavigate();
-  const { data: tests, isLoading } = testsApi.useGetTestsQuery();
+  // const { data: tests, isLoading } = testsApi.useGetTestsQuery();
+  const { tests, isLoading } = useGetTests();
   const { showLoading, hideLoading } = useLoading();
 
   useEffect(() => {
