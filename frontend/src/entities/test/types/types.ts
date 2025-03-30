@@ -103,4 +103,6 @@ export interface AssignedTest {
   // result: any | null; // уточни тип, если знаешь структуру result
   finished: boolean;
   test: Test;
+  score: number | null;
+  questionsCount?: number;
 }

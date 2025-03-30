@@ -1,9 +1,12 @@
-import { useAppSelector } from '@/app';
+import { useAppDispatch, useAppSelector } from '@/app';
 import { AssignedTest } from '@/entities/test';
 import { Card } from '@/shared/ui/Card';
 import FirstScreen from './FirstScreen/FirstScreen';
 import QuestionScreen from './QuestionScreen/QuestionScreen';
 import { CountdownTimer } from '@/shared/ui/CountdownTimer';
+import { useEffect, useState } from 'react';
+import { $api } from '@/shared/lib/$api';
+import { testsApi } from '@/shared/api/testsApi';
 
 interface TestQuestionProps {
   test: AssignedTest;
@@ -12,6 +15,20 @@ interface TestQuestionProps {
 
 export default function TestQuestion({ test, onFinish }: TestQuestionProps) {
   const screen = useAppSelector((state) => state.testAssesment.screen);
+  const dispatch = useAppDispatch();
+  const [startDate, setStartDate] = useState<string>(test.startDate);
+
+  useEffect(() => {
+    if (test && !test.startDate && screen !== -1) {
+      $api.post(`/test/assigned/${test.id}/start`);
+      dispatch(
+        testsApi.util.updateQueryData('getAssignedTest', test.id, (draft) => {
+          draft.startDate = new Date().toISOString();
+        }),
+      );
+      setStartDate(new Date().toISOString());
+    }
+  }, [test, dispatch, screen]);
 
   return (
     <>
@@ -28,13 +45,17 @@ export default function TestQuestion({ test, onFinish }: TestQuestionProps) {
         )}
       </Card>
       <div className="mt-4 self-center">
-        {test.test.limitedByTime && test.test.timeLimit && (
-          <CountdownTimer
-            onFinish={onFinish}
-            startDate={test.startDate}
-            duration={test.test.timeLimit * 60}
-          />
-        )}
+        {test.test.limitedByTime &&
+          test.test.timeLimit &&
+          (screen !== -1 ? (
+            <CountdownTimer
+              onFinish={onFinish}
+              startDate={startDate}
+              duration={test.test.timeLimit * 60}
+            />
+          ) : (
+            <div>{test.test.timeLimit}:00</div>
+          ))}
       </div>
     </>
   );

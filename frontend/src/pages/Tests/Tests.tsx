@@ -11,7 +11,6 @@ import { useGetTests } from '@/shared/hooks/useGetTests';
 
 export default function Tests() {
   const navigate = useNavigate();
-  // const { data: tests, isLoading } = testsApi.useGetTestsQuery();
   const { tests, isLoading } = useGetTests();
   const { showLoading, hideLoading } = useLoading();
 
@@ -22,14 +21,6 @@ export default function Tests() {
       hideLoading();
     }
   }, [isLoading, showLoading, hideLoading]);
-  // const { openModal } = useModal();
-
-  // useEffect(() => {
-  //   $api.get('/test');
-  //   openModal('TEST_ASSIGN_USERS', {
-  //     testId: 3,
-  //   });
-  // }, []);
 
   return (
     <div className="px-8 py-10 flex flex-col h-full relative">

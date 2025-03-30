@@ -18,8 +18,9 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
     name: 'Доска задач',
     icon: MapIcon,
     href: '/board',
-    count: user?.notifications.filter((n) => typesTasks.includes(n.type))
-      .length,
+    count: user?.notifications.filter(
+      (n) => typesTasks.includes(n.type) && !n.watched,
+    ).length,
   },
   {
     name: 'Мне назначено',
@@ -28,15 +29,17 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
       {
         name: 'Оценка 360',
         href: '/progress',
-        count: user?.notifications.filter((n) => types360.includes(n.type))
-          .length,
+        count: user?.notifications.filter(
+          (n) => types360.includes(n.type) && !n.watched,
+        ).length,
       },
       {
         name: 'Тесты',
         href: '/assigned-tests',
         icon: QuestionMarkCircleIcon,
-        count: user?.notifications.filter((n) => n.type === 'TEST_ASSIGNED')
-          .length,
+        count: user?.notifications.filter(
+          (n) => n.type === 'TEST_ASSIGNED' && !n.watched,
+        ).length,
       },
     ],
   },

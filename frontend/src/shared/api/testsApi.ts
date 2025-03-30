@@ -55,6 +55,10 @@ export const testsApi = createApi({
       query: () => '/test/finished',
       providesTags: ['Finished'],
     }),
+    getFinishedTestForUser: build.query<AssignedTest, number>({
+      query: (id) => `/test/finished/${id}`,
+      providesTags: (_, __, id) => [{ type: 'Finished', id }],
+    }),
   }),
 });
 

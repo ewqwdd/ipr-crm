@@ -28,7 +28,7 @@ export default function TestScore() {
       <StatsItem label="Всего вопросов:" value={questions.length} />
       <StatsItem label="Всего вопросов с ответами:" value={count} />
       <TimeLimit />
-      <MinScore />
+      <MinScore maxScore={count} />
     </div>
   );
 }

@@ -1,22 +1,24 @@
 import { testsApi } from '@/shared/api/testsApi';
-import { Card } from '@/shared/ui/Card';
-import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import FinishedListItem from './FinishedListItem';
+import { EmptyState } from '@/shared/ui/EmptyState';
+import { useEffect } from 'react';
+import { hideLoading, showLoading } from '@/app/store/loadingSlice';
 
 export default function FinishedList() {
   const { data, isLoading } = testsApi.useGetFinishedTestsQuery();
 
+  useEffect(() => {
+    if (isLoading) {
+      showLoading();
+    } else {
+      hideLoading();
+    }
+  }, [isLoading, showLoading, hideLoading]);
+
   return (
-    <LoadingOverlay active={isLoading}>
-      <div className="flex flex-col gap-1.5 mt-4">
-        {data?.map((test) => (
-          <Card className="[&>div]:flex [&>div]:gap-4 [&>div]:p-3 [&>div]:px-6  [&>div]:items-center">
-            <h3 className="font-semibold text-gray-900">{test.test?.name}</h3>
-            <span className="text-gray-500 text-sm">
-              {test.endDate?.slice(0, 10)}
-            </span>
-          </Card>
-        ))}
-      </div>
-    </LoadingOverlay>
+    <div className="flex flex-col gap-1.5 mt-4 h-full">
+      {data?.map((test) => <FinishedListItem test={test} key={test.id} />)}
+      {data?.length === 0 && <EmptyState />}
+    </div>
   );
 }

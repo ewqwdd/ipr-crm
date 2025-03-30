@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { AssignUsersDTO } from './dto/assign-users.dto';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
+import { ToggleHiddenDTO } from './dto/toggle-hidden.dto';
 
 @Controller('test')
 export class TestController {
@@ -115,5 +117,40 @@ export class TestController {
     @Body() data: AnswerQuestionDTO,
   ) {
     return this.testService.answerQuestion(Number(id), sessionInfo, data);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get('/finished/:id')
+  async getFinishedTestById(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.testService.getFinishedTestForUser(Number(id), sessionInfo);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Put('/:id/hidden')
+  async hideTest(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Body() body: ToggleHiddenDTO,
+  ) {
+    return this.testService.toggleTestHidden(
+      Number(id),
+      body.hidden,
+      sessionInfo,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('/:testId/notify')
+  async notifyTest(
+    @Param('testId') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.testService.notifyTestAssigned(Number(id), sessionInfo);
   }
 }

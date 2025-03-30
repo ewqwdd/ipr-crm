@@ -8,14 +8,24 @@ import { NotificationsService } from 'src/utils/notifications/notifications.serv
 import { CreateTestDTO } from './dto/create-test.dto';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, QuestionType } from '@prisma/client';
 import { AssignUsersDTO } from './dto/assign-users.dto';
+import { ExcelService } from 'src/utils/excel/excel.service';
+import { Response } from 'express';
+
+type AssignedType = Prisma.User_Assigned_TestGetPayload<{
+  include: {
+    answeredQUestions: { include: { options: true } };
+    test: { include: { testQuestions: { include: { options: true } } } };
+  };
+}>;
 
 @Injectable()
 export class TestService {
   constructor(
     private prismaService: PrismaService,
     private notificationsService: NotificationsService,
+    private excelService: ExcelService,
   ) {}
 
   async createTest(data: CreateTestDTO) {
@@ -105,22 +115,22 @@ export class TestService {
     return this.prismaService.test.findUnique({
       where: {
         id,
-        // OR: [
-        //   {
-        //     access: 'PUBLIC',
-        //   },
-        //   {
-        //     access: 'LINK_ONLY',
-        //   },
-        //   {
-        //     access: 'PRIVATE',
-        //     usersAssigned: {
-        //       some: {
-        //         userId: sessionInfo.id,
-        //       },
-        //     },
-        //   },
-        // ],
+        OR: [
+          {
+            access: 'PUBLIC',
+          },
+          {
+            access: 'LINK_ONLY',
+          },
+          {
+            access: 'PRIVATE',
+            usersAssigned: {
+              some: {
+                userId: sessionInfo.id,
+              },
+            },
+          },
+        ],
       },
       include: {
         testQuestions: {
@@ -140,14 +150,19 @@ export class TestService {
           finished: false,
           OR: [
             {
-              startDate: {
+              availableFrom: {
                 lte: new Date(new Date().setHours(23, 59, 59, 999)),
               },
             },
             {
-              startDate: null,
+              availableFrom: null,
             },
           ],
+          test: {
+            // TODO: добавить проверку на доступность теста
+            // finished: false,
+            archived: false,
+          },
         },
         include: {
           test: {
@@ -167,7 +182,7 @@ export class TestService {
   }
 
   async getAssignedTest(testId: number, sessionInfo: GetSessionInfoDto) {
-    return await this.prismaService.user_Assigned_Test.findFirst({
+    const test = await this.prismaService.user_Assigned_Test.findFirst({
       where: {
         id: testId,
         userId: sessionInfo.id,
@@ -182,10 +197,11 @@ export class TestService {
           },
         ],
         test: {
-          access: 'PRIVATE',
           archived: false,
-          hidden: false,
+          // TODO: добавить проверку на доступность теста
+          // hidden: false,
         },
+        finished: false,
       },
       include: {
         test: {
@@ -199,13 +215,21 @@ export class TestService {
         },
       },
     });
+
+    if (!test) {
+      throw new NotFoundException('Тест не найден');
+    }
+
+    return test;
   }
 
   async startAssesment(testId: number, sessionInfo: GetSessionInfoDto) {
     const test = await this.prismaService.user_Assigned_Test.findFirst({
       where: {
-        userId: sessionInfo.id,
-        testId,
+        user: {
+          id: sessionInfo.id,
+        },
+        id: testId,
         finished: false,
       },
     });
@@ -338,6 +362,16 @@ export class TestService {
       allowedUsers = userIds.filter((id) => teamUserIds.has(id));
     }
 
+    const test = await this.prismaService.test.findFirst({
+      where: {
+        id: testId,
+      },
+    });
+
+    if (!test) {
+      throw new NotFoundException('Тест не найден');
+    }
+
     const existingAssignments =
       await this.prismaService.user_Assigned_Test.findMany({
         where: {
@@ -359,22 +393,35 @@ export class TestService {
       (id) => !userIdsWithActiveTest.has(id),
     );
 
+    let sendNotifs = false;
+
+    const now = new Date();
+
+    const isStartedAssign = !startDate || new Date(startDate) <= now;
+    const isStartedTest = !test.startDate || test.startDate <= now;
+    const isNotEndedTest = !test.endDate || test.endDate >= now;
+
+    if (!test.hidden && isStartedAssign && isStartedTest && isNotEndedTest) {
+      sendNotifs = true;
+    }
+
     const createdAssignments =
       await this.prismaService.user_Assigned_Test.createMany({
         data: filteredUserIds.map((userId) => ({
           userId,
           testId,
           availableFrom: startDate ? new Date(startDate) : undefined,
+          firstNotificationSent: sendNotifs,
         })),
         skipDuplicates: true, // на всякий случай
       });
 
-    filteredUserIds.forEach(async (userId) => {
-      await this.notificationsService.sendTestAssignedNotification(
-        userId,
-        testId,
+    if (sendNotifs) {
+      const promisesNotifs = filteredUserIds.map((userId) =>
+        this.notificationsService.sendTestAssignedNotification(userId, testId),
       );
-    });
+      await Promise.all(promisesNotifs);
+    }
 
     return createdAssignments;
   }
@@ -392,15 +439,387 @@ export class TestService {
     });
   }
 
+  projectFields = (test: AssignedType) => {
+    return {
+      ...test,
+      questionsCount: test.test.testQuestions.length,
+      answeredQUestions: null,
+      test: {
+        ...test.test,
+        testQuestions: null,
+      },
+    };
+  };
+
+  countScore(test: AssignedType) {
+    return test.answeredQUestions.reduce((acc, question) => {
+      const questionData = test.test.testQuestions.find(
+        (q) => q.id === question.questionId,
+      );
+      if (!questionData) return acc;
+      if (
+        questionData.type === QuestionType.SINGLE &&
+        questionData.options.find((o) => o.isCorrect)
+      ) {
+        const answeredOption = question.options?.[0];
+        const foundOption = questionData.options?.find(
+          (o) => o.id === answeredOption?.optionId,
+        );
+        if (foundOption.isCorrect) {
+          return acc + 1;
+        }
+      } else if (
+        questionData.type === QuestionType.MULTIPLE &&
+        questionData.options.find((o) => o.isCorrect)
+      ) {
+        const allCorrect = questionData.options?.filter((o) => o.isCorrect);
+        const answeredOptions = question.options?.map((o) => o.optionId) || [];
+        const allAnsweredCorrect = allCorrect?.every((o) =>
+          answeredOptions.includes(o.id),
+        );
+        if (
+          allAnsweredCorrect &&
+          allCorrect?.length === answeredOptions.length
+        ) {
+          return acc + 1;
+        }
+      } else if (
+        questionData.type === QuestionType.TEXT &&
+        questionData.textCorrectValue
+      ) {
+        if (question.textAnswer === questionData.textCorrectValue) {
+          return acc + 1;
+        }
+      } else if (
+        questionData.type === QuestionType.NUMBER &&
+        questionData.numberCorrectValue
+      ) {
+        if (question.numberAnswer === questionData.numberCorrectValue) {
+          return acc + 1;
+        }
+      }
+      return acc;
+    }, 0);
+  }
+
+  async getFinishedTestForUser(
+    assignedId: number,
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    const test = await this.prismaService.user_Assigned_Test.findFirst({
+      where: {
+        id: assignedId,
+        userId: sessionInfo.id,
+      },
+      include: {
+        answeredQUestions: {
+          include: {
+            options: true,
+          },
+        },
+        test: {
+          include: {
+            testQuestions: {
+              include: {
+                options: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!test) throw new NotFoundException('Тест не найден');
+
+    if (test.test.showScoreToUser) {
+      const count = this.countScore(test);
+      return {
+        ...this.projectFields(test),
+        score: count,
+      };
+    }
+    return this.projectFields(test);
+  }
+
   async getFinishedTests(sessionInfo: GetSessionInfoDto) {
-    return await this.prismaService.user_Assigned_Test.findMany({
+    const finishedTests = await this.prismaService.user_Assigned_Test.findMany({
       where: {
         userId: sessionInfo.id,
         finished: true,
       },
       include: {
-        test: true,
+        test: {
+          include: {
+            testQuestions: {
+              include: {
+                options: true,
+              },
+            },
+          },
+        },
+        answeredQUestions: {
+          include: {
+            options: true,
+          },
+        },
       },
+    });
+
+    const withResults = finishedTests.map((test) => {
+      if (test.test.showScoreToUser) {
+        const score = this.countScore(test);
+        return {
+          ...this.projectFields(test),
+          score,
+        };
+      } else {
+        return this.projectFields(test);
+      }
+    });
+    return withResults;
+  }
+
+  async checkAccess(sessionInfo: GetSessionInfoDto) {
+    if (sessionInfo.role === 'admin') {
+      return true;
+    }
+
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        id: sessionInfo.id,
+      },
+      include: {
+        teamCurator: { select: { id: true } },
+      },
+    });
+
+    if (user?.teamCurator?.length > 0) return user;
+    throw new ForbiddenException();
+  }
+
+  async toggleTestHidden(
+    testid: number,
+    hidden: boolean,
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    await this.checkAccess(sessionInfo);
+    const test = await this.prismaService.test.findFirst({
+      where: {
+        id: testid,
+      },
+    });
+    if (!test) throw new NotFoundException('Тест не найден');
+
+    return await this.prismaService.test.update({
+      where: {
+        id: testid,
+      },
+      data: {
+        hidden,
+      },
+    });
+  }
+
+  async notifyTestAssigned(testId: number, sessionInfo: GetSessionInfoDto) {
+    const access = await this.checkAccess(sessionInfo);
+
+    let filters = {};
+    if (typeof access !== 'boolean') {
+      filters = {
+        usersAssigned: {
+          every: {
+            user: {
+              teams: {
+                some: {
+                  id: {
+                    in: access.teamCurator.map((team) => team.id),
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+    }
+
+    const test = await this.prismaService.user_Assigned_Test.findMany({
+      where: {
+        test: {
+          ...filters,
+          id: testId,
+          hidden: false,
+          archived: false,
+        },
+        finished: false,
+      },
+    });
+
+    if (!test) throw new NotFoundException('Тест не найден');
+    const userIds = test.map((t) => t.userId);
+    const promisesNotifs = userIds.map((userId) =>
+      this.notificationsService.sendTestAssignedNotification(userId, testId),
+    );
+    await Promise.all(promisesNotifs);
+    return true;
+  }
+
+  async generateResults(
+    res: Response,
+    testId: number,
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    const access = await this.checkAccess(sessionInfo);
+
+    let filters = {};
+    if (typeof access !== 'boolean') {
+      filters = {
+        usersAssigned: {
+          every: {
+            user: {
+              teams: {
+                some: {
+                  id: {
+                    in: access.teamCurator.map((team) => team.id),
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+    }
+
+    const test = await this.prismaService.user_Assigned_Test.findMany({
+      where: {
+        test: {
+          ...filters,
+          id: testId,
+        },
+      },
+      include: {
+        test: {
+          include: {
+            testQuestions: {
+              include: {
+                options: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            username: true,
+          },
+        },
+        answeredQUestions: {
+          include: {
+            options: true,
+          },
+        },
+      },
+    });
+    if (!test) throw new NotFoundException('Тест не найден');
+
+    const questions = test.flatMap((t) => t.test.testQuestions);
+    const ids = Array.from(new Set(questions.map((q) => q.id)));
+
+    const keys = [
+      'id',
+      'name',
+      ...ids.flatMap((id) => [String(id), `ans_${id}`]),
+      'score',
+      'finished',
+    ];
+
+    const results = test.map<Record<(typeof keys)[number], number | string>>(
+      (t) => {
+        let count = 0;
+        const questionsToExcel = {};
+
+        t.test.testQuestions.forEach((q) => {
+          const answer = t.answeredQUestions.find((a) => a.questionId === q.id);
+
+          let value;
+          let isCorrect = false;
+          if (q.type === QuestionType.SINGLE) {
+            const answeredOption = answer?.options?.[0];
+            const foundOption = q.options?.find(
+              (o) => o.id === answeredOption?.optionId,
+            );
+            value = foundOption?.value || '';
+            if (foundOption?.isCorrect) {
+              count++;
+              isCorrect = true;
+            }
+          } else if (q.type === QuestionType.MULTIPLE) {
+            const allCorrect = q.options?.filter((o) => o.isCorrect);
+            const answeredOptions =
+              answer?.options?.map((o) => o.optionId) || [];
+            const allAnsweredCorrect = allCorrect?.every((o) =>
+              answeredOptions.includes(o.id),
+            );
+            value =
+              answeredOptions
+                .map((o) => q.options?.find((opt) => opt.id === o)?.value)
+                .join(', ') || '';
+            if (
+              allAnsweredCorrect &&
+              allCorrect?.length === answeredOptions.length
+            ) {
+              count++;
+              isCorrect = true;
+            }
+          } else if (q.type === QuestionType.TEXT) {
+            value = answer?.textAnswer || '';
+            if (answer?.textAnswer === q.textCorrectValue) {
+              count++;
+              isCorrect = true;
+            }
+          } else if (q.type === QuestionType.NUMBER) {
+            value = answer?.numberAnswer || '';
+            if (answer?.numberAnswer === q.numberCorrectValue) {
+              count++;
+              isCorrect = true;
+            }
+          }
+
+          questionsToExcel[String(q.id)] = value;
+          questionsToExcel[`ans_${q.id}`] = isCorrect ? 'Да' : 'Нет';
+        });
+
+        return {
+          id: t.userId,
+          name: t.user?.username || 'Неизвестный',
+          ...questionsToExcel,
+          score: count,
+          finished: t.finished ? 'Да' : 'Нет',
+        };
+      },
+    );
+
+    const questionsHeaders = {};
+
+    ids.forEach((id) => {
+      const question = questions.find((q) => q.id === id);
+      if (question) {
+        questionsHeaders[String(id)] = question.label;
+        questionsHeaders[`ans_${id}`] = 'Ответ';
+      }
+    });
+
+    const headers: Record<(typeof keys)[number], string> = {
+      id: 'ID',
+      name: 'Имя',
+      ...questionsHeaders,
+      score: 'Баллы',
+      finished: 'Завершен',
+    };
+
+    await this.excelService.generateExcel(res, {
+      keys,
+      headers,
+      name: 'Результаты теста',
+      rows: results,
     });
   }
 }
