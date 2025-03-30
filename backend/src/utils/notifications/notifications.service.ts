@@ -137,6 +137,36 @@ export class NotificationsService {
     });
   }
 
+  async sendTestAssignedNotification(userId: number, testAssignedId?: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (process.env.MAIL_ENABLED === 'true') {
+      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+      const message = 'Вам назначен тест';
+      const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=tests`;
+
+      const html = this.generateText(heading, message, link);
+
+      await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
+    }
+
+    await this.prismaService.notification.create({
+      data: {
+        title: 'Вам назначена оценка',
+        userId: userId,
+        type: 'TEST_ASSIGNED',
+        url: '/assigned-tests?tab=tests',
+        ...(Number.isInteger(testAssignedId)
+          ? { assignedTestId: testAssignedId }
+          : {}),
+      },
+    });
+  }
+
   async readNotifications(ids: number[], userId: number) {
     await this.prismaService.notification.updateMany({
       where: {

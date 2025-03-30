@@ -12,6 +12,7 @@ import { boardReducer } from '@/entities/ipr';
 import { loadingReducer } from './loadingSlice';
 import { testCreateReducer } from '@/entities/test/testCreateSlice';
 import { testsApi } from '@/shared/api/testsApi';
+import { testAssesmentReducer } from '@/entities/test/testAssesmentSlice';
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   rates: ratesReducer,
   board: boardReducer,
   testCreate: testCreateReducer,
+  testAssesment: testAssesmentReducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [universalApi.reducerPath]: universalApi.reducer,
   [teamsApi.reducerPath]: teamsApi.reducer,

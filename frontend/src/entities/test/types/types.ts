@@ -13,11 +13,13 @@ export type QuestionType = (typeof questionTypes)[number];
 export type TestAccessType = (typeof testAccessTypes)[number];
 
 export interface TestOption {
+  id: number;
   value: string;
   isCorrect?: boolean;
 }
 
 export interface Question {
+  id: number;
   type: QuestionType;
   label: string;
   description?: string;
@@ -31,8 +33,9 @@ export interface Question {
   allowDecimal?: boolean;
 }
 
-export interface CreateQuestion extends Question {
+export interface CreateQuestion extends Omit<Question, 'id' | 'options'> {
   error?: string;
+  options?: Omit<TestOption, 'id'>[];
 }
 
 export interface TestCreate {
@@ -58,8 +61,18 @@ export interface TestCreateStoreSchema extends TestCreate {
   errors: Partial<Record<keyof TestCreate, string>>;
 }
 
+export interface Answer {
+  textAnswer?: string;
+  numberAnswer?: string;
+  optionAnswer?: number[];
+}
+
+export interface TestAssesmentStoreSchema {
+  screen: number;
+  answers: Record<number, Answer>;
+}
 export interface Test {
-  id?: number;
+  id: number;
   hidden?: boolean;
   name?: string;
   description?: string;
@@ -72,9 +85,21 @@ export interface Test {
   access?: TestAccessType;
   anonymous?: boolean;
 
-  questions: Question[];
+  testQuestions: Question[];
 
   limitedByTime?: boolean;
   timeLimit?: number;
   minimumScore?: number;
+}
+
+export interface AssignedTest {
+  id: number;
+  userId: number;
+  testId: number;
+  rate360Id: number | null;
+  startDate: string; // или `Date`, если ты парсишь в дату
+  endDate: string | null; // или `Date | null`
+  // result: any | null; // уточни тип, если знаешь структуру result
+  finished: boolean;
+  test: Test;
 }
