@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../db/prisma.service';
 import { MailService } from '../mailer/mailer';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class NotificationsService {
@@ -151,12 +152,12 @@ export class NotificationsService {
 
       const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
+      await this.mailService.sendMail(user.email, 'Вам назначен тест', html);
     }
 
     await this.prismaService.notification.create({
       data: {
-        title: 'Вам назначена оценка',
+        title: 'Вам назначен тест',
         userId: userId,
         type: 'TEST_ASSIGNED',
         url: '/assigned-tests?tab=tests',
@@ -165,6 +166,57 @@ export class NotificationsService {
           : {}),
       },
     });
+  }
+
+  @Cron('0 * * * *')
+  async sendTestAssignedCron() {
+    const tests = await this.prismaService.user_Assigned_Test.findMany({
+      where: {
+        OR: [
+          {
+            availableFrom: null,
+          },
+          {
+            availableFrom: {
+              lte: new Date(),
+            },
+          },
+        ],
+        firstNotificationSent: false,
+        test: {
+          hidden: false,
+          archived: false,
+        },
+      },
+      include: {
+        test: {
+          select: {
+            startDate: true,
+            endDate: true,
+          },
+        },
+      },
+    });
+
+    const filtered = tests.filter((test) => {
+      return (
+        (!test.test.startDate || test.test.startDate >= new Date()) &&
+        (!test.test.endDate || test.test.endDate <= new Date())
+      );
+    });
+
+    for (const test of filtered) {
+      await this.prismaService.user_Assigned_Test.update({
+        where: {
+          id: test.id,
+        },
+        data: {
+          firstNotificationSent: true,
+        },
+      });
+
+      await this.sendTestAssignedNotification(test.userId, test.id);
+    }
   }
 
   async readNotifications(ids: number[], userId: number) {

@@ -17,6 +17,7 @@ import { MailService } from './utils/mailer/mailer';
 import { IprModule } from './ipr/ipr.module';
 import { NotificationModule } from './notification/notification.module';
 import { TestModule } from './test/test.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
 
@@ -35,6 +36,7 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
     IprModule,
     NotificationModule,
     TestModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [

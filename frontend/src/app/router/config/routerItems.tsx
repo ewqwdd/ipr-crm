@@ -25,6 +25,7 @@ import { Tests } from '@/pages/Tests';
 import { TestCreate } from '@/pages/TestCreate';
 import { TestAssesment } from '@/pages/TestAssesment';
 import { AssignedTests } from '@/pages/AssignedTests';
+import { FinishedTest } from '@/pages/FinishedTest';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -78,6 +79,10 @@ export const routerItems: RouterItemType[] = [
   {
     path: '/assigned-tests',
     element: <AssignedTests />,
+  },
+  {
+    path: '/test-finish/:id',
+    element: <FinishedTest />,
   },
 ];
 

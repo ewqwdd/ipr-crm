@@ -5,10 +5,14 @@ import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { digitRegex } from '@/shared/lib/regex';
 import { testCreateActions } from '@/entities/test/testCreateSlice';
 
-export default memo(function MinScore() {
+interface MinScoreProps {
+  maxScore: number;
+}
+
+export default memo(function MinScore({ maxScore }: MinScoreProps) {
   const dispatch = useAppDispatch();
   const minimumScore = useAppSelector((state) => state.testCreate.minimumScore);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(!!minimumScore);
 
   const onToggleMinScore = () => {
     if (checked) {
@@ -24,7 +28,10 @@ export default memo(function MinScore() {
 
   const onMinScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (!digitRegex.test(value) && value !== '') return;
+    if (value !== '') {
+      if (!digitRegex.test(value)) return;
+      if (parseInt(value) > maxScore) return;
+    }
     dispatch(
       testCreateActions.setField({
         field: 'minimumScore',
@@ -44,7 +51,7 @@ export default memo(function MinScore() {
         <InputWithLabelLight
           className="mb-2"
           label="Зачетный минимум"
-          placeholder="0"
+          placeholder={`Максимум ${maxScore}`}
           value={minimumScore}
           onChange={onMinScoreChange}
         />

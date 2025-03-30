@@ -12,9 +12,11 @@ export default function Tests() {
   useEffect(() => {
     $api.get('/test');
     openModal('TEST_ASSIGN_USERS', {
-      testId: 3,
+      testId: 16,
     });
   }, []);
+
+  console.log('TESTS');
 
   return (
     <div className="px-8 py-10 flex flex-col h-full relative">

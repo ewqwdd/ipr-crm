@@ -21,15 +21,17 @@ export const userNavigation: (user: User | null) => NavType[] = (
         name: 'Оценка 360',
         href: '/progress',
         current: false,
-        count: user?.notifications.filter((n) => types360.includes(n.type))
-          .length,
+        count: user?.notifications.filter(
+          (n) => types360.includes(n.type) && !n.watched,
+        ).length,
       },
       {
         name: 'Тесты',
         href: '/assigned-tests',
         icon: QuestionMarkCircleIcon,
-        count: user?.notifications.filter((n) => n.type === 'TEST_ASSIGNED')
-          .length,
+        count: user?.notifications.filter(
+          (n) => n.type === 'TEST_ASSIGNED' && !n.watched,
+        ).length,
       },
     ],
   },
@@ -38,8 +40,9 @@ export const userNavigation: (user: User | null) => NavType[] = (
     icon: MapIcon,
     current: false,
     href: '/board',
-    count: user?.notifications.filter((n) => typesTasks.includes(n.type))
-      .length,
+    count: user?.notifications.filter(
+      (n) => typesTasks.includes(n.type) && !n.watched,
+    ).length,
   },
   ...((user?.teamCurator?.length ?? 0) > 0
     ? [

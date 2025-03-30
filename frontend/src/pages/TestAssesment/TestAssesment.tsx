@@ -1,11 +1,10 @@
 import { useAppDispatch } from '@/app';
+import { hideLoading, showLoading } from '@/app/store/loadingSlice';
 import { TestQuestion } from '@/entities/test';
 import { testAssesmentActions } from '@/entities/test/testAssesmentSlice';
 import { testsApi } from '@/shared/api/testsApi';
-import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
-import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router';
@@ -52,34 +51,29 @@ export default function TestAssesment() {
   }, [finishState.isError]);
 
   useEffect(() => {
-    if (data && !data.startDate) {
-      $api.post(`/test/assigned/${data.id}/start`);
-      dispatch(
-        testsApi.util.updateQueryData('getAssignedTest', data.id, (draft) => {
-          draft.startDate = new Date().toISOString();
-        }),
-      );
-    }
-  }, [data, dispatch]);
-
-  useEffect(() => {
     if (isError) {
       toast.error('Ошибка при загрузке теста');
     }
   }, [isError]);
 
+  useEffect(() => {
+    if (isLoading) {
+      showLoading();
+    } else {
+      hideLoading();
+    }
+  }, [isLoading, showLoading, hideLoading]);
+
   return (
-    <LoadingOverlay active={isLoading}>
-      <div
-        className={cva('px-8 py-10 flex flex-col h-full relative', {
-          'animate-pulse pointer-events-none': finishState.isLoading,
-        })}
-      >
-        <div className="flex justify-between items-center">
-          <Heading title="Прохождение теста" />
-        </div>
-        {data && <TestQuestion onFinish={onFinish} test={data} />}
+    <div
+      className={cva('px-8 py-10 flex flex-col h-full relative', {
+        'animate-pulse pointer-events-none': finishState.isLoading,
+      })}
+    >
+      <div className="flex justify-between items-center">
+        <Heading title="Прохождение теста" />
       </div>
-    </LoadingOverlay>
+      {data && <TestQuestion onFinish={onFinish} test={data} />}
+    </div>
   );
 }

@@ -159,6 +159,7 @@ model User_Assigned_Test {
   result    Resut?
   finished  Boolean   @default(false)
   availableFrom DateTime? @default(now())
+  firstNotificationSent Boolean @default(false)
 
   user User @relation(fields: [userId], references: [id])
   test Test @relation(fields: [testId], references: [id])
