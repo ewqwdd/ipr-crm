@@ -59,6 +59,8 @@ export interface TestCreateStoreSchema extends TestCreate {
 }
 
 export interface Test {
+  id?: number;
+  hidden?: boolean;
   name?: string;
   description?: string;
   passedMessage?: string;

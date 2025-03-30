@@ -1,15 +1,23 @@
-import { $api } from '@/shared/lib/$api';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import TestTable from './table';
+import { testsApi } from '@/shared/api/testsApi';
+import { useEffect } from 'react';
+import { useLoading } from '@/app/hooks/useLoading';
 
 export default function Tests() {
   const navigate = useNavigate();
+  const { data: tests, isLoading } = testsApi.useGetTestsQuery();
+  const { showLoading, hideLoading } = useLoading();
 
   useEffect(() => {
-    $api.get('/test');
-  }, []);
+    if (isLoading) {
+      showLoading();
+    } else {
+      hideLoading();
+    }
+  }, [isLoading, showLoading, hideLoading]);
 
   return (
     <div className="px-8 py-10 flex flex-col h-full relative">
@@ -22,6 +30,7 @@ export default function Tests() {
           Создать новый тест
         </PrimaryButton>
       </div>
+      <TestTable tests={tests || []} />
     </div>
   );
 }
