@@ -1,41 +1,23 @@
-import { useAppDispatch, useAppSelector } from '@/app';
 import DatePickerLight from '@/shared/ui/DatePickerLight';
 import { DateObject } from 'react-multi-date-picker';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 
-export default function EndDate() {
-  const endDate = useAppSelector((state) => state.testCreate.endDate);
-  const dispatch = useAppDispatch();
+interface EndDateProps {
+  onChange: (date?: DateObject | DateObject[]) => void;
+  endDate?: Date;
+  onClear: () => void;
+}
 
-  const handleChange = (date?: DateObject | DateObject[]) => {
-    if (Array.isArray(date)) {
-      return;
-    }
-    dispatch(
-      testCreateActions.setField({ field: 'endDate', value: date?.toDate() }),
-    );
-  };
-
+export default function EndDate({ onChange, endDate, onClear }: EndDateProps) {
   return (
     <div className="flex gap-2">
       <DatePickerLight
         label="Дата окончания"
-        onChange={handleChange}
+        onChange={onChange}
         value={endDate}
       />
       {endDate && (
-        <SoftButton
-          className="h-[38px] self-end"
-          onClick={() =>
-            dispatch(
-              testCreateActions.setField({
-                field: 'endDate',
-                value: undefined,
-              }),
-            )
-          }
-        >
+        <SoftButton className="h-[38px] self-end" onClick={onClear}>
           Очистить
         </SoftButton>
       )}

@@ -13,6 +13,7 @@ interface InputWithLabelProps extends SelectHTMLAttributes<HTMLSelectElement> {
   right?: ReactNode;
   error?: string;
   required?: boolean;
+  containerClassName?: string;
 }
 
 export default forwardRef(function SelectLight(
@@ -24,6 +25,7 @@ export default forwardRef(function SelectLight(
     error,
     children,
     required,
+    containerClassName,
     ...props
   }: InputWithLabelProps,
   ref: ForwardedRef<HTMLSelectElement>,
@@ -40,7 +42,7 @@ export default forwardRef(function SelectLight(
   }
 
   return (
-    <div>
+    <div className={containerClassName}>
       {(labelElem || right) && (
         <div className="flex justify-between">
           {labelElem}

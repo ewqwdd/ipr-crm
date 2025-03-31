@@ -1,5 +1,4 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
+import { CreateQuestion } from '@/entities/test/types/types';
 import { cva } from '@/shared/lib/cva';
 import { digitRegex, floatRegex } from '@/shared/lib/regex';
 import { Checkbox } from '@/shared/ui/Checkbox';
@@ -9,23 +8,27 @@ import { useEffect, useState } from 'react';
 interface NumberOptionsProps {
   index: number;
   correctRequired: boolean;
+  questions: CreateQuestion[];
+  onNumberCorrectChange: (index: number, value: string) => void;
+  onAllowDecimalChange: (index: number, value: boolean) => void;
+  onMaxNumberChange: (index: number, value: string | undefined) => void;
+  onMinNumberChange: (index: number, value: string | undefined) => void;
 }
 
 export default function NumberOptions({
   index,
   correctRequired,
+  onNumberCorrectChange,
+  questions,
+  onAllowDecimalChange,
+  onMaxNumberChange,
+  onMinNumberChange,
 }: NumberOptionsProps) {
-  const type = useAppSelector(
-    (state) => state.testCreate.questions[index].type,
-  );
-  const allowDecimal = useAppSelector(
-    (state) => state.testCreate.questions[index].allowDecimal,
-  );
-  const dispatch = useAppDispatch();
+  const type = questions[index].type;
+  const allowDecimal = questions[index].allowDecimal;
+  const numberCorrectValue = questions[index].numberCorrectValue?.toString();
+
   const [maxLengthToggle, setMaxLengthToggle] = useState(false);
-  const numberCorrectValue = useAppSelector((state) =>
-    state.testCreate.questions[index].numberCorrectValue?.toString(),
-  );
 
   const [minValue, setMinValue] = useState('');
   const [maxValue, setMaxValue] = useState('');
@@ -34,70 +37,35 @@ export default function NumberOptions({
     const value = e.target.value;
     const regex = allowDecimal ? floatRegex : digitRegex;
     if (!regex.test(value) && value !== '') return;
-    dispatch(
-      testCreateActions.setQuestionField({
-        index,
-        field: 'numberCorrectValue',
-        value: value,
-      }),
-    );
+    onNumberCorrectChange(index, value);
   };
 
   const allowDecimalChange = () => {
-    dispatch(
-      testCreateActions.setQuestionField({
-        index,
-        field: 'allowDecimal',
-        value: !allowDecimal,
-      }),
-    );
+    onAllowDecimalChange(index, !allowDecimal);
   };
 
   useEffect(() => {
     if (!allowDecimal) {
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'numberCorrectValue',
-          value: (numberCorrectValue ?? '')?.split('.')[0],
-        }),
-      );
+      onNumberCorrectChange(index, (numberCorrectValue ?? '')?.split('.')[0]);
     }
-  }, [allowDecimal, numberCorrectValue, index, dispatch]);
+  }, [allowDecimal, numberCorrectValue, index, onNumberCorrectChange]);
 
   useEffect(() => {
     if (maxLengthToggle) {
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'maxNumber',
-          value: maxValue,
-        }),
-      );
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'minNumber',
-          value: minValue,
-        }),
-      );
+      onMaxNumberChange(index, maxValue);
+      onMinNumberChange(index, minValue);
     } else {
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'maxNumber',
-          value: undefined,
-        }),
-      );
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'minNumber',
-          value: undefined,
-        }),
-      );
+      onMaxNumberChange(index, undefined);
+      onMinNumberChange(index, undefined);
     }
-  }, [maxLengthToggle, minValue, maxValue, index, dispatch]);
+  }, [
+    maxLengthToggle,
+    minValue,
+    maxValue,
+    index,
+    onMaxNumberChange,
+    onMinNumberChange,
+  ]);
 
   const onChangeMinValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

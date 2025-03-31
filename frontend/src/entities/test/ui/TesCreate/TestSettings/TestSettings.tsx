@@ -3,13 +3,50 @@ import ShowScoreToUser from './ShowScoreToUser';
 import TaskDescription from './TaskDescription';
 import TaskName from './TaskName';
 
-export default function TestSettings() {
+interface TestSettingsProps {
+  name?: string;
+  description?: string;
+  passedMessage?: string;
+  showScoreToUser?: boolean;
+  errors: {
+    name?: string;
+    description?: string;
+    passedMessage?: string;
+  };
+  onChangeName: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeDescription: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChangeShowScore: () => void;
+  onChangePassedMessage: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}
+
+export default function TestSettings({
+  description,
+  errors,
+  name,
+  onChangeDescription,
+  onChangeName,
+  onChangePassedMessage,
+  onChangeShowScore,
+  passedMessage,
+  showScoreToUser,
+}: TestSettingsProps) {
   return (
     <div className="flex flex-col gap-8 mt-6 max-w-2xl">
-      <TaskName />
-      <TaskDescription />
-      <ShowScoreToUser />
-      <PassedMessage />
+      <TaskName name={name} error={errors?.name} onChange={onChangeName} />
+      <TaskDescription
+        description={description}
+        error={errors?.description}
+        onChange={onChangeDescription}
+      />
+      <ShowScoreToUser
+        showScoreToUser={!!showScoreToUser}
+        onChange={onChangeShowScore}
+      />
+      <PassedMessage
+        onChange={onChangePassedMessage}
+        passedMessage={passedMessage}
+        error={errors?.passedMessage}
+      />
     </div>
   );
 }

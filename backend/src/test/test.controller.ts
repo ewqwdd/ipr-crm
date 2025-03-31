@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -8,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { TestService } from './test.service';
@@ -18,6 +20,7 @@ import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { AssignUsersDTO } from './dto/assign-users.dto';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
 import { ToggleHiddenDTO } from './dto/toggle-hidden.dto';
+import { Response } from 'express';
 
 @Controller('test')
 export class TestController {
@@ -152,5 +155,26 @@ export class TestController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     return this.testService.notifyTestAssigned(Number(id), sessionInfo);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get('/:id/excel')
+  async getTestExcel(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Res() res: Response,
+  ) {
+    return this.testService.generateResults(res, Number(id), sessionInfo);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Delete('/:id')
+  async deleteTest(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.testService.deleteTest(Number(id), sessionInfo);
   }
 }

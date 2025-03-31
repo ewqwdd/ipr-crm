@@ -1,12 +1,28 @@
-import { useAppSelector } from '@/app';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import StatsItem from './StatsItem';
 import TimeLimit from './TimeLimit';
 import MinScore from './MinScore';
+import { CreateQuestion } from '@/entities/test/types/types';
 
-export default function TestScore() {
-  const questions = useAppSelector((state) => state.testCreate.questions);
+interface TestScoreProps {
+  questions: CreateQuestion[];
+  limitByTime: boolean;
+  timeLimit?: number;
+  onToggleLimitByTime: (value: boolean) => void;
+  onTimeLimitChange: (value: string) => void;
+  minimumScore?: number;
+  onChangeMinimumScore: (value?: string) => void;
+}
 
+export default memo(function TestScore({
+  questions,
+  limitByTime,
+  onChangeMinimumScore,
+  onTimeLimitChange,
+  onToggleLimitByTime,
+  minimumScore,
+  timeLimit,
+}: TestScoreProps) {
   const count = useMemo(() => {
     return questions.reduce((acc, question) => {
       if (question.type === 'TEXT' && question.textCorrectValue) {
@@ -27,8 +43,17 @@ export default function TestScore() {
     <div className="flex flex-col gap-4 mt-6 max-w-xl">
       <StatsItem label="Всего вопросов:" value={questions.length} />
       <StatsItem label="Всего вопросов с ответами:" value={count} />
-      <TimeLimit />
-      <MinScore maxScore={count} />
+      <TimeLimit
+        limitByTime={limitByTime}
+        onTimeLimitChange={onTimeLimitChange}
+        onToggleLimitByTime={onToggleLimitByTime}
+        timeLimit={timeLimit}
+      />
+      <MinScore
+        maxScore={count}
+        onChangeMinimumScore={onChangeMinimumScore}
+        minimumScore={minimumScore}
+      />
     </div>
   );
-}
+});

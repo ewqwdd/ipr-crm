@@ -1,27 +1,22 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import DatePickerLight from '@/shared/ui/DatePickerLight';
+import { memo } from 'react';
 import { DateObject } from 'react-multi-date-picker';
 
-export default function StartDate() {
-  const startDate = useAppSelector((state) => state.testCreate.startDate);
-  const dispatch = useAppDispatch();
+interface StartDateProps {
+  startDate?: Date;
+  onChange: (date?: DateObject | DateObject[]) => void;
+}
 
-  const handleChange = (date?: DateObject | DateObject[]) => {
-    if (Array.isArray(date)) {
-      return;
-    }
-    dispatch(
-      testCreateActions.setField({ field: 'startDate', value: date?.toDate() }),
-    );
-  };
-
+export default memo(function StartDate({
+  onChange,
+  startDate,
+}: StartDateProps) {
   return (
     <DatePickerLight
       required
       label="Дата старта"
-      onChange={handleChange}
+      onChange={onChange}
       value={startDate}
     />
   );
-}
+});

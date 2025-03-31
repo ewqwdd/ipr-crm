@@ -1,33 +1,17 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { TextArea } from '@/shared/ui/TextArea';
+import { memo } from 'react';
 
-export default function TaskDescription() {
-  const description = useAppSelector((state) => state.testCreate.description);
-  const error = useAppSelector((state) => state.testCreate.errors.description);
-  const dispatch = useAppDispatch();
+interface TaskDescriptionProps {
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  description?: string;
+  error?: string;
+}
 
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch(
-      testCreateActions.setField({
-        field: 'description',
-        value: e.target.value,
-      }),
-    );
-    if (e.target.value.length === 0) {
-      dispatch(
-        testCreateActions.setError({
-          field: 'description',
-          error: 'Поле обязательно для заполнения',
-        }),
-      );
-    } else {
-      dispatch(
-        testCreateActions.setError({ field: 'description', error: undefined }),
-      );
-    }
-  };
-
+export default memo(function TaskDescription({
+  onChange,
+  description,
+  error,
+}: TaskDescriptionProps) {
   return (
     <TextArea
       label="Описание"
@@ -36,4 +20,4 @@ export default function TaskDescription() {
       error={error}
     />
   );
-}
+});

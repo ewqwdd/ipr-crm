@@ -2,7 +2,6 @@ import { Modal } from '@/shared/ui/Modal';
 import { FC } from 'react';
 import { CheckCircleIcon, MinusCircleIcon } from '@heroicons/react/outline';
 import { testsApi } from '@/shared/api/testsApi';
-import { usersApi } from '@/shared/api/usersApi';
 import { Progress } from '@/shared/ui/Progress';
 
 type TestResult = {
@@ -27,24 +26,18 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
 }) => {
   const { testId } = modalData as { testId?: number };
   const { data: finishedTests, isLoading: finishedTestsLoading } =
-    testsApi.useGetFinishedTestsQuery();
-  const { data, isLoading: usersLoading } = usersApi.useGetUsersQuery({});
-  const users = data?.users || [];
+    testsApi.useGetTestsQuery();
 
-  const filteredUsers = finishedTests
-    ?.filter((user) => {
-      return user.testId === testId;
-    })
-    .map(({ userId, finished }) => {
-      const user = users.find((user) => user.id === userId);
-      return {
-        id: `${userId}_${testId}`,
-        name: `${user?.firstName} ${user?.lastName}`,
-        percent: finished ? 100 : 0,
-      };
-    });
+  const test = finishedTests?.find((test) => test.id === testId);
+  const users = test?.usersAssigned?.map((user) => {
+    return {
+      id: `${user.userId}_${testId}`,
+      name: `${user.user?.firstName} ${user.user?.lastName}`,
+      percent: user.finished ? 100 : 0,
+    };
+  });
 
-  const loading = finishedTestsLoading || usersLoading;
+  const loading = finishedTestsLoading;
 
   return (
     <Modal
@@ -59,7 +52,7 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
           Тест: {modalData?.testName}
         </div>
         <div className="flex flex-col divide-y divide-gray-200">
-          {filteredUsers?.map(({ id, name, percent }) => (
+          {users?.map(({ id, name, percent }) => (
             <div
               key={id}
               className="flex items-center justify-between py-3 gap-4"
@@ -76,7 +69,7 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
             </div>
           ))}
         </div>
-        {filteredUsers?.length === 0 && (
+        {users?.length === 0 && (
           <div className="text-gray-500 text-sm text-center py-4">
             Нет завершенных тестов
           </div>

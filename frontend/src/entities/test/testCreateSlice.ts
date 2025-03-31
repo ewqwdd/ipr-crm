@@ -136,6 +136,13 @@ const testCreateSlice = createSlice({
     ) {
       state.questions[action.payload.index].error = action.payload.error;
     },
+    deleteQuestion(state, action: PayloadAction<{ index: number }>) {
+      const { index } = action.payload;
+      if (state.questions[index]) {
+        state.questions.splice(index, 1);
+        state.errors.questions = undefined;
+      }
+    },
     clear(state) {
       Object.keys(state).forEach((key) => {
         delete state[key as keyof TestCreateStoreSchema];

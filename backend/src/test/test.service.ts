@@ -84,14 +84,66 @@ export class TestService {
     return created;
   }
 
+  countScore(test: AssignedType) {
+    return test.answeredQUestions.reduce((acc, question) => {
+      const questionData = test.test.testQuestions.find(
+        (q) => q.id === question.questionId,
+      );
+      if (!questionData) return acc;
+      if (
+        questionData.type === QuestionType.SINGLE &&
+        questionData.options.find((o) => o.isCorrect)
+      ) {
+        const answeredOption = question.options?.[0];
+        const foundOption = questionData.options?.find(
+          (o) => o.id === answeredOption?.optionId,
+        );
+        if (foundOption.isCorrect) {
+          return acc + 1;
+        }
+      } else if (
+        questionData.type === QuestionType.MULTIPLE &&
+        questionData.options.find((o) => o.isCorrect)
+      ) {
+        const allCorrect = questionData.options?.filter((o) => o.isCorrect);
+        const answeredOptions = question.options?.map((o) => o.optionId) || [];
+        const allAnsweredCorrect = allCorrect?.every((o) =>
+          answeredOptions.includes(o.id),
+        );
+        if (
+          allAnsweredCorrect &&
+          allCorrect?.length === answeredOptions.length
+        ) {
+          return acc + 1;
+        }
+      } else if (
+        questionData.type === QuestionType.TEXT &&
+        questionData.textCorrectValue
+      ) {
+        if (question.textAnswer === questionData.textCorrectValue) {
+          return acc + 1;
+        }
+      } else if (
+        questionData.type === QuestionType.NUMBER &&
+        questionData.numberCorrectValue
+      ) {
+        if (question.numberAnswer === questionData.numberCorrectValue) {
+          return acc + 1;
+        }
+      }
+      return acc;
+    }, 0);
+  }
+
   async getTests(name?: string, startDate?: Date, endDate?: Date) {
     const filters = {
       ...(name ? { name: { contains: name } } : {}),
       ...(startDate ? { startDate: { gte: startDate } } : {}),
       ...(endDate ? { endDate: { lte: endDate } } : {}),
+      archived: false,
     };
 
-    return this.prismaService.test.findMany({
+    const tests = await this.prismaService.test.findMany({
       include: {
         testQuestions: {
           include: {
@@ -100,15 +152,42 @@ export class TestService {
         },
         usersAssigned: {
           select: {
+            id: true,
             finished: true,
             userId: true,
             startDate: true,
             endDate: true,
+            availableFrom: true,
+            user: {
+              select: {
+                username: true,
+                firstName: true,
+                lastName: true,
+                id: true,
+              },
+            },
+            answeredQUestions: {
+              select: {
+                questionId: true,
+                textAnswer: true,
+                numberAnswer: true,
+                options: {
+                  select: {
+                    optionId: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
       ...(Object.keys(filters).length > 0 ? { where: filters } : {}),
+      orderBy: {
+        id: 'desc',
+      },
     });
+
+    return tests;
   }
 
   async getTest(id: number, sessionInfo: GetSessionInfoDto) {
@@ -172,6 +251,9 @@ export class TestService {
               startDate: true,
             },
           },
+        },
+        orderBy: {
+          id: 'desc',
         },
       })
     ).filter(
@@ -451,57 +533,6 @@ export class TestService {
     };
   };
 
-  countScore(test: AssignedType) {
-    return test.answeredQUestions.reduce((acc, question) => {
-      const questionData = test.test.testQuestions.find(
-        (q) => q.id === question.questionId,
-      );
-      if (!questionData) return acc;
-      if (
-        questionData.type === QuestionType.SINGLE &&
-        questionData.options.find((o) => o.isCorrect)
-      ) {
-        const answeredOption = question.options?.[0];
-        const foundOption = questionData.options?.find(
-          (o) => o.id === answeredOption?.optionId,
-        );
-        if (foundOption.isCorrect) {
-          return acc + 1;
-        }
-      } else if (
-        questionData.type === QuestionType.MULTIPLE &&
-        questionData.options.find((o) => o.isCorrect)
-      ) {
-        const allCorrect = questionData.options?.filter((o) => o.isCorrect);
-        const answeredOptions = question.options?.map((o) => o.optionId) || [];
-        const allAnsweredCorrect = allCorrect?.every((o) =>
-          answeredOptions.includes(o.id),
-        );
-        if (
-          allAnsweredCorrect &&
-          allCorrect?.length === answeredOptions.length
-        ) {
-          return acc + 1;
-        }
-      } else if (
-        questionData.type === QuestionType.TEXT &&
-        questionData.textCorrectValue
-      ) {
-        if (question.textAnswer === questionData.textCorrectValue) {
-          return acc + 1;
-        }
-      } else if (
-        questionData.type === QuestionType.NUMBER &&
-        questionData.numberCorrectValue
-      ) {
-        if (question.numberAnswer === questionData.numberCorrectValue) {
-          return acc + 1;
-        }
-      }
-      return acc;
-    }, 0);
-  }
-
   async getFinishedTestForUser(
     assignedId: number,
     sessionInfo: GetSessionInfoDto,
@@ -562,6 +593,9 @@ export class TestService {
             options: true,
           },
         },
+      },
+      orderBy: {
+        id: 'desc',
       },
     });
 
@@ -803,7 +837,7 @@ export class TestService {
       const question = questions.find((q) => q.id === id);
       if (question) {
         questionsHeaders[String(id)] = question.label;
-        questionsHeaders[`ans_${id}`] = 'Ответ';
+        questionsHeaders[`ans_${id}`] = 'Правильный ответ';
       }
     });
 
@@ -820,6 +854,26 @@ export class TestService {
       headers,
       name: 'Результаты теста',
       rows: results,
+    });
+  }
+
+  async deleteTest(testId: number, sessionInfo: GetSessionInfoDto) {
+    if (sessionInfo.role !== 'admin') throw new ForbiddenException();
+
+    const test = await this.prismaService.test.findFirst({
+      where: {
+        id: testId,
+      },
+    });
+    if (!test) throw new NotFoundException('Тест не найден');
+
+    return await this.prismaService.test.update({
+      where: {
+        id: testId,
+      },
+      data: {
+        archived: true,
+      },
     });
   }
 }

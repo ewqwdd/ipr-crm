@@ -5,10 +5,11 @@ import { useIsAdmin } from './useIsAdmin';
 interface UseGetTestsResult {
   tests: Test[] | undefined;
   isLoading: boolean;
+  isFetching: boolean;
 }
 
 export const useGetTests = (): UseGetTestsResult => {
-  const { data: tests, isLoading } = useGetTestsQuery();
+  const { data: tests, isLoading, isFetching } = useGetTestsQuery();
   const isAdmin = useIsAdmin();
 
   const filteredTests = tests?.filter((test: Test) => {
@@ -19,5 +20,6 @@ export const useGetTests = (): UseGetTestsResult => {
   return {
     tests: filteredTests,
     isLoading,
+    isFetching,
   };
 };

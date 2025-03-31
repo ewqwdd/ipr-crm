@@ -59,6 +59,21 @@ export const testsApi = createApi({
       query: (id) => `/test/finished/${id}`,
       providesTags: (_, __, id) => [{ type: 'Finished', id }],
     }),
+    toggleHidden: build.mutation<void, { id: number; hidden: boolean }>({
+      query: ({ id, hidden }) => ({
+        url: `/test/${id}/hidden`,
+        method: 'PUT',
+        body: { hidden },
+      }),
+      invalidatesTags: ['Test', 'Assigned'],
+    }),
+    testDelete: build.mutation<void, number>({
+      query: (id) => ({
+        url: `/test/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Test', 'Assigned'],
+    }),
   }),
 });
 

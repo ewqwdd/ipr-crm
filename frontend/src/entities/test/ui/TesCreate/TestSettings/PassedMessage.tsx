@@ -1,25 +1,17 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { TextArea } from '@/shared/ui/TextArea';
+import { memo } from 'react';
 
-export default function PassedMessage() {
-  const passedMessage = useAppSelector(
-    (state) => state.testCreate.passedMessage,
-  );
-  const error = useAppSelector(
-    (state) => state.testCreate.errors.passedMessage,
-  );
-  const dispatch = useAppDispatch();
+interface PassedMessageProps {
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  passedMessage?: string;
+  error?: string;
+}
 
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch(
-      testCreateActions.setField({
-        field: 'passedMessage',
-        value: e.target.value,
-      }),
-    );
-  };
-
+export default memo(function PassedMessage({
+  onChange,
+  error,
+  passedMessage,
+}: PassedMessageProps) {
   return (
     <TextArea
       label="Сообщение при завершении прохождения"
@@ -28,4 +20,4 @@ export default function PassedMessage() {
       error={error}
     />
   );
-}
+});

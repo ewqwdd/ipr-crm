@@ -1,7 +1,5 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import {
-  QuestionType,
+  CreateQuestion,
   questionTypeLabels,
   questionTypes,
 } from '@/entities/test/types/types';
@@ -10,26 +8,23 @@ import { memo } from 'react';
 
 interface QuestionTypeProps {
   index: number;
+  questions: CreateQuestion[];
+  onChange: (index: number, e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export default memo(function QuestionTypeSelect({ index }: QuestionTypeProps) {
-  const dispatch = useAppDispatch();
-  const type = useAppSelector(
-    (state) => state.testCreate.questions[index].type,
-  );
-
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(
-      testCreateActions.setQuestionField({
-        index,
-        field: 'type',
-        value: e.target.value as QuestionType,
-      }),
-    );
-  };
+export default memo(function QuestionTypeSelect({
+  index,
+  questions,
+  onChange,
+}: QuestionTypeProps) {
+  const type = questions[index].type;
 
   return (
-    <SelectLight value={type} onChange={onChange}>
+    <SelectLight
+      containerClassName="flex-1"
+      value={type}
+      onChange={(e) => onChange(index, e)}
+    >
       {questionTypes.map((type) => (
         <option key={type} value={type}>
           {questionTypeLabels[type]}

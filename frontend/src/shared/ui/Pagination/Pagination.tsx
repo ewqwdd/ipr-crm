@@ -33,9 +33,10 @@ export default function Pagination({
       <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
-            Showing <span className="font-medium">1</span> to{' '}
-            <span className="font-medium">{(page - 1) * limit}</span> of{' '}
-            <span className="font-medium">{count}</span> results
+            Showing{' '}
+            <span className="font-medium">{(page - 1) * limit + 1}</span> to{' '}
+            <span className="font-medium">{Math.min(page * limit, count)}</span>{' '}
+            of <span className="font-medium">{count}</span> results
           </p>
         </div>
         <div>

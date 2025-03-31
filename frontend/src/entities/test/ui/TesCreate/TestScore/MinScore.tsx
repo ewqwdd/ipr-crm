@@ -1,27 +1,24 @@
-import { useAppDispatch, useAppSelector } from '@/app';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { memo, useState } from 'react';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { digitRegex } from '@/shared/lib/regex';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 
 interface MinScoreProps {
   maxScore: number;
+  minimumScore?: number;
+  onChangeMinimumScore: (value?: string) => void;
 }
 
-export default memo(function MinScore({ maxScore }: MinScoreProps) {
-  const dispatch = useAppDispatch();
-  const minimumScore = useAppSelector((state) => state.testCreate.minimumScore);
+export default memo(function MinScore({
+  maxScore,
+  minimumScore,
+  onChangeMinimumScore,
+}: MinScoreProps) {
   const [checked, setChecked] = useState(!!minimumScore);
 
   const onToggleMinScore = () => {
     if (checked) {
-      dispatch(
-        testCreateActions.setField({
-          field: 'minimumScore',
-          value: undefined,
-        }),
-      );
+      onChangeMinimumScore(undefined);
     }
     setChecked(!checked);
   };
@@ -32,12 +29,7 @@ export default memo(function MinScore({ maxScore }: MinScoreProps) {
       if (!digitRegex.test(value)) return;
       if (parseInt(value) > maxScore) return;
     }
-    dispatch(
-      testCreateActions.setField({
-        field: 'minimumScore',
-        value: value,
-      }),
-    );
+    onChangeMinimumScore(value);
   };
 
   return (

@@ -1,5 +1,4 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
+import { CreateQuestion } from '@/entities/test/types/types';
 import { cva } from '@/shared/lib/cva';
 import { digitRegex } from '@/shared/lib/regex';
 import { Checkbox } from '@/shared/ui/Checkbox';
@@ -9,21 +8,23 @@ import { useEffect, useState } from 'react';
 interface TextOptionsProps {
   index: number;
   correctRequired: boolean;
+  onMaxLengthChange: (index: number, value: string | undefined) => void;
+  onTextCorrectChange: (index: number, value: string) => void;
+  questions: CreateQuestion[];
 }
 
 export default function TextOptions({
   index,
   correctRequired,
+  onMaxLengthChange,
+  onTextCorrectChange,
+  questions,
 }: TextOptionsProps) {
-  const type = useAppSelector(
-    (state) => state.testCreate.questions[index].type,
-  );
-  const dispatch = useAppDispatch();
+  const type = questions[index].type;
+
   const [maxLengthToggle, setMaxLengthToggle] = useState(false);
   const [maxLength, setMaxLength] = useState('');
-  const textCorrectValue = useAppSelector(
-    (state) => state.testCreate.questions[index].textCorrectValue,
-  );
+  const textCorrectValue = questions[index].textCorrectValue;
 
   const onChangeMaxLength = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -35,43 +36,19 @@ export default function TextOptions({
   const onChangeCorrect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (!maxLengthToggle || value.length <= Number(maxLength)) {
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'textCorrectValue',
-          value: value,
-        }),
-      );
+      onTextCorrectChange(index, value);
     } else {
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'textCorrectValue',
-          value: value.slice(0, Number(maxLength)),
-        }),
-      );
+      onTextCorrectChange(index, value.slice(0, Number(maxLength)));
     }
   };
 
   useEffect(() => {
     if (maxLengthToggle) {
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'maxLength',
-          value: maxLength,
-        }),
-      );
+      onMaxLengthChange(index, maxLength);
     } else {
-      dispatch(
-        testCreateActions.setQuestionField({
-          index,
-          field: 'maxLength',
-          value: undefined,
-        }),
-      );
+      onMaxLengthChange(index, undefined);
     }
-  }, [maxLengthToggle, maxLength, index, dispatch]);
+  }, [maxLengthToggle, maxLength, index, onMaxLengthChange]);
 
   if (type !== 'TEXT') return null;
 

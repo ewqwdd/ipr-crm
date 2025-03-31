@@ -1,28 +1,17 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
+import { memo } from 'react';
 
-export default function TaskName() {
-  const name = useAppSelector((state) => state.testCreate.name);
-  const error = useAppSelector((state) => state.testCreate.errors.name);
-  const dispatch = useAppDispatch();
+interface TaskNameProps {
+  name?: string;
+  error?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(
-      testCreateActions.setField({ field: 'name', value: e.target.value }),
-    );
-    if (e.target.value.length === 0) {
-      dispatch(
-        testCreateActions.setError({
-          field: 'name',
-          error: 'Поле обязательно для заполнения',
-        }),
-      );
-    } else {
-      dispatch(testCreateActions.setError({ field: 'name', error: undefined }));
-    }
-  };
-
+export default memo(function TaskName({
+  error,
+  name,
+  onChange,
+}: TaskNameProps) {
   return (
     <InputWithLabelLight
       label="Название теста"
@@ -31,4 +20,4 @@ export default function TaskName() {
       error={error}
     />
   );
-}
+});

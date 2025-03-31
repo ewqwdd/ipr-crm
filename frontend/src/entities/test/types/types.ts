@@ -91,6 +91,27 @@ export interface Test {
   limitedByTime?: boolean;
   timeLimit?: number;
   minimumScore?: number;
+
+  usersAssigned: {
+    user: {
+      username: string;
+      id: number;
+      firstName?: string;
+      lastName?: string;
+    };
+    userId: number;
+    id: number;
+    finished: boolean;
+    startDate: string | null;
+    endDate: string | null;
+    availableFrom: string | null;
+    answeredQUestions: {
+      numberAnswer?: number;
+      questionId: number;
+      textAnswer?: string;
+      options: { optionId: number }[];
+    }[];
+  }[];
 }
 
 export interface AssignedTest {

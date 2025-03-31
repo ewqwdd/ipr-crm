@@ -7,11 +7,12 @@ import TestTable from './table';
 // import { testsApi } from '@/shared/api/testsApi';
 import { useEffect } from 'react';
 import { useLoading } from '@/app/hooks/useLoading';
-import { useGetTests } from '@/shared/hooks/useGetTests';
+import { testsApi } from '@/shared/api/testsApi';
 
 export default function Tests() {
   const navigate = useNavigate();
-  const { tests, isLoading } = useGetTests();
+  const { data: tests, isLoading, isFetching } = testsApi.useGetTestsQuery();
+
   const { showLoading, hideLoading } = useLoading();
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function Tests() {
           Создать новый тест
         </PrimaryButton>
       </div>
-      <TestTable tests={tests || []} />
+      <TestTable tests={tests || []} isFetching={isFetching} />
     </div>
   );
 }

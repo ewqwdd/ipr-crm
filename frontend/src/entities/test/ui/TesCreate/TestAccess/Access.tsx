@@ -1,12 +1,12 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { CardsRadio } from '@/shared/ui/CardsRadio';
+import { memo } from 'react';
 
-export default function Access() {
-  const access =
-    useAppSelector((state) => state.testCreate.access) ?? 'PRIVATE';
-  const dispatch = useAppDispatch();
+interface AccessProps {
+  access: string;
+  onChange: (access: string) => void;
+}
 
+export default memo(function Access({ access, onChange }: AccessProps) {
   return (
     <CardsRadio
       elements={[
@@ -30,9 +30,7 @@ export default function Access() {
         },
       ]}
       selected={access}
-      onChange={(key) => {
-        dispatch(testCreateActions.setField({ field: 'access', value: key }));
-      }}
+      onChange={onChange}
     />
   );
-}
+});

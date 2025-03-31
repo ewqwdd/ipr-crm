@@ -1,14 +1,20 @@
-import { useAppDispatch } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { TestOption } from '@/entities/test/types/types';
 import { Radio } from '@/shared/ui/Radio';
 import OptionBase from './OptionBase';
+import { ChangeEvent } from 'react';
 
 interface SingleOptionProps {
-  option: TestOption;
+  option: Omit<TestOption, 'id'>;
   correctRequired: boolean;
   index: number;
   questionIndex: number;
+  onCorrectChange: (questionIndex: number, optionIndex: number) => void;
+  onDeleteOption: (questionIndex: number, optionIndex: number) => void;
+  onNameOptionChange: (
+    questionIndex: number,
+    optionIndex: number,
+    e: ChangeEvent<HTMLInputElement>,
+  ) => void;
 }
 
 export default function SingleOption({
@@ -16,46 +22,21 @@ export default function SingleOption({
   correctRequired,
   index,
   questionIndex,
+  onCorrectChange,
+  onDeleteOption,
+  onNameOptionChange,
 }: SingleOptionProps) {
-  const dispatch = useAppDispatch();
-
-  const onCorrectChange = () => {
-    dispatch(
-      testCreateActions.setOptionIsCorrect({
-        optionIndex: index,
-        index: questionIndex,
-        value: true,
-      }),
-    );
-  };
-
-  const onDelete = () => {
-    dispatch(
-      testCreateActions.deleteOption({
-        index: questionIndex,
-        optionIndex: index,
-      }),
-    );
-  };
-
-  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(
-      testCreateActions.setOptionName({
-        index: questionIndex,
-        optionIndex: index,
-        value: e.target.value,
-      }),
-    );
-  };
-
   return (
     <OptionBase
       correctRequired={correctRequired}
-      onDelete={onDelete}
+      onDelete={() => onDeleteOption(questionIndex, index)}
       option={option}
-      onNameChange={onNameChange}
+      onNameChange={(e) => onNameOptionChange(questionIndex, index, e)}
       radio={
-        <Radio checked={option.isCorrect} onChange={onCorrectChange}>
+        <Radio
+          checked={option.isCorrect}
+          onChange={() => onCorrectChange(questionIndex, index)}
+        >
           Правильный ответ
         </Radio>
       }

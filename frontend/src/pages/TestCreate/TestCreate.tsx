@@ -1,13 +1,14 @@
-import { TestAccess, TestSettings } from '@/entities/test';
 import { Heading } from '@/shared/ui/Heading';
 import { Tabs } from '@/shared/ui/Tabs';
 import { useSearchParams } from 'react-router';
 import SubmitTest from './SubmitTest';
-import TestQuestions from '@/entities/test/ui/TesCreate/TestQuestions/TestQuestions';
-import TestScore from '@/entities/test/ui/TesCreate/TestScore/TestScore';
 import { testsApi } from '@/shared/api/testsApi';
 import { useEffect } from 'react';
 import { hideLoading, showLoading } from '@/app/store/loadingSlice';
+import TestCreateAccess from './tabs/TestCreateAccess';
+import TestCreateSettings from './tabs/TestCreateSettings';
+import TestQuestionsCreate from './tabs/TestQuestionsCreate';
+import TestScoreCreate from './tabs/TestScoreCreate';
 
 const tabs = [
   {
@@ -43,7 +44,7 @@ export default function TestCreate() {
     } else {
       hideLoading();
     }
-  }, [isLoading, showLoading, hideLoading]);
+  }, [isLoading]);
 
   return (
     <div className="px-8 py-10 flex flex-col h-full relative">
@@ -51,10 +52,10 @@ export default function TestCreate() {
         <Heading title="Создание теста" />
         <Tabs tabs={tabs} setCurrentTab={setTab} currentTab={activeTab} />
       </div>
-      {activeTab === 'settings' && <TestSettings />}
-      {activeTab === 'access' && <TestAccess />}
-      {activeTab === 'questions' && <TestQuestions />}
-      {activeTab === 'score-settings' && <TestScore />}
+      {activeTab === 'settings' && <TestCreateSettings />}
+      {activeTab === 'access' && <TestCreateAccess />}
+      {activeTab === 'questions' && <TestQuestionsCreate />}
+      {activeTab === 'score-settings' && <TestScoreCreate />}
       <SubmitTest />
     </div>
   );

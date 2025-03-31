@@ -1,34 +1,24 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
+import { CreateQuestion } from '@/entities/test/types/types';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { memo } from 'react';
 
 interface RequiredCheckboxProps {
   index: number;
+  questions: CreateQuestion[];
+  onChange: (index: number, value: boolean) => void;
 }
 
 export default memo(function RequiredCheckbox({
   index,
+  onChange,
+  questions,
 }: RequiredCheckboxProps) {
-  const dispatch = useAppDispatch();
-  const required = useAppSelector(
-    (state) => state.testCreate.questions[index].required,
-  );
-
-  const onChange = () => {
-    dispatch(
-      testCreateActions.setQuestionField({
-        index,
-        field: 'required',
-        value: !required,
-      }),
-    );
-  };
+  const required = questions[index].required;
 
   return (
     <Checkbox
       checked={required}
-      onChange={onChange}
+      onChange={() => onChange(index, !required)}
       title="Обязательное поле"
     />
   );

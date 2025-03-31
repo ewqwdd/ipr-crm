@@ -6,7 +6,7 @@ import { TrashIcon } from '@heroicons/react/outline';
 import { ReactNode } from 'react';
 
 interface SingleOptionProps {
-  option: TestOption;
+  option: Omit<TestOption, 'id'>;
   correctRequired: boolean;
   onDelete: () => void;
   radio: ReactNode;

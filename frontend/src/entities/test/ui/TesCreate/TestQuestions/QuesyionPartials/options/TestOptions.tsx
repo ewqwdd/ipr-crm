@@ -1,29 +1,33 @@
-import { useAppDispatch, useAppSelector } from '@/app';
 import SingleOption from './SingleOption';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import MultipleOption from './MultipleOption';
+import { CreateQuestion } from '@/entities/test/types/types';
 
 interface TestOptionsProps {
   index: number;
   correctRequired: boolean;
+  questions: CreateQuestion[];
+  handleAddOption: (index: number) => void;
+  onCorrectChange: (questionIndex: number, optionIndex: number) => void;
+  onDeleteOption: (questionIndex: number, optionIndex: number) => void;
+  onNameOptionChange: (
+    questionIndex: number,
+    optionIndex: number,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
 }
 
 export default function TestOptions({
   index,
   correctRequired,
+  handleAddOption,
+  questions,
+  onCorrectChange,
+  onDeleteOption,
+  onNameOptionChange,
 }: TestOptionsProps) {
-  const options = useAppSelector(
-    (state) => state.testCreate.questions[index].options,
-  );
-  const type = useAppSelector(
-    (state) => state.testCreate.questions[index].type,
-  );
-  const dispatch = useAppDispatch();
-
-  const handleAddOption = () => {
-    dispatch(testCreateActions.addOption({ index }));
-  };
+  const options = questions[index].options;
+  const type = questions[index].type;
 
   if (['TEXT', 'NUMBER'].includes(type)) return null;
 
@@ -32,6 +36,9 @@ export default function TestOptions({
       {type === 'SINGLE' &&
         options?.map((option, optionIndex) => (
           <SingleOption
+            onNameOptionChange={onNameOptionChange}
+            onDeleteOption={onDeleteOption}
+            onCorrectChange={onCorrectChange}
             index={optionIndex}
             key={optionIndex}
             option={option}
@@ -42,6 +49,9 @@ export default function TestOptions({
       {type === 'MULTIPLE' &&
         options?.map((option, optionIndex) => (
           <MultipleOption
+            onNameOptionChange={onNameOptionChange}
+            onDeleteOption={onDeleteOption}
+            onCorrectChange={onCorrectChange}
             index={optionIndex}
             key={optionIndex}
             option={option}
@@ -50,7 +60,7 @@ export default function TestOptions({
           />
         ))}
       <SecondaryButton
-        onClick={handleAddOption}
+        onClick={() => handleAddOption(index)}
         size="xs"
         className="self-start mt-5"
       >

@@ -1,11 +1,15 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { CardsRadio } from '@/shared/ui/CardsRadio';
+import { memo } from 'react';
 
-export default function Anonymous() {
-  const anonymous = useAppSelector((state) => !!state.testCreate.anonymous);
-  const dispatch = useAppDispatch();
+interface AnonymousProps {
+  anonymous: boolean;
+  onChangeAnonymous: (anonymous: string) => void;
+}
 
+export default memo(function Anonymous({
+  anonymous,
+  onChangeAnonymous,
+}: AnonymousProps) {
   return (
     <CardsRadio
       elements={[
@@ -23,14 +27,7 @@ export default function Anonymous() {
         },
       ]}
       selected={anonymous.toString()}
-      onChange={(key) => {
-        dispatch(
-          testCreateActions.setField({
-            field: 'anonymous',
-            value: key === 'true',
-          }),
-        );
-      }}
+      onChange={onChangeAnonymous}
     />
   );
-}
+});

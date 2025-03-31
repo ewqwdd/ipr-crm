@@ -1,22 +1,15 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { Checkbox } from '@/shared/ui/Checkbox';
+import { memo } from 'react';
 
-export default function ShowScoreToUser() {
-  const showScoreToUser = useAppSelector(
-    (state) => state.testCreate.showScoreToUser,
-  );
-  const dispatch = useAppDispatch();
+interface ShowScoreToUserProps {
+  showScoreToUser: boolean;
+  onChange: () => void;
+}
 
-  const onChange = () => {
-    dispatch(
-      testCreateActions.setField({
-        field: 'showScoreToUser',
-        value: !showScoreToUser,
-      }),
-    );
-  };
-
+export default memo(function ShowScoreToUser({
+  onChange,
+  showScoreToUser,
+}: ShowScoreToUserProps) {
   return (
     <div>
       <Checkbox
@@ -26,4 +19,4 @@ export default function ShowScoreToUser() {
       />
     </div>
   );
-}
+});

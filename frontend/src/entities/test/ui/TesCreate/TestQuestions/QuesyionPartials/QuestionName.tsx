@@ -1,33 +1,25 @@
-import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
+import { CreateQuestion } from '@/entities/test/types/types';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { memo } from 'react';
 
 interface QuestionNameProps {
   index: number;
+  onChange: (index: number, e: React.ChangeEvent<HTMLInputElement>) => void;
+  questions: CreateQuestion[];
 }
 
-export default memo(function QuestionName({ index }: QuestionNameProps) {
-  const dispatch = useAppDispatch();
-  const label = useAppSelector(
-    (state) => state.testCreate.questions[index].label,
-  );
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(
-      testCreateActions.setQuestionField({
-        index,
-        field: 'label',
-        value: e.target.value,
-      }),
-    );
-  };
+export default memo(function QuestionName({
+  index,
+  onChange,
+  questions,
+}: QuestionNameProps) {
+  const label = questions[index].label;
 
   return (
     <InputWithLabelLight
       label="Название вопроса"
       value={label}
-      onChange={onChange}
+      onChange={(e) => onChange(index, e)}
     />
   );
 });

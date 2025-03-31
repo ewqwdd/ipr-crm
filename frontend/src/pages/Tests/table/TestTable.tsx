@@ -6,14 +6,16 @@ import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import Row from './Row';
 import { initialFilters, TestTableFilterType } from './helpers';
 import { DateObject } from 'react-multi-date-picker';
+import { cva } from '@/shared/lib/cva';
 
 type TestTableProps = {
   tests: Test[];
+  isFetching?: boolean;
 };
 
 const LIMIT = 10;
 
-const TestTable = ({ tests }: TestTableProps) => {
+const TestTable = ({ tests, isFetching }: TestTableProps) => {
   const [page, setPage] = useState(1);
   const isAdmin = useIsAdmin();
   const [filters, setFilters] = useState<TestTableFilterType>(initialFilters);
@@ -69,7 +71,7 @@ const TestTable = ({ tests }: TestTableProps) => {
   const paginateddata = filteredTests.slice((page - 1) * LIMIT, page * LIMIT);
 
   return (
-    <div>
+    <div className={cva({ 'animate-pulse': !!isFetching })}>
       <TestTableFilter filters={filters} updateFilters={updateFilters} />
       <div className="w-full overflow-x-auto">
         <table className={`min-w-[800px] w-full divide-y divide-gray-300 mt-5`}>

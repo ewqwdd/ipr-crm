@@ -1,33 +1,29 @@
-import { useAppDispatch, useAppSelector } from '@/app';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { digitRegex } from '@/shared/lib/regex';
 import { memo } from 'react';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 
-export default memo(function TimeLimit() {
-  const limitByTime = useAppSelector((state) => state.testCreate.limitedByTime);
-  const timeLimit = useAppSelector((state) => state.testCreate.timeLimit);
-  const dispatch = useAppDispatch();
+interface TimeLimitProps {
+  limitByTime: boolean;
+  timeLimit?: number;
+  onToggleLimitByTime: (value: boolean) => void;
+  onTimeLimitChange: (value: string) => void;
+}
 
+export default memo(function TimeLimit({
+  limitByTime,
+  onTimeLimitChange,
+  onToggleLimitByTime,
+  timeLimit,
+}: TimeLimitProps) {
   const onChange = () => {
-    dispatch(
-      testCreateActions.setField({
-        field: 'limitedByTime',
-        value: !limitByTime,
-      }),
-    );
+    onToggleLimitByTime(!limitByTime);
   };
 
-  const onTimeLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onTimeLimitChange_ = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (!digitRegex.test(value) && value !== '') return;
-    dispatch(
-      testCreateActions.setField({
-        field: 'timeLimit',
-        value: value,
-      }),
-    );
+    onTimeLimitChange(value);
   };
 
   return (
@@ -43,7 +39,7 @@ export default memo(function TimeLimit() {
           label="Время на тест (мин)"
           placeholder="60"
           value={timeLimit}
-          onChange={onTimeLimitChange}
+          onChange={onTimeLimitChange_}
         />
       )}
     </>

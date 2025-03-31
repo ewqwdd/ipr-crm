@@ -1,14 +1,20 @@
-import { useAppDispatch } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { TestOption } from '@/entities/test/types/types';
 import OptionBase from './OptionBase';
 import { Checkbox } from '@/shared/ui/Checkbox';
+import { ChangeEvent } from 'react';
 
 interface MultipleOptionProps {
-  option: TestOption;
+  option: Omit<TestOption, 'id'>;
   correctRequired: boolean;
   index: number;
   questionIndex: number;
+  onCorrectChange: (questionIndex: number, optionIndex: number) => void;
+  onDeleteOption: (questionIndex: number, optionIndex: number) => void;
+  onNameOptionChange: (
+    questionIndex: number,
+    optionIndex: number,
+    e: ChangeEvent<HTMLInputElement>,
+  ) => void;
 }
 
 export default function MultipleOption({
@@ -16,49 +22,21 @@ export default function MultipleOption({
   correctRequired,
   index,
   questionIndex,
+  onCorrectChange,
+  onDeleteOption,
+  onNameOptionChange,
 }: MultipleOptionProps) {
-  const dispatch = useAppDispatch();
-
-  const onCorrectChange = () => {
-    dispatch(
-      testCreateActions.setOptionIsCorrect({
-        optionIndex: index,
-        index: questionIndex,
-        value: !option.isCorrect,
-      }),
-    );
-  };
-
-  const onDelete = () => {
-    dispatch(
-      testCreateActions.deleteOption({
-        index: questionIndex,
-        optionIndex: index,
-      }),
-    );
-  };
-
-  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(
-      testCreateActions.setOptionName({
-        index: questionIndex,
-        optionIndex: index,
-        value: e.target.value,
-      }),
-    );
-  };
-
   return (
     <OptionBase
       correctRequired={correctRequired}
-      onDelete={onDelete}
+      onDelete={() => onDeleteOption(questionIndex, index)}
       option={option}
-      onNameChange={onNameChange}
+      onNameChange={(e) => onNameOptionChange(questionIndex, index, e)}
       radio={
         <Checkbox
           title="Правильный ответ"
           checked={option.isCorrect}
-          onChange={onCorrectChange}
+          onChange={() => onCorrectChange(questionIndex, index)}
         />
       }
     />
