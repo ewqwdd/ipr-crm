@@ -3,12 +3,11 @@ import { Tabs } from '@/shared/ui/Tabs';
 import { useSearchParams } from 'react-router';
 import SubmitTest from './SubmitTest';
 import { testsApi } from '@/shared/api/testsApi';
-import { useEffect } from 'react';
-import { hideLoading, showLoading } from '@/app/store/loadingSlice';
 import TestCreateAccess from './tabs/TestCreateAccess';
 import TestCreateSettings from './tabs/TestCreateSettings';
 import TestQuestionsCreate from './tabs/TestQuestionsCreate';
 import TestScoreCreate from './tabs/TestScoreCreate';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 const tabs = [
   {
@@ -38,25 +37,21 @@ export default function TestCreate() {
 
   const [, { isLoading }] = testsApi.useCreateTestMutation();
 
-  useEffect(() => {
-    if (isLoading) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [isLoading]);
+  // TODO: replace loading
 
   return (
-    <div className="px-8 py-10 flex flex-col h-full relative">
-      <div className="flex justify-between items-center">
-        <Heading title="Создание теста" />
-        <Tabs tabs={tabs} setCurrentTab={setTab} currentTab={activeTab} />
+    <LoadingOverlay active={isLoading}>
+      <div className="px-8 py-10 flex flex-col h-full relative">
+        <div className="flex justify-between items-center">
+          <Heading title="Создание теста" />
+          <Tabs tabs={tabs} setCurrentTab={setTab} currentTab={activeTab} />
+        </div>
+        {activeTab === 'settings' && <TestCreateSettings />}
+        {activeTab === 'access' && <TestCreateAccess />}
+        {activeTab === 'questions' && <TestQuestionsCreate />}
+        {activeTab === 'score-settings' && <TestScoreCreate />}
+        <SubmitTest />
       </div>
-      {activeTab === 'settings' && <TestCreateSettings />}
-      {activeTab === 'access' && <TestCreateAccess />}
-      {activeTab === 'questions' && <TestQuestionsCreate />}
-      {activeTab === 'score-settings' && <TestScoreCreate />}
-      <SubmitTest />
-    </div>
+    </LoadingOverlay>
   );
 }
