@@ -11,7 +11,7 @@ export default function Ipr() {
 
   return (
     <LoadingOverlay active={isFetching}>
-      <IprEdit ipr={data} />;
+      <IprEdit ipr={data} />
     </LoadingOverlay>
   );
 }
