@@ -3,9 +3,9 @@ import { universalApi } from '@/shared/api/universalApi';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import { Radio } from '@/shared/ui/Radio';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ConfirmListItem from '../ConfirmListItem/ConfirmListItem';
-import { useLoading } from '@/app/hooks/useLoading';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 type RatesFilter = 'self' | 'curator';
 
@@ -22,45 +22,39 @@ export default function ConfirmListTab() {
       ? confirmByUser.isLoading
       : confirmByCurator.isLoading;
 
-  const { showLoading, hideLoading } = useLoading();
-
-  useEffect(() => {
-    if (loadingToShow) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [loadingToShow, showLoading, hideLoading]);
+  // TODO: replace loading
 
   return (
-    <div
-      className={cva('flex flex-col gap-4 p-4', {
-        'animate-pulse': loadingToShow,
-      })}
-    >
-      <Heading title={'Утверждение взаимодействующих для оценки 360'} />
-      <div className="flex items-center gap-4">
-        <Radio
-          checked={ratesFilter === 'self'}
-          onChange={() => setRatesFilter('self')}
-        >
-          По себе
-        </Radio>
-        <Radio
-          checked={ratesFilter === 'curator'}
-          onChange={() => setRatesFilter('curator')}
-        >
-          По другим пользователям
-        </Radio>
-      </div>
+    <LoadingOverlay active={loadingToShow}>
+      <div
+        className={cva('flex flex-col gap-4 p-4', {
+          'animate-pulse': loadingToShow,
+        })}
+      >
+        <Heading title={'Утверждение взаимодействующих для оценки 360'} />
+        <div className="flex items-center gap-4">
+          <Radio
+            checked={ratesFilter === 'self'}
+            onChange={() => setRatesFilter('self')}
+          >
+            По себе
+          </Radio>
+          <Radio
+            checked={ratesFilter === 'curator'}
+            onChange={() => setRatesFilter('curator')}
+          >
+            По другим пользователям
+          </Radio>
+        </div>
 
-      {listToShow?.map((rate) => (
-        <ConfirmListItem
-          specs={specs.data ?? []}
-          rate={rate}
-          curatorBlocked={ratesFilter === 'self'}
-        />
-      ))}
-    </div>
+        {listToShow?.map((rate) => (
+          <ConfirmListItem
+            specs={specs.data ?? []}
+            rate={rate}
+            curatorBlocked={ratesFilter === 'self'}
+          />
+        ))}
+      </div>
+    </LoadingOverlay>
   );
 }

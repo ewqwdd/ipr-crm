@@ -7,6 +7,7 @@ import Row from './Row';
 import { initialFilters, TestTableFilterType } from './helpers';
 import { DateObject } from 'react-multi-date-picker';
 import { cva } from '@/shared/lib/cva';
+import { mockTestsData } from './testsData.mock';
 
 type TestTableProps = {
   tests: Test[];
@@ -15,7 +16,10 @@ type TestTableProps = {
 
 const LIMIT = 10;
 
-const TestTable = ({ tests, isFetching }: TestTableProps) => {
+const TestTable = ({
+  // tests,
+  isFetching,
+}: TestTableProps) => {
   const [page, setPage] = useState(1);
   const isAdmin = useIsAdmin();
   const [filters, setFilters] = useState<TestTableFilterType>(initialFilters);
@@ -29,6 +33,10 @@ const TestTable = ({ tests, isFetching }: TestTableProps) => {
     },
     [],
   );
+
+  // console.log('tests => ', tests);
+
+  const tests = mockTestsData;
 
   const filteredTests = tests.filter((test) => {
     if (
