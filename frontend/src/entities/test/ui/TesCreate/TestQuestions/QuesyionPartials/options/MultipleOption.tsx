@@ -8,7 +8,7 @@ interface MultipleOptionProps {
   correctRequired: boolean;
   index: number;
   questionIndex: number;
-  onCorrectChange: (questionIndex: number, optionIndex: number) => void;
+  onCorrectChange: (questionIndex: number, optionIndex: number, value: boolean) => void;
   onDeleteOption: (questionIndex: number, optionIndex: number) => void;
   onNameOptionChange: (
     questionIndex: number,
@@ -36,7 +36,7 @@ export default function MultipleOption({
         <Checkbox
           title="Правильный ответ"
           checked={option.isCorrect}
-          onChange={() => onCorrectChange(questionIndex, index)}
+          onChange={() => onCorrectChange(questionIndex, index, !option.isCorrect)}
         />
       }
     />

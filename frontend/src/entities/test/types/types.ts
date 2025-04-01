@@ -33,12 +33,20 @@ export interface Question {
   allowDecimal?: boolean;
 }
 
+interface CreateOption extends Omit<TestOption, 'id'> {
+  id?: number;
+}
+
 export interface CreateQuestion extends Omit<Question, 'id' | 'options'> {
+  id?: number;
+  correctRequired?: boolean;
   error?: string;
-  options?: Omit<TestOption, 'id'>[];
+  options?: CreateOption[];
+  maxMinToggle?: boolean;
 }
 
 export interface TestCreate {
+  id?: number;
   name?: string;
   description?: string;
   passedMessage?: string;

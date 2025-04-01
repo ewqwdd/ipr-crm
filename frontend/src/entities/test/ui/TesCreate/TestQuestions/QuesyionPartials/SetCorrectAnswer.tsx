@@ -1,19 +1,21 @@
 import { Checkbox } from '@/shared/ui/Checkbox';
-import { Dispatch, memo, SetStateAction } from 'react';
+import { memo } from 'react';
 
 interface SetCorrectAnswerProps {
   correctRequired: boolean;
-  setCorrectRequired: Dispatch<SetStateAction<boolean>>;
+  index: number;
+  setCorrectRequired: (index: number, value: boolean) => void;
 }
 
 export default memo(function SetCorrectAnswer({
   correctRequired,
+  index,
   setCorrectRequired,
 }: SetCorrectAnswerProps) {
   return (
     <Checkbox
       checked={correctRequired}
-      onChange={() => setCorrectRequired((p) => !p)}
+      onChange={() => setCorrectRequired(index, !correctRequired)}
       title="Указать правильный ответ"
     />
   );

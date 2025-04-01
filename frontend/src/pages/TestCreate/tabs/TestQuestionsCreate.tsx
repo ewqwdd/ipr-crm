@@ -20,12 +20,12 @@ export default function TestQuestionsCreate() {
   );
 
   const onCorrectChange = useCallback(
-    (questionIndex: number, index: number) => {
+    (questionIndex: number, index: number, value: boolean) => {
       dispatch(
         testCreateActions.setOptionIsCorrect({
           optionIndex: index,
           index: questionIndex,
-          value: true,
+          value,
         }),
       );
     },
@@ -185,6 +185,32 @@ export default function TestQuestionsCreate() {
     [dispatch],
   );
 
+  const setCorrectRequired = useCallback(
+    (index: number, value: boolean) => {
+      dispatch(
+        testCreateActions.setQuestionField({
+          index,
+          field: 'correctRequired',
+          value,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const setMaxMinToggle = useCallback(
+    (index: number, value: boolean) => {
+        dispatch(
+            testCreateActions.setQuestionField({
+            index,
+            field: 'maxMinToggle',
+            value,
+            }),
+        );
+        },
+    [dispatch],
+  );
+
   const props = {
     clearCorrectOptions: onClear,
     questions: questions,
@@ -202,6 +228,8 @@ export default function TestQuestionsCreate() {
     onMaxNumberChange: onMaxNumberChange,
     onMinNumberChange: onMinNumberChange,
     deleteQuestion: deleteQuestion,
+    setCorrectRequired: setCorrectRequired,
+    setMaxMinToggle: setMaxMinToggle,
   };
 
   return <TestQuestions {...props} />;

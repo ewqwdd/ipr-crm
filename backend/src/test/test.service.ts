@@ -146,8 +146,15 @@ export class TestService {
     const tests = await this.prismaService.test.findMany({
       include: {
         testQuestions: {
+          where: {
+            archived: false,
+          },
           include: {
-            options: true,
+            options: {
+              where: {
+                archived: false,
+              }
+            },
           },
         },
         usersAssigned: {
@@ -190,10 +197,41 @@ export class TestService {
     return tests;
   }
 
-  async getTest(id: number, sessionInfo: GetSessionInfoDto) {
-    return this.prismaService.test.findUnique({
+  async getTestAdmin(id: number, sessionInfo: GetSessionInfoDto) {
+    await  this.checkAccess(sessionInfo);
+
+    const test = await this.prismaService.test.findUnique({
       where: {
         id,
+        archived: false,
+      },
+      include: {
+        testQuestions: {
+          where: {
+            archived: false,
+          },
+          include: {
+            options: {
+              where: {
+                archived: false,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    if (!test) throw new NotFoundException('Тест не найден');
+
+    return test;
+  }
+
+  async getTest(id: number, sessionInfo: GetSessionInfoDto) {
+    const test = await this.prismaService.test.findUnique({
+      where: {
+        id,
+        archived: false,
+        hidden: false,
         OR: [
           {
             access: 'PUBLIC',
@@ -213,12 +251,23 @@ export class TestService {
       },
       include: {
         testQuestions: {
+          where: {
+            archived: false,
+          },
           include: {
-            options: true,
+            options: {
+              where: {
+                archived: false,
+              },
+            },
           },
         },
       },
     });
+
+    if (!test) throw new NotFoundException('Тест не найден');
+
+    return test;
   }
 
   async getAssignedTests(sessionInfo: GetSessionInfoDto) {
@@ -289,8 +338,15 @@ export class TestService {
         test: {
           include: {
             testQuestions: {
+              where: {
+                archived: false,
+              },
               include: {
-                options: true,
+                options: {
+                  where: {
+                    archived: false,
+                  },
+                },
               },
             },
           },
@@ -551,8 +607,15 @@ export class TestService {
         test: {
           include: {
             testQuestions: {
+              where: {
+                archived: false,
+              },
               include: {
-                options: true,
+                options: {
+                  where: {
+                    archived: false,
+                  },
+                },
               },
             },
           },
@@ -582,8 +645,15 @@ export class TestService {
         test: {
           include: {
             testQuestions: {
+              where: {
+                archived: false,
+              },
               include: {
-                options: true,
+                options: {
+                  where: {
+                    archived: false,
+                  },
+                },
               },
             },
           },
@@ -734,8 +804,15 @@ export class TestService {
         test: {
           include: {
             testQuestions: {
+              where: {
+                archived: false,
+              },
               include: {
-                options: true,
+                options: {
+                  where: {
+                    archived: false,
+                  },
+                },
               },
             },
           },
@@ -876,4 +953,170 @@ export class TestService {
       },
     });
   }
+
+  async editTest(
+    testId: number,
+    data: CreateTestDTO,
+    sessionInfo: GetSessionInfoDto,) {
+    if (sessionInfo.role !== 'admin') throw new ForbiddenException();
+    const test = await this.prismaService.test.findFirst({
+      where: {
+        id: testId,
+      },
+
+    });
+    if (!test) throw new NotFoundException('Тест не найден');
+
+    const updatedTest = await this.prismaService.test.update({
+      where: {
+        id: testId,
+      },
+      data: {
+        name: data.name,
+        description: data.description,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        access: data.access,
+        anonymous: data.anonymous,
+        failedMessage: data.failedMessage,
+        passedMessage: data.passedMessage,
+        finishMessage: data.finishMessage,
+        limitedByTime: data.limitedByTime,
+        minimumScore: data.minimumScore,
+        showScoreToUser: data.showScoreToUser,
+        timeLimit: data.timeLimit,
+      },
+    });
+
+    const questions = await this.prismaService.question.findMany({
+      where: {
+        testId: testId,
+        archived: false,
+      },
+      include: {
+        options: true,
+        answeredQuestions: true,
+      }
+    })
+
+    for (const question of questions) {
+      const found = data.questions.find(q => q.id === question.id);
+      if (!found) {
+        await this.prismaService.question.update({
+          where: {
+            id: question.id,
+          },
+          data: {
+            archived: true,
+          },
+        });
+      }
+      else {
+        await this.prismaService.question.update({
+          where: {
+            id: question.id,
+          },
+          data: {
+            label: found.label,
+            type: found.type,
+            description: found.description,
+            maxLength: found.maxLength,
+            maxNumber: found.maxNumber,
+            minNumber: found.minNumber,
+            numberCorrectValue: found.numberCorrectValue,
+            required: found.required,
+            textCorrectValue: found.textCorrectValue,
+            allowDecimal: found.allowDecimal,
+          },
+        });
+        const options = await this.prismaService.option.findMany({
+          where: {
+            questionId: question.id,
+            archived: false,
+          },
+        });
+
+        for (const option of options) {
+          const foundOption = found.options?.find(o => o.id === option.id);
+          if (!foundOption) {
+            await this.prismaService.option.update({
+              where: {
+                id: option.id,
+              },
+              data: {
+                archived: true,
+              },
+            });
+          } else {
+            await this.prismaService.option.update({
+              where: {
+                id: option.id,
+              },
+              data: {
+                value: foundOption.value,
+                isCorrect: foundOption.isCorrect,
+              },
+            });
+          }
+        }
+
+        const newOptions = found.options?.filter(o => !o.id)
+          .map(o => ({
+            value: o.value,
+            isCorrect: o.isCorrect,
+          }))
+          || [];
+
+        if (newOptions.length > 0) {
+          await this.prismaService.option.createMany({
+            data: newOptions.map(o => ({
+              questionId: question.id,
+              ...o,
+            })),
+          });
+        }
+
+      }
+    }
+
+    const newQuestions = data.questions.filter(q => !q.id)
+    .map((question, index) => 
+      this.prismaService.question.create({
+        data: {
+          label: question.label,
+          type: question.type,
+          order: index,
+          description: question.description,
+          maxLength: question.maxLength,
+          maxNumber: question.maxNumber,
+          minNumber: question.minNumber,
+          numberCorrectValue: question.numberCorrectValue,
+          required: question.required,
+          textCorrectValue: question.textCorrectValue,
+          Test: {
+            connect: {
+              id: updatedTest.id,
+            },
+          },
+          ...(question.options
+            ? {
+                options: {
+                  createMany: {
+                    data: question.options.map((option) => ({
+                      value: option.value,
+                      isCorrect: option.isCorrect,
+                    })),
+                  },
+                },
+              }
+            : {}),
+        },
+      })
+    )
+
+    await Promise.all(newQuestions);
+    return updatedTest;
+
+    }
+
 }

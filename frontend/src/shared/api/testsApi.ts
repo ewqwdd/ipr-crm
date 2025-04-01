@@ -21,6 +21,18 @@ export const testsApi = createApi({
       }),
       invalidatesTags: ['Test'],
     }),
+    updateTest: build.mutation<void, TestCreate>({
+      query: (body) => ({
+        url: `/test/admin/${body.id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Test', 'Assigned'],
+    }),
+    getTestAdmin: build.query<Test, number>({
+      query: (id) => `/test/admin/${id}`,
+      providesTags: (_, __, id) => [{ type: 'Test', id }],
+    }),
     getAssignedTests: build.query<AssignedTest[], void>({
       query: () => '/test/assigned',
       providesTags: ['Assigned'],

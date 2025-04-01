@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   CreateQuestion,
+  Test,
   TestCreate,
   TestCreateStoreSchema,
 } from './types/types';
@@ -10,6 +11,27 @@ const initialState: TestCreateStoreSchema = {
   startDate: new Date(),
   questions: [],
 };
+
+const ifCorrectRequired = (question: CreateQuestion) => {
+  if (question.type === 'SINGLE' || question.type === 'MULTIPLE') {
+    return question.options?.some((option) => option.isCorrect);
+  }
+  if (question.type === 'NUMBER') {
+    return question.numberCorrectValue !== undefined;
+  }
+  if (question.type === 'TEXT') {
+    return question.textCorrectValue !== undefined;
+  }
+  return false;
+};
+
+const ifMaxMinToggle = (question: CreateQuestion) => {
+  if (question.type === 'NUMBER') {
+    return question.maxNumber !== undefined || question.minNumber !== undefined;
+  }
+  return false;
+}
+  
 
 const testCreateSlice = createSlice({
   name: 'testCreate',
@@ -151,6 +173,33 @@ const testCreateSlice = createSlice({
       state.questions = [];
       state.startDate = new Date();
     },
+    init(state, action: PayloadAction<{test: Test}>) {
+      const { test } = action.payload;
+      state.id = test.id;
+      state.name = test.name;
+      state.description = test.description;
+      state.passedMessage = test.passedMessage;
+      state.failedMessage = test.failedMessage;
+      state.showScoreToUser = test.showScoreToUser;
+      state.startDate = test.startDate ? new Date(test.startDate) : new Date();
+      state.endDate = test.endDate ? new Date(test.endDate) : undefined;
+      state.access = test.access;
+      state.anonymous = test.anonymous;
+      state.minimumScore = test.minimumScore;
+      state.limitedByTime = test.limitedByTime;
+      state.timeLimit = test.timeLimit;
+      
+      state.questions = test.testQuestions.map((question) => ({
+        ...question,
+        error: undefined,
+        maxMinToggle: ifMaxMinToggle(question),
+        correctRequired: ifCorrectRequired(question),
+        options: question.options?.map((option) => ({
+          ...option,
+          isCorrect: option.isCorrect ?? false,
+        })),
+      }));
+    }
   },
 });
 

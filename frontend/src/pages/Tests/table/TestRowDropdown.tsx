@@ -7,6 +7,7 @@ import { Dropdown } from '@/shared/ui/Dropdown';
 import { DotsVerticalIcon } from '@heroicons/react/outline';
 import { FC, memo, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 
 type TestRowDropdownProps = {
   hidden?: boolean;
@@ -16,6 +17,7 @@ type TestRowDropdownProps = {
 const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
   const { openModal } = useModal();
   const isAdmin = useIsAdmin();
+  const navigate = useNavigate();
 
   const downloadExcel = (id: number) => {
     console.log('Download Excel triggered for test ID:', id);
@@ -39,8 +41,7 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
   const handleItemClick = useCallback((itemId: string) => {
     switch (itemId) {
       case 'edit':
-        // Handle edit action
-        console.log('Edit action triggered');
+        navigate(`/tests-edit/${testId}`);
         break;
       case 'hide':
         toggleHide({ id: testId!, hidden: !hidden });
@@ -67,7 +68,7 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
 
   const dropdownItems = [
     { id: 'edit', label: 'Редактировать тест' },
-    isAdmin &&
+    
       (hidden
         ? { id: 'hide', label: 'Сделать доступным' }
         : { id: 'show', label: 'Скрыть доступ' }),
@@ -78,7 +79,7 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
     },
     { id: 'assign', label: 'Назначить участников' },
     { id: 'notify', label: 'Напомнить' },
-    { id: 'delete', label: 'Удалить' },
+    isAdmin && { id: 'delete', label: 'Удалить' },
   ]
     .filter((item): item is { id: string; label: string } => Boolean(item))
     .map((item) => ({

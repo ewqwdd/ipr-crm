@@ -16,6 +16,11 @@ import { Transform, Type } from 'class-transformer';
 import { TestAccess } from '@prisma/client';
 
 class OptionDTO {
+  @IsOptional()
+  @IsNumber()
+  @IsInt()
+  id?: number;
+
   @IsString()
   value: string;
 
@@ -32,6 +37,11 @@ enum QuestionType {
 }
 
 class QuestionDTO {
+  @IsNumber()
+  @IsOptional()
+  @IsInt()
+  id?: number;
+
   @IsEnum(QuestionType)
   type: QuestionType;
 
@@ -42,7 +52,7 @@ class QuestionDTO {
   required: boolean;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
+  @Transform(({ value }) => Number(value))
   numberCorrectValue?: number;
 
   @IsOptional()

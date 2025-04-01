@@ -234,6 +234,8 @@ model Question {
   allowDecimal Boolean @default(false)
   textCorrectValue String?
 
+  archived Boolean @default(false)
+
   Test Test @relation(fields: [testId], references: [id])
   answeredQuestions UserAnsweredQuestion[]
 }
@@ -243,6 +245,7 @@ model Option {
   questionId Int
   value      String
   isCorrect  Boolean @default(false)
+  archived Boolean @default(false)
 
   Question Question @relation(fields: [questionId], references: [id])
   pickedOptions UserAnsweredQuestionOption[]

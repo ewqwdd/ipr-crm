@@ -8,7 +8,7 @@ interface TestQuestionsProps {
   clearCorrectOptions: (index: number) => void;
   questions: CreateQuestion[];
   handleAddOption: (index: number) => void;
-  onCorrectChange: (questionIndex: number, optionIndex: number) => void;
+  onCorrectChange: (questionIndex: number, optionIndex: number, value: boolean) => void;
   onDeleteOption: (questionIndex: number, optionIndex: number) => void;
   onNameOptionChange: (
     questionIndex: number,
@@ -28,6 +28,8 @@ interface TestQuestionsProps {
   onMaxNumberChange: (index: number, value: string | undefined) => void;
   onMinNumberChange: (index: number, value: string | undefined) => void;
   deleteQuestion: (index: number) => void;
+  setCorrectRequired: (index: number, value: boolean) => void;
+  setMaxMinToggle: (index: number, value: boolean) => void;
 }
 
 export default function TestQuestions(props: TestQuestionsProps) {

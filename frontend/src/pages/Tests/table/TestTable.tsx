@@ -73,7 +73,7 @@ const TestTable = ({ tests, isFetching }: TestTableProps) => {
   return (
     <div className={cva({ 'animate-pulse': !!isFetching })}>
       <TestTableFilter filters={filters} updateFilters={updateFilters} />
-      <div className="w-full overflow-x-auto">
+      <div className="w-full max-sm:overflow-x-auto">
         <table className={`min-w-[800px] w-full divide-y divide-gray-300 mt-5`}>
           <thead className="bg-gray-50">
             <tr>

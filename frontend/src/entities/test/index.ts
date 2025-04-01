@@ -11,6 +11,7 @@ import TestSettings from './ui/TesCreate/TestSettings/TestSettings';
 import TestAccess from './ui/TesCreate/TestAccess/TestAccess';
 import TestQuestion from './ui/TestAssesment/TestQuestion';
 import TestAssignUsersModal from './ui/TestAssignUsersModal/TestAssignUsersModal';
+import {testCreateTabs} from './constants';
 
 export type {
   QuestionType,
@@ -26,4 +27,5 @@ export {
   TestAccess,
   TestQuestion,
   TestAssignUsersModal,
+  testCreateTabs,
 };

@@ -13,6 +13,7 @@ interface NumberOptionsProps {
   onAllowDecimalChange: (index: number, value: boolean) => void;
   onMaxNumberChange: (index: number, value: string | undefined) => void;
   onMinNumberChange: (index: number, value: string | undefined) => void;
+  setMaxMinToggle: (index: number, value: boolean) => void;
 }
 
 export default function NumberOptions({
@@ -23,15 +24,19 @@ export default function NumberOptions({
   onAllowDecimalChange,
   onMaxNumberChange,
   onMinNumberChange,
+  setMaxMinToggle,
 }: NumberOptionsProps) {
   const type = questions[index].type;
   const allowDecimal = questions[index].allowDecimal;
+  const minValueInit = questions[index].minNumber;
+  const maxValueInit = questions[index].maxNumber;
+
   const numberCorrectValue = questions[index].numberCorrectValue?.toString();
 
-  const [maxLengthToggle, setMaxLengthToggle] = useState(false);
+  const maxLengthToggle = questions[index].maxMinToggle;
 
-  const [minValue, setMinValue] = useState('');
-  const [maxValue, setMaxValue] = useState('');
+  const [minValue, setMinValue] = useState(minValueInit?.toString() ?? '');
+  const [maxValue, setMaxValue] = useState(maxValueInit?.toString() ?? '');
 
   const onChangeCorrect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -66,6 +71,7 @@ export default function NumberOptions({
     onMaxNumberChange,
     onMinNumberChange,
   ]);
+  
 
   const onChangeMinValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -94,7 +100,7 @@ export default function NumberOptions({
         <Checkbox
           title="Мин/макс значение"
           checked={maxLengthToggle}
-          onChange={() => setMaxLengthToggle((p) => !p)}
+          onChange={() => setMaxMinToggle(index, !maxLengthToggle)}
         />
 
         <InputWithLabelLight

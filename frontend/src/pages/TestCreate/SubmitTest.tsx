@@ -1,18 +1,27 @@
 import { useAppDispatch, useAppSelector } from '@/app';
 import { testCreateActions } from '@/entities/test/testCreateSlice';
-import { TestCreateStoreSchema } from '@/entities/test/types/types';
-import { testsApi } from '@/shared/api/testsApi';
+import { TestCreate, TestCreateStoreSchema } from '@/entities/test/types/types';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
 
-export default function SubmitTest() {
+interface SubmitTestProps {
+  handleSubmit: (test: TestCreate) => void;
+  state: {
+    isLoading: boolean;
+    isSuccess: boolean;
+    isError: boolean;
+  }
+  errorMessage: string | null;
+  successMessage: string | null;
+}
+
+export default function SubmitTest({errorMessage, handleSubmit, state, successMessage}: SubmitTestProps) {
   const test = useAppSelector((state) => state.testCreate);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [mutate, state] = testsApi.useCreateTestMutation();
 
   const validate = () => {
     const errors: TestCreateStoreSchema['errors'] = {};
@@ -26,9 +35,7 @@ export default function SubmitTest() {
     if (!test.questions.length) {
       errors.questions = 'Добавьте вопросы';
     }
-    if (test.startDate && test.startDate < todayStart) {
-      errors.startDate = 'Дата начала теста не может быть в прошлом';
-    } else if (!test.startDate) {
+ else if (!test.startDate) {
       errors.startDate = 'Введите дату начала теста';
     }
     if (test.endDate && test.endDate < todayStart) {
@@ -92,18 +99,25 @@ export default function SubmitTest() {
       if (question.type === 'NUMBER') {
         return {
           ...question,
+          maxNumber: question.maxNumber ? Number(question.maxNumber) : undefined,
+          minNumber: question.minNumber ? Number(question.minNumber) : undefined,
           options: undefined,
           textCorrectValue: undefined,
           maxLength: undefined,
+          correctRequired: undefined,
+          maxMinToggle: undefined,
         };
       } else if (question.type === 'TEXT') {
         return {
           ...question,
+          maxLength: question.maxLength ? Number(question.maxLength) : undefined,
           options: undefined,
           numberCorrectValue: undefined,
           maxNumber: undefined,
           minNumber: undefined,
           allowDecimal: undefined,
+          correctRequired: undefined,
+          maxMinToggle: undefined,
         };
       } else {
         return {
@@ -114,11 +128,13 @@ export default function SubmitTest() {
           allowDecimal: undefined,
           textCorrectValue: undefined,
           maxLength: undefined,
+          correctRequired: undefined,
+          maxMinToggle: undefined,
         };
       }
     });
 
-    mutate({
+    handleSubmit({
       ...test,
       questions,
     });
@@ -126,20 +142,20 @@ export default function SubmitTest() {
 
   useEffect(() => {
     if (state.isSuccess) {
-      toast.success('Тест успешно создан');
+      toast.success(successMessage);
       dispatch(testCreateActions.clear());
       navigate('/tests');
     }
-  }, [state.isSuccess, navigate, dispatch]);
+  }, [state.isSuccess, navigate, dispatch, successMessage]);
 
   useEffect(() => {
     if (state.isError) {
-      toast.error('Ошибка при создании теста');
+      toast.error(errorMessage);
     }
-  }, [state.isError]);
+  }, [state.isError, errorMessage]);
 
   return (
-    <div className="mt-4 flex gap-4">
+    <div className="flex gap-4 py-10">
       <PrimaryButton onClick={onSubmit}>Сохранить</PrimaryButton>
       <SecondaryButton onClick={() => navigate('/tests')}>
         Отменить

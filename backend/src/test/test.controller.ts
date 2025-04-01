@@ -61,6 +61,7 @@ export class TestController {
     return this.testService.getFinishedTests(sessionInfo);
   }
 
+  @UseGuards(AuthGuard)
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   async getTestById(
@@ -68,6 +69,27 @@ export class TestController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     return this.testService.getTest(Number(id), sessionInfo);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/admin/:id')
+  @HttpCode(HttpStatus.OK)
+  async getTestByIdAdmin(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.testService.getTestAdmin(Number(id), sessionInfo);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('/admin/:id')
+  @HttpCode(HttpStatus.OK)
+  async updateTest(
+    @Param('id') id: string,
+    @Body() data: CreateTestDTO,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.testService.editTest(Number(id), data, sessionInfo);
   }
 
   @UseGuards(AuthGuard)
@@ -79,6 +101,7 @@ export class TestController {
   ) {
     return this.testService.getAssignedTest(Number(id), sessionInfo);
   }
+  
 
   @UseGuards(AuthGuard)
   @Post('/assigned/:id/start')

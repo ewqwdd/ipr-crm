@@ -1,6 +1,6 @@
 import { Card } from '@/shared/ui/Card';
 import QuestionTypeSelect from './QuesyionPartials/QuestionTypeSelect';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect } from 'react';
 import QuestionName from './QuesyionPartials/QuestionName';
 import RequiredCheckbox from './QuesyionPartials/RequiredCheckbox';
 import SetCorrectAnswer from './QuesyionPartials/SetCorrectAnswer';
@@ -17,7 +17,7 @@ interface QuestionProps {
   clearCorrectOptions: (index: number) => void;
   questions: CreateQuestion[];
   handleAddOption: (index: number) => void;
-  onCorrectChange: (questionIndex: number, optionIndex: number) => void;
+  onCorrectChange: (questionIndex: number, optionIndex: number, value: boolean) => void;
   onDeleteOption: (questionIndex: number, optionIndex: number) => void;
   onNameOptionChange: (
     questionIndex: number,
@@ -37,6 +37,8 @@ interface QuestionProps {
   onMaxNumberChange: (index: number, value: string | undefined) => void;
   onMinNumberChange: (index: number, value: string | undefined) => void;
   deleteQuestion: (index: number) => void;
+  setCorrectRequired: (index: number, value: boolean) => void;
+  setMaxMinToggle: (index: number, value: boolean) => void;
 }
 
 export default memo(function Question({
@@ -57,8 +59,11 @@ export default memo(function Question({
   onNumberCorrectChange,
   onTextCorrectChange,
   deleteQuestion,
+  setCorrectRequired,
+  setMaxMinToggle,
 }: QuestionProps) {
-  const [correctRequired, setCorrectRequired] = useState(false);
+
+  const correctRequired = !!questions[index].correctRequired;
 
   useEffect(() => {
     if (!correctRequired) {
@@ -94,6 +99,7 @@ export default memo(function Question({
           index={index}
         />
         <SetCorrectAnswer
+          index={index}
           correctRequired={correctRequired}
           setCorrectRequired={setCorrectRequired}
         />
@@ -115,6 +121,7 @@ export default memo(function Question({
         index={index}
       />
       <NumberOptions
+        setMaxMinToggle={setMaxMinToggle}
         onMaxNumberChange={onMaxNumberChange}
         onMinNumberChange={onMinNumberChange}
         questions={questions}
