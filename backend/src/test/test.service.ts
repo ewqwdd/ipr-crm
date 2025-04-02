@@ -917,7 +917,7 @@ export class TestService {
 
         return {
           id: t.userId,
-          name: t.user?.username || 'Неизвестный',
+          name: t.test.anonymous ? 'Анонимно' : (t.user?.username ?? 'Неизвестный'),
           ...questionsToExcel,
           score: count,
           finished: t.finished ? 'Да' : 'Нет',
