@@ -8,7 +8,11 @@ interface SingleOptionProps {
   correctRequired: boolean;
   index: number;
   questionIndex: number;
-  onCorrectChange: (questionIndex: number, optionIndex: number, value: boolean) => void;
+  onCorrectChange: (
+    questionIndex: number,
+    optionIndex: number,
+    value: boolean,
+  ) => void;
   onDeleteOption: (questionIndex: number, optionIndex: number) => void;
   onNameOptionChange: (
     questionIndex: number,

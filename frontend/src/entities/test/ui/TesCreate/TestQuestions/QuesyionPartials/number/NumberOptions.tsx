@@ -71,7 +71,6 @@ export default function NumberOptions({
     onMaxNumberChange,
     onMinNumberChange,
   ]);
-  
 
   const onChangeMinValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

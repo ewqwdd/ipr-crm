@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Answer, TestAssesmentStoreSchema } from './types/types';
+import { Answer, AssignedTest, TestAssesmentStoreSchema } from './types/types';
 
 const initialState: TestAssesmentStoreSchema = {
   screen: -1,
@@ -19,6 +19,25 @@ const testAssesmentSlice = createSlice({
     clear(state) {
       state.screen = -1;
       state.answers = {};
+    },
+    initAnswers(state, action: PayloadAction<AssignedTest>) {
+      const { test, answeredQUestions } = action.payload;
+      state.answers = answeredQUestions.reduce(
+        (acc, question) => {
+          const questionIndex = test.testQuestions.findIndex(
+            (q) => q.id === question.questionId,
+          );
+          if (questionIndex !== -1) {
+            acc[questionIndex] = {
+              numberAnswer: question.numberAnswer?.toString(),
+              textAnswer: question.textAnswer,
+              optionAnswer: question.options.map((option) => option.optionId),
+            };
+          }
+          return acc;
+        },
+        {} as Record<number, Answer>,
+      );
     },
   },
 });

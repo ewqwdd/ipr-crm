@@ -23,7 +23,7 @@ export default function UsersList({
         {team.users.map((user) => (
           <UserCheckbox
             key={user.id}
-            user={user}
+            user={{ ...user, teamCurator: [] }}
             selected={selected.includes(user.id)}
             onChange={(e) => {
               if (e.target.checked) {

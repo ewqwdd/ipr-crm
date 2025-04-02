@@ -13,12 +13,17 @@ interface SubmitTestProps {
     isLoading: boolean;
     isSuccess: boolean;
     isError: boolean;
-  }
+  };
   errorMessage: string | null;
   successMessage: string | null;
 }
 
-export default function SubmitTest({errorMessage, handleSubmit, state, successMessage}: SubmitTestProps) {
+export default function SubmitTest({
+  errorMessage,
+  handleSubmit,
+  state,
+  successMessage,
+}: SubmitTestProps) {
   const test = useAppSelector((state) => state.testCreate);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -34,8 +39,7 @@ export default function SubmitTest({errorMessage, handleSubmit, state, successMe
     }
     if (!test.questions.length) {
       errors.questions = 'Добавьте вопросы';
-    }
- else if (!test.startDate) {
+    } else if (!test.startDate) {
       errors.startDate = 'Введите дату начала теста';
     }
     if (test.endDate && test.endDate < todayStart) {
@@ -95,12 +99,17 @@ export default function SubmitTest({errorMessage, handleSubmit, state, successMe
     if (!isValid) {
       return;
     }
+    console.log(test);
     const questions = test.questions.map((question) => {
       if (question.type === 'NUMBER') {
         return {
           ...question,
-          maxNumber: question.maxNumber ? Number(question.maxNumber) : undefined,
-          minNumber: question.minNumber ? Number(question.minNumber) : undefined,
+          maxNumber: question.maxNumber
+            ? Number(question.maxNumber)
+            : undefined,
+          minNumber: question.minNumber
+            ? Number(question.minNumber)
+            : undefined,
           options: undefined,
           textCorrectValue: undefined,
           maxLength: undefined,
@@ -110,7 +119,9 @@ export default function SubmitTest({errorMessage, handleSubmit, state, successMe
       } else if (question.type === 'TEXT') {
         return {
           ...question,
-          maxLength: question.maxLength ? Number(question.maxLength) : undefined,
+          maxLength: question.maxLength
+            ? Number(question.maxLength)
+            : undefined,
           options: undefined,
           numberCorrectValue: undefined,
           maxNumber: undefined,
@@ -136,6 +147,7 @@ export default function SubmitTest({errorMessage, handleSubmit, state, successMe
 
     handleSubmit({
       ...test,
+      timeLimit: test.timeLimit ? Number(test.timeLimit) : undefined,
       questions,
     });
   };

@@ -47,7 +47,7 @@ export default function TestQuestion({ test, onFinish }: TestQuestionProps) {
       <div className="mt-4 self-center">
         {test.test.limitedByTime &&
           test.test.timeLimit &&
-          (screen !== -1 ? (
+          (screen !== -1 && startDate ? (
             <CountdownTimer
               onFinish={onFinish}
               startDate={startDate}

@@ -168,8 +168,44 @@ export class NotificationsService {
     });
   }
 
+  async sendTestAssignedTimeOver(userId: number, testAssignedId?: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (process.env.MAIL_ENABLED === 'true') {
+      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+      const message = 'Время для теста истекло';
+      const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=finished`;
+
+      const html = this.generateText(heading, message, link);
+
+      await this.mailService.sendMail(
+        user.email,
+        'Время для теста истекло',
+        html,
+      );
+    }
+
+    await this.prismaService.notification.create({
+      data: {
+        title: 'Время для теста истекло',
+        userId: userId,
+        type: 'TEST_TIME_OVER',
+        url: '/assigned-tests?tab=finished',
+        ...(Number.isInteger(testAssignedId)
+          ? { assignedTestId: testAssignedId }
+          : {}),
+      },
+    });
+  }
+
+  // @Cron('* * * * *')
   @Cron('0 * * * *')
   async sendTestAssignedCron() {
+    console.log('sendTestAssignedCron started');
     const tests = await this.prismaService.user_Assigned_Test.findMany({
       where: {
         OR: [
@@ -200,11 +236,11 @@ export class NotificationsService {
 
     const filtered = tests.filter((test) => {
       return (
-        (!test.test.startDate || test.test.startDate >= new Date()) &&
-        (!test.test.endDate || test.test.endDate <= new Date())
+        (!test.test.startDate || test.test.startDate <= new Date()) &&
+        (!test.test.endDate || test.test.endDate >= new Date())
       );
     });
-
+    let count = 0;
     for (const test of filtered) {
       await this.prismaService.user_Assigned_Test.update({
         where: {
@@ -214,9 +250,10 @@ export class NotificationsService {
           firstNotificationSent: true,
         },
       });
-
+      count++;
       await this.sendTestAssignedNotification(test.userId, test.id);
     }
+    console.log(`sendTestAssignedCron ended. ${count} notifications sent`);
   }
 
   async readNotifications(ids: number[], userId: number) {

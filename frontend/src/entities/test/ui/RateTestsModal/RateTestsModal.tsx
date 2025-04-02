@@ -1,21 +1,12 @@
 import { Modal } from '@/shared/ui/Modal';
 import { FC } from 'react';
-import { CheckCircleIcon, MinusCircleIcon } from '@heroicons/react/outline';
 import { testsApi } from '@/shared/api/testsApi';
-import { Progress } from '@/shared/ui/Progress';
-
-type TestResult = {
-  username: string;
-  score: number;
-  total: number;
-};
+import { TestResultScore } from '@/shared/ui/TestResultScore';
+import { testScoreCount } from '@/shared/lib/testScoreCount';
 
 type RateTestsModalProps = {
   isOpen: boolean;
-  modalData: {
-    testName: string;
-    results: TestResult[];
-  };
+  modalData: unknown;
   closeModal: () => void;
 };
 
@@ -24,16 +15,22 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
   isOpen,
   modalData,
 }) => {
-  const { testId } = modalData as { testId?: number };
+  const { testId, testName } = modalData as {
+    testId?: number;
+    testName?: string;
+  };
   const { data: finishedTests, isLoading: finishedTestsLoading } =
     testsApi.useGetTestsQuery();
 
   const test = finishedTests?.find((test) => test.id === testId);
   const users = test?.usersAssigned?.map((user) => {
+    const { score, questionsCount } = testScoreCount(user, test);
     return {
       id: `${user.userId}_${testId}`,
       name: `${user.user?.firstName} ${user.user?.lastName}`,
-      percent: user.finished ? 100 : 0,
+      finished: user.finished,
+      score,
+      questionsCount,
     };
   });
 
@@ -48,24 +45,22 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
       loading={loading}
     >
       <div className="flex flex-col">
-        <div className="text-sm text-gray-500 mb-4">
-          Тест: {modalData?.testName}
-        </div>
+        <div className="text-sm text-gray-500 mb-4">Тест: {testName}</div>
         <div className="flex flex-col divide-y divide-gray-200">
-          {users?.map(({ id, name, percent }) => (
+          {users?.map(({ id, name, finished, questionsCount, score }) => (
             <div
               key={id}
               className="flex items-center justify-between py-3 gap-4"
             >
               <div className="flex items-center gap-2">
-                {percent === 100 ? (
-                  <CheckCircleIcon className="h-5 w-5 text-emerald-500" />
-                ) : (
-                  <MinusCircleIcon className="h-5 w-5 text-red-500" />
-                )}
                 <span className="text-gray-900">{name}</span>
+                {test && (
+                  <TestResultScore
+                    test={{ test, questionsCount, score }}
+                    finished={finished}
+                  />
+                )}
               </div>
-              <Progress percent={percent} className="min-w-20" />
             </div>
           ))}
         </div>

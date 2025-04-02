@@ -17,21 +17,20 @@ const ifCorrectRequired = (question: CreateQuestion) => {
     return question.options?.some((option) => option.isCorrect);
   }
   if (question.type === 'NUMBER') {
-    return question.numberCorrectValue !== undefined;
+    return !!question.numberCorrectValue || question.numberCorrectValue === 0;
   }
   if (question.type === 'TEXT') {
-    return question.textCorrectValue !== undefined;
+    return !!question.textCorrectValue;
   }
   return false;
 };
 
 const ifMaxMinToggle = (question: CreateQuestion) => {
   if (question.type === 'NUMBER') {
-    return question.maxNumber !== undefined || question.minNumber !== undefined;
+    return !!question.maxNumber || !!question.minNumber;
   }
   return false;
-}
-  
+};
 
 const testCreateSlice = createSlice({
   name: 'testCreate',
@@ -173,7 +172,7 @@ const testCreateSlice = createSlice({
       state.questions = [];
       state.startDate = new Date();
     },
-    init(state, action: PayloadAction<{test: Test}>) {
+    init(state, action: PayloadAction<{ test: Test }>) {
       const { test } = action.payload;
       state.id = test.id;
       state.name = test.name;
@@ -188,7 +187,7 @@ const testCreateSlice = createSlice({
       state.minimumScore = test.minimumScore;
       state.limitedByTime = test.limitedByTime;
       state.timeLimit = test.timeLimit;
-      
+
       state.questions = test.testQuestions.map((question) => ({
         ...question,
         error: undefined,
@@ -199,7 +198,7 @@ const testCreateSlice = createSlice({
           isCorrect: option.isCorrect ?? false,
         })),
       }));
-    }
+    },
   },
 });
 

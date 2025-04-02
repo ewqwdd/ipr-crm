@@ -30,7 +30,12 @@ export default function FinishedTest() {
           <h2 className="text-lg font-semibold text-center">
             {data?.test.name}
           </h2>
-          <p className="text-sm text-center text-gray-600">Тест пройден</p>
+          <p className="text-sm text-center text-gray-800 font-medium">
+            Тест пройден
+          </p>
+          <p className="text-sm text-center text-gray-600">
+            {data?.test.passedMessage ? data?.test.passedMessage : ''}
+          </p>
           {data?.test.showScoreToUser && (
             <div className="flex gap-2 items-center">
               <TestResultScore test={data} />

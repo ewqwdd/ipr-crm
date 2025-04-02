@@ -570,6 +570,7 @@ enum NotificationType {
   TASK_ASSIGNED
   IPR_ASSIGNED
   TEST_ASSIGNED
+  TEST_TIME_OVER
 }
 
 enum TestAccess {

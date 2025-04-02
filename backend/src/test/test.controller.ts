@@ -101,7 +101,6 @@ export class TestController {
   ) {
     return this.testService.getAssignedTest(Number(id), sessionInfo);
   }
-  
 
   @UseGuards(AuthGuard)
   @Post('/assigned/:id/start')

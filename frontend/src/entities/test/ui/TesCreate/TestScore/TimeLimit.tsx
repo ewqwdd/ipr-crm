@@ -1,7 +1,7 @@
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { digitRegex } from '@/shared/lib/regex';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 
 interface TimeLimitProps {
   limitByTime: boolean;
@@ -25,6 +25,12 @@ export default memo(function TimeLimit({
     if (!digitRegex.test(value) && value !== '') return;
     onTimeLimitChange(value);
   };
+
+  useEffect(() => {
+    if (!limitByTime && timeLimit) {
+      onTimeLimitChange('');
+    }
+  }, [limitByTime, onTimeLimitChange, timeLimit]);
 
   return (
     <>

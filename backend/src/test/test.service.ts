@@ -12,6 +12,7 @@ import { Prisma, QuestionType } from '@prisma/client';
 import { AssignUsersDTO } from './dto/assign-users.dto';
 import { ExcelService } from 'src/utils/excel/excel.service';
 import { Response } from 'express';
+import { Cron } from '@nestjs/schedule';
 
 type AssignedType = Prisma.User_Assigned_TestGetPayload<{
   include: {
@@ -153,7 +154,7 @@ export class TestService {
             options: {
               where: {
                 archived: false,
-              }
+              },
             },
           },
         },
@@ -194,11 +195,27 @@ export class TestService {
       },
     });
 
-    return tests;
+    const projectTests = tests.map((test) => {
+      if (!test.anonymous) return test;
+      return {
+        ...test,
+        usersAssigned: test.usersAssigned.map((userAssigned) => ({
+          ...userAssigned,
+          user: {
+            id: -1,
+            firstName: 'Аноним',
+            lastName: '',
+            username: 'Аноним',
+          },
+        })),
+      };
+    });
+
+    return projectTests;
   }
 
   async getTestAdmin(id: number, sessionInfo: GetSessionInfoDto) {
-    await  this.checkAccess(sessionInfo);
+    await this.checkAccess(sessionInfo);
 
     const test = await this.prismaService.test.findUnique({
       where: {
@@ -219,7 +236,7 @@ export class TestService {
           },
         },
       },
-    })
+    });
 
     if (!test) throw new NotFoundException('Тест не найден');
 
@@ -288,7 +305,7 @@ export class TestService {
           ],
           test: {
             // TODO: добавить проверку на доступность теста
-            // finished: false,
+            hidden: false,
             archived: false,
           },
         },
@@ -330,7 +347,7 @@ export class TestService {
         test: {
           archived: false,
           // TODO: добавить проверку на доступность теста
-          // hidden: false,
+          hidden: false,
         },
         finished: false,
       },
@@ -341,14 +358,32 @@ export class TestService {
               where: {
                 archived: false,
               },
-              include: {
+              select: {
+                id: true,
+                allowDecimal: true,
+                description: true,
+                maxLength: true,
+                maxNumber: true,
+                minNumber: true,
+                label: true,
+                required: true,
+                type: true,
                 options: {
                   where: {
                     archived: false,
                   },
+                  select: {
+                    value: true,
+                    id: true,
+                  },
                 },
               },
             },
+          },
+        },
+        answeredQUestions: {
+          include: {
+            options: true,
           },
         },
       },
@@ -491,7 +526,7 @@ export class TestService {
 
       const teamUsers = await this.prismaService.user.findMany({
         where: {
-          teams: { some: { id: { in: teamIds } } },
+          teams: { some: { teamId: { in: teamIds } } },
         },
         select: { id: true },
       });
@@ -499,7 +534,6 @@ export class TestService {
       const teamUserIds = new Set(teamUsers.map((user) => user.id));
       allowedUsers = userIds.filter((id) => teamUserIds.has(id));
     }
-
     const test = await this.prismaService.test.findFirst({
       where: {
         id: testId,
@@ -531,35 +565,18 @@ export class TestService {
       (id) => !userIdsWithActiveTest.has(id),
     );
 
-    let sendNotifs = false;
-
-    const now = new Date();
-
-    const isStartedAssign = !startDate || new Date(startDate) <= now;
-    const isStartedTest = !test.startDate || test.startDate <= now;
-    const isNotEndedTest = !test.endDate || test.endDate >= now;
-
-    if (!test.hidden && isStartedAssign && isStartedTest && isNotEndedTest) {
-      sendNotifs = true;
-    }
-
     const createdAssignments =
       await this.prismaService.user_Assigned_Test.createMany({
         data: filteredUserIds.map((userId) => ({
           userId,
           testId,
-          availableFrom: startDate ? new Date(startDate) : undefined,
-          firstNotificationSent: sendNotifs,
+          availableFrom: startDate
+            ? new Date(new Date(startDate).setHours(0, 0, 0, 0))
+            : undefined,
+          firstNotificationSent: false,
         })),
         skipDuplicates: true, // на всякий случай
       });
-
-    if (sendNotifs) {
-      const promisesNotifs = filteredUserIds.map((userId) =>
-        this.notificationsService.sendTestAssignedNotification(userId, testId),
-      );
-      await Promise.all(promisesNotifs);
-    }
 
     return createdAssignments;
   }
@@ -957,13 +974,14 @@ export class TestService {
   async editTest(
     testId: number,
     data: CreateTestDTO,
-    sessionInfo: GetSessionInfoDto,) {
-    if (sessionInfo.role !== 'admin') throw new ForbiddenException();
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    await this.checkAccess(sessionInfo);
+
     const test = await this.prismaService.test.findFirst({
       where: {
         id: testId,
       },
-
     });
     if (!test) throw new NotFoundException('Тест не найден');
 
@@ -996,11 +1014,11 @@ export class TestService {
       include: {
         options: true,
         answeredQuestions: true,
-      }
-    })
+      },
+    });
 
     for (const question of questions) {
-      const found = data.questions.find(q => q.id === question.id);
+      const found = data.questions.find((q) => q.id === question.id);
       if (!found) {
         await this.prismaService.question.update({
           where: {
@@ -1010,8 +1028,7 @@ export class TestService {
             archived: true,
           },
         });
-      }
-      else {
+      } else {
         await this.prismaService.question.update({
           where: {
             id: question.id,
@@ -1019,14 +1036,14 @@ export class TestService {
           data: {
             label: found.label,
             type: found.type,
-            description: found.description,
-            maxLength: found.maxLength,
-            maxNumber: found.maxNumber,
-            minNumber: found.minNumber,
-            numberCorrectValue: found.numberCorrectValue,
-            required: found.required,
-            textCorrectValue: found.textCorrectValue,
-            allowDecimal: found.allowDecimal,
+            description: found.description ?? null,
+            maxLength: found.maxLength ?? null,
+            maxNumber: found.maxNumber ?? null,
+            minNumber: found.minNumber ?? null,
+            numberCorrectValue: found.numberCorrectValue ?? null,
+            required: !!found.required,
+            textCorrectValue: found.textCorrectValue ?? null,
+            allowDecimal: !!found.allowDecimal,
           },
         });
         const options = await this.prismaService.option.findMany({
@@ -1037,7 +1054,7 @@ export class TestService {
         });
 
         for (const option of options) {
-          const foundOption = found.options?.find(o => o.id === option.id);
+          const foundOption = found.options?.find((o) => o.id === option.id);
           if (!foundOption) {
             await this.prismaService.option.update({
               where: {
@@ -1060,63 +1077,168 @@ export class TestService {
           }
         }
 
-        const newOptions = found.options?.filter(o => !o.id)
-          .map(o => ({
-            value: o.value,
-            isCorrect: o.isCorrect,
-          }))
-          || [];
+        const newOptions =
+          found.options
+            ?.filter((o) => !o.id)
+            .map((o) => ({
+              value: o.value,
+              isCorrect: o.isCorrect,
+            })) || [];
 
         if (newOptions.length > 0) {
           await this.prismaService.option.createMany({
-            data: newOptions.map(o => ({
+            data: newOptions.map((o) => ({
               questionId: question.id,
               ...o,
             })),
           });
         }
-
       }
     }
 
-    const newQuestions = data.questions.filter(q => !q.id)
-    .map((question, index) => 
-      this.prismaService.question.create({
-        data: {
-          label: question.label,
-          type: question.type,
-          order: index,
-          description: question.description,
-          maxLength: question.maxLength,
-          maxNumber: question.maxNumber,
-          minNumber: question.minNumber,
-          numberCorrectValue: question.numberCorrectValue,
-          required: question.required,
-          textCorrectValue: question.textCorrectValue,
-          Test: {
-            connect: {
-              id: updatedTest.id,
+    const newQuestions = data.questions
+      .filter((q) => !q.id)
+      .map((question, index) =>
+        this.prismaService.question.create({
+          data: {
+            label: question.label,
+            type: question.type,
+            order: index,
+            description: question.description,
+            maxLength: question.maxLength,
+            maxNumber: question.maxNumber,
+            minNumber: question.minNumber,
+            numberCorrectValue: question.numberCorrectValue,
+            required: question.required,
+            textCorrectValue: question.textCorrectValue,
+            Test: {
+              connect: {
+                id: updatedTest.id,
+              },
             },
-          },
-          ...(question.options
-            ? {
-                options: {
-                  createMany: {
-                    data: question.options.map((option) => ({
-                      value: option.value,
-                      isCorrect: option.isCorrect,
-                    })),
+            ...(question.options
+              ? {
+                  options: {
+                    createMany: {
+                      data: question.options.map((option) => ({
+                        value: option.value,
+                        isCorrect: option.isCorrect,
+                      })),
+                    },
                   },
-                },
-              }
-            : {}),
-        },
-      })
-    )
+                }
+              : {}),
+          },
+        }),
+      );
 
     await Promise.all(newQuestions);
     return updatedTest;
+  }
 
+  // @Cron('* * * * *')
+  @Cron('0 * * * *')
+  async completeTimeLimitTestAssignedCron() {
+    try {
+      console.log('Запуск крон завершения тестов по времени');
+      const tests = await this.prismaService.user_Assigned_Test.findMany({
+        where: {
+          startDate: {
+            not: null,
+          },
+          test: {
+            limitedByTime: true,
+            archived: false,
+          },
+          finished: false,
+        },
+        include: {
+          test: {
+            select: {
+              timeLimit: true,
+            },
+          },
+        },
+      });
+
+      let count = 0;
+      for (const test of tests) {
+        const startTime = test.startDate.getTime();
+        const currentTime = new Date().getTime();
+
+        if (currentTime - startTime >= test.test.timeLimit * 60 * 1000) {
+          await this.prismaService.user_Assigned_Test.update({
+            where: {
+              id: test.id,
+            },
+            data: {
+              finished: true,
+              endDate: new Date(),
+            },
+          });
+          await this.notificationsService.sendTestAssignedTimeOver(
+            test.userId,
+            test.id,
+          );
+          count++;
+        }
+      }
+
+      console.log(`Завершено ${count} тестов по времени`);
+    } catch (e) {
+      console.log('Ошибка в кроне завершения тестов по времени', e);
     }
+  }
 
+  // @Cron('* * * * *')
+  @Cron('0 0 * * *')
+  async finishEndDateTestAssignedCron() {
+    console.log('Запуск крон завершения тестов по дате');
+    try {
+      const tests = await this.prismaService.user_Assigned_Test.findMany({
+        where: {
+          test: {
+            archived: false,
+            endDate: {
+              not: null,
+            },
+          },
+          finished: false,
+        },
+        include: {
+          test: {
+            select: {
+              endDate: true,
+            },
+          },
+        },
+      });
+
+      let count = 0;
+      for (const test of tests) {
+        const endTime = test.test.endDate.getTime();
+        const currentTime = new Date().getTime();
+
+        if (currentTime >= endTime) {
+          await this.prismaService.user_Assigned_Test.update({
+            where: {
+              id: test.id,
+            },
+            data: {
+              finished: true,
+              endDate: new Date(),
+            },
+          });
+          await this.notificationsService.sendTestAssignedTimeOver(
+            test.userId,
+            test.id,
+          );
+          count++;
+        }
+      }
+      console.log(`Завершено ${count} тестов по дате`);
+    } catch (e) {
+      console.log('Ошибка в кроне завершения тестов по дате', e);
+    }
+  }
 }

@@ -8,7 +8,11 @@ interface TestOptionsProps {
   correctRequired: boolean;
   questions: CreateQuestion[];
   handleAddOption: (index: number) => void;
-  onCorrectChange: (questionIndex: number, optionIndex: number) => void;
+  onCorrectChange: (
+    questionIndex: number,
+    optionIndex: number,
+    value: boolean,
+  ) => void;
   onDeleteOption: (questionIndex: number, optionIndex: number) => void;
   onNameOptionChange: (
     questionIndex: number,

@@ -52,7 +52,7 @@ class QuestionDTO {
   required: boolean;
 
   @IsOptional()
-  @Transform(({ value }) => Number(value))
+  @Transform(({ value }) => (value ? Number(value) : null))
   numberCorrectValue?: number;
 
   @IsOptional()

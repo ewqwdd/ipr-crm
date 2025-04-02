@@ -27,7 +27,7 @@ export const testsApi = createApi({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: ['Test', 'Assigned'],
+      invalidatesTags: ['Test', 'Assigned', 'Finished'],
     }),
     getTestAdmin: build.query<Test, number>({
       query: (id) => `/test/admin/${id}`,
@@ -84,7 +84,7 @@ export const testsApi = createApi({
         url: `/test/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Test', 'Assigned'],
+      invalidatesTags: ['Test', 'Assigned', 'Finished'],
     }),
   }),
 });

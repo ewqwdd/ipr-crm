@@ -11,7 +11,6 @@ import TestQuestionsCreate from './tabs/TestQuestionsCreate';
 import TestScoreCreate from './tabs/TestScoreCreate';
 import { testCreateTabs } from '@/entities/test';
 
-
 export default function TestCreate() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || testCreateTabs[0].key;
@@ -19,8 +18,8 @@ export default function TestCreate() {
     setSearchParams(`?tab=${tab}`);
   };
 
-    const [mutate, state] = testsApi.useCreateTestMutation();
-    const isLoading = state.isLoading;
+  const [mutate, state] = testsApi.useCreateTestMutation();
+  const isLoading = state.isLoading;
 
   useEffect(() => {
     if (isLoading) {
@@ -34,13 +33,22 @@ export default function TestCreate() {
     <div className="px-8 py-10 flex flex-col h-full relative">
       <div className="flex justify-between items-center">
         <Heading title="Создание теста" />
-        <Tabs tabs={testCreateTabs} setCurrentTab={setTab} currentTab={activeTab} />
+        <Tabs
+          tabs={testCreateTabs}
+          setCurrentTab={setTab}
+          currentTab={activeTab}
+        />
       </div>
       {activeTab === 'settings' && <TestCreateSettings />}
       {activeTab === 'access' && <TestCreateAccess />}
       {activeTab === 'questions' && <TestQuestionsCreate />}
       {activeTab === 'score-settings' && <TestScoreCreate />}
-      <SubmitTest handleSubmit={mutate} state={state} errorMessage={'Ошибка при создании теста'} successMessage={'Тест успешно создан'} />
+      <SubmitTest
+        handleSubmit={mutate}
+        state={state}
+        errorMessage={'Ошибка при создании теста'}
+        successMessage={'Тест успешно создан'}
+      />
     </div>
   );
 }

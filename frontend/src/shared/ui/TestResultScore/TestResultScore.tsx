@@ -1,4 +1,4 @@
-import { AssignedTest } from '@/entities/test';
+import { Test } from '@/entities/test';
 import {
   CheckCircleIcon,
   MinusCircleIcon,
@@ -6,13 +6,18 @@ import {
 } from '@heroicons/react/outline';
 
 interface TestScoreProps {
-  test: AssignedTest;
+  test: {
+    test: Test;
+    score?: number | null;
+    questionsCount?: number;
+  };
+  finished?: boolean;
 }
 
-export default function TestScore({ test }: TestScoreProps) {
+export default function TestScore({ test, finished = true }: TestScoreProps) {
   return (
     <>
-      {test.test.minimumScore ? (
+      {test.test.minimumScore && finished ? (
         (test.score ?? 0) >= test.test.minimumScore ? (
           <CheckCircleIcon className="text-green-500 size-4" />
         ) : (
@@ -22,7 +27,8 @@ export default function TestScore({ test }: TestScoreProps) {
         <MinusCircleIcon className="text-gray-500 size-4" />
       )}
       <span className="text-gray-500 text-sm">
-        {test.score ?? 0} {test.questionsCount && `из ${test.questionsCount}`}
+        {test.score ?? 0}{' '}
+        {Boolean(test.questionsCount) && `из ${test.questionsCount}`}
       </span>
     </>
   );

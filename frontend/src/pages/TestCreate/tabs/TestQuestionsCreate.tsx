@@ -200,14 +200,14 @@ export default function TestQuestionsCreate() {
 
   const setMaxMinToggle = useCallback(
     (index: number, value: boolean) => {
-        dispatch(
-            testCreateActions.setQuestionField({
-            index,
-            field: 'maxMinToggle',
-            value,
-            }),
-        );
-        },
+      dispatch(
+        testCreateActions.setQuestionField({
+          index,
+          field: 'maxMinToggle',
+          value,
+        }),
+      );
+    },
     [dispatch],
   );
 

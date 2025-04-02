@@ -27,7 +27,10 @@ export default memo(function TestScore({
     return questions.reduce((acc, question) => {
       if (question.type === 'TEXT' && question.textCorrectValue) {
         return acc + 1;
-      } else if (question.type === 'NUMBER' && question.numberCorrectValue) {
+      } else if (
+        question.type === 'NUMBER' &&
+        (question.numberCorrectValue || question.numberCorrectValue === 0)
+      ) {
         return acc + 1;
       } else if (
         (question.type === 'SINGLE' || question.type === 'MULTIPLE') &&

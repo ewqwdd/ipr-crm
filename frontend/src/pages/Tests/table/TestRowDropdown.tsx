@@ -68,10 +68,10 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
 
   const dropdownItems = [
     { id: 'edit', label: 'Редактировать тест' },
-    
-      (hidden
-        ? { id: 'hide', label: 'Сделать доступным' }
-        : { id: 'show', label: 'Скрыть доступ' }),
+
+    hidden
+      ? { id: 'hide', label: 'Сделать доступным' }
+      : { id: 'show', label: 'Скрыть доступ' },
     {
       id: 'results',
       label: 'Выгрузить результаты',
