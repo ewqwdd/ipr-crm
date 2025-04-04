@@ -58,11 +58,11 @@ export default function TestAssesment() {
 
   useEffect(() => {
     if (isLoading) {
-      showLoading();
+      dispatch(showLoading());
     } else {
-      hideLoading();
+      dispatch(hideLoading());
     }
-  }, [isLoading, showLoading, hideLoading]);
+  }, [isLoading, dispatch]);
 
   useEffect(() => {
     if (data?.answeredQUestions && data.answeredQUestions.length > 0) {
