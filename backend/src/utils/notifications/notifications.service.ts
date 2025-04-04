@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../db/prisma.service';
 import { MailService } from '../mailer/mailer';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class NotificationsService {
@@ -203,7 +203,7 @@ export class NotificationsService {
   }
 
   // @Cron('* * * * *')
-  @Cron('0 * * * *')
+  @Cron(CronExpression.EVERY_5_MINUTES, { name: 'sendTestAssignedCron' })
   async sendTestAssignedCron() {
     console.log('sendTestAssignedCron started');
     const tests = await this.prismaService.user_Assigned_Test.findMany({

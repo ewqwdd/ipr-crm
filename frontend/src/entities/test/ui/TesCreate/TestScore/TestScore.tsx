@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import StatsItem from './StatsItem';
 import TimeLimit from './TimeLimit';
 import MinScore from './MinScore';
@@ -41,6 +41,12 @@ export default memo(function TestScore({
       return acc;
     }, 0);
   }, [questions]);
+
+  useEffect(() => {
+    if (minimumScore && minimumScore > count) {
+      onChangeMinimumScore(count.toString());
+    }
+  }, [count, minimumScore, onChangeMinimumScore]);
 
   return (
     <div className="flex flex-col gap-4 mt-6 max-w-xl">

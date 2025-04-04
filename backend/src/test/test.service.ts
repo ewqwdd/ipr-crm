@@ -12,7 +12,7 @@ import { Prisma, QuestionType } from '@prisma/client';
 import { AssignUsersDTO } from './dto/assign-users.dto';
 import { ExcelService } from 'src/utils/excel/excel.service';
 import { Response } from 'express';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 type AssignedType = Prisma.User_Assigned_TestGetPayload<{
   include: {
@@ -1137,7 +1137,7 @@ export class TestService {
   }
 
   // @Cron('* * * * *')
-  @Cron('0 * * * *')
+  @Cron(CronExpression.EVERY_MINUTE, {name: 'completeTimeLimitTestAssignedCron'})
   async completeTimeLimitTestAssignedCron() {
     try {
       console.log('Запуск крон завершения тестов по времени');
@@ -1191,7 +1191,7 @@ export class TestService {
   }
 
   // @Cron('* * * * *')
-  @Cron('0 0 * * *')
+  @Cron('0 0 * * *', {name: 'finishEndDateTestAssignedCron'})
   async finishEndDateTestAssignedCron() {
     console.log('Запуск крон завершения тестов по дате');
     try {
