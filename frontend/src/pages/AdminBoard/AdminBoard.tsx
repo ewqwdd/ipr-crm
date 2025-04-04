@@ -25,7 +25,7 @@ export default function AdminBoard() {
         );
       }
     };
-  }, [dispatch, data]);
+  }, [dispatch, data, userId]);
 
   useEffect(() => {
     if (isLoading) {

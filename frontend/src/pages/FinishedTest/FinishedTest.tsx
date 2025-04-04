@@ -1,3 +1,4 @@
+import { useAppDispatch } from '@/app';
 import { hideLoading, showLoading } from '@/app/store/loadingSlice';
 import { testsApi } from '@/shared/api/testsApi';
 import { Card } from '@/shared/ui/Card';
@@ -11,14 +12,15 @@ export default function FinishedTest() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, isSuccess, isError } =
     testsApi.useGetFinishedTestForUserQuery(parseInt(id ?? '-1'));
+    const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isLoading) {
-      showLoading();
+      dispatch(showLoading());
     } else {
-      hideLoading();
+      dispatch(hideLoading());
     }
-  }, [isLoading, showLoading, hideLoading]);
+  }, [isLoading, dispatch]);
 
   return (
     <div className={'px-8 py-10 flex flex-col h-full relative'}>
