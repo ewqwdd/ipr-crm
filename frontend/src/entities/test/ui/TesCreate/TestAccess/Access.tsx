@@ -7,6 +7,7 @@ interface AccessProps {
 }
 
 export default memo(function Access({ access, onChange }: AccessProps) {
+  return null;
   return (
     <CardsRadio
       elements={[

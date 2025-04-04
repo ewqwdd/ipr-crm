@@ -12,7 +12,7 @@ export default function FinishedTest() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, isSuccess, isError } =
     testsApi.useGetFinishedTestForUserQuery(parseInt(id ?? '-1'));
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isLoading) {
