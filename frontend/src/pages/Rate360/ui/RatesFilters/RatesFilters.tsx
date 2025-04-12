@@ -13,6 +13,7 @@ import { getChangedFilters } from './helpers';
 import { Option } from '@/shared/types/Option';
 import { MultiValue } from 'react-select';
 import { DateObject } from 'react-multi-date-picker';
+import { PingCircle } from '@/shared/ui/PingCircle';
 
 type OnChange = (value: string | number) => void;
 
@@ -53,12 +54,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
         <SoftButton className="relative" onClick={() => setIsOpen((s) => !s)}>
           Фильтры
           {changedFiltersCount !== 0 && (
-            <span className="absolute top-[-6px] right-[-6px] flex size-4">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
-              <span className="relative inline-flex size-4 rounded-full bg-sky-500 justify-center items-center text-white text-xs">
-                {changedFiltersCount}
-              </span>
-            </span>
+            <PingCircle>{changedFiltersCount}</PingCircle>
           )}
         </SoftButton>
         {changedFiltersCount !== 0 && (

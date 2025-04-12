@@ -60,7 +60,7 @@ export default function UserForm({
     if (!file) return;
 
     if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      toast.error('Вы можете загружать только JPG/PNG файлы.');
+      toast.error('Можно загружать только JPG/PNG изображения.');
       e.preventDefault();
       return;
     }
@@ -97,7 +97,7 @@ export default function UserForm({
     if (!data.username || data.username.length < 4) {
       setErrors((prev) => ({
         ...prev,
-        username: 'Имя пользователя должно быть минимум 4 симввола',
+        username: 'Имя пользователя должно быть минимум 4 символа',
       }));
       valid = false;
     }
@@ -106,7 +106,7 @@ export default function UserForm({
       valid = false;
     }
     if (!data.specId) {
-      setErrors((prev) => ({ ...prev, specId: 'Выберите роль' }));
+      setErrors((prev) => ({ ...prev, specId: 'Выберите специальность' }));
       valid = false;
     }
     if (!edit && (!data.password || data.password.length < 7)) {
@@ -150,6 +150,7 @@ export default function UserForm({
   };
 
   const disabledTeams = initData?.teamCurator?.map((e) => e.id) ?? [];
+
   return (
     <form
       className={cva('space-y-8 divide-y divide-gray-200 py-10 px-8', {
@@ -161,18 +162,18 @@ export default function UserForm({
         <div>
           <div>
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Profile
+              Профиль
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              This information will be displayed publicly so be careful what you
-              share.
+              Эта информация будет видна другим пользователям. Заполняйте с
+              умом.
             </p>
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
             <div className="sm:col-span-4 max-w-96">
               <InputWithLabelLight
-                label="Username"
+                label="Имя пользователя"
                 name="username"
                 id="username"
                 autoComplete="username"
@@ -189,7 +190,7 @@ export default function UserForm({
             {!edit && (
               <div className="sm:col-span-3">
                 <InputWithLabelLight
-                  label="Password"
+                  label="Пароль"
                   type="password"
                   name="password"
                   id="password"
@@ -205,7 +206,7 @@ export default function UserForm({
                 htmlFor="photo"
                 className="block text-sm font-medium text-gray-700"
               >
-                Photo
+                Фото
               </label>
               <div className="mt-1 flex items-center">
                 {photo ? (
@@ -230,7 +231,7 @@ export default function UserForm({
                   type="button"
                   className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  Change
+                  Изменить
                 </button>
                 <input
                   type="file"
@@ -246,16 +247,16 @@ export default function UserForm({
         <div className="pt-8">
           <div>
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Personal Information
+              Личная информация
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              Use a permanent address where you can receive mail.
+              Укажите действительные данные, по которым с вами можно связаться.
             </p>
           </div>
           <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
             <div className="sm:col-span-3">
               <InputWithLabelLight
-                label="First name"
+                label="Имя"
                 type="text"
                 name="first-name"
                 id="first-name"
@@ -267,7 +268,7 @@ export default function UserForm({
             </div>
             <div className="sm:col-span-3">
               <InputWithLabelLight
-                label="Last name"
+                label="Фамилия"
                 type="text"
                 name="last-name"
                 id="last-name"
@@ -280,7 +281,7 @@ export default function UserForm({
 
             <div className="sm:col-span-3">
               <InputWithLabelLight
-                label="Email address"
+                label="Email"
                 name="email"
                 id="email"
                 autoComplete="email"
@@ -292,7 +293,7 @@ export default function UserForm({
 
             <div className="sm:col-span-3">
               <InputWithLabelLight
-                label="Phone"
+                label="Телефон"
                 type="text"
                 name="phone"
                 id="phone"
@@ -336,11 +337,11 @@ export default function UserForm({
         <div className="pt-8">
           <div>
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Notifications
+              Уведомления
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              We'll always let you know about important changes, but you pick
-              what else you want to hear about.
+              Мы всегда сообщим о важных изменениях. Остальное — по вашему
+              желанию.
             </p>
           </div>
         </div>
@@ -349,10 +350,10 @@ export default function UserForm({
       <div className="pt-5">
         <div className="flex justify-end">
           <SecondaryButton type="button" onClick={() => navigate(-1)}>
-            Cancel
+            Отмена
           </SecondaryButton>
           <PrimaryButton type="submit" className="ml-4">
-            Save
+            Сохранить
           </PrimaryButton>
         </div>
       </div>

@@ -27,6 +27,10 @@ class OptionDTO {
   @IsOptional()
   @IsBoolean()
   isCorrect?: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  score?: number;
 }
 
 enum QuestionType {
@@ -81,6 +85,10 @@ class QuestionDTO {
   @IsNumber()
   @IsInt()
   minNumber?: number;
+
+  @IsNumber()
+  @IsOptional()
+  score?: number;
 
   @IsOptional()
   @IsArray()

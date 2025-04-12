@@ -1,6 +1,7 @@
 import { UserForm } from '@/entities/user';
 import { UserFormData } from '@/entities/user/types/types';
 import { usersApi } from '@/shared/api/usersApi';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
@@ -34,11 +35,13 @@ export default function UserEdit() {
   }, [isSuccess]);
 
   return (
-    <UserForm
-      loading={isFetching || isLoading || mutateLoading}
-      initData={data}
-      onSubmit={onSubmit}
-      edit
-    />
+    <LoadingOverlay active={isLoading}>
+      <UserForm
+        loading={isFetching || mutateLoading}
+        initData={data}
+        onSubmit={onSubmit}
+        edit
+      />
+    </LoadingOverlay>
   );
 }

@@ -31,14 +31,17 @@ export default memo(function Settings({
     openModal('CONFIRM', {
       submitText: 'Удалить',
       title: 'Удалить выбранные Оценки?',
-      onSubmit: async () => removeRates({ ids: selected }),
+      onSubmit: async () => {
+        setSelected([]);
+        return await removeRates({ ids: selected });
+      },
     });
   };
 
   return (
     <div
       className={cva(
-        'flex gap-3 p-3 pb-5 absolute bottom-0 right-0 w-full bg-white shadow-2xl items-center',
+        'flex gap-3 p-3 pb-5 fixed bottom-0 right-0 w-full bg-white shadow-2xl items-center',
         {
           'animate-pulse pointer-events-none': removeRatesProps.isLoading,
         },

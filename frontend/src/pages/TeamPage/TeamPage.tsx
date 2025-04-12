@@ -12,10 +12,11 @@ import { Modal } from '@/shared/ui/Modal';
 import AddUserForm from '@/entities/user/ui/AddUserForm';
 import { usersApi } from '@/shared/api/usersApi';
 import { SpecsFilter } from '@/widgets/SpecsFilter';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading } = teamsApi.useGetTeamQuery(Number(id));
+  const { data, isFetching, isLoading } = teamsApi.useGetTeamQuery(Number(id));
   const [spec, setSpec] = useState<number | undefined>();
   const [openNewCurator, setOpenNewCurator] = useState(false);
   const [openNewUser, setOpenNewUser] = useState(false);
@@ -43,11 +44,14 @@ export default function TeamPage() {
     }
   }, [mutateSuccess]);
 
+  const ifCuratorSelected =
+    !spec || data?.curatorSpecs?.some((s) => s.specId === spec);
+
   return (
-    <>
+    <LoadingOverlay active={isLoading}>
       <div
         className={cva('px-8 py-10 flex flex-col', {
-          'animate-pulse pointer-events-none': isLoading || mutateLoading,
+          'animate-pulse pointer-events-none': isFetching || mutateLoading,
         })}
       >
         <div className="flex justify-between items-center">
@@ -76,7 +80,7 @@ export default function TeamPage() {
           </p>
         </div>
         <div className="flex flex-col gap-1 max-w-5xl mt-8">
-          {data?.curator?.id && (
+          {data?.curator?.id && ifCuratorSelected && (
             <UserItem
               teamId={Number(id)}
               leader
@@ -115,6 +119,6 @@ export default function TeamPage() {
           teamId={Number(id)}
         />
       </Modal>
-    </>
+    </LoadingOverlay>
   );
 }

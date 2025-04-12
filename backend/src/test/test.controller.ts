@@ -50,7 +50,6 @@ export class TestController {
   @Get('/assigned')
   @HttpCode(HttpStatus.OK)
   async getTestsAssigned(@SessionInfo() sessionInfo: GetSessionInfoDto) {
-    console.log(sessionInfo);
     return this.testService.getAssignedTests(sessionInfo);
   }
 

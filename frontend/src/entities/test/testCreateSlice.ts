@@ -57,6 +57,7 @@ const testCreateSlice = createSlice({
         type: 'SINGLE',
         label: '',
         required: false,
+        score: 0,
       });
       state.errors.questions = undefined;
     },
@@ -131,7 +132,7 @@ const testCreateSlice = createSlice({
       if (!state.questions[index].options) {
         state.questions[index].options = [];
       }
-      state.questions[index].options?.push({ value: '' });
+      state.questions[index].options?.push({ value: '', score: 1 });
       state.questions[index].error = undefined;
       state.errors.questions = undefined;
     },
@@ -147,6 +148,21 @@ const testCreateSlice = createSlice({
       } else if (question.type === 'TEXT') {
         delete question.textCorrectValue;
       }
+    },
+    setOptionScore(
+      state,
+      action: PayloadAction<{
+        questionIndex: number;
+        optionIndex: number;
+        value: number | undefined;
+      }>,
+    ) {
+      const { questionIndex, optionIndex } = action.payload;
+      if (!state.questions[questionIndex]?.options?.[optionIndex]) return;
+      state.questions[questionIndex].options[optionIndex].score =
+        action.payload.value;
+      state.questions[questionIndex].error = undefined;
+      state.errors.questions = undefined;
     },
     setErrors(state, action: PayloadAction<TestCreateStoreSchema['errors']>) {
       state.errors = action.payload;

@@ -99,7 +99,6 @@ export default function SubmitTest({
     if (!isValid) {
       return;
     }
-    console.log(test);
     const questions = test.questions.map((question) => {
       if (question.type === 'NUMBER') {
         return {
@@ -115,6 +114,7 @@ export default function SubmitTest({
           maxLength: undefined,
           correctRequired: undefined,
           maxMinToggle: undefined,
+          score: question.correctRequired ? question.score : undefined,
         };
       } else if (question.type === 'TEXT') {
         return {
@@ -129,6 +129,7 @@ export default function SubmitTest({
           allowDecimal: undefined,
           correctRequired: undefined,
           maxMinToggle: undefined,
+          score: question.correctRequired ? question.score : undefined,
         };
       } else {
         return {

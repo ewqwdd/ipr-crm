@@ -11,6 +11,7 @@ import Error from './QuesyionPartials/Error';
 import { CreateQuestion } from '@/entities/test/types/types';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { TrashIcon } from '@heroicons/react/outline';
+import QuestionScore from './QuesyionPartials/QuestionScore';
 
 interface QuestionProps {
   index: number;
@@ -43,6 +44,12 @@ interface QuestionProps {
   deleteQuestion: (index: number) => void;
   setCorrectRequired: (index: number, value: boolean) => void;
   setMaxMinToggle: (index: number, value: boolean) => void;
+  setOptionScore: (
+    questionIndex: number,
+    optionIndex: number,
+    value: number | undefined,
+  ) => void;
+  setQuestionScore: (questionIndex: number, value: number | undefined) => void;
 }
 
 export default memo(function Question({
@@ -65,6 +72,8 @@ export default memo(function Question({
   deleteQuestion,
   setCorrectRequired,
   setMaxMinToggle,
+  setOptionScore,
+  setQuestionScore,
 }: QuestionProps) {
   const correctRequired = !!questions[index].correctRequired;
 
@@ -107,6 +116,11 @@ export default memo(function Question({
           setCorrectRequired={setCorrectRequired}
         />
       </div>
+      <QuestionScore
+        index={index}
+        questions={questions}
+        onChange={setQuestionScore}
+      />
       <TestOptions
         onNameOptionChange={onNameOptionChange}
         onDeleteOption={onDeleteOption}
@@ -114,6 +128,7 @@ export default memo(function Question({
         handleAddOption={handleAddOption}
         questions={questions}
         correctRequired={correctRequired}
+        onScoreChange={setOptionScore}
         index={index}
       />
       <TextOptions

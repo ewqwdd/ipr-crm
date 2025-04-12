@@ -12,7 +12,31 @@ export const testScoreCount = (assignedTest: AssignedTest, test: Test) => {
     }
     return false;
   });
-  console.log(questionsWithCorrectAnswers);
+
+  const maxScore = questionsWithCorrectAnswers.reduce((acc, question) => {
+    if (question.type === 'MULTIPLE' && question.options) {
+      return (
+        acc +
+        question.options
+          .filter((option) => option.isCorrect)
+          .reduce((a, op) => a + (op.score ?? 1), 0)
+      );
+    } else if (question.type === 'SINGLE' && question.options) {
+      return (
+        acc +
+        Math.max(
+          ...question.options
+            .filter((option) => option.isCorrect)
+            .map((op) => op.score ?? 1),
+        )
+      );
+    } else if (question.type === 'TEXT') {
+      return acc + (question.score ?? 1);
+    } else if (question.type === 'NUMBER') {
+      return acc + (question.score ?? 1);
+    }
+    return acc;
+  }, 0);
 
   const score = assignedTest.answeredQUestions.reduce((acc, question) => {
     const foundQuestion = questionsWithCorrectAnswers.find(
@@ -20,27 +44,31 @@ export const testScoreCount = (assignedTest: AssignedTest, test: Test) => {
     );
     if (!foundQuestion) return acc;
     if (['MULTIPLE', 'SINGLE'].includes(foundQuestion.type)) {
-      const allCorrect = foundQuestion.options
-        ?.filter((option) => option.isCorrect)
-        .map((option) => option.id);
-      const allSelected = question.options?.map((option) => option.optionId);
-      const allSelectedCorrect = allSelected?.every((option) =>
-        allCorrect?.includes(option),
-      );
-      if (allSelectedCorrect) {
-        return acc + 1;
-      }
+      const score = question.options.reduce((a, op) => {
+        const foundOption = foundQuestion.options?.find(
+          (o) => o.id === op.optionId,
+        );
+        if (foundOption?.isCorrect) {
+          return a + (foundOption.score ?? 1);
+        }
+        return a;
+      }, 0);
+      return acc + score;
     } else if (foundQuestion.type === 'TEXT') {
       if (question.textAnswer === foundQuestion.textCorrectValue) {
-        return acc + 1;
+        return acc + (foundQuestion.score ?? 1);
       }
     } else if (foundQuestion.type === 'NUMBER') {
       if (question.numberAnswer === foundQuestion.numberCorrectValue) {
-        return acc + 1;
+        return acc + (foundQuestion.score ?? 1);
       }
     }
     return acc;
   }, 0);
 
-  return { score, questionsCount: questionsWithCorrectAnswers.length };
+  return {
+    score,
+    questionsCount: questionsWithCorrectAnswers.length,
+    maxScore,
+  };
 };

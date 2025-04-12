@@ -211,6 +211,32 @@ export default function TestQuestionsCreate() {
     [dispatch],
   );
 
+  const setOptionScore = useCallback(
+    (questionIndex: number, optionIndex: number, value: number | undefined) => {
+      dispatch(
+        testCreateActions.setOptionScore({
+          questionIndex,
+          optionIndex,
+          value,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const setQuestionScore = useCallback(
+    (questionIndex: number, value: number | undefined) => {
+      dispatch(
+        testCreateActions.setQuestionField({
+          index: questionIndex,
+          field: 'score',
+          value,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   const props = {
     clearCorrectOptions: onClear,
     questions: questions,
@@ -230,6 +256,8 @@ export default function TestQuestionsCreate() {
     deleteQuestion: deleteQuestion,
     setCorrectRequired: setCorrectRequired,
     setMaxMinToggle: setMaxMinToggle,
+    setOptionScore: setOptionScore,
+    setQuestionScore: setQuestionScore,
   };
 
   return <TestQuestions {...props} />;

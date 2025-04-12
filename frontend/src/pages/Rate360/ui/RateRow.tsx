@@ -18,6 +18,7 @@ interface RateRowProps {
   index: number;
   setSelected?: React.Dispatch<SetStateAction<number[]>>;
   selected?: boolean;
+  isFetching?: boolean;
 }
 
 export default function RateRow({
@@ -25,6 +26,7 @@ export default function RateRow({
   index,
   setSelected,
   selected,
+  isFetching,
 }: RateRowProps) {
   const evaluatorsCount = rate.evaluators.length ?? 0;
   const ratesCount = rate.userRates.length ?? 0;
@@ -44,7 +46,8 @@ export default function RateRow({
     skill!.competencies.flatMap((comp) => comp.indicators),
   );
 
-  const isLoading = usersFetching || teamsFetching || specsFetching;
+  const isLoading =
+    usersFetching || teamsFetching || specsFetching || isFetching;
   const { openModal } = useModal();
   const navigate = useNavigate();
 
@@ -57,11 +60,15 @@ export default function RateRow({
 
   if (isLoading) {
     return (
-      <div
-        className={cva('animate-pulse', {
-          'bg-gray-50': index % 2 === 0,
+      <tr
+        className={cva('animate-pulse bg-gray-100 h-16', {
+          'bg-gray-200': index % 2 === 0,
         })}
-      />
+      >
+        <td colSpan={10} className="px-6 py-4">
+          <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+        </td>
+      </tr>
     );
   }
   return (

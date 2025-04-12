@@ -14,13 +14,13 @@ export default memo(function Progress() {
 
   const tabs = useMemo(() => {
     const selfNotifs = notifications?.filter(
-      (notif) => notif.type === 'RATE_ASSIGNED_SELF',
+      (notif) => notif.type === 'RATE_ASSIGNED_SELF' && !notif.watched,
     ).length;
     const rateAssigned = notifications?.filter(
-      (notif) => notif.type === 'RATE_ASSIGNED',
+      (notif) => notif.type === 'RATE_ASSIGNED' && !notif.watched,
     ).length;
     const rateConfirm = notifications?.filter(
-      (notif) => notif.type === 'RATE_CONFIRM',
+      (notif) => notif.type === 'RATE_CONFIRM' && !notif.watched,
     ).length;
 
     return [

@@ -34,6 +34,12 @@ interface TestQuestionsProps {
   deleteQuestion: (index: number) => void;
   setCorrectRequired: (index: number, value: boolean) => void;
   setMaxMinToggle: (index: number, value: boolean) => void;
+  setOptionScore: (
+    questionIndex: number,
+    optionIndex: number,
+    value: number | undefined,
+  ) => void;
+  setQuestionScore: (questionIndex: number, value: number | undefined) => void;
 }
 
 export default function TestQuestions(props: TestQuestionsProps) {

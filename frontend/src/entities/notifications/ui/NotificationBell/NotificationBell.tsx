@@ -3,6 +3,7 @@ import { userActions } from '@/entities/user';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { Dropdown } from '@/shared/ui/Dropdown';
+import { PingCircle } from '@/shared/ui/PingCircle';
 import { BellIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router';
 
@@ -17,10 +18,25 @@ export default function NotificationBell() {
     dispatch(userActions.setNotificationRead(id));
   };
 
+  const count = notifications?.length ?? 0;
+  const countRead = notifications?.filter((n) => !n.watched).length ?? 0;
+
+  const button = (
+    <div className="relative">
+      <BellIcon className="size-6" />
+      {count > 0 && <PingCircle>{countRead}</PingCircle>}
+    </div>
+  );
+
   return (
     <Dropdown
-      button={<BellIcon className="h-5 w-5" />}
-      btnClassName="text-indigo-500 hover:text-indigo-700 bg-transparent transition-all duration-100 p-2"
+      button={button}
+      btnClassName={cva(
+        'text-indigo-500 hover:text-indigo-700 bg-transparent transition-all duration-100 p-2',
+        {
+          'pointer-events-none opacity-70': count === 0,
+        },
+      )}
     >
       {notifications?.map((notification) => {
         const Cmp = notification.url ? Link : 'button';

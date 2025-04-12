@@ -24,34 +24,50 @@ export default memo(function TestScore({
   timeLimit,
 }: TestScoreProps) {
   const count = useMemo(() => {
-    return questions.reduce((acc, question) => {
-      if (question.type === 'TEXT' && question.textCorrectValue) {
-        return acc + 1;
-      } else if (
-        question.type === 'NUMBER' &&
-        (question.numberCorrectValue || question.numberCorrectValue === 0)
-      ) {
-        return acc + 1;
-      } else if (
-        (question.type === 'SINGLE' || question.type === 'MULTIPLE') &&
-        question.options?.some((option) => option.isCorrect)
-      ) {
-        return acc + 1;
-      }
-      return acc;
-    }, 0);
+    return questions.reduce(
+      (acc, question) => {
+        if (question.type === 'TEXT' && question.textCorrectValue) {
+          return {
+            score: acc.score + (question.score ?? 1),
+            questions: acc.questions + 1,
+          };
+        } else if (
+          question.type === 'NUMBER' &&
+          (question.numberCorrectValue || question.numberCorrectValue === 0)
+        ) {
+          return {
+            score: acc.score + (question.score ?? 1),
+            questions: acc.questions + 1,
+          };
+        } else if (
+          (question.type === 'SINGLE' || question.type === 'MULTIPLE') &&
+          question.options?.some((option) => option.isCorrect)
+        ) {
+          const maxScore = Math.max(
+            ...question.options
+              .filter((q) => q.isCorrect)
+              .map((q) => q.score ?? 1),
+          );
+          return { score: acc.score + maxScore, questions: acc.questions + 1 };
+        }
+        return acc;
+      },
+      { score: 0, questions: 0 },
+    );
   }, [questions]);
 
   useEffect(() => {
-    if (minimumScore && minimumScore > count) {
-      onChangeMinimumScore(count.toString());
+    if (minimumScore && minimumScore > count.score) {
+      onChangeMinimumScore(count.score.toString());
     }
   }, [count, minimumScore, onChangeMinimumScore]);
+
+  console.log(count);
 
   return (
     <div className="flex flex-col gap-4 mt-6 max-w-xl">
       <StatsItem label="Всего вопросов:" value={questions.length} />
-      <StatsItem label="Всего вопросов с ответами:" value={count} />
+      <StatsItem label="Всего вопросов с ответами:" value={count.questions} />
       <TimeLimit
         limitByTime={limitByTime}
         onTimeLimitChange={onTimeLimitChange}
@@ -59,7 +75,7 @@ export default memo(function TestScore({
         timeLimit={timeLimit}
       />
       <MinScore
-        maxScore={count}
+        maxScore={count.score}
         onChangeMinimumScore={onChangeMinimumScore}
         minimumScore={minimumScore}
       />

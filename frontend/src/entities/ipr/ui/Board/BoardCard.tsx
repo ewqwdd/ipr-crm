@@ -35,6 +35,11 @@ export default function BoardCard({ card, deletable, userId }: BoardCardProps) {
       >
         {priorityNames[card.priority]}
       </Badge>
+      {card.task.deadline && (
+        <span className="text-xs text-gray-500 -mb-2">
+          {String(card.task.deadline).slice(0, 10)}
+        </span>
+      )}
       <button
         className=" font-medium text-gray-800 cursor-pointer hover:text-indigo-600 transition-all self-start"
         onClick={onOpen}

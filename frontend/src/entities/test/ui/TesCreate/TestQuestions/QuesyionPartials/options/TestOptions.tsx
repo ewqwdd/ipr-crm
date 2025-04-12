@@ -19,6 +19,11 @@ interface TestOptionsProps {
     optionIndex: number,
     e: React.ChangeEvent<HTMLInputElement>,
   ) => void;
+  onScoreChange: (
+    questionIndex: number,
+    optionIndex: number,
+    value: number | undefined,
+  ) => void;
 }
 
 export default function TestOptions({
@@ -29,6 +34,7 @@ export default function TestOptions({
   onCorrectChange,
   onDeleteOption,
   onNameOptionChange,
+  onScoreChange,
 }: TestOptionsProps) {
   const options = questions[index].options;
   const type = questions[index].type;
@@ -48,6 +54,7 @@ export default function TestOptions({
             option={option}
             correctRequired={correctRequired}
             questionIndex={index}
+            onScoreChange={onScoreChange}
           />
         ))}
       {type === 'MULTIPLE' &&
@@ -61,6 +68,7 @@ export default function TestOptions({
             option={option}
             correctRequired={correctRequired}
             questionIndex={index}
+            onScoreChange={onScoreChange}
           />
         ))}
       <SecondaryButton

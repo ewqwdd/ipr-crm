@@ -61,6 +61,7 @@ export class TestService {
           numberCorrectValue: question.numberCorrectValue,
           required: question.required,
           textCorrectValue: question.textCorrectValue,
+          score: question.score,
           Test: {
             connect: {
               id: created.id,
@@ -73,6 +74,7 @@ export class TestService {
                     data: question.options.map((option) => ({
                       value: option.value,
                       isCorrect: option.isCorrect,
+                      score: option.score,
                     })),
                   },
                 },
@@ -100,36 +102,38 @@ export class TestService {
           (o) => o.id === answeredOption?.optionId,
         );
         if (foundOption.isCorrect) {
-          return acc + 1;
+          return acc + (foundOption.score || 1);
         }
       } else if (
         questionData.type === QuestionType.MULTIPLE &&
         questionData.options.find((o) => o.isCorrect)
       ) {
-        const allCorrect = questionData.options?.filter((o) => o.isCorrect);
-        const answeredOptions = question.options?.map((o) => o.optionId) || [];
-        const allAnsweredCorrect = allCorrect?.every((o) =>
-          answeredOptions.includes(o.id),
-        );
-        if (
-          allAnsweredCorrect &&
-          allCorrect?.length === answeredOptions.length
-        ) {
-          return acc + 1;
-        }
+        const answeredOptions = question.options || [];
+
+        const points = answeredOptions.reduce((acc, answeredOption) => {
+          const foundOption = questionData.options?.find(
+            (o) => o.id === answeredOption.optionId,
+          );
+          if (foundOption?.isCorrect) {
+            return acc + (foundOption.score || 1);
+          }
+          return acc;
+        }, 0);
+
+        return acc + points;
       } else if (
         questionData.type === QuestionType.TEXT &&
         questionData.textCorrectValue
       ) {
         if (question.textAnswer === questionData.textCorrectValue) {
-          return acc + 1;
+          return acc + (questionData.score || 1);
         }
       } else if (
         questionData.type === QuestionType.NUMBER &&
         questionData.numberCorrectValue
       ) {
         if (question.numberAnswer === questionData.numberCorrectValue) {
-          return acc + 1;
+          return acc + (questionData.score || 1);
         }
       }
       return acc;
@@ -597,7 +601,29 @@ export class TestService {
   projectFields = (test: AssignedType) => {
     return {
       ...test,
-      questionsCount: test.test.testQuestions.length,
+      questionsCount: test.test.testQuestions.reduce((acc, question) => {
+        if (question.type === QuestionType.SINGLE) {
+          return (
+            acc +
+            Math.max(
+              ...question.options
+                .filter((o) => o.isCorrect)
+                .map((q) => q.score),
+            )
+          );
+        } else if (question.type === QuestionType.MULTIPLE) {
+          return (
+            acc +
+            question.options.reduce(
+              (optAcc, option) =>
+                optAcc + (option.isCorrect ? option.score : 0),
+              0,
+            )
+          );
+        } else {
+          return acc + (question.score || 1);
+        }
+      }, 0),
       answeredQUestions: null,
       test: {
         ...test.test,
@@ -736,7 +762,9 @@ export class TestService {
         id: testid,
       },
       data: {
-        hidden,
+        hidden: {
+          set: hidden,
+        },
       },
     });
   }
@@ -763,7 +791,7 @@ export class TestService {
       };
     }
 
-    const test = await this.prismaService.user_Assigned_Test.findMany({
+    const tests = await this.prismaService.user_Assigned_Test.findMany({
       where: {
         test: {
           ...filters,
@@ -775,10 +803,12 @@ export class TestService {
       },
     });
 
-    if (!test) throw new NotFoundException('Тест не найден');
-    const userIds = test.map((t) => t.userId);
-    const promisesNotifs = userIds.map((userId) =>
-      this.notificationsService.sendTestAssignedNotification(userId, testId),
+    if (!tests) throw new NotFoundException('Тест не найден');
+    const promisesNotifs = tests.map((test) =>
+      this.notificationsService.sendTestAssignedNotification(
+        test.userId,
+        test.id,
+      ),
     );
     await Promise.all(promisesNotifs);
     return true;
@@ -876,7 +906,7 @@ export class TestService {
             );
             value = foundOption?.value || '';
             if (foundOption?.isCorrect) {
-              count++;
+              count += foundOption.score || 1;
               isCorrect = true;
             }
           } else if (q.type === QuestionType.MULTIPLE) {
@@ -894,19 +924,28 @@ export class TestService {
               allAnsweredCorrect &&
               allCorrect?.length === answeredOptions.length
             ) {
-              count++;
               isCorrect = true;
             }
+            const points = answeredOptions.reduce((acc, answeredOption) => {
+              const foundOption = q.options?.find(
+                (o) => o.id === answeredOption,
+              );
+              if (foundOption?.isCorrect) {
+                return acc + (foundOption.score || 1);
+              }
+              return acc;
+            }, 0);
+            count += points;
           } else if (q.type === QuestionType.TEXT) {
             value = answer?.textAnswer || '';
             if (answer?.textAnswer === q.textCorrectValue) {
-              count++;
+              count += q.score || 1;
               isCorrect = true;
             }
           } else if (q.type === QuestionType.NUMBER) {
             value = answer?.numberAnswer || '';
             if (answer?.numberAnswer === q.numberCorrectValue) {
-              count++;
+              count += q.score || 1;
               isCorrect = true;
             }
           }
@@ -917,7 +956,9 @@ export class TestService {
 
         return {
           id: t.userId,
-          name: t.test.anonymous ? 'Анонимно' : (t.user?.username ?? 'Неизвестный'),
+          name: t.test.anonymous
+            ? 'Анонимно'
+            : (t.user?.username ?? 'Неизвестный'),
           ...questionsToExcel,
           score: count,
           finished: t.finished ? 'Да' : 'Нет',
@@ -1044,6 +1085,7 @@ export class TestService {
             required: !!found.required,
             textCorrectValue: found.textCorrectValue ?? null,
             allowDecimal: !!found.allowDecimal,
+            score: found.score,
           },
         });
         const options = await this.prismaService.option.findMany({
@@ -1071,6 +1113,7 @@ export class TestService {
               },
               data: {
                 value: foundOption.value,
+                score: foundOption.score,
                 isCorrect: foundOption.isCorrect,
               },
             });
@@ -1137,7 +1180,9 @@ export class TestService {
   }
 
   // @Cron('* * * * *')
-  @Cron(CronExpression.EVERY_MINUTE, {name: 'completeTimeLimitTestAssignedCron'})
+  @Cron(CronExpression.EVERY_MINUTE, {
+    name: 'completeTimeLimitTestAssignedCron',
+  })
   async completeTimeLimitTestAssignedCron() {
     try {
       console.log('Запуск крон завершения тестов по времени');
@@ -1191,7 +1236,7 @@ export class TestService {
   }
 
   // @Cron('* * * * *')
-  @Cron('0 0 * * *', {name: 'finishEndDateTestAssignedCron'})
+  @Cron('0 0 * * *', { name: 'finishEndDateTestAssignedCron' })
   async finishEndDateTestAssignedCron() {
     console.log('Запуск крон завершения тестов по дате');
     try {

@@ -19,6 +19,11 @@ interface SingleOptionProps {
     optionIndex: number,
     e: ChangeEvent<HTMLInputElement>,
   ) => void;
+  onScoreChange: (
+    questionIndex: number,
+    optionIndex: number,
+    value: number | undefined,
+  ) => void;
 }
 
 export default function SingleOption({
@@ -29,7 +34,17 @@ export default function SingleOption({
   onCorrectChange,
   onDeleteOption,
   onNameOptionChange,
+  onScoreChange,
 }: SingleOptionProps) {
+  const handleScoreChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value !== '') {
+      if (isNaN(Number(value))) return;
+      if (Number(value) < 0) return;
+      onScoreChange?.(questionIndex, index, Number(value));
+    }
+  };
+
   return (
     <OptionBase
       correctRequired={correctRequired}
@@ -37,12 +52,22 @@ export default function SingleOption({
       option={option}
       onNameChange={(e) => onNameOptionChange(questionIndex, index, e)}
       radio={
-        <Radio
-          checked={option.isCorrect}
-          onChange={() => onCorrectChange(questionIndex, index, true)}
-        >
-          Правильный ответ
-        </Radio>
+        <>
+          {option.isCorrect && (
+            <input
+              value={option.score}
+              onChange={handleScoreChange}
+              className="bg-white pl-1 pr-0 py-0.5 w-11"
+              type="number"
+            />
+          )}
+          <Radio
+            checked={option.isCorrect}
+            onChange={() => onCorrectChange(questionIndex, index, true)}
+          >
+            Правильный ответ
+          </Radio>
+        </>
       }
     />
   );

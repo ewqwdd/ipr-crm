@@ -133,7 +133,7 @@ export class NotificationsService {
         userId: userId,
         type: 'RATE_CONFIRM',
         rateId: rateId,
-        url: '/progress?tab=confirm',
+        url: '/progress?tab=confirm-list',
       },
     });
   }

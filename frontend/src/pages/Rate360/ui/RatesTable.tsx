@@ -1,9 +1,6 @@
-import { cva } from '@/shared/lib/cva';
 import ColumnsHeading from './ColumnsHeading';
 import { Rate } from '@/entities/rates';
 import RateRow from './RateRow';
-import { useEffect } from 'react';
-import { hideLoading, showLoading } from '@/app/store/loadingSlice';
 
 interface RatesTableProps {
   data?: Rate[];
@@ -18,24 +15,12 @@ export default function RatesTable({
   setSelected,
   selected,
 }: RatesTableProps) {
-  useEffect(() => {
-    if (isLoading) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [isLoading, showLoading, hideLoading]);
-
   return (
     <div className="overflow-x-auto">
       {data?.length !== 0 ? (
         <table className="min-w-full divide-y divide-gray-300 mt-10">
           <ColumnsHeading />
-          <tbody
-            className={cva('bg-white', {
-              'animate-pulse pointer-events-none': isLoading,
-            })}
-          >
+          <tbody>
             {data?.map((rate, index) => (
               <RateRow
                 key={rate.id}
@@ -43,6 +28,7 @@ export default function RatesTable({
                 index={index}
                 selected={selected.includes(rate.id)}
                 setSelected={setSelected}
+                isFetching={isLoading}
               />
             ))}
           </tbody>

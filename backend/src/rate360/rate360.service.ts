@@ -128,6 +128,7 @@ export class Rate360Service {
 
     return await Promise.all(
       ratesToCreate.map(async (rate, index) => {
+        let curatorConfirmed = data.confirmCurator;
         if (data.confirmUser) {
           const team = await this.prismaService.team.findUnique({
             where: {
@@ -137,10 +138,14 @@ export class Rate360Service {
               curatorId: true,
             },
           });
-          await this.notificationsService.sendRateConfirmNotification(
-            team.curatorId,
-            createdRates[index].id,
-          );
+          if (team.curatorId === rate.userId) {
+            curatorConfirmed = true;
+          } else {
+            await this.notificationsService.sendRateConfirmNotification(
+              team.curatorId,
+              createdRates[index].id,
+            );
+          }
         } else if (data.confirmCurator) {
           await this.notificationsService.sendRateConfirmNotification(
             rate.userId,
@@ -165,6 +170,7 @@ export class Rate360Service {
         return await this.prismaService.rate360.update({
           where: { id: createdRates[index].id },
           data: {
+            curatorConfirmed: curatorConfirmed,
             evaluators: {
               createMany: {
                 data: [
@@ -592,11 +598,10 @@ export class Rate360Service {
         team: true,
       },
     });
-
     if (!data) {
       throw new NotFoundException('Rate not found');
     }
-    if (data.team) {
+    if (data.team && !data.curatorConfirmed) {
       await this.notificationsService.sendRateConfirmNotification(
         data.team.curatorId,
         rateId,

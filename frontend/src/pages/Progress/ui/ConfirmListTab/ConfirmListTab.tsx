@@ -21,6 +21,10 @@ export default function ConfirmListTab() {
     ratesFilter === 'self'
       ? confirmByUser.isLoading
       : confirmByCurator.isLoading;
+  const fetchingToShow =
+    ratesFilter === 'self'
+      ? confirmByUser.isFetching
+      : confirmByCurator.isFetching;
 
   const { showLoading, hideLoading } = useLoading();
 
@@ -54,11 +58,13 @@ export default function ConfirmListTab() {
         </Radio>
       </div>
 
-      {listToShow?.map((rate) => (
+      {listToShow?.map((rate, index) => (
         <ConfirmListItem
+          index={index}
           specs={specs.data ?? []}
           rate={rate}
           curatorBlocked={ratesFilter === 'self'}
+          isFetching={fetchingToShow}
         />
       ))}
     </div>

@@ -1,6 +1,5 @@
 import { rate360Api } from '@/shared/api/rate360Api';
-import { skillsApi } from '@/shared/api/skillsApi';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import TabsHeader from './ui/TabsHeader';
@@ -18,8 +17,7 @@ export default function Rate360Assesment() {
   const { data, isFetching, isError } = rate360Api.useFindForUserQuery(
     parseInt(id ?? ''),
   );
-  const { data: skills, isFetching: skillsFetching } =
-    skillsApi.useGetSkillsQuery();
+
   const [
     mutateAssesment,
     { isLoading: mutateAssesmentLoading, isSuccess: mutateAssesmentSuccess },
@@ -37,13 +35,13 @@ export default function Rate360Assesment() {
   const { showLoading, hideLoading } = useLoading();
 
   useEffect(() => {
-    if (isFetching || skillsFetching) {
+    if (isFetching) {
       showLoading();
     }
-    if (!isFetching && !skillsFetching) {
+    if (!isFetching) {
       hideLoading();
     }
-  }, [isFetching, skillsFetching, showLoading, hideLoading]);
+  }, [isFetching, showLoading, hideLoading]);
 
   useEffect(() => {
     if (isError) {
@@ -52,13 +50,7 @@ export default function Rate360Assesment() {
     }
   }, [isError]);
 
-  const blocks = useMemo(
-    () =>
-      data?.competencyBlocks?.filter(
-        (skill) => skill.specId === data?.specId && skill.type === data.type,
-      ) ?? [],
-    [skills, data],
-  );
+  const blocks = data?.competencyBlocks ?? [];
 
   useEffect(() => {
     if (Object.keys(assessment).length === 0 && data) {

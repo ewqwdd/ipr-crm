@@ -24,13 +24,13 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
 
   const test = finishedTests?.find((test) => test.id === testId);
   const users = test?.usersAssigned?.map((user) => {
-    const { score, questionsCount } = testScoreCount(user, test);
+    const { score, maxScore } = testScoreCount(user, test);
     return {
       id: `${user.userId}_${testId}`,
       name: `${user.user?.firstName} ${user.user?.lastName}`,
       finished: user.finished,
       score,
-      questionsCount,
+      questionsCount: maxScore,
     };
   });
 

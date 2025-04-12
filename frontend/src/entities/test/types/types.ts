@@ -16,6 +16,7 @@ export interface TestOption {
   id: number;
   value: string;
   isCorrect?: boolean;
+  score?: number;
 }
 
 export interface Question {
@@ -31,6 +32,7 @@ export interface Question {
   numberCorrectValue?: number;
   textCorrectValue?: string;
   allowDecimal?: boolean;
+  score?: number;
 }
 
 interface CreateOption extends Omit<TestOption, 'id'> {

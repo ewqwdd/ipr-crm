@@ -78,7 +78,13 @@ export class TeamsService {
             },
           },
         },
-        curator: true,
+        curator: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
       },
     });
     if (!team) {

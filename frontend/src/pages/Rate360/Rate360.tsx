@@ -8,15 +8,14 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useEffect, useState } from 'react';
 import RatesTable from './ui/RatesTable';
 import Settings from './ui/Settings';
-import { useLoading } from '@/app/hooks/useLoading';
 import RatesFiltersWrapper from './ui/RatesFilters';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 export default function Rate360() {
-  const { data, isLoading } = rate360Api.useGetRatesQuery();
+  const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery();
   const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
   const dispatch = useAppDispatch();
-  const { showLoading, hideLoading } = useLoading();
 
   const handleClose = () => {
     setOpen(false);
@@ -24,15 +23,11 @@ export default function Rate360() {
   };
 
   useEffect(() => {
-    if (isLoading) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [isLoading, showLoading, hideLoading]);
+    setSelected([]);
+  }, [data]);
 
   return (
-    <>
+    <LoadingOverlay active={isLoading}>
       <div className="px-8 py-10 flex flex-col h-full realtive">
         <div className="flex justify-between items-center">
           <Heading title="Командные отчёты" description="Список 360 оценок" />
@@ -45,7 +40,7 @@ export default function Rate360() {
             <RatesTable
               selected={selected}
               data={filteredData}
-              isLoading={isLoading}
+              isLoading={isFetching}
               setSelected={setSelected}
             />
           )}
@@ -61,6 +56,6 @@ export default function Rate360() {
       >
         <AddRate closeModal={handleClose} />
       </Modal>
-    </>
+    </LoadingOverlay>
   );
 }

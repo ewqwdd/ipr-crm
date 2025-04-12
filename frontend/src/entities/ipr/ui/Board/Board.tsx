@@ -38,7 +38,6 @@ interface BoardProps {
 export default function Board({ data, userId }: BoardProps) {
   const dispatch = useAppDispatch();
   const controlledBoard = useAppSelector((state) => state.board.board);
-  const id = useAppSelector((state) => state.user.user?.id);
 
   const [filters, setFilters] = useState(initialFilters);
 
@@ -201,11 +200,7 @@ export default function Board({ data, userId }: BoardProps) {
             )}
             renderCard={(card) => {
               return (
-                <BoardCard
-                  deletable={userId !== id}
-                  card={card}
-                  userId={userId}
-                />
+                <BoardCard deletable={false} card={card} userId={userId} />
               );
             }}
           >

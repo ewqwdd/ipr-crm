@@ -14,7 +14,7 @@ export default memo(function MinScore({
   minimumScore,
   onChangeMinimumScore,
 }: MinScoreProps) {
-  const [checked, setChecked] = useState(Number.isInteger(minimumScore));
+  const [checked, setChecked] = useState(!!minimumScore);
 
   const onToggleMinScore = () => {
     if (checked) {

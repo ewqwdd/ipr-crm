@@ -233,6 +233,7 @@ model Question {
   numberCorrectValue Int?
   allowDecimal Boolean @default(false)
   textCorrectValue String?
+  score     Int?
 
   archived Boolean @default(false)
 
@@ -246,6 +247,7 @@ model Option {
   value      String
   isCorrect  Boolean @default(false)
   archived Boolean @default(false)
+  score     Int?
 
   Question Question @relation(fields: [questionId], references: [id])
   pickedOptions UserAnsweredQuestionOption[]
@@ -352,13 +354,14 @@ model Notification {
   url         String?
 
   rateId Int?
-  rate   Rate360? @relation(fields: [rateId], references: [id])
+  rate   Rate360? @relation(fields: [rateId], references: [id], onDelete: Cascade)
 
   iprId Int?
-  ipr IndividualGrowthPlan? @relation(fields: [iprId], references: [id])
+  ipr IndividualGrowthPlan? @relation(fields: [iprId], references: [id], onDelete: Cascade)
   
   user User @relation(fields: [userId], references: [id])
-  assignedTest User_Assigned_Test? @relation(fields: [assignedTestId], references: [id])
+  assignedTest User_Assigned_Test? @relation(fields: [assignedTestId], references: [id], onDelete: Cascade)
+  
 }
 
 model Team {

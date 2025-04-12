@@ -44,7 +44,10 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
         navigate(`/tests-edit/${testId}`);
         break;
       case 'hide':
-        toggleHide({ id: testId!, hidden: !hidden });
+        toggleHide({ id: testId!, hidden: true });
+        break;
+      case 'show':
+        toggleHide({ id: testId!, hidden: false });
         break;
       case 'results':
         downloadExcel(testId!);
@@ -70,8 +73,8 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
     { id: 'edit', label: 'Редактировать тест' },
 
     hidden
-      ? { id: 'hide', label: 'Сделать доступным' }
-      : { id: 'show', label: 'Скрыть доступ' },
+      ? { id: 'show', label: 'Сделать доступным' }
+      : { id: 'hide', label: 'Скрыть доступ' },
     {
       id: 'results',
       label: 'Выгрузить результаты',

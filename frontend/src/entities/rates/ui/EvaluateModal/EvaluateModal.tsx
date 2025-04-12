@@ -35,7 +35,6 @@ export default function EvaluateModal({
     teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
-  const skills = rate.competencyBlocks;
 
   const [
     mutateApproveSelf,
@@ -53,14 +52,8 @@ export default function EvaluateModal({
   const foundUser = users?.users.find((user) => user.id === rate.userId);
   const foundTeam = teams?.list.find((team) => team.id === rate.teamId);
   const foundSpec = specs?.find((spec) => spec.id === rate.specId);
-  const foundSkills = foundSpec?.competencyBlocks
-    .map(
-      (block) =>
-        skills.find(
-          (skill) => skill.id === block.id && skill.type === rate.type,
-        )!,
-    )
-    .filter(Boolean);
+
+  const skills = rate.competencyBlocks;
 
   const details = [
     {
@@ -82,7 +75,7 @@ export default function EvaluateModal({
   ];
 
   const indicators =
-    foundSkills?.flatMap((block) =>
+    skills?.flatMap((block) =>
       block.competencies.flatMap((competency) => competency.indicators),
     ) ?? [];
   const userRates = rate.userRates.filter((rate) => rate.userId === userId);
@@ -137,11 +130,7 @@ export default function EvaluateModal({
           ответы будут преобразованы в баллы и представлены без привязки к
           конкретному человеку.
         </p>
-        <BlockList
-          userRates={userRates}
-          rate={rate}
-          skills={foundSkills ?? []}
-        />
+        <BlockList userRates={userRates} rate={rate} skills={skills ?? []} />
         {isCompleted && (
           <PrimaryButton className="self-end" onClick={onSubmit}>
             Завершить тестирование

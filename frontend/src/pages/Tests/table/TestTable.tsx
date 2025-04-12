@@ -7,6 +7,7 @@ import Row from './Row';
 import { initialFilters, TestTableFilterType } from './helpers';
 import { DateObject } from 'react-multi-date-picker';
 import { cva } from '@/shared/lib/cva';
+import { EmptyState } from '@/shared/ui/EmptyState';
 
 type TestTableProps = {
   tests: Test[];
@@ -71,51 +72,61 @@ const TestTable = ({ tests, isFetching }: TestTableProps) => {
   const paginateddata = filteredTests.slice((page - 1) * LIMIT, page * LIMIT);
 
   return (
-    <div className={cva({ 'animate-pulse': !!isFetching })}>
+    <div
+      className={cva('flex flex-col h-full', { 'animate-pulse': !!isFetching })}
+    >
       <TestTableFilter filters={filters} updateFilters={updateFilters} />
-      <div className="w-full max-sm:overflow-x-auto">
-        <table className={`min-w-[800px] w-full divide-y divide-gray-300 mt-5`}>
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-              >
-                Информация
-              </th>
-              <th
-                scope="col"
-                className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Название теста
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Дедлайн
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Действия
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {paginateddata.map((test) => (
-              <Row key={test?.id} isAdmin={isAdmin} {...test} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <Pagination
-        count={filteredTests.length}
-        limit={LIMIT}
-        page={page}
-        setPage={setPage}
-      />
+      {filteredTests.length > 0 ? (
+        <div className="w-full max-sm:overflow-x-auto">
+          <table
+            className={`min-w-[800px] w-full divide-y divide-gray-300 mt-5`}
+          >
+            <thead className="bg-gray-50">
+              <tr>
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                >
+                  Информация
+                </th>
+                <th
+                  scope="col"
+                  className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Название теста
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Дедлайн
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Действия
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {paginateddata.map((test) => (
+                <Row key={test?.id} isAdmin={isAdmin} {...test} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <EmptyState />
+      )}
+      {filteredTests.length > 0 && (
+        <Pagination
+          count={filteredTests.length}
+          limit={LIMIT}
+          page={page}
+          setPage={setPage}
+        />
+      )}
     </div>
   );
 };

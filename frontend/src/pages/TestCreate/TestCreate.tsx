@@ -10,6 +10,8 @@ import TestCreateSettings from './tabs/TestCreateSettings';
 import TestQuestionsCreate from './tabs/TestQuestionsCreate';
 import TestScoreCreate from './tabs/TestScoreCreate';
 import { testCreateTabs } from '@/entities/test';
+import { useAppDispatch } from '@/app';
+import { testCreateActions } from '@/entities/test/testCreateSlice';
 
 export default function TestCreate() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,6 +22,7 @@ export default function TestCreate() {
 
   const [mutate, state] = testsApi.useCreateTestMutation();
   const isLoading = state.isLoading;
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isLoading) {
@@ -28,6 +31,12 @@ export default function TestCreate() {
       hideLoading();
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(testCreateActions.clear());
+    };
+  }, []);
 
   return (
     <div className="px-8 py-10 flex flex-col h-full relative">
