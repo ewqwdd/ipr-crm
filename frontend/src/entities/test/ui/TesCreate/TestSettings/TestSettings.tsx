@@ -1,7 +1,9 @@
-import PassedMessage from './PassedMessage';
-import ShowScoreToUser from './ShowScoreToUser';
-import TaskDescription from './TaskDescription';
-import TaskName from './TaskName';
+import {
+  PassedMessage,
+  ShowScoreToUser,
+  TaskDescription,
+  TaskName,
+} from '@/widgets/TestSettings';
 
 interface TestSettingsProps {
   name?: string;

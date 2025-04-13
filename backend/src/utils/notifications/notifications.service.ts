@@ -269,4 +269,37 @@ export class NotificationsService {
       },
     });
   }
+
+  async sendSurveyAssignedNotification(
+    userId: number,
+    surveyAssignedId?: number,
+  ) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (process.env.MAIL_ENABLED === 'true') {
+      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+      const message = 'Вам назначен опрос';
+      const link = `${process.env.FRONTEND_URL}/assigned-surveys?tab=surveys`;
+
+      const html = this.generateText(heading, message, link);
+
+      await this.mailService.sendMail(user.email, 'Вам назначен опрос', html);
+    }
+
+    await this.prismaService.notification.create({
+      data: {
+        title: 'Вам назначен опрос',
+        userId: userId,
+        type: 'SURVEY_ASSIGNED',
+        url: '/assigned-surveys?tab=surveys',
+        ...(Number.isInteger(surveyAssignedId)
+          ? { assignedSurveyId: surveyAssignedId }
+          : {}),
+      },
+    });
+  }
 }

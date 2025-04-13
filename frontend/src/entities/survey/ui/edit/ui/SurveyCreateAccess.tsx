@@ -1,21 +1,21 @@
 import { useAppDispatch, useAppSelector } from '@/app';
-import { testCreateActions } from '@/entities/test/testCreateSlice';
+import { surveyCreateActions } from '@/entities/survey';
 import { TestAccess } from '@/widgets/TestAccess';
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { DateObject } from 'react-multi-date-picker';
 
-export default function TestCreateAccess() {
+export default memo(function SurveyCreateAccess() {
   const dispatch = useAppDispatch();
 
   const access =
-    useAppSelector((state) => state.testCreate.access) ?? 'PRIVATE';
-  const anonymous = useAppSelector((state) => !!state.testCreate.anonymous);
-  const startDate = useAppSelector((state) => state.testCreate.startDate);
-  const endDate = useAppSelector((state) => state.testCreate.endDate);
+    useAppSelector((state) => state.surveyCreate.access) ?? 'PRIVATE';
+  const anonymous = useAppSelector((state) => !!state.surveyCreate.anonymous);
+  const startDate = useAppSelector((state) => state.surveyCreate.startDate);
+  const endDate = useAppSelector((state) => state.surveyCreate.endDate);
 
   const onChangeAccess = useCallback(
     (key: string) => {
-      dispatch(testCreateActions.setField({ field: 'access', value: key }));
+      dispatch(surveyCreateActions.setField({ field: 'access', value: key }));
     },
     [dispatch],
   );
@@ -23,7 +23,7 @@ export default function TestCreateAccess() {
   const onChangeAnonymous = useCallback(
     (key: string) => {
       dispatch(
-        testCreateActions.setField({
+        surveyCreateActions.setField({
           field: 'anonymous',
           value: key === 'true',
         }),
@@ -37,7 +37,7 @@ export default function TestCreateAccess() {
       return;
     }
     dispatch(
-      testCreateActions.setField({ field: 'endDate', value: date?.toDate() }),
+      surveyCreateActions.setField({ field: 'endDate', value: date?.toDate() }),
     );
   };
 
@@ -47,7 +47,7 @@ export default function TestCreateAccess() {
         return;
       }
       dispatch(
-        testCreateActions.setField({
+        surveyCreateActions.setField({
           field: 'startDate',
           value: date?.toDate(),
         }),
@@ -58,7 +58,7 @@ export default function TestCreateAccess() {
 
   const onClearEndDate = useCallback(() => {
     dispatch(
-      testCreateActions.setField({
+      surveyCreateActions.setField({
         field: 'endDate',
         value: undefined,
       }),
@@ -78,4 +78,4 @@ export default function TestCreateAccess() {
       onClearEndDate={onClearEndDate}
     />
   );
-}
+});

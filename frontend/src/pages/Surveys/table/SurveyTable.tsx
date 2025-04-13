@@ -1,8 +1,6 @@
-import { Test } from '@/entities/test';
 import { Pagination } from '@/shared/ui/Pagination';
 import { useCallback, useState } from 'react';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
-import Row from './Row';
 import { DateObject } from 'react-multi-date-picker';
 import { cva } from '@/shared/lib/cva';
 import { EmptyState } from '@/shared/ui/EmptyState';
@@ -11,15 +9,17 @@ import {
   TestTableFilter,
   TestTableFilterType,
 } from '@/widgets/TestTableFilter';
+import { Survey } from '@/entities/survey';
+import Row from './Row';
 
-type TestTableProps = {
-  tests: Test[];
+type SurveyTableProps = {
+  surveys: Survey[];
   isFetching?: boolean;
 };
 
 const LIMIT = 10;
 
-const TestTable = ({ tests, isFetching }: TestTableProps) => {
+const SurveyTable = ({ surveys, isFetching }: SurveyTableProps) => {
   const [page, setPage] = useState(1);
   const isAdmin = useIsAdmin();
   const [filters, setFilters] = useState<TestTableFilterType>(initialFilters);
@@ -34,16 +34,16 @@ const TestTable = ({ tests, isFetching }: TestTableProps) => {
     [],
   );
 
-  const filteredTests = tests.filter((test) => {
+  const filteredTests = surveys.filter((survey) => {
     if (
       filters.name &&
-      !test.name?.toLowerCase().includes(filters.name.toLowerCase())
+      !survey.name?.toLowerCase().includes(filters.name.toLowerCase())
     ) {
       return false;
     }
 
     if (filters.status !== 'ALL') {
-      const isHidden = test.hidden ?? true;
+      const isHidden = survey.hidden ?? true;
       if (filters.status === 'VISSIBLE' && isHidden) return false;
       if (filters.status === 'HIDDEN' && !isHidden) return false;
     }
@@ -52,7 +52,7 @@ const TestTable = ({ tests, isFetching }: TestTableProps) => {
       const period = filters.period as DateObject[];
       if (period.length === 2) {
         const [start, end] = period;
-        const deadline = test.endDate ? new Date(test.endDate) : null;
+        const deadline = survey.endDate ? new Date(survey.endDate) : null;
 
         if (!deadline) return false;
 
@@ -134,4 +134,4 @@ const TestTable = ({ tests, isFetching }: TestTableProps) => {
   );
 };
 
-export default TestTable;
+export default SurveyTable;

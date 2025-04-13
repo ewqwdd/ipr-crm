@@ -1,17 +1,19 @@
 import { Card } from '@/shared/ui/Card';
 import QuestionTypeSelect from './QuesyionPartials/QuestionTypeSelect';
 import { memo, useEffect } from 'react';
-import QuestionName from './QuesyionPartials/QuestionName';
-import RequiredCheckbox from './QuesyionPartials/RequiredCheckbox';
 import SetCorrectAnswer from './QuesyionPartials/SetCorrectAnswer';
-import TestOptions from './QuesyionPartials/options/TestOptions';
-import TextOptions from './QuesyionPartials/text/TextOptions';
-import NumberOptions from './QuesyionPartials/number/NumberOptions';
-import Error from './QuesyionPartials/Error';
 import { CreateQuestion } from '@/entities/test/types/types';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { TrashIcon } from '@heroicons/react/outline';
 import QuestionScore from './QuesyionPartials/QuestionScore';
+import {
+  NumberOptions,
+  QuestionError,
+  QuestionName,
+  RequiredCheckbox,
+  TextOptions,
+} from '@/widgets/QuestionPartials';
+import TestOptions from '@/widgets/QuestionPartials/options/TestOptions';
 
 interface QuestionProps {
   index: number;
@@ -148,7 +150,7 @@ export default memo(function Question({
         correctRequired={correctRequired}
         index={index}
       />
-      <Error questions={questions} index={index} />
+      <QuestionError questions={questions} index={index} />
     </Card>
   );
 });

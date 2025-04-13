@@ -1154,6 +1154,7 @@ export class TestService {
             numberCorrectValue: question.numberCorrectValue,
             required: question.required,
             textCorrectValue: question.textCorrectValue,
+            allowDecimal: question.allowDecimal,
             Test: {
               connect: {
                 id: updatedTest.id,

@@ -27,6 +27,9 @@ import { TestAssesment } from '@/pages/TestAssesment';
 import { AssignedTests } from '@/pages/AssignedTests';
 import { FinishedTest } from '@/pages/FinishedTest';
 import { TestEdit } from '@/pages/TestEdit';
+import { Surveys } from '@/pages/Surveys';
+import { SurveyCreate } from '@/pages/SurveyCreate';
+import { SurveyEdit } from '@/pages/SurveyEdit';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -90,6 +93,24 @@ export const routerItems: RouterItemType[] = [
   {
     path: '/test-finish/:id',
     element: <FinishedTest />,
+  },
+  {
+    path: '/surveys',
+    element: <Surveys />,
+    onlyAdmin: true,
+    curator: true,
+  },
+  {
+    path: '/surveys/create',
+    element: <SurveyCreate />,
+    onlyAdmin: true,
+    curator: true,
+  },
+  {
+    path: '/survey-edit/:id',
+    element: <SurveyEdit />,
+    onlyAdmin: true,
+    curator: true,
   },
 ];
 

@@ -13,6 +13,8 @@ import { loadingReducer } from './loadingSlice';
 import { testCreateReducer } from '@/entities/test/testCreateSlice';
 import { testsApi } from '@/shared/api/testsApi';
 import { testAssesmentReducer } from '@/entities/test/testAssesmentSlice';
+import { surveyApi } from '@/shared/api/surveyApi';
+import { surveyCreateReducer } from '@/entities/survey';
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -22,6 +24,7 @@ const rootReducer = combineReducers({
   board: boardReducer,
   testCreate: testCreateReducer,
   testAssesment: testAssesmentReducer,
+  surveyCreate: surveyCreateReducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [universalApi.reducerPath]: universalApi.reducer,
   [teamsApi.reducerPath]: teamsApi.reducer,
@@ -29,6 +32,7 @@ const rootReducer = combineReducers({
   [skillsApi.reducerPath]: skillsApi.reducer,
   [iprApi.reducerPath]: iprApi.reducer,
   [testsApi.reducerPath]: testsApi.reducer,
+  [surveyApi.reducerPath]: surveyApi.reducer,
 });
 
 export const store = configureStore({
@@ -41,7 +45,8 @@ export const store = configureStore({
       .concat(rate360Api.middleware)
       .concat(skillsApi.middleware)
       .concat(iprApi.middleware)
-      .concat(testsApi.middleware),
+      .concat(testsApi.middleware)
+      .concat(surveyApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

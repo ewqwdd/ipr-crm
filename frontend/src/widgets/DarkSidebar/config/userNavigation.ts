@@ -1,5 +1,6 @@
 import {
   ChartBarIcon,
+  ClipboardListIcon,
   HomeIcon,
   InboxIcon,
   MapIcon,
@@ -62,6 +63,11 @@ export const userNavigation: (user: User | null) => NavType[] = (
           name: 'Тесты',
           icon: QuestionMarkCircleIcon,
           href: '/tests',
+        },
+        {
+          name: 'Опросы',
+          icon: ClipboardListIcon,
+          href: '/surveys',
         },
       ]
     : []),

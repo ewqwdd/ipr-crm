@@ -1,5 +1,5 @@
 import { useModal } from '@/app/hooks/useModal';
-import { testsApi } from '@/shared/api/testsApi';
+import { surveyApi } from '@/shared/api/surveyApi';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
@@ -9,27 +9,30 @@ import { FC, memo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
 
-type TestRowDropdownProps = {
+type SurveyRowDropdownProps = {
   hidden?: boolean;
-  testId?: number;
+  surveyId?: number;
 };
 
-const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
+const SurveyRowDropdown: FC<SurveyRowDropdownProps> = ({
+  hidden,
+  surveyId,
+}) => {
   const { openModal } = useModal();
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
 
   const downloadExcel = (id: number) => {
     console.log('Download Excel triggered for test ID:', id);
-    window.open(import.meta.env.VITE_API_URL + `/test/${id}/excel`, '_blank');
+    window.open(import.meta.env.VITE_API_URL + `/survey/${id}/excel`, '_blank');
   };
 
-  const [toggleHide, toggleHiddenState] = testsApi.useToggleHiddenMutation();
-  const [testDelete, testDeleteState] = testsApi.useTestDeleteMutation();
+  const [toggleHide, toggleHiddenState] = surveyApi.useToggleHiddenMutation();
+  const [testDelete, testDeleteState] = surveyApi.useSurveyDeleteMutation();
 
   const notify = () => {
     $api
-      .post('/test/' + testId + '/notify')
+      .post('/survey/' + surveyId + '/notify')
       .then(() => {
         toast.success('Уведомления отправлены');
       })
@@ -41,27 +44,27 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
   const handleItemClick = useCallback((itemId: string) => {
     switch (itemId) {
       case 'edit':
-        navigate(`/tests-edit/${testId}`);
+        navigate(`/survey-edit/${surveyId}`);
         break;
       case 'hide':
-        toggleHide({ id: testId!, hidden: true });
+        toggleHide({ id: surveyId!, hidden: true });
         break;
       case 'show':
-        toggleHide({ id: testId!, hidden: false });
+        toggleHide({ id: surveyId!, hidden: false });
         break;
       case 'results':
-        downloadExcel(testId!);
+        downloadExcel(surveyId!);
         break;
       case 'assign':
         openModal('ASSESMENT_ASSIGN_USERS', {
-          testId,
+          surveyId,
         });
         break;
       case 'notify':
         notify();
         break;
       case 'delete':
-        testDelete(testId!);
+        testDelete(surveyId!);
         break;
       default:
         console.log('Unknown action');
@@ -78,7 +81,6 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
     {
       id: 'results',
       label: 'Выгрузить результаты',
-      onClick: () => downloadExcel(testId!),
     },
     { id: 'assign', label: 'Назначить участников' },
     { id: 'notify', label: 'Напомнить' },
@@ -103,4 +105,4 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
   );
 };
 
-export default memo(TestRowDropdown);
+export default memo(SurveyRowDropdown);

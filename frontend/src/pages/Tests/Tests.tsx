@@ -1,10 +1,7 @@
-// import { useModal } from '@/app/hooks/useModal';
-// import { $api } from '@/shared/lib/$api';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useNavigate } from 'react-router';
 import TestTable from './table';
-// import { testsApi } from '@/shared/api/testsApi';
 import { useEffect } from 'react';
 import { useLoading } from '@/app/hooks/useLoading';
 import { testsApi } from '@/shared/api/testsApi';
