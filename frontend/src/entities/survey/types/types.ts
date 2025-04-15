@@ -77,15 +77,24 @@ export interface SurveyCreateStoreSchema extends SurveyCreate {
   errors: Partial<Record<keyof SurveyCreate, string>>;
 }
 
-export interface Answer {
+export interface SurveyAnswer {
   textAnswer?: string;
   numberAnswer?: string;
   optionAnswer?: number[];
+  scaleAnswer?: number;
+  dateAnswer?: string;
+  fileAnswer?: string;
+  phoneAnswer?: string;
+  timeAnswer?: string;
 }
 
-export interface TestAssesmentStoreSchema {
+export type StoreAnswer = Omit<SurveyAnswer, 'fileAnswer'> & {
+  fileAnswer?: File | true;
+};
+export interface SurveyAssesmentStoreSchema {
   screen: number;
-  answers: Record<number, Answer>;
+  answers: Record<number, StoreAnswer>;
+  errors: Record<number, string>;
 }
 export interface Survey {
   id: number;
@@ -102,30 +111,31 @@ export interface Survey {
   hidden?: boolean;
 
   surveyQuestions: SurveyQuestion[]; // аналогично surveyQuestions
-  usersAssigned: AssignedTest[]; // ты не дал его тип, оставляю как есть
+  usersAssigned: AssignedSurvey[]; // ты не дал его тип, оставляю как есть
 }
 
 export interface AssignedAnsweredQuestion {
   assignedTestId: number;
-  questionId: number;
+  surveyQuestionId: number;
   numberAnswer?: number;
   textAnswer?: string;
+  scaleAnswer?: number;
+  dateAnswer?: Date;
+  fileAnswer?: string;
+  phoneAnswer?: string;
+  timeAnswer?: string;
   options: { optionId: number; id: number; userAnsweredQuestion: number }[];
   userId: number;
 }
 
-export interface AssignedTest {
+export interface AssignedSurvey {
   id: number;
   userId: number;
-  testId: number;
-  rate360Id: number | null;
+  surveyId: number;
   startDate: string; // или `Date`, если ты парсишь в дату
   endDate: string | null; // или `Date | null`
-  // result: any | null; // уточни тип, если знаешь структуру result
   finished: boolean;
-  test: Test;
-  score: number | null;
-  questionsCount?: number;
+  survey: Survey;
   answeredQUestions: AssignedAnsweredQuestion[];
   user: {
     username: string;

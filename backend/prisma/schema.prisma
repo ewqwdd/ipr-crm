@@ -195,6 +195,9 @@ model UserAnsweredQuestion {
   numberAnswer Int?
   scaleAnswer  Int?
   dateAnswer   DateTime?
+  fileAnswer   String?
+  phoneAnswer  String?
+  timeAnswer   String?
 
   user           User                  @relation(fields: [userId], references: [id])
   question       Question?             @relation(fields: [questionId], references: [id])

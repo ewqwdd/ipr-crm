@@ -40,7 +40,7 @@ export default function TestOptions({
   const options = questions[index].options;
   const type = questions[index].type;
 
-  if (['TEXT', 'NUMBER'].includes(type)) return null;
+  if (!['SINGLE', 'MULTIPLE'].includes(type)) return null;
 
   return (
     <div className="flex flex-col gap-2 mt-4">

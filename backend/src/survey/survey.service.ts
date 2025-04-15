@@ -8,12 +8,16 @@ import { PrismaService } from 'src/utils/db/prisma.service';
 import { CreateSurveyDTO } from './dto/create-survey.dto';
 import { AssignUsersDTO } from './dto/assign-users.dto';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
+import { AnswerQuestionDTO } from './dto/answer-question.dto';
+import { Prisma } from '@prisma/client';
+import { S3Service } from 'src/utils/s3/s3.service';
 
 @Injectable()
 export class SurveyService {
   constructor(
     private prismaService: PrismaService,
     private notificationsService: NotificationsService,
+    private s3Service: S3Service,
   ) {}
 
   async checkAccess(sessionInfo: GetSessionInfoDto) {
@@ -506,5 +510,274 @@ export class SurveyService {
         !test.survey.startDate ||
         test.survey.startDate <= new Date(new Date().setHours(23, 59, 59, 999)),
     );
+  }
+
+  async answerQuestion(
+    assignedId: number,
+    sessionInfo: GetSessionInfoDto,
+    answer: AnswerQuestionDTO,
+    file?: Express.Multer.File,
+  ) {
+    const survey = await this.prismaService.user_Assigned_Survey.findFirst({
+      where: {
+        id: assignedId,
+        userId: sessionInfo.id,
+      },
+    });
+
+    if (!survey) {
+      throw new NotFoundException();
+    }
+
+    const question = await this.prismaService.surveyQuestion.findFirst({
+      where: {
+        id: answer.questionId,
+      },
+      include: {
+        answeredQuestions: {
+          where: {
+            userId: sessionInfo.id,
+            assignedTestId: assignedId,
+          },
+        },
+      },
+    });
+
+    if (!question) {
+      throw new NotFoundException();
+    }
+
+    const dataToSet: Pick<
+      Prisma.UserAnsweredQuestionCreateInput,
+      | 'numberAnswer'
+      | 'options'
+      | 'textAnswer'
+      | 'dateAnswer'
+      | 'phoneAnswer'
+      | 'timeAnswer'
+      | 'scaleAnswer'
+      | 'fileAnswer'
+    > = {};
+
+    if (question.type === 'TEXT') {
+      dataToSet.textAnswer = answer.textAnswer;
+    } else if (question.type === 'NUMBER') {
+      dataToSet.numberAnswer = answer.numberAnswer;
+    } else if (question.type === 'DATE') {
+      dataToSet.dateAnswer = new Date(answer.dateAnswer);
+    } else if (question.type === 'PHONE') {
+      dataToSet.phoneAnswer = answer.phoneAnswer;
+    } else if (question.type === 'TIME') {
+      dataToSet.timeAnswer = answer.timeAnswer;
+    } else if (question.type === 'SCALE') {
+      dataToSet.scaleAnswer = answer.scaleAnswer;
+    } else if (question.type === 'FILE') {
+      if (question.answeredQuestions.length > 0) {
+        const findFile = question.answeredQuestions.find((a) => a.fileAnswer);
+        if (findFile) {
+          await this.s3Service.deleteImageFromS3(findFile.fileAnswer);
+        }
+      }
+      const uploaded = await this.s3Service.uploadImageBufferToS3(
+        file.buffer,
+        Date.now() + '_' + file.originalname,
+        'SURVEY_ANSWER',
+      );
+      dataToSet.fileAnswer = uploaded;
+    } else if (question.type === 'SINGLE' || question.type === 'MULTIPLE') {
+      dataToSet.options = {
+        createMany: {
+          data: answer.optionAnswer.map((optionId) => ({
+            optionId,
+          })),
+        },
+      };
+    }
+
+    const foundAnswer = await this.prismaService.userAnsweredQuestion.findFirst(
+      {
+        where: {
+          surveyQuestionId: answer.questionId,
+          assignedTestId: assignedId,
+        },
+      },
+    );
+
+    if (!foundAnswer) {
+      return await this.prismaService.userAnsweredQuestion.create({
+        data: {
+          ...dataToSet,
+          assignedSurveyId: assignedId,
+          surveyQuestionId: answer.questionId,
+          userId: sessionInfo.id,
+        },
+      });
+    } else {
+      await this.prismaService.userAnsweredQuestionOption.deleteMany({
+        where: {
+          userAnsweredQuestionId: foundAnswer.id,
+        },
+      });
+      return await this.prismaService.userAnsweredQuestion.update({
+        where: {
+          id: foundAnswer.id,
+        },
+        data: {
+          ...dataToSet,
+        },
+      });
+    }
+  }
+
+  async getAssignedSurvey(surveyId: number, sessionInfo: GetSessionInfoDto) {
+    const survey = await this.prismaService.user_Assigned_Survey.findFirst({
+      where: {
+        id: surveyId,
+        userId: sessionInfo.id,
+        OR: [
+          {
+            availableFrom: {
+              lte: new Date(),
+            },
+          },
+          {
+            availableFrom: null,
+          },
+        ],
+        survey: {
+          archived: false,
+          hidden: false,
+        },
+        finished: false,
+      },
+      include: {
+        survey: {
+          include: {
+            surveyQuestions: {
+              where: {
+                archived: false,
+              },
+              select: {
+                id: true,
+                allowDecimal: true,
+                description: true,
+                maxLength: true,
+                maxNumber: true,
+                minNumber: true,
+                scaleDots: true,
+                scaleEnd: true,
+                scaleStart: true,
+                order: true,
+                label: true,
+                required: true,
+                type: true,
+                options: {
+                  where: {
+                    archived: false,
+                  },
+                  select: {
+                    value: true,
+                    id: true,
+                  },
+                },
+              },
+              orderBy: {
+                id: 'asc',
+              },
+            },
+          },
+        },
+        answeredQUestions: {
+          include: {
+            options: true,
+          },
+        },
+      },
+    });
+
+    if (!survey) {
+      throw new NotFoundException('Опрос не найден');
+    }
+
+    return survey;
+  }
+
+  async startAssesment(surveyId: number, sessionInfo: GetSessionInfoDto) {
+    const survey = await this.prismaService.user_Assigned_Survey.findFirst({
+      where: {
+        user: {
+          id: sessionInfo.id,
+        },
+        id: surveyId,
+        finished: false,
+      },
+    });
+
+    if (!survey) {
+      throw new NotFoundException();
+    }
+
+    if (survey.startDate) {
+      return survey;
+    }
+
+    return await this.prismaService.user_Assigned_Survey.update({
+      where: {
+        id: survey.id,
+      },
+      data: {
+        startDate: new Date(),
+      },
+    });
+  }
+
+  async finishSurvey(assignedId: number, sessionInfo: GetSessionInfoDto) {
+    return await this.prismaService.user_Assigned_Survey.update({
+      where: {
+        id: assignedId,
+        userId: sessionInfo.id,
+      },
+      data: {
+        finished: true,
+        endDate: new Date(),
+      },
+    });
+  }
+
+  async getUserFinishedSurveyById(
+    surveyId: number,
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    const survey = await this.prismaService.user_Assigned_Survey.findFirst({
+      where: {
+        id: surveyId,
+        userId: sessionInfo.id,
+        finished: true,
+      },
+      include: {
+        survey: true,
+      },
+    });
+    if (!survey) {
+      throw new NotFoundException('Опрос не найден');
+    }
+    return survey;
+  }
+
+  async getFinishedSurveys(sessionInfo: GetSessionInfoDto) {
+    const finishedSurveys =
+      await this.prismaService.user_Assigned_Survey.findMany({
+        where: {
+          userId: sessionInfo.id,
+          finished: true,
+        },
+        include: {
+          survey: true,
+        },
+        orderBy: {
+          id: 'desc',
+        },
+      });
+    return finishedSurveys;
   }
 }

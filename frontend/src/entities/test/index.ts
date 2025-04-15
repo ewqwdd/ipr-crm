@@ -5,6 +5,7 @@ import type {
   Test,
   TestOption,
   AssignedTest,
+  Answer,
 } from '@/entities/test/types/types';
 import { questionTypes } from '@/entities/test/types/types';
 import TestSettings from './ui/TesCreate/TestSettings/TestSettings';
@@ -17,6 +18,7 @@ export type {
   Question,
   Test,
   TestOption,
+  Answer,
   AssignedTest,
 };
 export { questionTypes, TestSettings, TestQuestion, testCreateTabs };

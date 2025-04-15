@@ -30,6 +30,9 @@ import { TestEdit } from '@/pages/TestEdit';
 import { Surveys } from '@/pages/Surveys';
 import { SurveyCreate } from '@/pages/SurveyCreate';
 import { SurveyEdit } from '@/pages/SurveyEdit';
+import { AssignedSurveys } from '@/pages/AssignedSurveys';
+import { SurveyAssesment } from '@/pages/SurveyAssesment';
+import { FinishedSurvey } from '@/pages/FinishedSurvey';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -111,6 +114,18 @@ export const routerItems: RouterItemType[] = [
     element: <SurveyEdit />,
     onlyAdmin: true,
     curator: true,
+  },
+  {
+    path: '/assigned-surveys',
+    element: <AssignedSurveys />,
+  },
+  {
+    path: '/surveys/:id',
+    element: <SurveyAssesment />,
+  },
+  {
+    path: '/survey-finish/:id',
+    element: <FinishedSurvey />,
   },
 ];
 

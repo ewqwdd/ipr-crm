@@ -1,12 +1,16 @@
-import { useAppDispatch } from '@/app';
-import { testAssesmentActions } from '@/entities/test/testAssesmentSlice';
+import { useAppDispatch, useAppSelector } from '@/app';
 import { Test } from '@/entities/test/types/types';
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/outline';
-import TextQuestion from './TextQuestion';
-import NumberQuestion from './NumberQuestion';
-import SingleQuestion from './SingleQuestion';
-import MultipleQuestion from './MultipleQuestion';
 import TestConfirm from './TestConfirm';
+import { QuestionScreenWrapper } from '@/shared/ui/QuestionScreenWrapper';
+import { answerQuestion } from '../answerQuestion';
+import {
+  MultipleQuestion,
+  NumberQuestion,
+  SingleQuestion,
+  TextQuestion,
+} from '@/widgets/AssesmentQuestionPartials';
+import { surveyAssesmentActions } from '@/entities/survey/surveyAssesmentSlice';
+import { testAssesmentActions } from '@/entities/test/testAssesmentSlice';
 
 interface QuestionScreenProps {
   test: Test;
@@ -22,6 +26,7 @@ export default function QuestionScreen({
   testId,
 }: QuestionScreenProps) {
   const dispatch = useAppDispatch();
+  const answers = useAppSelector((state) => state.testAssesment.answers);
 
   const handleForward = () => {
     if (screen < test.testQuestions.length - 1) {
@@ -41,40 +46,77 @@ export default function QuestionScreen({
 
   const question = test.testQuestions[screen];
 
+  const onChangeMultiple = (index: number) => (options: number[]) => {
+    const newAnswer = {
+      optionAnswer: options,
+    };
+
+    dispatch(testAssesmentActions.setAnswer({ index, value: newAnswer }));
+    answerQuestion(testId, question.id, newAnswer);
+  };
+
+  const onChangeSingle = (index: number) => (optionId: number) => {
+    const answer = {
+      optionAnswer: [optionId],
+    };
+    dispatch(testAssesmentActions.setAnswer({ index, value: answer }));
+    answerQuestion(testId, question.id, answer);
+  };
+
+  const onChangeNumber = (index: number) => (value: string) => {
+    dispatch(
+      testAssesmentActions.setAnswer({
+        index,
+        value: {
+          numberAnswer: value,
+        },
+      }),
+    );
+    answerQuestion(testId, question.id, {
+      numberAnswer: Number(value),
+    });
+  };
+
+  const onChangeText = (index: number) => (value: string) => {
+    const answer = {
+      textAnswer: value,
+    };
+
+    dispatch(surveyAssesmentActions.setAnswer({ index, value: answer }));
+    answerQuestion(testId, question.id, answer);
+  };
+
   const defaultProps = {
-    testId,
-    index: screen,
+    answer: answers[screen],
     question: question,
   };
 
   return (
-    <div className="flex flex-col gap-4 h-full flex-1">
-      <div className="flex">
-        <button onClick={handleBack}>
-          <ArrowLeftIcon className="size-4" />
-        </button>
-        <h3 className="text text-center flex-1 font-medium text-gray-700">
-          Вопрос {screen + 1}
-          {test.testQuestions[screen]?.required && (
-            <span className="text-red-500 text-sm relative -top-0.5 left-px">
-              *
-            </span>
-          )}
-        </h3>
-        <button onClick={handleForward}>
-          <ArrowRightIcon className="size-4" />
-        </button>
-      </div>
+    <QuestionScreenWrapper
+      handleBack={handleBack}
+      handleForward={handleForward}
+      questionNumber={screen + 1}
+      required={test.testQuestions[screen]?.required}
+    >
       <div className="flex flex-col gap-4 mt-2">
         <h3 className="text-lg font-medium text-gray-900">{question?.label}</h3>
-        {question?.type === 'TEXT' && <TextQuestion {...defaultProps} />}
-        {question?.type === 'NUMBER' && <NumberQuestion {...defaultProps} />}
-        {question?.type === 'SINGLE' && <SingleQuestion {...defaultProps} />}
+        {question?.type === 'TEXT' && (
+          <TextQuestion {...defaultProps} onChange={onChangeText(screen)} />
+        )}
+        {question?.type === 'NUMBER' && (
+          <NumberQuestion {...defaultProps} onChange={onChangeNumber(screen)} />
+        )}
+        {question?.type === 'SINGLE' && (
+          <SingleQuestion {...defaultProps} onChange={onChangeSingle(screen)} />
+        )}
         {question?.type === 'MULTIPLE' && (
-          <MultipleQuestion {...defaultProps} />
+          <MultipleQuestion
+            {...defaultProps}
+            onChange={onChangeMultiple(screen)}
+          />
         )}
       </div>
       <TestConfirm onFinish={onFinish} test={test} />
-    </div>
+    </QuestionScreenWrapper>
   );
 }

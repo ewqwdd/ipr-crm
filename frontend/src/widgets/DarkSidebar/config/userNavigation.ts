@@ -34,6 +34,14 @@ export const userNavigation: (user: User | null) => NavType[] = (
           (n) => n.type === 'TEST_ASSIGNED' && !n.watched,
         ).length,
       },
+      {
+        name: 'Опросы',
+        href: '/assigned-surveys',
+        icon: ClipboardListIcon,
+        count: user?.notifications.filter(
+          (n) => n.type === 'SURVEY_ASSIGNED' && !n.watched,
+        ).length,
+      },
     ],
   },
   {

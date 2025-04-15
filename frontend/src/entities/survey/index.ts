@@ -1,6 +1,13 @@
 import { surveyCreateTabs } from './constants';
 import { surveyCreateReducer, surveyCreateActions } from './surveyCreateSlice';
-import type { CreateSurveyQuestion, Survey, SurveyCreate } from './types/types';
+import type {
+  CreateSurveyQuestion,
+  Survey,
+  SurveyCreate,
+  AssignedSurvey,
+  SurveyAnswer,
+  SurveyQuestion,
+} from './types/types';
 import SurveyQuestionCreate from './ui/SurveyQuestionCreate';
 import SurveySubmit from './ui/SurveySubmit';
 import SurveyCreateAccess from './ui/edit/ui/SurveyCreateAccess';
@@ -18,4 +25,11 @@ export {
   SurveyQuestions,
 };
 
-export type { CreateSurveyQuestion, Survey, SurveyCreate };
+export type {
+  CreateSurveyQuestion,
+  Survey,
+  SurveyCreate,
+  AssignedSurvey,
+  SurveyAnswer,
+  SurveyQuestion,
+};

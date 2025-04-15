@@ -202,7 +202,6 @@ export class NotificationsService {
     });
   }
 
-  // @Cron('* * * * *')
   @Cron(CronExpression.EVERY_5_MINUTES, { name: 'sendTestAssignedCron' })
   async sendTestAssignedCron() {
     console.log('sendTestAssignedCron started');
@@ -301,5 +300,58 @@ export class NotificationsService {
           : {}),
       },
     });
+  }
+
+  @Cron(CronExpression.EVERY_5_MINUTES, { name: 'sendTestAssignedCron' })
+  async sendSurveyAssignedCron() {
+    console.log('sendSurveyAssignedCron started');
+    const tests = await this.prismaService.user_Assigned_Survey.findMany({
+      where: {
+        OR: [
+          {
+            availableFrom: null,
+          },
+          {
+            availableFrom: {
+              lte: new Date(),
+            },
+          },
+        ],
+        firstNotificationSent: false,
+        survey: {
+          hidden: false,
+          archived: false,
+        },
+      },
+      include: {
+        survey: {
+          select: {
+            startDate: true,
+            endDate: true,
+          },
+        },
+      },
+    });
+
+    const filtered = tests.filter((test) => {
+      return (
+        (!test.survey.startDate || test.survey.startDate <= new Date()) &&
+        (!test.survey.endDate || test.survey.endDate >= new Date())
+      );
+    });
+    let count = 0;
+    for (const test of filtered) {
+      await this.prismaService.user_Assigned_Survey.update({
+        where: {
+          id: test.id,
+        },
+        data: {
+          firstNotificationSent: true,
+        },
+      });
+      count++;
+      await this.sendSurveyAssignedNotification(test.userId, test.id);
+    }
+    console.log(`sendSurveyAssignedCron ended. ${count} notifications sent`);
   }
 }

@@ -44,6 +44,12 @@ export default function SurveyEdit() {
     }
   }, [data, dispatch]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(surveyCreateActions.clear());
+    };
+  }, [dispatch]);
+
   return (
     isMounted && (
       <div

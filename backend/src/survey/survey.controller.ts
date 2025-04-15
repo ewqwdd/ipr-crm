@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,7 +9,9 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { SurveyService } from './survey.service';
@@ -17,10 +20,18 @@ import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { CreateSurveyDTO } from './dto/create-survey.dto';
 import { AssignUsersDTO } from './dto/assign-users.dto';
 import { ToggleHiddenDTO } from './dto/toggle-hidden.dto';
+import { AnswerQuestionDTO } from './dto/answer-question.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ValidationsService } from 'src/utils/validations/validations.service';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Controller('survey')
 export class SurveyController {
-  constructor(private readonly surveyService: SurveyService) {}
+  constructor(
+    private readonly surveyService: SurveyService,
+    private readonly validationsService: ValidationsService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Get('/')
@@ -50,6 +61,26 @@ export class SurveyController {
       data,
       sessionInfo,
     );
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/assigned/:id')
+  @HttpCode(HttpStatus.OK)
+  async getAssignedTestById(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.surveyService.getAssignedSurvey(Number(id), sessionInfo);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/assigned/:id/start')
+  @HttpCode(HttpStatus.OK)
+  async startTest(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.surveyService.startAssesment(Number(id), sessionInfo);
   }
 
   @UseGuards(AuthGuard)
@@ -113,5 +144,67 @@ export class SurveyController {
   @HttpCode(HttpStatus.OK)
   async getTestsAssigned(@SessionInfo() sessionInfo: GetSessionInfoDto) {
     return this.surveyService.getAssignedSurveys(sessionInfo);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('/assigned/:id/answer')
+  @UseInterceptors(FileInterceptor('fileAnswer'))
+  async answerQuestion(
+    @Param('id') id: string,
+    @Body() rawBody: any,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    const normalized = this.validationsService.normalizeFormDataArray(rawBody, [
+      'optionAnswer',
+    ]);
+
+    // Трансформируем и валидируем
+    const dto = plainToInstance(AnswerQuestionDTO, normalized, {
+      enableImplicitConversion: true,
+    });
+
+    const errors = await validate(dto);
+    if (errors.length > 0) {
+      throw new BadRequestException(errors);
+    }
+
+    return this.surveyService.answerQuestion(
+      Number(id),
+      sessionInfo,
+      dto,
+      file,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('/assigned/:id/finish')
+  async finishTest(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.surveyService.finishSurvey(Number(id), sessionInfo);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get('/finished/:id')
+  async getFinishedTestById(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.surveyService.getUserFinishedSurveyById(
+      Number(id),
+      sessionInfo,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get('/finished')
+  async getFinishedTests(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return this.surveyService.getFinishedSurveys(sessionInfo);
   }
 }

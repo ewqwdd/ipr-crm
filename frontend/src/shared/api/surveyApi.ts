@@ -1,4 +1,4 @@
-import { Survey, SurveyCreate } from '@/entities/survey';
+import { AssignedSurvey, Survey, SurveyCreate } from '@/entities/survey';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const surveyApi = createApi({
@@ -58,6 +58,29 @@ const surveyApi = createApi({
         body,
       }),
       invalidatesTags: ['Survey', 'Assigned', 'Finished'],
+    }),
+    getAssignedSurveys: build.query<AssignedSurvey[], void>({
+      query: () => '/survey/assigned',
+      providesTags: ['Assigned'],
+    }),
+    getAssignedSurvey: build.query<AssignedSurvey, number>({
+      query: (id) => `/survey/assigned/${id}`,
+      providesTags: (_, __, id) => [{ type: 'Assigned', id }],
+    }),
+    finishSurvey: build.mutation<void, number>({
+      query: (id) => ({
+        url: `/survey/assigned/${id}/finish`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Assigned', 'Finished'],
+    }),
+    getFinishedSurveyForUser: build.query<AssignedSurvey, number>({
+      query: (id) => `/survey/finished/${id}`,
+      providesTags: (_, __, id) => [{ type: 'Finished', id }],
+    }),
+    getFinishedTestsForUser: build.query<AssignedSurvey[], void>({
+      query: () => '/survey/finished',
+      providesTags: ['Finished'],
     }),
   }),
 });

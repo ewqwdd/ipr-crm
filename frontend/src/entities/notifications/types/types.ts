@@ -5,6 +5,7 @@ export const NotificationTypes = [
   'IPR_ASSIGNED',
   'RATE_ASSIGNED',
   'TEST_ASSIGNED',
+  'SURVEY_ASSIGNED',
 ] as const;
 export type NotificationType = (typeof NotificationTypes)[number];
 

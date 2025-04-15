@@ -15,6 +15,7 @@ import { testsApi } from '@/shared/api/testsApi';
 import { testAssesmentReducer } from '@/entities/test/testAssesmentSlice';
 import { surveyApi } from '@/shared/api/surveyApi';
 import { surveyCreateReducer } from '@/entities/survey';
+import { surveyAssesmentReducer } from '@/entities/survey/surveyAssesmentSlice';
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   testCreate: testCreateReducer,
   testAssesment: testAssesmentReducer,
   surveyCreate: surveyCreateReducer,
+  surveyAssesment: surveyAssesmentReducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [universalApi.reducerPath]: universalApi.reducer,
   [teamsApi.reducerPath]: teamsApi.reducer,

@@ -43,6 +43,12 @@ export default function TestEdit() {
     }
   }, [data, dispatch]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(testCreateActions.clear());
+    };
+  }, [dispatch]);
+
   return (
     isMounted && (
       <div
