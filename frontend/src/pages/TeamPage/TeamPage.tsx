@@ -47,6 +47,12 @@ export default function TeamPage() {
     }
   }, [mutateSuccess]);
 
+  useEffect(() => {
+    if (!openNewUser) {
+      setSelected([]);
+    }
+  }, [openNewUser]);
+
   const ifCuratorSelected =
     !spec || data?.curatorSpecs?.some((s) => s.specId === spec);
 

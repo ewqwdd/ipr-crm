@@ -32,12 +32,12 @@ export default function Teams() {
             title="Подразделения"
             description="Подразделения и пользователи"
           />
-          <PrimaryButton
+          {isAdmin && <PrimaryButton
             className="self-start"
             onClick={() => setAddOpen(true)}
           >
             Добавить
-          </PrimaryButton>
+          </PrimaryButton>}
         </div>
         <div className="flex flex-col gap-1 max-w-5xl mt-8">
           {list.map((team) => (
