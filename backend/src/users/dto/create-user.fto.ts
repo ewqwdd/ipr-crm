@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
@@ -24,14 +25,14 @@ export class CreateUserDto {
   @IsString()
   lastName: string;
   phone?: string;
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  roleId: number;
-  @IsNotEmpty()
+  roleId?: number;
+  @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  specId: number;
+  specId?: number;
   avatar?: string;
   @Transform(({ value }) => (value ? JSON.parse(value) : undefined))
   teams?: number[];

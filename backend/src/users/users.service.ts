@@ -68,6 +68,7 @@ export class UsersService {
     const passwordHash = await this.passwordService.getHash(data.password);
     const userData = {
       ...data,
+      roleId: data.roleId || 2,
       passwordHash,
       teams: { createMany: { data: data.teams.map((t) => ({ teamId: t })) } },
     };
