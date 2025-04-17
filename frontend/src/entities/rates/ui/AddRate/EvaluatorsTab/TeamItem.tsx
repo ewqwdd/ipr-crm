@@ -1,7 +1,7 @@
 import { teamsApi } from '@/shared/api/teamsApi';
 import { cva } from '@/shared/lib/cva';
 import { UsersIcon } from '@heroicons/react/outline';
-import { memo, useMemo } from 'react';
+import { useMemo } from 'react';
 import { TeamItemIds } from './EvaluatorsTab';
 import { universalApi } from '@/shared/api/universalApi';
 import EvaluatorsItem from './EvaluatorsItem';
@@ -11,7 +11,7 @@ interface TeamItemProps {
   teamId: TeamItemIds;
 }
 
-export default memo(function TeamItem({ teamId }: TeamItemProps) {
+export default function TeamItem({ teamId }: TeamItemProps) {
   const { data, isFetching } = teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
@@ -42,6 +42,8 @@ export default memo(function TeamItem({ teamId }: TeamItemProps) {
     teamId: teamId.teamId,
   };
 
+  console.log('TeamItem', teamId.evaluateTeam);
+
   return (
     <div
       className={cva('flex flex-col gap-4', {
@@ -64,23 +66,23 @@ export default memo(function TeamItem({ teamId }: TeamItemProps) {
           <EvaluatorsItem
             {...evaluatorItemProps}
             type="CURATOR"
-            evaluators={teamId.evaluateCurators}
+            evaluators={[...teamId.evaluateCurators]}
             title="Руководители"
           />
           <EvaluatorsItem
             {...evaluatorItemProps}
             type="TEAM_MEMBER"
-            evaluators={teamId.evaluateTeam}
+            evaluators={[...teamId.evaluateTeam]}
             title="Коллеги"
           />
           <EvaluatorsItem
             {...evaluatorItemProps}
             type="SUBORDINATE"
-            evaluators={teamId.evaluateSubbordinate}
+            evaluators={[...teamId.evaluateSubbordinate]}
             title="Подчиненые"
           />
         </div>
       </div>
     </div>
   );
-});
+}

@@ -138,6 +138,7 @@ model Course {
 model Spec {
   id               Int                    @id @default(autoincrement())
   name             String
+  active           Boolean @default(true)
   description      String?
   users            User[]
   courses          Course[]

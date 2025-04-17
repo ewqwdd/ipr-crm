@@ -3,6 +3,8 @@ import { Tabs } from '@/shared/ui/Tabs';
 import { useSearchParams } from 'react-router';
 import AssignedList from './tabs/AssignedList';
 import FinishedList from './tabs/FinishedList';
+import { useReadNotifsOnClose } from '@/shared/hooks/useReadNotifsOnClose';
+import { NotificationType } from '@/entities/notifications';
 
 const tabs = [
   {
@@ -15,6 +17,8 @@ const tabs = [
   },
 ];
 
+const notifTypes: NotificationType[] = ['SURVEY_ASSIGNED'];
+
 export default function AssignedSurveys() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || tabs[0].key;
@@ -22,6 +26,7 @@ export default function AssignedSurveys() {
     setSearchParams(`?tab=${tab}`);
   };
 
+  useReadNotifsOnClose(notifTypes);
   return (
     <div className="px-8 py-10 flex flex-col h-full relative">
       <div className="flex justify-between">

@@ -15,7 +15,7 @@ export default function NotificationBell() {
 
   const readNotification = (id: number) => {
     $api.post('notification/read', { ids: [id] });
-    dispatch(userActions.setNotificationRead(id));
+    dispatch(userActions.setNotificationRead([id]));
   };
 
   const count = notifications?.length ?? 0;

@@ -18,6 +18,8 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 import { LeaveTeamDto } from './dto/leave-team.dto';
 import { SetTeamUserSpecs } from './dto/set-team-user-specs';
 import { AddTeamUserDto } from './dto/add-team-users.dto';
+import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
+import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -68,15 +70,25 @@ export class TeamsController {
   }
 
   @Post('/users')
-  @UseGuards(AdminGuard)
-  async addUsers(@Body() body: AddTeamUserDto) {
-    return this.teamsService.addTeamUsers(body.teamId, body.userIds);
+  @UseGuards(AuthGuard)
+  async addUsers(
+    @Body() body: AddTeamUserDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.teamsService.addTeamUsers(
+      body.teamId,
+      body.userIds,
+      sessionInfo,
+    );
   }
 
   @Post('/specs')
-  @UseGuards(AdminGuard)
-  async addSpec(@Body() body: SetTeamUserSpecs) {
-    return this.teamsService.setTeamUserSpecs(body);
+  @UseGuards(AuthGuard)
+  async addSpec(
+    @Body() body: SetTeamUserSpecs,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.teamsService.setTeamUserSpecs(body, sessionInfo);
   }
 
   @Post('/:id')
@@ -92,8 +104,12 @@ export class TeamsController {
   }
 
   @Delete('/:id/users/:userId')
-  @UseGuards(AdminGuard)
-  async removeUser(@Param('id') id: number, @Param('userId') userId: number) {
-    return this.teamsService.removeTeamUsers(id, userId);
+  @UseGuards(AuthGuard)
+  async removeUser(
+    @Param('id') id: number,
+    @Param('userId') userId: number,
+    @SessionInfo() sessionInfo,
+  ) {
+    return this.teamsService.removeTeamUsers(id, userId, sessionInfo);
   }
 }

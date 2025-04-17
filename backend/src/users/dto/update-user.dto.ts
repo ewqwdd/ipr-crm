@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsNumberString,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -28,9 +29,9 @@ export class UpdateUserDto {
   @Transform(({ value }) => Number(value))
   roleId: number;
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }) => Number(value))
-  specId: number;
+  specId?: number;
   avatar?: string;
   @Transform(({ value }) => (value ? JSON.parse(value) : undefined))
   teams?: number[];

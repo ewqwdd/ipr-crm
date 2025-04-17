@@ -1,11 +1,15 @@
 import { useAppSelector } from '@/app';
 import { useLoading } from '@/app/hooks/useLoading';
 import { Board } from '@/entities/ipr';
+import { NotificationType } from '@/entities/notifications';
 import { iprApi } from '@/shared/api/iprApi';
+import { useReadNotifsOnClose } from '@/shared/hooks/useReadNotifsOnClose';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useEffect } from 'react';
+
+const notifTypes: NotificationType[] = ['TASK_ASSIGNED'];
 
 export default function BoardPage() {
   const { data, isLoading } = iprApi.useFindBoardQuery();
@@ -13,6 +17,7 @@ export default function BoardPage() {
   const isAdmin = role?.name === 'admin';
 
   const { showLoading, hideLoading } = useLoading();
+  useReadNotifsOnClose(notifTypes);
 
   useEffect(() => {
     if (isLoading) {

@@ -23,6 +23,7 @@ interface UserFormProps {
   initData?: User;
   loading?: boolean;
   edit?: boolean;
+  adminEdit?: boolean;
 }
 
 export default function UserForm({
@@ -30,6 +31,7 @@ export default function UserForm({
   initData,
   loading,
   edit,
+  adminEdit,
 }: UserFormProps) {
   const [data, setData] = useState<UserFormData>({
     email: '',
@@ -105,10 +107,10 @@ export default function UserForm({
       setErrors((prev) => ({ ...prev, roleId: 'Выберите роль' }));
       valid = false;
     }
-    if (!data.specId) {
-      setErrors((prev) => ({ ...prev, specId: 'Выберите специальность' }));
-      valid = false;
-    }
+    // if (!data.specId) {
+    //   setErrors((prev) => ({ ...prev, specId: 'Выберите специальность' }));
+    //   valid = false;
+    // }
     if (!edit && (!data.password || data.password.length < 7)) {
       setErrors((prev) => ({
         ...prev,
@@ -303,34 +305,38 @@ export default function UserForm({
                 error={errors.phone}
               />
             </div>
-            <div className="sm:col-span-2">
-              <RolesSelect
-                role={data.roleId}
-                setRole={(e) => setDataField('roleId', e)}
-              />
-              {errors.roleId && (
-                <p className={styles.errorStyles}>{errors.roleId}</p>
-              )}
-            </div>
-            <div className="sm:col-span-2">
-              <SpecsSelect
-                spec={data.specId}
-                setSpec={(e) => setDataField('specId', e)}
-              />
-              {errors.specId && (
-                <p className={styles.errorStyles}>{errors.specId}</p>
-              )}
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Подразделение
-              </label>
-              <TeamsMultiSelect
-                disabledTeams={disabledTeams}
-                value={data.teams}
-                onChange={(e) => setDataField('teams', e)}
-              />
-            </div>
+            {adminEdit && (
+              <>
+                <div className="sm:col-span-2">
+                  <RolesSelect
+                    role={data.roleId}
+                    setRole={(e) => setDataField('roleId', e)}
+                  />
+                  {errors.roleId && (
+                    <p className={styles.errorStyles}>{errors.roleId}</p>
+                  )}
+                </div>
+                <div className="sm:col-span-2">
+                  <SpecsSelect
+                    spec={data.specId}
+                    setSpec={(e) => setDataField('specId', e)}
+                  />
+                  {errors.specId && (
+                    <p className={styles.errorStyles}>{errors.specId}</p>
+                  )}
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Подразделение
+                  </label>
+                  <TeamsMultiSelect
+                    disabledTeams={disabledTeams}
+                    value={data.teams}
+                    onChange={(e) => setDataField('teams', e)}
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
 

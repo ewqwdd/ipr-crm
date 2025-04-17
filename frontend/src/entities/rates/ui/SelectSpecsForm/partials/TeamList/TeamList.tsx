@@ -8,6 +8,7 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { useEffect, useState } from 'react';
 import { SelectOption } from '@/shared/types/SelectType';
 import { TeamUser } from '@/entities/team';
+import { useAppSelector } from '@/app';
 
 interface TeamListProps {
   teams: MultiValue<Option>;
@@ -35,6 +36,7 @@ export default function TeamList({
     teamsApi.useSetTeamSpecsMutation();
   const [open, setOpen] = useState<ModalStateType | undefined>();
   const [spec, setSpec] = useState<SelectOption[]>([]);
+  const user = useAppSelector((state) => state.user.user);
 
   useEffect(() => {
     if (open) {
@@ -53,9 +55,16 @@ export default function TeamList({
     }
   }, [isSuccess]);
 
+  const teamsToShow =
+    user?.role.name === 'admin'
+      ? filteredTeams
+      : filteredTeams?.filter((team) =>
+          user?.teamCurator?.find((t) => t.id === team.id),
+        );
+
   return (
     <>
-      {filteredTeams?.map((team) => (
+      {teamsToShow?.map((team) => (
         <TeamListItem
           key={team.id}
           team={team}

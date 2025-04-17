@@ -48,7 +48,7 @@ export const routerItems: RouterItemType[] = [
   { path: '/userEdit', element: <ProfileEdit /> },
   { path: '/addUser', element: <AddUser />, onlyAdmin: true },
   { path: '/structure', element: <Structure />, onlyAdmin: true },
-  { path: '/teams', element: <Teams />, onlyAdmin: true },
+  { path: '/teams', element: <Teams />, onlyAdmin: true, curator: true },
   { path: '/teams/:id', element: <TeamPage />, onlyAdmin: true, curator: true },
   { path: '/360rate', element: <Rate360 />, onlyAdmin: true, curator: true },
   {

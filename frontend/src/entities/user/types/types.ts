@@ -7,6 +7,7 @@ export type Spec = IdName & {
   competencyBlocks: { id: number; name: string }[];
   materials?: { id: number }[];
   description?: string;
+  active?: boolean;
 };
 
 export interface Notification {

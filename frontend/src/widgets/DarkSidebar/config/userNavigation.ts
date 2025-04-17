@@ -5,6 +5,7 @@ import {
   InboxIcon,
   MapIcon,
   QuestionMarkCircleIcon,
+  UsersIcon,
 } from '@heroicons/react/outline';
 import { NavType, types360, typesTasks } from './types';
 import { User } from '@/entities/user';
@@ -55,6 +56,7 @@ export const userNavigation: (user: User | null) => NavType[] = (
   },
   ...((user?.teamCurator?.length ?? 0) > 0
     ? [
+        { name: 'Команды', icon: UsersIcon, href: '/teams' },
         {
           name: 'Планы развития',
           icon: ChartBarIcon,

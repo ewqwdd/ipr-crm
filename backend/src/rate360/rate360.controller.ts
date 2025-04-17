@@ -34,9 +34,12 @@ export class Rate360Controller {
   }
 
   @Post('/')
-  @UseGuards(AdminGuard)
-  async createRate(@Body() data: CreateRateDto) {
-    return this.rate360Service.createRate(data);
+  @UseGuards(AuthGuard)
+  async createRate(
+    @Body() data: CreateRateDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.rate360Service.createRate(data, sessionInfo);
   }
 
   @Delete('/:id')

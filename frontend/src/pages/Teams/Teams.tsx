@@ -1,12 +1,16 @@
+import { useAppSelector } from '@/app';
 import { useLoading } from '@/app/hooks/useLoading';
 import { AddTeamModal, TeamItem } from '@/entities/team';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function Teams() {
   const { data, isFetching } = teamsApi.useGetTeamsQuery();
+  const user = useAppSelector((state) => state.user.user);
+  const isAdmin = user?.role.name === 'admin';
+  const [addAopen, setAddOpen] = useState(false);
 
   const { showLoading, hideLoading } = useLoading();
 
@@ -18,8 +22,16 @@ export default function Teams() {
     }
   }, [isFetching, showLoading, hideLoading]);
 
-  const list = data?.list ?? [];
-  const [addAopen, setAddOpen] = useState(false);
+  const list = useMemo(() => {
+    if (!data?.list) return [];
+    if (isAdmin) {
+      return data.list;
+    } else {
+      return data.list.filter(
+        (team) => !!user?.teamCurator?.find((t) => t.id === team.id),
+      );
+    }
+  }, [data, isAdmin, user]);
 
   return (
     <div className="px-8 py-10 flex flex-col">

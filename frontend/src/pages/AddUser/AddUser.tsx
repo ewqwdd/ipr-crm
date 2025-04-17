@@ -28,5 +28,5 @@ export default function AddUser() {
     }
   }, [isSuccess]);
 
-  return <UserForm loading={isLoading} onSubmit={onSubmit} />;
+  return <UserForm loading={isLoading} onSubmit={onSubmit} adminEdit />;
 }

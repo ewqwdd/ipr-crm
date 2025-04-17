@@ -3,15 +3,18 @@ import { UserFormData } from '@/entities/user/types/types';
 import { usersApi } from '@/shared/api/usersApi';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router';
 
 export default function UserEdit() {
   const { id } = useParams();
-  const { data, isFetching, isLoading } = usersApi.useGetUserByIdQuery(
+  const { data, isFetching, isLoading, isError } = usersApi.useGetUserByIdQuery(
     Number(id),
   );
-  const [mutate, { isSuccess, isLoading: mutateLoading }] =
-    usersApi.useUpdateUserMutation();
+  const [
+    mutate,
+    { isSuccess, isLoading: mutateLoading, isError: mutateError },
+  ] = usersApi.useUpdateUserMutation();
   const navigate = useNavigate();
 
   const onSubmit = async (data: UserFormData) => {
@@ -33,6 +36,18 @@ export default function UserEdit() {
       navigate(-1);
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Ошибка получения данных');
+    }
+  }, [isError]);
+
+  useEffect(() => {
+    if (mutateError) {
+      toast.error('Ошибка сохранения данных');
+    }
+  }, [mutateError]);
 
   return (
     <LoadingOverlay active={isLoading}>

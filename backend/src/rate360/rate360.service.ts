@@ -9,6 +9,7 @@ import { EvaluatorType } from '@prisma/client';
 import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
+import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -19,7 +20,10 @@ export class Rate360Service {
 
   async findAll(curatorId?: number) {
     const rates = await this.prismaService.rate360.findMany({
-      ...(curatorId ? { where: { team: { curatorId } } } : {}),
+      where: {
+        archived: false,
+        ...(curatorId ? { team: { curatorId } } : {}),
+      },
       include: {
         evaluators: {
           select: {
@@ -89,8 +93,9 @@ export class Rate360Service {
     });
   }
 
-  async createRate(data: CreateRateDto) {
+  async createRate(data: CreateRateDto, sessionInfo: GetSessionInfoDto) {
     const { rate, skill, confirmCurator, confirmUser } = data;
+
     const ratesToCreate = skill.flatMap((skill) =>
       rate.flatMap((team) => {
         return team.specs.map((spec) => ({
@@ -100,6 +105,24 @@ export class Rate360Service {
         }));
       }),
     );
+
+    if (sessionInfo.role !== 'admin') {
+      const curatorTeams = await this.prismaService.team.findMany({
+        where: {
+          curatorId: sessionInfo.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const rateTeamIds = ratesToCreate.map((rate) => rate.teamId);
+      const teamIds = curatorTeams.map((team) => team.id);
+      const found = rateTeamIds.some((teamId) => !teamIds.includes(teamId));
+      if (found) {
+        throw new ForbiddenException('You are not allowed to create this rate');
+      }
+    }
 
     const competencyBlocks = await this.prismaService.competencyBlock.findMany({
       where: {
@@ -111,7 +134,7 @@ export class Rate360Service {
         },
         archived: false,
       },
-      select: { id: true },
+      select: { id: true, specId: true, type: true },
     });
 
     const createdRates = await this.prismaService.rate360.createManyAndReturn({
@@ -128,27 +151,29 @@ export class Rate360Service {
 
     return await Promise.all(
       ratesToCreate.map(async (rate, index) => {
-        let curatorConfirmed = data.confirmCurator;
+        const team = await this.prismaService.team.findUnique({
+          where: {
+            id: rate.teamId,
+          },
+          select: {
+            curatorId: true,
+          },
+        });
+
+        let curatorConfirm = data.confirmCurator;
+
+        if (team.curatorId === rate.userId) {
+          curatorConfirm = false;
+        }
+
         if (data.confirmUser) {
-          const team = await this.prismaService.team.findUnique({
-            where: {
-              id: rate.teamId,
-            },
-            select: {
-              curatorId: true,
-            },
-          });
-          if (team.curatorId === rate.userId) {
-            curatorConfirmed = true;
-          } else {
-            await this.notificationsService.sendRateConfirmNotification(
-              team.curatorId,
-              createdRates[index].id,
-            );
-          }
-        } else if (data.confirmCurator) {
           await this.notificationsService.sendRateConfirmNotification(
             rate.userId,
+            createdRates[index].id,
+          );
+        } else if (curatorConfirm) {
+          await this.notificationsService.sendRateConfirmNotification(
+            team.curatorId,
             createdRates[index].id,
           );
         } else {
@@ -170,7 +195,7 @@ export class Rate360Service {
         return await this.prismaService.rate360.update({
           where: { id: createdRates[index].id },
           data: {
-            curatorConfirmed: curatorConfirmed,
+            curatorConfirmed: !curatorConfirm,
             evaluators: {
               createMany: {
                 data: [
@@ -190,7 +215,12 @@ export class Rate360Service {
               },
             },
             competencyBlocks: {
-              connect: competencyBlocks.map(({ id }) => ({ id })),
+              connect: competencyBlocks
+                .filter(
+                  (block) =>
+                    block.specId === rate.specId && rate.type === block.type,
+                )
+                .map(({ id }) => ({ id })),
             },
           },
         });
@@ -209,6 +239,7 @@ export class Rate360Service {
         },
         curatorConfirmed: true,
         userConfirmed: true,
+        archived: false,
       },
       include: {
         spec: true,
@@ -261,6 +292,7 @@ export class Rate360Service {
         userId,
         userConfirmed: true,
         curatorConfirmed: true,
+        archived: false,
       },
       include: {
         spec: true,
@@ -307,6 +339,7 @@ export class Rate360Service {
         finished: false,
         userConfirmed: true,
         curatorConfirmed: true,
+        archived: false,
       },
       include: {
         competencyBlocks: {
@@ -419,6 +452,7 @@ export class Rate360Service {
         userId,
         userConfirmed: true,
         curatorConfirmed: true,
+        archived: false,
       },
       include: {
         userRates: {
@@ -476,6 +510,7 @@ export class Rate360Service {
         },
         userConfirmed: true,
         curatorConfirmed: true,
+        archived: false,
       },
       include: {
         userRates: {
@@ -561,6 +596,7 @@ export class Rate360Service {
           curatorId: userId,
         },
         id: rateId,
+        archived: false,
       },
       data: {
         curatorConfirmed: true,
@@ -590,6 +626,7 @@ export class Rate360Service {
       where: {
         userId,
         id: rateId,
+        archived: false,
       },
       data: {
         userConfirmed: true,
@@ -615,6 +652,7 @@ export class Rate360Service {
       where: {
         userId,
         userConfirmed: false,
+        archived: false,
       },
       include: {
         spec: true,
@@ -660,6 +698,7 @@ export class Rate360Service {
         },
         curatorConfirmed: false,
         userConfirmed: true,
+        archived: false,
       },
       include: {
         spec: true,
@@ -755,13 +794,15 @@ export class Rate360Service {
         },
       }),
     ]);
+
+    this.sendNotificationStatus(rateId);
+    return;
   }
 
   async confirmByUser(
     { evaluateSubbordinate, evaluateTeam, rateId, comment }: ConfirmRateDto,
     userId: number,
   ) {
-    console.log(comment);
     const rate = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
@@ -807,15 +848,74 @@ export class Rate360Service {
         },
       }),
     ]);
+
+    this.sendNotificationStatus(rateId);
+    return;
   }
 
-  deleteRates(ids: number[]) {
-    return this.prismaService.rate360.deleteMany({
+  async deleteRates(ids: number[]) {
+    await this.prismaService.rate360.updateMany({
       where: {
         id: {
           in: ids,
         },
       },
+      data: {
+        archived: true,
+      },
     });
+    await this.prismaService.notification.updateMany({
+      where: {
+        rateId: {
+          in: ids,
+        },
+      },
+      data: {
+        watched: true,
+      },
+    });
+  }
+
+  async sendNotificationStatus(rateId: number) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+      },
+      include: {
+        team: true,
+        user: true,
+        evaluators: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+    if (!rate) {
+      throw new NotFoundException('Rate not found');
+    }
+
+    if (!rate.userConfirmed) {
+      await this.notificationsService.sendRateSelfAssignedNotification(
+        rate.userId,
+        rateId,
+      );
+    } else if (!rate.curatorConfirmed) {
+      await this.notificationsService.sendRateConfirmNotification(
+        rate.team.curatorId,
+        rateId,
+      );
+    } else {
+      await this.notificationsService.sendRateAssignedNotification(
+        rate.userId,
+        rate.id,
+      );
+      for (const evaluator of rate.evaluators) {
+        await this.notificationsService.sendRateAssignedNotification(
+          evaluator.userId,
+          rate.id,
+        );
+      }
+    }
   }
 }

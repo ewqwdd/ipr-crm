@@ -19,11 +19,11 @@ const userSlice = createSlice({
       state.isMounted = true;
       state.isAdmin = action.payload?.role.name === 'admin';
     },
-    setNotificationRead: (state, action: PayloadAction<number>) => {
+    setNotificationRead: (state, action: PayloadAction<number[]>) => {
       if (state.user) {
         state.user.notifications = state.user.notifications.map(
           (notification) => {
-            if (notification.id === action.payload) {
+            if (action.payload.includes(notification.id)) {
               return { ...notification, watched: true };
             }
             return notification;

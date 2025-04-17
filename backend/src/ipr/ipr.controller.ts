@@ -44,13 +44,17 @@ export class IprController {
   }
 
   @Post('360/:id/goal')
-  @UseGuards(AdminGuard)
-  async setGoal(@Param('id') id: number, @Body() data: SetGoalDto) {
-    return this.iprService.updatePlan(id, { goal: data.goal });
+  @UseGuards(AuthGuard)
+  async setGoal(
+    @Param('id') id: number,
+    @Body() data: SetGoalDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.updatePlan(id, { goal: data.goal }, sessionInfo);
   }
 
   @Post('/:id/priority')
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   async setPriority(
     @Param('id') id: number,
     @Body() data: SetPriorityStatusDto,

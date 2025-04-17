@@ -2,7 +2,7 @@ import { cva } from '@/shared/lib/cva';
 import { Ipr } from '../../model/types';
 import { Link } from 'react-router';
 import { Progress } from '@/shared/ui/Progress';
-import { ArrowRightIcon } from '@heroicons/react/outline';
+import { ArrowRightIcon, PencilAltIcon } from '@heroicons/react/outline';
 
 interface RateRowProps {
   task: Ipr;
@@ -71,6 +71,12 @@ export default function RateRow({ index, task }: RateRowProps) {
         <div className="flex items-center gap-2 justify-center">
           <Progress percent={percent} className="min-w-20" />
           <span className="min-w-10">{Math.round(percent * 100)}%</span>
+          <Link
+            to={'/ipr/360/' + task.id}
+            className="font-medium text-violet-500 hover:text-violet-700 transition-all ml3"
+          >
+            <PencilAltIcon className="w-5 h-5" />
+          </Link>
         </div>
       </td>
 

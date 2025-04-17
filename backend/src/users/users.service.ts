@@ -108,14 +108,15 @@ export class UsersService {
 
     // Validate spec and role
     const [specExists, roleExists] = await Promise.all([
-      this.prisma.spec.findUnique({ where: { id: specId } }),
+      specId ? this.prisma.spec.findUnique({ where: { id: specId } }) : null,
       this.prisma.role.findUnique({ where: { id: roleId } }),
     ]);
 
-    if (!specExists) throw new NotFoundException('Spec не найден.');
     if (!roleExists) throw new NotFoundException('Role не найден.');
 
-    updates.Spec = { connect: { id: specId } };
+    if (specId && specExists) {
+      updates.Spec = { connect: { id: specId } };
+    }
     updates.role = { connect: { id: roleId } };
 
     // teams that user is not in and not a curator of

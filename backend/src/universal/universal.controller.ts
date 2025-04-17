@@ -50,6 +50,16 @@ export class UniversalController {
     return spec;
   }
 
+  @Put('specs/:id/active')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AdminGuard)
+  async editSpecActive(
+    @Param('id') id: number,
+    @Body('active') active: boolean,
+  ) {
+    return this.universalService.editSpecActive(id, active);
+  }
+
   @Delete('specs/:id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AdminGuard)

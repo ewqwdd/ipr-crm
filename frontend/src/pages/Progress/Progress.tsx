@@ -6,11 +6,21 @@ import ConfirmListTab from './ui/ConfirmListTab/ConfirmListTab';
 import { memo, useMemo } from 'react';
 import { useAppSelector } from '@/app';
 import { Badge } from '@/shared/ui/Badge';
+import { useReadNotifsOnClose } from '@/shared/hooks/useReadNotifsOnClose';
+import { NotificationType } from '@/entities/notifications';
+
+const notifTypes: NotificationType[] = [
+  'RATE_ASSIGNED_SELF',
+  'RATE_ASSIGNED',
+  'RATE_CONFIRM',
+];
 
 export default memo(function Progress() {
   const notifications = useAppSelector(
     (state) => state.user.user?.notifications,
   );
+
+  useReadNotifsOnClose(notifTypes);
 
   const tabs = useMemo(() => {
     const selfNotifs = notifications?.filter(

@@ -137,7 +137,10 @@ export default function EvaluatorsTab({
       </div>
       <div className="gap-4 flex flex-col">
         {teamIds.map((teamId) => (
-          <TeamItem teamId={teamId} />
+          <TeamItem
+            key={`${teamId.teamId}_${teamId.userId}_${teamId.specId}`}
+            teamId={teamId}
+          />
         ))}
       </div>
     </>

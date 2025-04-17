@@ -21,6 +21,7 @@ interface UserItemProps {
   teamId: number;
   setOpenNew?: React.Dispatch<React.SetStateAction<boolean>>;
   curatorSpecs?: SpecOnUser[];
+  accessType?: 'user' | 'curator' | 'admin';
 }
 
 export default memo(function UserItem({
@@ -30,6 +31,7 @@ export default memo(function UserItem({
   teamId,
   setOpenNew,
   curatorSpecs,
+  accessType = 'user',
 }: UserItemProps) {
   const { data } = usersApi.useGetUsersQuery({});
   const [open, setOpen] = useState(false);
@@ -89,7 +91,10 @@ export default memo(function UserItem({
             </Link>
             {leader && (
               <Badge color="purple" size="sm">
-                Лидер <LeaderDropdown teamId={teamId} setOpenNew={setOpenNew} />
+                Лидер
+                {accessType === 'admin' && (
+                  <LeaderDropdown teamId={teamId} setOpenNew={setOpenNew} />
+                )}
               </Badge>
             )}
           </div>

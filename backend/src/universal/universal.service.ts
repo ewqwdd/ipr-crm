@@ -19,6 +19,9 @@ export class UniversalService {
           },
         },
       },
+      orderBy: {
+        id: 'asc',
+      },
     });
     return spec;
   }
@@ -44,6 +47,15 @@ export class UniversalService {
   async deleteSpec(id: number) {
     return await this.prismaService.spec.delete({
       where: { id },
+    });
+  }
+
+  async editSpecActive(id: number, active: boolean) {
+    return await this.prismaService.spec.update({
+      where: { id },
+      data: {
+        active,
+      },
     });
   }
 }

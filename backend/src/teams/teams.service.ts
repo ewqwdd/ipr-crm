@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { SetTeamUserSpecs } from './dto/set-team-user-specs';
+import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TeamsService {
@@ -31,7 +33,7 @@ export class TeamsService {
         curatorSpecs: {
           select: {
             specId: true,
-            spec: { select: { name: true } },
+            spec: { select: { name: true, active: true } },
           },
         },
         users: {
@@ -42,7 +44,10 @@ export class TeamsService {
                 id: true,
                 username: true,
                 specsOnTeams: {
-                  select: { specId: true, spec: { select: { name: true } } },
+                  select: {
+                    specId: true,
+                    spec: { select: { name: true, active: true } },
+                  },
                 },
               },
             },
@@ -252,10 +257,19 @@ export class TeamsService {
     await this.prisma.team.delete({ where: { id } });
     return;
   }
-  async setTeamUserSpecs({ specs, teamId, userId, curator }: SetTeamUserSpecs) {
+  async setTeamUserSpecs(
+    { specs, teamId, userId, curator }: SetTeamUserSpecs,
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    const filters = { id: teamId } as Prisma.TeamWhereUniqueInput;
+
+    if (sessionInfo.role !== 'admin') {
+      filters.curatorId = sessionInfo.id;
+    }
+
     // Проверяем, существует ли команда
     const team = await this.prisma.team.findUnique({
-      where: { id: teamId },
+      where: filters,
       include: {
         curatorSpecs: true,
       },
@@ -342,8 +356,18 @@ export class TeamsService {
     return;
   }
 
-  async addTeamUsers(teamId: number, userIds: number[]) {
-    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+  async addTeamUsers(
+    teamId: number,
+    userIds: number[],
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    const filters = { id: teamId } as Prisma.TeamWhereUniqueInput;
+
+    if (sessionInfo.role !== 'admin') {
+      filters.curatorId = sessionInfo.id;
+    }
+
+    const team = await this.prisma.team.findUnique({ where: filters });
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }
@@ -370,9 +394,19 @@ export class TeamsService {
     return;
   }
 
-  async removeTeamUsers(teamId: number, userId: number) {
+  async removeTeamUsers(
+    teamId: number,
+    userId: number,
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    const filters = { teamId, userId } as Prisma.UserTeamWhereInput;
+
+    if (sessionInfo.role !== 'admin') {
+      filters.team = { curatorId: sessionInfo.id };
+    }
+
     return this.prisma.userTeam.deleteMany({
-      where: { teamId, userId },
+      where: filters,
     });
   }
 }

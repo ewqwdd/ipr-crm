@@ -68,11 +68,27 @@ export default memo(
       </div>
     );
   },
-  (prev, next) =>
-    prev.userId !== next.userId ||
-    prev.teamId !== next.teamId ||
-    prev.specId !== next.specId ||
-    prev.type !== next.type ||
-    prev.evaluators.some((e, i) => e.userId !== next.evaluators[i].userId) ||
-    prev.title !== next.title,
+  (prev, next) => {
+    // если что-то изменилось — нужно ререндерить → return false
+    if (
+      prev.userId !== next.userId ||
+      prev.teamId !== next.teamId ||
+      prev.specId !== next.specId ||
+      prev.type !== next.type ||
+      prev.title !== next.title ||
+      prev.evaluators.length !== next.evaluators.length
+    ) {
+      return false;
+    }
+
+    // сравниваем каждый элемент в массиве по userId
+    for (let i = 0; i < prev.evaluators.length; i++) {
+      if (prev.evaluators[i].userId !== next.evaluators[i].userId) {
+        return false;
+      }
+    }
+
+    // всё одинаково — можно не ререндерить
+    return true;
+  },
 );

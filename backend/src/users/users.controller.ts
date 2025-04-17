@@ -89,7 +89,8 @@ export class UsersController {
     }
     const id = sessionInfo.id;
     await this.usersService.update(id, updateUserDto);
-    return { message: 'Пользователь обновлен.' };
+    const user = await this.usersService.findOne(id);
+    return user;
   }
 
   @Put(':id')

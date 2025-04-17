@@ -13,7 +13,7 @@ interface UserItemProps {
   onChange?: (teamId: number, specId: number, userId: number) => void;
   teamId: number;
   setOpen?: (v: ModalStateType) => void;
-  curatorSpecs?: { specId: number; spec: { name: string } }[];
+  curatorSpecs?: TeamUser['specsOnTeams'];
 }
 
 export default function UserItem({
@@ -40,19 +40,21 @@ export default function UserItem({
       </div>
       {userSpecsExist || curatorSpecsExist ? (
         <div className="flex flex-col pl-2 bg-violet-50 pt-2 pb-3">
-          {(user.specsOnTeams || curatorSpecs)?.map((spec) => (
-            <Checkbox
-              key={spec.specId}
-              title={data?.find((s) => s.id === spec.specId)?.name}
-              className="[&_label]:text-base [&_input]:size-5 h-8"
-              checked={
-                !!selected?.find(
-                  (s) => s.specId === spec.specId && s.userId === user.id,
-                )
-              }
-              onChange={() => onChange?.(teamId, spec.specId, user.id)}
-            />
-          ))}
+          {(user.specsOnTeams || curatorSpecs)
+            ?.filter((s) => !!s.spec.active)
+            .map((spec) => (
+              <Checkbox
+                key={spec.specId}
+                title={data?.find((s) => s.id === spec.specId)?.name}
+                className="[&_label]:text-base [&_input]:size-5 h-8"
+                checked={
+                  !!selected?.find(
+                    (s) => s.specId === spec.specId && s.userId === user.id,
+                  )
+                }
+                onChange={() => onChange?.(teamId, spec.specId, user.id)}
+              />
+            ))}
         </div>
       ) : (
         <span className="text-gray-500 font-medium text-sm pt-2 pb-3">

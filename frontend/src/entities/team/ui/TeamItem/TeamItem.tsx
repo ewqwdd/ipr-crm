@@ -12,9 +12,10 @@ import TeamUserItem from './TeamUserItem';
 
 interface TeamItemProps {
   team: Team;
+  isAdmin?: boolean;
 }
 
-export default function TeamItem({ team }: TeamItemProps) {
+export default function TeamItem({ team, isAdmin }: TeamItemProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState<Team>();
   const [mutate, { isLoading: deleteLoading, isSuccess: deleteSuccess }] =
@@ -50,16 +51,20 @@ export default function TeamItem({ team }: TeamItemProps) {
       <span className="text-gray-700 text-sm ml-4">
         {(team.users?.length ?? 0) + (team.curator ? 1 : 0)} users
       </span>
-      <PrimaryButton
-        onClick={openDelete}
-        className="p-1 rounded-full ml-auto mr-4"
-        danger
-      >
-        <TrashIcon className="h-5 w-5" />
-      </PrimaryButton>
-      <SoftButton onClick={openEdit} className="p-1 rounded-full mr-4">
-        <PencilAltIcon className="h-5 w-5" />
-      </SoftButton>
+      {isAdmin && (
+        <>
+          <PrimaryButton
+            onClick={openDelete}
+            className="p-1 rounded-full ml-auto mr-4"
+            danger
+          >
+            <TrashIcon className="h-5 w-5" />
+          </PrimaryButton>
+          <SoftButton onClick={openEdit} className="p-1 rounded-full mr-4">
+            <PencilAltIcon className="h-5 w-5" />
+          </SoftButton>
+        </>
+      )}
     </div>
   );
 
@@ -74,7 +79,11 @@ export default function TeamItem({ team }: TeamItemProps) {
             </>
           )}
           {team.users?.map((user) => (
-            <TeamUserItem teamId={team.id} user={user.user} />
+            <TeamUserItem
+              key={user.user?.id}
+              teamId={team.id}
+              user={user.user}
+            />
           ))}
         </div>
       </Accordion>

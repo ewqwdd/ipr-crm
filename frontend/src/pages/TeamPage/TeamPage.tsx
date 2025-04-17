@@ -2,7 +2,7 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { useParams } from 'react-router';
+import { Navigate, useParams } from 'react-router';
 import UserItem from './UserItem';
 import { UsersIcon } from '@heroicons/react/outline';
 import { useEffect, useMemo, useState } from 'react';
@@ -13,6 +13,7 @@ import AddUserForm from '@/entities/user/ui/AddUserForm';
 import { usersApi } from '@/shared/api/usersApi';
 import { SpecsFilter } from '@/widgets/SpecsFilter';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { useAppSelector } from '@/app';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +25,8 @@ export default function TeamPage() {
   const [mutate, { isLoading: mutateLoading, isSuccess: mutateSuccess }] =
     teamsApi.useAddUsersMutation();
   const { refetch } = usersApi.useGetUsersQuery({});
+
+  const user = useAppSelector((state) => state.user.user);
 
   const count = (data?.users?.length ?? 0) + (data?.curator?.id ? 1 : 0);
 
@@ -47,6 +50,17 @@ export default function TeamPage() {
   const ifCuratorSelected =
     !spec || data?.curatorSpecs?.some((s) => s.specId === spec);
 
+  let accessType: 'user' | 'admin' | 'curator' = 'user';
+
+  if (user?.teamCurator?.find((t) => t.id === Number(id))) {
+    accessType = 'curator';
+  } else if (user?.role.name === 'admin') {
+    accessType = 'admin';
+  }
+  if (user && accessType === 'user') {
+    return <Navigate to="/404" />;
+  }
+
   return (
     <LoadingOverlay active={isLoading}>
       <div
@@ -66,10 +80,14 @@ export default function TeamPage() {
                 text: 'Добавить участника',
                 onClick: () => setOpenNewUser(true),
               },
-              {
-                text: 'Назначить лидера',
-                onClick: () => setOpenNewCurator(true),
-              },
+              ...(accessType === 'admin'
+                ? [
+                    {
+                      text: 'Назначить лидера',
+                      onClick: () => setOpenNewCurator(true),
+                    },
+                  ]
+                : []),
             ]}
           />
         </div>
@@ -87,6 +105,7 @@ export default function TeamPage() {
               userId={data?.curator?.id}
               setOpenNew={setOpenNewCurator}
               curatorSpecs={data.curatorSpecs}
+              accessType={accessType}
             />
           )}
           {filtered?.map((user) => (
@@ -95,6 +114,7 @@ export default function TeamPage() {
               userId={user?.userId}
               key={user?.id}
               specs={user.user?.specsOnTeams}
+              accessType={accessType}
             />
           ))}
         </div>

@@ -7,6 +7,7 @@ import {
 import {
   GrowthPlanTask,
   IndividualGrowthPlan,
+  Prisma,
   TaskMaterialType,
   TaskPriority,
   TaskStatus,
@@ -181,11 +182,36 @@ export class IprService {
     return created;
   }
 
-  updatePlan(id: number, data: Partial<IndividualGrowthPlan>) {
+  updatePlan(
+    id: number,
+    data: Partial<IndividualGrowthPlan>,
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    const filters = {
+      rate360Id: id,
+    } as Prisma.IndividualGrowthPlanWhereUniqueInput;
+
+    if (sessionInfo.role !== 'admin') {
+      filters.OR = [
+        {
+          rate360: {
+            team: {
+              curatorId: sessionInfo.id,
+            },
+          },
+        },
+        {
+          planCurators: {
+            some: {
+              userId: sessionInfo.id,
+            },
+          },
+        },
+      ];
+    }
+
     return this.prismaService.individualGrowthPlan.update({
-      where: {
-        id: id,
-      },
+      where: filters,
       data: data,
     });
   }
@@ -195,17 +221,40 @@ export class IprService {
     data: Partial<GrowthPlanTask>,
     session: GetSessionInfoDto,
   ) {
-    const plan = await this.prismaService.individualGrowthPlan.findFirst({
-      where: {
-        tasks: {
-          some: {
-            id: id,
-          },
+    const filters = {
+      tasks: {
+        some: {
+          id: id,
         },
       },
+    } as Prisma.IndividualGrowthPlanWhereInput;
+    if (session.role !== 'admin') {
+      filters.OR = [
+        {
+          rate360: {
+            team: {
+              curatorId: session.id,
+            },
+          },
+        },
+        {
+          planCurators: {
+            some: {
+              userId: session.id,
+            },
+          },
+        },
+        {
+          userId: session.id,
+        },
+      ];
+    }
+
+    const plan = await this.prismaService.individualGrowthPlan.findFirst({
+      where: filters,
     });
 
-    if (session.role !== 'admin' && plan.userId !== session.id) {
+    if (!plan) {
       throw new ForbiddenException('You are not allowed to update this task');
     }
 
@@ -431,6 +480,9 @@ export class IprService {
           tasks: true,
           spec: true,
         },
+        orderBy: {
+          id: 'desc',
+        },
       });
     }
     return this.prismaService.individualGrowthPlan.findMany({
@@ -465,6 +517,9 @@ export class IprService {
           },
         },
         tasks: true,
+      },
+      orderBy: {
+        id: 'desc',
       },
     });
   }

@@ -1,4 +1,7 @@
-export type SpecOnUser = { specId: number; spec: { name: string } };
+export type SpecOnUser = {
+  specId: number;
+  spec: { name: string; active?: boolean };
+};
 
 export type TeamUser = {
   id: number;

@@ -1,5 +1,7 @@
+import { useAppDispatch } from '@/app';
 import { rate360Api } from '@/shared/api/rate360Api';
 import { skillsApi } from '@/shared/api/skillsApi';
+import { universalApi } from '@/shared/api/universalApi';
 import { cva } from '@/shared/lib/cva';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useEffect } from 'react';
@@ -9,6 +11,7 @@ export default function ArchiveButton() {
   const [mutate, { isSuccess, isError, isLoading }] =
     skillsApi.useArchiveAllMutation();
   const versionApi = skillsApi.useGetVersionQuery();
+  const dispatch = useAppDispatch();
 
   const onClick = () => {
     mutate();
@@ -17,9 +20,11 @@ export default function ArchiveButton() {
   useEffect(() => {
     if (isSuccess) {
       toast.success('Версия зафиксирована');
-      rate360Api.util.invalidateTags(['Rate360']);
+      console.log('Версия зафиксирована');
+      dispatch(rate360Api.util.invalidateTags(['Rate360']));
+      dispatch(universalApi.util.invalidateTags(['Spec']));
     }
-  }, [isSuccess]);
+  }, [isSuccess, dispatch]);
 
   useEffect(() => {
     if (isError) {
