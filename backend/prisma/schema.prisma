@@ -56,7 +56,7 @@ model Rate360 {
   endDate          DateTime?
   userId           Int
   specId           Int
-  teamId           Int
+  teamId           Int?
   user             User        @relation(fields: [userId], references: [id])
   archived         Boolean     @default(false)
   type             SkillType
@@ -70,7 +70,7 @@ model Rate360 {
   evaluators       Rate360Evaluator[]
   comments         UserComments[]
   spec             Spec                  @relation(fields: [specId], references: [id])
-  team             Team                  @relation(fields: [teamId], references: [id])
+  team             Team?                  @relation(fields: [teamId], references: [id], onDelete: SetNull)
   plan             IndividualGrowthPlan?
   createdAt        DateTime              @default(now())
   notifications    Notification[]
