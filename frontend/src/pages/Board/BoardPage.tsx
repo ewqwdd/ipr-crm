@@ -17,7 +17,6 @@ export default function BoardPage() {
 
   useReadNotifsOnClose(notifTypes);
 
-
   return (
     <LoadingOverlay active={isLoading}>
       <div

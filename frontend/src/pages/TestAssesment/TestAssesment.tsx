@@ -56,7 +56,6 @@ export default function TestAssesment() {
     }
   }, [isError]);
 
-
   useEffect(() => {
     if (data?.answeredQUestions && data.answeredQUestions.length > 0) {
       dispatch(testAssesmentActions.initAnswers(data));

@@ -28,7 +28,6 @@ export default function TestEdit() {
   const [mutate, state] = testsApi.useUpdateTestMutation();
   const [isMounted, setIsMounted] = useState(false);
 
-
   useEffect(() => {
     if (data) {
       dispatch(testCreateActions.init({ test: data }));
@@ -44,32 +43,32 @@ export default function TestEdit() {
 
   return (
     <LoadingOverlay active={isLoading || state.isLoading}>
-    {isMounted && (
-      <div
-        className={cva('px-8 py-10 flex flex-col h-full relative', {
-          'animate-pulse pointer-events-none': state.isLoading,
-        })}
-      >
-        <div className="flex justify-between items-center">
-          <Heading title="Редактирование теста" />
-          <Tabs
-            tabs={testCreateTabs}
-            setCurrentTab={setTab}
-            currentTab={activeTab}
+      {isMounted && (
+        <div
+          className={cva('px-8 py-10 flex flex-col h-full relative', {
+            'animate-pulse pointer-events-none': state.isLoading,
+          })}
+        >
+          <div className="flex justify-between items-center">
+            <Heading title="Редактирование теста" />
+            <Tabs
+              tabs={testCreateTabs}
+              setCurrentTab={setTab}
+              currentTab={activeTab}
+            />
+          </div>
+          {activeTab === 'settings' && <TestCreateSettings />}
+          {activeTab === 'access' && <TestCreateAccess />}
+          {activeTab === 'questions' && <TestQuestionsCreate />}
+          {activeTab === 'score-settings' && <TestScoreCreate />}
+          <SubmitTest
+            handleSubmit={mutate}
+            state={state}
+            errorMessage={'Ошибка при редактировании теста'}
+            successMessage={'Тест успешно редактирован'}
           />
         </div>
-        {activeTab === 'settings' && <TestCreateSettings />}
-        {activeTab === 'access' && <TestCreateAccess />}
-        {activeTab === 'questions' && <TestQuestionsCreate />}
-        {activeTab === 'score-settings' && <TestScoreCreate />}
-        <SubmitTest
-          handleSubmit={mutate}
-          state={state}
-          errorMessage={'Ошибка при редактировании теста'}
-          successMessage={'Тест успешно редактирован'}
-        />
-      </div>
-    )}
+      )}
     </LoadingOverlay>
   );
 }

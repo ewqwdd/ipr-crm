@@ -13,6 +13,7 @@ import { Link } from 'react-router';
 import LeaderDropdown from './LeaderDropdown';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { SpecOnUser } from '@/entities/team/types/types';
+import { useAppDispatch } from '@/app';
 
 interface UserItemProps {
   userId: number;
@@ -42,6 +43,7 @@ export default memo(function UserItem({
     universalApi.useGetSpecsQuery();
   const [spec, setSpec] = useState<SelectOption[]>([]);
   const [remove, removeOptions] = teamsApi.useRemoveUserMutation();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isSuccess) {
@@ -69,6 +71,12 @@ export default memo(function UserItem({
       );
     }
   }, [specs, curatorSpecs]);
+
+  useEffect(() => {
+    if (removeOptions.isSuccess) {
+      dispatch(usersApi.util.invalidateTags(['User']));
+    }
+  }, [removeOptions.isSuccess]);
 
   return (
     <>

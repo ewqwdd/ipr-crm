@@ -44,33 +44,33 @@ export default function SurveyEdit() {
 
   return (
     <LoadingOverlay active={isLoading || state.isLoading}>
-    {isMounted && (
-      <div
-        className={cva('px-8 py-10 flex flex-col h-full relative', {
-          //   'animate-pulse pointer-events-none': state.isLoading,
-        })}
-      >
-        <div className="flex justify-between items-center">
-          <Heading title="Редактирование опроса" />
-          <Tabs
-            tabs={surveyCreateTabs}
-            setCurrentTab={setTab}
-            currentTab={activeTab}
+      {isMounted && (
+        <div
+          className={cva('px-8 py-10 flex flex-col h-full relative', {
+            //   'animate-pulse pointer-events-none': state.isLoading,
+          })}
+        >
+          <div className="flex justify-between items-center">
+            <Heading title="Редактирование опроса" />
+            <Tabs
+              tabs={surveyCreateTabs}
+              setCurrentTab={setTab}
+              currentTab={activeTab}
+            />
+          </div>
+
+          {activeTab === 'settings' && <SurveySettings />}
+          {activeTab === 'questions' && <SurveyQuestions />}
+          {activeTab === 'access' && <SurveyCreateAccess />}
+
+          <SurveySubmit
+            handleSubmit={mutate}
+            state={state}
+            errorMessage={'Ошибка при редактировании опроса'}
+            successMessage={'Опрос успешно редактирован'}
           />
         </div>
-
-        {activeTab === 'settings' && <SurveySettings />}
-        {activeTab === 'questions' && <SurveyQuestions />}
-        {activeTab === 'access' && <SurveyCreateAccess />}
-
-        <SurveySubmit
-          handleSubmit={mutate}
-          state={state}
-          errorMessage={'Ошибка при редактировании опроса'}
-          successMessage={'Опрос успешно редактирован'}
-        />
-      </div>
-    )}
+      )}
     </LoadingOverlay>
   );
 }

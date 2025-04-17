@@ -12,7 +12,6 @@ export default function Ipr() {
   const { data, isFetching } = iprApi.useFindRateQuery(Number(rateId));
   useReadNotifsOnClose(notifTypes);
 
-
   return (
     <LoadingOverlay active={isFetching}>
       <IprEdit ipr={data} />
