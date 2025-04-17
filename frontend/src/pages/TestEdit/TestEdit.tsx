@@ -1,5 +1,4 @@
 import { useAppDispatch } from '@/app';
-import { hideLoading, showLoading } from '@/app/store/loadingSlice';
 import { testCreateTabs } from '@/entities/test';
 import { testCreateActions } from '@/entities/test/testCreateSlice';
 import { testsApi } from '@/shared/api/testsApi';
@@ -13,6 +12,7 @@ import TestQuestionsCreate from '../TestCreate/tabs/TestQuestionsCreate';
 import TestScoreCreate from '../TestCreate/tabs/TestScoreCreate';
 import SubmitTest from '../TestCreate/SubmitTest';
 import { cva } from '@/shared/lib/cva';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 export default function TestEdit() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,13 +28,6 @@ export default function TestEdit() {
   const [mutate, state] = testsApi.useUpdateTestMutation();
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    if (isLoading) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [isLoading]);
 
   useEffect(() => {
     if (data) {
@@ -50,7 +43,8 @@ export default function TestEdit() {
   }, [dispatch]);
 
   return (
-    isMounted && (
+    <LoadingOverlay active={isLoading || state.isLoading}>
+    {isMounted && (
       <div
         className={cva('px-8 py-10 flex flex-col h-full relative', {
           'animate-pulse pointer-events-none': state.isLoading,
@@ -75,6 +69,7 @@ export default function TestEdit() {
           successMessage={'Тест успешно редактирован'}
         />
       </div>
-    )
+    )}
+    </LoadingOverlay>
   );
 }

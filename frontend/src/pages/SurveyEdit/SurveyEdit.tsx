@@ -1,5 +1,4 @@
 import { useAppDispatch } from '@/app';
-import { hideLoading, showLoading } from '@/app/store/loadingSlice';
 import { Heading } from '@/shared/ui/Heading';
 import { Tabs } from '@/shared/ui/Tabs';
 import { useEffect, useState } from 'react';
@@ -14,6 +13,7 @@ import {
   SurveySubmit,
 } from '@/entities/survey';
 import { surveyApi } from '@/shared/api/surveyApi';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 export default function SurveyEdit() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,14 +30,6 @@ export default function SurveyEdit() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (isLoading) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
     if (data) {
       dispatch(surveyCreateActions.init({ survey: data }));
       setIsMounted(true);
@@ -51,7 +43,8 @@ export default function SurveyEdit() {
   }, [dispatch]);
 
   return (
-    isMounted && (
+    <LoadingOverlay active={isLoading || state.isLoading}>
+    {isMounted && (
       <div
         className={cva('px-8 py-10 flex flex-col h-full relative', {
           //   'animate-pulse pointer-events-none': state.isLoading,
@@ -77,6 +70,7 @@ export default function SurveyEdit() {
           successMessage={'Опрос успешно редактирован'}
         />
       </div>
-    )
+    )}
+    </LoadingOverlay>
   );
 }
