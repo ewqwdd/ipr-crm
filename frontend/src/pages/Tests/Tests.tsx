@@ -9,8 +9,6 @@ export default function Tests() {
   const navigate = useNavigate();
   const { data: tests, isLoading, isFetching } = testsApi.useGetTestsQuery();
 
-  // TODO: replace loading
-
   return (
     <LoadingOverlay active={isLoading}>
       <div className="px-8 py-10 flex flex-col h-full relative">

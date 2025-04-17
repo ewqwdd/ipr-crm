@@ -22,7 +22,7 @@ export default function Teams() {
         (team) => !!user?.teamCurator?.find((t) => t.id === team.id),
       );
     }
-  }, [isFetching, showLoading, hideLoading]);
+  }, [data, isAdmin, user]);
 
   return (
     <LoadingOverlay active={isFetching}>

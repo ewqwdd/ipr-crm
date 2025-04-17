@@ -6,8 +6,6 @@ import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 export default function AssignedLists() {
   const { data, isLoading } = testsApi.useGetAssignedTestsQuery();
 
-  // TODO: replace loading
-
   return (
     <LoadingOverlay active={isLoading}>
       <div className="flex flex-col gap-1.5 mt-4 h-full">

@@ -74,7 +74,7 @@ export default function Rate360Assesment() {
   if (!id) return null;
 
   return (
-    <LoadingOverlay active={isFetching || skillsFetching}>
+    <LoadingOverlay active={isFetching}>
       <div
         className={cva('flex flex-col gap-4 h-full max-h-full pb-6', {
           'animate-pulse pointer-events-none': mutateAssesmentLoading,

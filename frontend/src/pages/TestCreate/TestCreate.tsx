@@ -10,6 +10,8 @@ import TestScoreCreate from './tabs/TestScoreCreate';
 import { testCreateTabs } from '@/entities/test';
 import { useAppDispatch } from '@/app';
 import { testCreateActions } from '@/entities/test/testCreateSlice';
+import { useEffect } from 'react';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 export default function TestCreate() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,39 +25,33 @@ export default function TestCreate() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (isLoading) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
     return () => {
       dispatch(testCreateActions.clear());
     };
   }, []);
 
   return (
-    <div className="px-8 py-10 flex flex-col h-full relative">
-      <div className="flex justify-between items-center">
-        <Heading title="Создание теста" />
-        <Tabs
-          tabs={testCreateTabs}
-          setCurrentTab={setTab}
-          currentTab={activeTab}
+    <LoadingOverlay active={isLoading}>
+      <div className="px-8 py-10 flex flex-col h-full relative">
+        <div className="flex justify-between items-center">
+          <Heading title="Создание теста" />
+          <Tabs
+            tabs={testCreateTabs}
+            setCurrentTab={setTab}
+            currentTab={activeTab}
+          />
+        </div>
+        {activeTab === 'settings' && <TestCreateSettings />}
+        {activeTab === 'access' && <TestCreateAccess />}
+        {activeTab === 'questions' && <TestQuestionsCreate />}
+        {activeTab === 'score-settings' && <TestScoreCreate />}
+        <SubmitTest
+          handleSubmit={mutate}
+          state={state}
+          errorMessage={'Ошибка при создании теста'}
+          successMessage={'Тест успешно создан'}
         />
       </div>
-      {activeTab === 'settings' && <TestCreateSettings />}
-      {activeTab === 'access' && <TestCreateAccess />}
-      {activeTab === 'questions' && <TestQuestionsCreate />}
-      {activeTab === 'score-settings' && <TestScoreCreate />}
-      <SubmitTest
-        handleSubmit={mutate}
-        state={state}
-        errorMessage={'Ошибка при создании теста'}
-        successMessage={'Тест успешно создан'}
-      />
-    </div>
+    </LoadingOverlay>
   );
 }
