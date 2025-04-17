@@ -19,10 +19,7 @@ type TestTableProps = {
 
 const LIMIT = 10;
 
-const TestTable = ({
-  // tests,
-  isFetching,
-}: TestTableProps) => {
+const TestTable = ({ tests, isFetching }: TestTableProps) => {
   const [page, setPage] = useState(1);
   const isAdmin = useIsAdmin();
   const [filters, setFilters] = useState<TestTableFilterType>(initialFilters);
@@ -36,10 +33,6 @@ const TestTable = ({
     },
     [],
   );
-
-  // console.log('tests => ', tests);
-
-  const tests = mockTestsData;
 
   const filteredTests = tests.filter((test) => {
     if (
