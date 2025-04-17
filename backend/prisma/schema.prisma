@@ -147,6 +147,7 @@ model Spec {
   usersTeams       SpecsOnUserTeam[]
   competencyBlocks CompetencyBlock[]
   curatorSpecs     CuratorSpecs[]
+  archived         Boolean @default(false)
 }
 
 // назначенные тесты юзеру

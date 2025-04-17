@@ -12,6 +12,9 @@ export class UniversalService {
 
   async findSpecs() {
     const spec = await this.prismaService.spec.findMany({
+      where: {
+        archived: false,
+      },
       include: {
         competencyBlocks: {
           select: {
@@ -45,8 +48,11 @@ export class UniversalService {
   }
 
   async deleteSpec(id: number) {
-    return await this.prismaService.spec.delete({
+    return await this.prismaService.spec.update({
       where: { id },
+      data: {
+        archived: true,
+      },
     });
   }
 

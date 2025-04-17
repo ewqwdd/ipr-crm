@@ -54,7 +54,8 @@ export default function TeamPage() {
 
   if (user?.teamCurator?.find((t) => t.id === Number(id))) {
     accessType = 'curator';
-  } else if (user?.role.name === 'admin') {
+  }
+  if (user?.role.name === 'admin') {
     accessType = 'admin';
   }
   if (user && accessType === 'user') {
