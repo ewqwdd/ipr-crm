@@ -1,22 +1,15 @@
 import { rate360Api } from '@/shared/api/rate360Api';
 import RateList from '../RatesList/RateList';
-import { useLoading } from '@/app/hooks/useLoading';
-import { useEffect } from 'react';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 export default function SelfRateTab() {
   const { data, isLoading } = rate360Api.useSelfRatesQuery();
 
-  const { showLoading, hideLoading } = useLoading();
-
-  useEffect(() => {
-    if (isLoading) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [isLoading, showLoading, hideLoading]);
+  // TODO: replace loading
 
   return (
-    <RateList data={data} isLoading={isLoading} heading="Самооценка 360" />
+    <LoadingOverlay active={isLoading}>
+      <RateList data={data} isLoading={isLoading} heading="Самооценка 360" />
+    </LoadingOverlay>
   );
 }

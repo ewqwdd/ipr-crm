@@ -1,9 +1,9 @@
 import { Team } from '@/entities/team';
 import { User } from '@/entities/user';
 import { teamsApi } from '@/shared/api/teamsApi';
-import { FC, memo, useEffect } from 'react';
+import { FC, memo } from 'react';
 import { getCuratorsAndMembers, getTeamMembers } from './helpers';
-import { hideLoading, showLoading } from '@/app/store/loadingSlice';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 type WorkSpaceProps = {
   user?: User;
 };
@@ -29,48 +29,44 @@ const WorkSpace: FC<WorkSpaceProps> = ({ user }) => {
     }[],
   );
 
-  useEffect(() => {
-    if (teamsFetching) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [teamsFetching, showLoading, hideLoading]);
+  // TODO: replace loading
 
   return (
-    <div className="flex border border-solid border-gray-300 rounded-md">
-      <div className="border-r border-solid border-gray-300 p-3 font-medium">
-        Окружение
-      </div>
-      <div className="w-full">
-        <div className="border-b border-solid border-gray-300 p-3">
-          <h4 className="font-medium">Руководители</h4>
-          <ul>
-            {curators &&
-              curators.map((curator) => (
-                <li key={curator?.toString()}>{curator}</li>
+    <LoadingOverlay active={teamsFetching}>
+      <div className="flex border border-solid border-gray-300 rounded-md">
+        <div className="border-r border-solid border-gray-300 p-3 font-medium">
+          Окружение
+        </div>
+        <div className="w-full">
+          <div className="border-b border-solid border-gray-300 p-3">
+            <h4 className="font-medium">Руководители</h4>
+            <ul>
+              {curators &&
+                curators.map((curator) => (
+                  <li key={curator?.toString()}>{curator}</li>
+                ))}
+            </ul>
+          </div>
+          <div className="border-b border-solid border-gray-300 p-3">
+            <h4 className="font-medium">Коллеги</h4>
+            <ul>
+              {members &&
+                members.map((member) => {
+                  return <li key={member?.toString()}>{member}</li>;
+                })}
+            </ul>
+          </div>
+          <div className="p-3">
+            <h4 className="font-medium">Подчиненные</h4>
+            <ul>
+              {teamMembers?.map((member) => (
+                <li key={member?.toString()}>{member}</li>
               ))}
-          </ul>
-        </div>
-        <div className="border-b border-solid border-gray-300 p-3">
-          <h4 className="font-medium">Коллеги</h4>
-          <ul>
-            {members &&
-              members.map((member) => {
-                return <li key={member?.toString()}>{member}</li>;
-              })}
-          </ul>
-        </div>
-        <div className="p-3">
-          <h4 className="font-medium">Подчиненные</h4>
-          <ul>
-            {teamMembers?.map((member) => (
-              <li key={member?.toString()}>{member}</li>
-            ))}
-          </ul>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
+    </LoadingOverlay>
   );
 };
 

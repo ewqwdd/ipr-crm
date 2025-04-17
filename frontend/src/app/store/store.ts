@@ -9,7 +9,6 @@ import { modalReducer } from './modalSlice';
 import { ratesReducer } from '@/entities/rates';
 import { iprApi } from '@/shared/api/iprApi';
 import { boardReducer } from '@/entities/ipr';
-import { loadingReducer } from './loadingSlice';
 import { testCreateReducer } from '@/entities/test/testCreateSlice';
 import { testsApi } from '@/shared/api/testsApi';
 import { testAssesmentReducer } from '@/entities/test/testAssesmentSlice';
@@ -20,7 +19,6 @@ import { surveyAssesmentReducer } from '@/entities/survey/surveyAssesmentSlice';
 const rootReducer = combineReducers({
   user: userReducer,
   modal: modalReducer,
-  loading: loadingReducer,
   rates: ratesReducer,
   board: boardReducer,
   testCreate: testCreateReducer,

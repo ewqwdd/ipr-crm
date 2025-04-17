@@ -5,7 +5,7 @@ import { Heading } from '@/shared/ui/Heading';
 import { Radio } from '@/shared/ui/Radio';
 import { useEffect, useState } from 'react';
 import ConfirmListItem from '../ConfirmListItem/ConfirmListItem';
-import { useLoading } from '@/app/hooks/useLoading';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 type RatesFilter = 'self' | 'curator';
 
@@ -26,17 +26,9 @@ export default function ConfirmListTab() {
       ? confirmByUser.isFetching
       : confirmByCurator.isFetching;
 
-  const { showLoading, hideLoading } = useLoading();
-
-  useEffect(() => {
-    if (loadingToShow) {
-      showLoading();
-    } else {
-      hideLoading();
-    }
-  }, [loadingToShow, showLoading, hideLoading]);
 
   return (
+    <LoadingOverlay active={loadingToShow}>
     <div
       className={cva('flex flex-col gap-4 p-4', {
         'animate-pulse': loadingToShow,
@@ -68,5 +60,6 @@ export default function ConfirmListTab() {
         />
       ))}
     </div>
+    </LoadingOverlay>
   );
 }

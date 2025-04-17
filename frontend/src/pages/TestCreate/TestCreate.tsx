@@ -3,8 +3,6 @@ import { Tabs } from '@/shared/ui/Tabs';
 import { useSearchParams } from 'react-router';
 import SubmitTest from './SubmitTest';
 import { testsApi } from '@/shared/api/testsApi';
-import { useEffect } from 'react';
-import { hideLoading, showLoading } from '@/app/store/loadingSlice';
 import TestCreateAccess from './tabs/TestCreateAccess';
 import TestCreateSettings from './tabs/TestCreateSettings';
 import TestQuestionsCreate from './tabs/TestQuestionsCreate';
