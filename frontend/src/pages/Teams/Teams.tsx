@@ -12,7 +12,6 @@ export default function Teams() {
   const isAdmin = user?.role.name === 'admin';
   const [addAopen, setAddOpen] = useState(false);
 
-
   const list = useMemo(() => {
     if (!data?.list) return [];
     if (isAdmin) {
@@ -41,7 +40,7 @@ export default function Teams() {
         </div>
         <div className="flex flex-col gap-1 max-w-5xl mt-8">
           {list.map((team) => (
-            <TeamItem key={team.id} team={team} />
+            <TeamItem key={team.id} team={team} isAdmin={isAdmin} />
           ))}
         </div>
         <AddTeamModal open={addAopen} setOpen={setAddOpen} />
