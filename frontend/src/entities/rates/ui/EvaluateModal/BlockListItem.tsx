@@ -18,6 +18,7 @@ export default function BlockListItem({
   const indicators = block.competencies.flatMap(
     (competency) => competency.indicators,
   );
+
   const userRatesFiltered = userRates.filter(
     (rate) =>
       !!indicators.find((indicator) => indicator.id === rate.indicatorId),
@@ -56,6 +57,7 @@ export default function BlockListItem({
         <Link
           to={`/progress/${rate.id}?tab=${block.id}`}
           onClick={closeModal}
+          state={window.location.pathname + window.location.search}
           className={cva('text-violet-500 font-semibold', {
             'pointer-events-none cursor-not-allowed': disabled,
           })}

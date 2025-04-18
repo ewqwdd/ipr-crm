@@ -84,7 +84,7 @@ const rateSlice = createSlice({
     removeEvaluator: (
       state,
       action: PayloadAction<{
-        teamId: number;
+        teamId?: number;
         specId: number;
         userId: number;
         evaluatorId: number;

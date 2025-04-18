@@ -17,13 +17,13 @@ export interface Rate {
   endDate: string | null;
   userId: number;
   specId: number;
-  teamId: number;
+  teamId?: number;
   archived: boolean;
   type: 'HARD' | 'SOFT';
   evaluators: RateEveloper[];
   user: { id: number; username: string };
   spec: { id: number; name: string };
-  team: { id: number; name: string };
+  team?: { id: number; name: string };
   userComment?: string;
   curatorComment?: string;
   userRates: {
@@ -52,7 +52,7 @@ export type EvaluateUser = { userId: number; username?: string };
 export type EvaulatorType = 'CURATOR' | 'TEAM_MEMBER' | 'SUBORDINATE';
 
 export type AddRateDto = {
-  teamId: number;
+  teamId?: number;
   specs: {
     specId: number;
     userId: number;

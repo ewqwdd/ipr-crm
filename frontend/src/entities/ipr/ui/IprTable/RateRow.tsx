@@ -43,7 +43,7 @@ export default function RateRow({ index, task }: RateRowProps) {
           className="font-medium text-violet-500 hover:text-violet-700 transition-all"
           to={'/teams/' + task.rate360?.teamId}
         >
-          {task.rate360?.team.name}
+          {task.rate360?.team?.name}
         </Link>
       </td>
 

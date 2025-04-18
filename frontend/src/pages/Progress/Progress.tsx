@@ -23,6 +23,8 @@ export default memo(function Progress() {
 
   useReadNotifsOnClose(notifTypes);
 
+  console.log('Progress');
+
   const tabs = useMemo(() => {
     const confirm =
       (confirmByUser?.length ?? 0) + (confirmByCurator?.length ?? 0);

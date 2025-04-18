@@ -172,7 +172,7 @@ export default function ConfirmEvaluatorsModal({
           </p>
           <p className="text-gray-500">
             Команда:{' '}
-            <span className="text-gray-800 font-medium">{rate.team.name}</span>
+            <span className="text-gray-800 font-medium">{rate.team?.name}</span>
           </p>
         </div>
         <div className="grid grid-cols-3 gap-4">

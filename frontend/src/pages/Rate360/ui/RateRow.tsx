@@ -40,7 +40,7 @@ export default function RateRow({
     universalApi.useGetSpecsQuery();
 
   const foundUser = users?.users.find((user) => user.id === rate.user.id);
-  const foundTeam = teams?.list.find((team) => team.id === rate.team.id);
+  const foundTeam = teams?.list.find((team) => team.id === rate.team?.id);
   const foundSpec = specs?.find((spec) => spec.id === rate.spec.id);
   const indicators = rate?.competencyBlocks.flatMap((skill) =>
     skill!.competencies.flatMap((comp) => comp.indicators),

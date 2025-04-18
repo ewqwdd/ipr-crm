@@ -9,6 +9,7 @@ import { PasswordService } from 'src/utils/password/password';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InviteUserDTO } from './dto/invite-user.dto';
 import { MailService } from 'src/utils/mailer/mailer';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class UsersService {
@@ -168,6 +169,15 @@ export class UsersService {
       );
     }
 
+    let username = data.email.split('@')[0];
+    const withUsername = await this.prisma.user.findFirst({
+      where: { username },
+    });
+
+    if (withUsername) {
+      username = nanoid(6);
+    }
+
     const authCode = Math.random().toString(36).substring(2, 15);
     const hashed = await this.passwordService.getHash(authCode);
 
@@ -177,7 +187,7 @@ export class UsersService {
         firstName: data.name,
         lastName: data.surname,
         roleId: 2,
-        username: data.email.split('@')[0],
+        username,
         authCode: hashed,
       },
     });

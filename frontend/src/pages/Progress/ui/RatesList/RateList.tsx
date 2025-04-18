@@ -27,6 +27,8 @@ export default function RateList({ isLoading, data, heading }: RateListProps) {
   const teamIds = Array.from(new Set(filtered?.map((rate) => rate.teamId)));
   const teams = teamData?.list.filter((team) => teamIds.includes(team.id));
 
+  const noTeam = filtered?.filter((rate) => !rate.teamId);
+
   return (
     <div
       className={cva('flex flex-col gap-4 p-4', {
@@ -48,6 +50,19 @@ export default function RateList({ isLoading, data, heading }: RateListProps) {
           </div>
         </div>
       ))}
+
+      {noTeam.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <span className="text-violet-600 font-semibold text-lg">
+            Без команды
+          </span>
+          <div className="flex flex-col bg-gray-50 py-2">
+            {noTeam.map((rate) => (
+              <RateItem specs={specsData ?? []} key={rate.id} rate={rate} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

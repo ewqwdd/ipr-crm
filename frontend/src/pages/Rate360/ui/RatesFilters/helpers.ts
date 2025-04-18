@@ -51,7 +51,7 @@ export const getUniqueOptions = <T extends keyof Rate>(
 
 export const filterByTeam = (rate: Rate, teams: Filters['teams']) => {
   if (teams.length === 0) return true;
-  return teams.some((team) => rate.team.id === team.value);
+  return teams.some((team) => rate.team?.id === team.value);
 };
 
 export const filterByUserId = (rate: Rate, userId: Filters['userId']) => {

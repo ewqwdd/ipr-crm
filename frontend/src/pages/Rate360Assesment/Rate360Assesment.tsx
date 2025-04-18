@@ -1,7 +1,13 @@
 import { rate360Api } from '@/shared/api/rate360Api';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router';
 import TabsHeader from './ui/TabsHeader';
 import Assesment from './ui/Assesment';
 import { Assesment as AssesmentType } from './types/types';
@@ -17,6 +23,8 @@ export default function Rate360Assesment() {
   const { data, isFetching, isError } = rate360Api.useFindForUserQuery(
     parseInt(id ?? ''),
   );
+
+  const { state } = useLocation();
 
   const [
     mutateAssesment,
@@ -67,7 +75,7 @@ export default function Rate360Assesment() {
   useEffect(() => {
     if (mutateAssesmentSuccess) {
       toast.success('Оценка сохранена');
-      navigate('/progress');
+      navigate(typeof state === 'string' ? state : '/progress');
     }
   }, [mutateAssesmentSuccess]);
 

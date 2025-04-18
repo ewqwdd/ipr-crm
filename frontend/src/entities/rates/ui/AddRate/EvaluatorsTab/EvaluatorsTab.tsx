@@ -19,7 +19,7 @@ interface EvaluatorsTabProps {
 }
 
 export interface TeamItemIds {
-  teamId: number;
+  teamId?: number;
   specId: number;
   userId: number;
   evaluateCurators: EvaluateUser[];

@@ -10,7 +10,7 @@ import { memo } from 'react';
 interface EvaluatorsItemProps {
   evaluators: EvaluateUser[];
   title: string;
-  teamId: number;
+  teamId?: number;
   specId: number;
   userId: number;
   type: EvaulatorType;

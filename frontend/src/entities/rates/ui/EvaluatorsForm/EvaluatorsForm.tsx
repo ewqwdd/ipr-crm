@@ -8,7 +8,7 @@ import { useFilteredTeams } from '../../hooks/useFilteredTeams';
 import TeamFilters from '../SelectSpecsForm/partials/TeamFilters';
 
 interface EvaluatorsFormProps {
-  teamId: number;
+  teamId?: number;
   specId: number;
   userId: number;
   type: EvaulatorType;
