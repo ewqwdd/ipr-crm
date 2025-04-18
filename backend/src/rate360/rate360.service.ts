@@ -22,7 +22,14 @@ export class Rate360Service {
     const rates = await this.prismaService.rate360.findMany({
       where: {
         archived: false,
-        ...(curatorId ? { team: { curatorId } } : {}),
+        ...(curatorId
+          ? {
+              teamId: { not: null }, // защита от null team
+              team: {
+                curatorId,
+              },
+            }
+          : {}),
       },
       include: {
         evaluators: {
