@@ -1,7 +1,7 @@
 import { usersApi } from '@/shared/api/usersApi';
 import TableRow from './TableRow';
 import { cva } from '@/shared/lib/cva';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Pagination } from '@/shared/ui/Pagination';
 import UsersFilters, { applyUsersFilters } from './usersFilters';
 import { User } from '@/entities/user';
@@ -22,6 +22,10 @@ export default function WithAvatarsAndMultiLineContent() {
       [key]: value,
     }));
   }, []);
+
+  useLayoutEffect(() => {
+    setFilteredData(data?.users || []);
+  }, [data?.users]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
