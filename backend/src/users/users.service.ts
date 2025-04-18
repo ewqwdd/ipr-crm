@@ -152,9 +152,7 @@ export class UsersService {
     }
 
     if (updates.password) {
-      const passwordHash = await this.passwordService.getHash(
-        updates.password,
-      );
+      const passwordHash = await this.passwordService.getHash(updates.password);
       updates.passwordHash = passwordHash;
       delete updates.password;
     }
