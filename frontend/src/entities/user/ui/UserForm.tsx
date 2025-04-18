@@ -11,6 +11,7 @@ import { SpecsSelect } from '@/widgets/SpecsSelect';
 import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
+import { useAppSelector } from '@/app';
 
 type UserFormErrors = Omit<UserFormData, 'avatar' | 'roleId' | 'specId'> & {
   avatar?: string;
@@ -55,6 +56,8 @@ export default function UserForm({
   const [photo, setPhoto] = useState<string | ArrayBuffer | null>();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const role = useAppSelector((state) => state.user.user?.role);
+  const isAdmin = role?.name === 'admin';
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -189,7 +192,7 @@ export default function UserForm({
                 {errors.username}
               </p>
             )}
-            {!edit && (
+            {(!edit || isAdmin) && (
               <div className="sm:col-span-3">
                 <InputWithLabelLight
                   label="Пароль"
