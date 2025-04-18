@@ -10,6 +10,13 @@ export class NotificationsService {
     private mailService: MailService,
   ) {}
 
+  async getNotifications(id: number) {
+    const notifications = await this.prismaService.notification.findMany({
+      where: { userId: id, watched: false },
+    });
+    return notifications ?? [];
+  }
+
   generateText(heading: string, message: string, link: string) {
     return `<div style="font-family:Arial,sans-serif;padding:20px;text-align: center;">
 <h2 style="max-width:560px;margin:30px auto;">${heading}</h2>

@@ -5,8 +5,6 @@ import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 export default function AssignedRatesTab() {
   const { data, isLoading } = rate360Api.useAssignedRatesQuery();
 
-  // TODO: replace loading
-
   return (
     <LoadingOverlay active={isLoading}>
       <RateList

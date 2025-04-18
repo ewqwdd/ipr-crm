@@ -4,9 +4,11 @@ import AppRouter from './router/AppRouter';
 import { DarkSidebar } from '@/widgets/DarkSidebar';
 import ModalWrapper from '@/entities/modals';
 import Loading from '@/shared/ui/Loading';
+import { useCheckNotifications } from '@/shared/hooks/useCheckNotifications';
 
 function App() {
   const { isMounted } = useAuthControl();
+  useCheckNotifications();
 
   if (!isMounted) {
     return (

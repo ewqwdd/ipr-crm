@@ -34,6 +34,11 @@ const userSlice = createSlice({
     setIsAdmin: (state, action: PayloadAction<boolean>) => {
       state.isAdmin = action.payload;
     },
+    setNotifications: (state, action: PayloadAction<User['notifications']>) => {
+      if (state.user) {
+        state.user.notifications = action.payload;
+      }
+    },
   },
 });
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { ReadNotificationsDto } from './dto/read-notifications.dto';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
@@ -16,5 +16,11 @@ export class NotificationController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     return this.notificationService.readNotifications(data.ids, sessionInfo.id);
+  }
+
+  @Get('/')
+  @UseGuards(AuthGuard)
+  async getNotifications(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return this.notificationService.getNotifications(sessionInfo.id);
   }
 }

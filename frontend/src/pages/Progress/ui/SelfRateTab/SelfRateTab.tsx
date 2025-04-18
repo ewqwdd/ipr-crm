@@ -5,8 +5,6 @@ import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 export default function SelfRateTab() {
   const { data, isLoading } = rate360Api.useSelfRatesQuery();
 
-  // TODO: replace loading
-
   return (
     <LoadingOverlay active={isLoading}>
       <RateList data={data} isLoading={isLoading} heading="Самооценка 360" />

@@ -8,6 +8,7 @@ import { useAppSelector } from '@/app';
 import { Badge } from '@/shared/ui/Badge';
 import { useReadNotifsOnClose } from '@/shared/hooks/useReadNotifsOnClose';
 import { NotificationType } from '@/entities/notifications';
+import { rate360Api } from '@/shared/api/rate360Api';
 
 const notifTypes: NotificationType[] = [
   'RATE_ASSIGNED_SELF',
@@ -16,32 +17,26 @@ const notifTypes: NotificationType[] = [
 ];
 
 export default memo(function Progress() {
-  const notifications = useAppSelector(
-    (state) => state.user.user?.notifications,
-  );
+  const { data: rateAssigned } = rate360Api.useAssignedRatesQuery();
+  const { data: confirmByUser } = rate360Api.useConfirmByUserQuery();
+  const { data: confirmByCurator } = rate360Api.useConfirmByCuratorQuery();
+  const { data: selfNotifs } = rate360Api.useSelfRatesQuery();
 
   useReadNotifsOnClose(notifTypes);
 
   const tabs = useMemo(() => {
-    const selfNotifs = notifications?.filter(
-      (notif) => notif.type === 'RATE_ASSIGNED_SELF' && !notif.watched,
-    ).length;
-    const rateAssigned = notifications?.filter(
-      (notif) => notif.type === 'RATE_ASSIGNED' && !notif.watched,
-    ).length;
-    const rateConfirm = notifications?.filter(
-      (notif) => notif.type === 'RATE_CONFIRM' && !notif.watched,
-    ).length;
+    const confirm =
+      (confirmByUser?.length ?? 0) + (confirmByCurator?.length ?? 0);
 
     return [
       {
         name: 'Самооценка 360',
         element:
-          selfNotifs === 0 ? (
+          !selfNotifs || selfNotifs.length === 0 ? (
             'Самооценка 360'
           ) : (
             <div className="flex items-center gap-2 [&>span]:rounded-full [&>span]size-4">
-              Самооценка 360 <Badge color={'red'}>{selfNotifs}</Badge>
+              Самооценка 360 <Badge color={'red'}>{selfNotifs.length}</Badge>
             </div>
           ),
         key: 'self-assessment',
@@ -49,12 +44,12 @@ export default memo(function Progress() {
       {
         name: 'По другим пользователям',
         element:
-          rateAssigned === 0 ? (
+          !rateAssigned || rateAssigned.length === 0 ? (
             'По другим пользователям'
           ) : (
             <div className="flex items-center gap-2 [&>span]:rounded-full [&>span]size-4">
               По другим пользователям{' '}
-              <Badge color={'red'}>{rateAssigned}</Badge>
+              <Badge color={'red'}>{rateAssigned.length}</Badge>
             </div>
           ),
         key: 'by-others',
@@ -62,17 +57,17 @@ export default memo(function Progress() {
       {
         name: 'Утвердить список',
         element:
-          rateConfirm === 0 ? (
+          confirm === 0 ? (
             'Утвердить список'
           ) : (
             <div className="flex items-center gap-2 [&>span]:rounded-full [&>span]size-4">
-              Утвердить список <Badge color={'red'}>{rateConfirm}</Badge>
+              Утвердить список <Badge color={'red'}>{confirm}</Badge>
             </div>
           ),
         key: 'confirm-list',
       },
     ];
-  }, [notifications]);
+  }, [rateAssigned, confirmByUser, confirmByCurator, selfNotifs]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || tabs[0].key;
