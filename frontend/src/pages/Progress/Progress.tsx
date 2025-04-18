@@ -4,7 +4,6 @@ import SelfRateTab from './ui/SelfRateTab/SelfRateTab';
 import AssignedRatesTab from './ui/AssignedRatesTab/AssignedRatesTab';
 import ConfirmListTab from './ui/ConfirmListTab/ConfirmListTab';
 import { memo, useMemo } from 'react';
-import { useAppSelector } from '@/app';
 import { Badge } from '@/shared/ui/Badge';
 import { useReadNotifsOnClose } from '@/shared/hooks/useReadNotifsOnClose';
 import { NotificationType } from '@/entities/notifications';
