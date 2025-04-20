@@ -20,9 +20,9 @@ export default function BoardPage() {
   return (
     <LoadingOverlay active={isLoading}>
       <div
-        className={cva('px-8 py-10 flex flex-col h-full gap-4', 'boardPage')}
+        className={cva('sm:px-8 py-10 flex flex-col h-full gap-4', 'boardPage')}
       >
-        <div className="flex justify-between">
+        <div className="flex justify-between max-sm:px-3">
           <Heading title="Доска задач" />
           {isAdmin && <PrimaryButton>Добавить задачу</PrimaryButton>}
         </div>

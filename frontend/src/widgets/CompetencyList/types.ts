@@ -18,4 +18,9 @@ export type CompetencyListItemProps = CombineType & {
   hint3?: string;
   hint4?: string;
   hint5?: string;
+  value1?: string;
+  value2?: string;
+  value3?: string;
+  value4?: string;
+  value5?: string;
 };

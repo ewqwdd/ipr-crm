@@ -20,6 +20,8 @@ import { EditDto } from './dto/edi.dto';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { EditMaterialDto } from './dto/edit-material.dto';
 import { EditIndicatorDto } from './dto/edit-indicator.dto';
+import { EditMultipleBoundariesDto } from './dto/edit-multiple-boudaries.dto';
+import { EditCompetencyDto } from './dto/edit-competency.dto';
 
 @Controller('profile-constructor')
 export class ProfileConstructorController {
@@ -124,9 +126,9 @@ export class ProfileConstructorController {
   @UseGuards(AdminGuard)
   async updateCompetency(
     @Param('id', { transform: (v) => parseInt(v) }) id: number,
-    @Body() data: EditDto,
+    @Body() data: EditCompetencyDto,
   ) {
-    return this.profileConstructorService.editCompetency(id, data.name);
+    return this.profileConstructorService.editCompetency(id, data);
   }
 
   @Put('/indicator/:id')
@@ -140,6 +142,7 @@ export class ProfileConstructorController {
       data.name,
       data.boundary,
       data.hints,
+      data.values,
     );
   }
 
@@ -167,5 +170,14 @@ export class ProfileConstructorController {
     @Param('id', { transform: (v) => parseInt(v) }) id: number,
   ) {
     return this.profileConstructorService.getVersionById(id);
+  }
+
+  @Post('/competency/:id/boundary')
+  @UseGuards(AdminGuard)
+  async editCompetencyBoundary(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @Body() data: EditMultipleBoundariesDto,
+  ) {
+    return this.profileConstructorService.editMultipleBoundaries(id, data);
   }
 }

@@ -6,7 +6,7 @@ import {
   CompetencyBlock,
   Version,
 } from '@/entities/skill';
-import { Hints } from '@/entities/skill/types/types';
+import { Hints, HintValues } from '@/entities/skill/types/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const skillsApi = createApi({
@@ -74,22 +74,37 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
-    editCompetency: build.mutation<void, { id: number; name: string }>({
-      query: ({ id, name }) => ({
+    editCompetency: build.mutation<
+      void,
+      {
+        id: number;
+        name: string;
+        boundary?: number;
+        hints?: Hints;
+        values?: HintValues;
+      }
+    >({
+      query: ({ id, name, boundary, hints, values }) => ({
         url: `/competency/${id}`,
         method: 'PUT',
-        body: { name },
+        body: { name, boundary, hints, values },
       }),
       invalidatesTags: ['Skills'],
     }),
     editIndicator: build.mutation<
       void,
-      { id: number; name: string; boundary: number; hints?: Hints }
+      {
+        id: number;
+        name: string;
+        boundary: number;
+        hints?: Hints;
+        values?: HintValues;
+      }
     >({
-      query: ({ id, name, boundary, hints }) => ({
+      query: ({ id, name, boundary, hints, values }) => ({
         url: `/indicator/${id}`,
         method: 'PUT',
-        body: { name, boundary, hints },
+        body: { name, boundary, hints, values },
       }),
       invalidatesTags: ['Skills'],
     }),
@@ -172,6 +187,17 @@ const skillsApi = createApi({
         blocks: response.blocks,
       }),
       providesTags: (_, __, id) => [{ type: 'Version', id }],
+    }),
+    editMultipleBoundaries: build.mutation<
+      void,
+      { id: number; name: string; boundary: number; hints?: Hints }
+    >({
+      query: ({ id, name, boundary, hints }) => ({
+        url: `/competency/${id}/boundary`,
+        method: 'POST',
+        body: { name, boundary, hints },
+      }),
+      invalidatesTags: ['Skills'],
     }),
   }),
 });

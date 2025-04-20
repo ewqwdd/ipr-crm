@@ -80,6 +80,7 @@ export default memo(function Progress() {
     <div className="flex flex-col gap-4">
       <Tabs
         tabClassName="first:ml-4"
+        className="max-sm:mr-16 max-sm:p-2"
         tabs={tabs}
         setCurrentTab={setTab}
         currentTab={activeTab}

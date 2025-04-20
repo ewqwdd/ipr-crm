@@ -534,6 +534,12 @@ model Indicator {
   hint3 String?
   hint4 String?
   hint5 String?
+
+  value1 String?
+  value2 String?
+  value3 String?
+  value4 String?
+  value5 String?
 }
 
 // Материалы 

@@ -10,8 +10,8 @@ export default function Surveys() {
   const { data, isFetching } = surveyApi.useGetSurveysQuery();
 
   return (
-    <div className="px-8 py-10 flex flex-col h-full relative">
-      <div className="flex justify-between items-center">
+    <div className="sm:px-8 sm:py-10 py-3 flex flex-col h-full relative">
+      <div className="flex justify-between items-center max-sm: pr-16 pl-3">
         <Heading title="Опросы" />
         <PrimaryButton
           onClick={() => navigate('/surveys/create')}

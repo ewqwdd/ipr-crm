@@ -1,15 +1,21 @@
 import { TableBody } from '@/widgets/TableBody';
 import { TableHeading } from '@/widgets/TableHeading';
-import { hintsTitle } from '../../config/hints';
 import { TextArea } from '@/shared/ui/TextArea';
 import React, { memo } from 'react';
 
 interface EditHintsProps {
-  data: string[];
-  setData: React.Dispatch<React.SetStateAction<string[]>>;
+  hitnsData: string[];
+  setHintsData: React.Dispatch<React.SetStateAction<string[]>>;
+  valuesData: string[];
+  setValuesData: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export default memo(function EditHints({ data, setData }: EditHintsProps) {
+export default memo(function EditHints({
+  hitnsData,
+  setHintsData,
+  setValuesData,
+  valuesData,
+}: EditHintsProps) {
   return (
     <table className="w-full">
       <TableHeading
@@ -22,22 +28,30 @@ export default memo(function EditHints({ data, setData }: EditHintsProps) {
         ]}
       />
       <TableBody
-        data={data}
+        data={hitnsData}
         columnRender={[
           {
             render: (_, index) => (
-              <span className="whitespace-normal text-left">
-                {hintsTitle[(index + 1) as keyof typeof hintsTitle]}
-              </span>
+              <TextArea
+                value={valuesData?.[index] ?? ''}
+                onChange={(e) => {
+                  setValuesData((prev) => {
+                    const newData = [...prev];
+                    newData[index] = e.target.value;
+                    return newData;
+                  });
+                }}
+                rows={2}
+              />
             ),
-            className: 'text-left pl-8 max-w-40',
+            className: 'text-left',
           },
           {
             render: (data, index) => (
               <TextArea
                 value={data}
                 onChange={(e) => {
-                  setData((prev) => {
+                  setHintsData((prev) => {
                     const newData = [...prev];
                     newData[index] = e.target.value;
                     return newData;

@@ -5,7 +5,9 @@ import { useState } from 'react';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import toast from 'react-hot-toast';
 import { EditHints } from './EditHints';
-import { hintsDescription } from '../config/hints';
+import { hintsDescription, hintsTitle } from '../config/hints';
+import { EditBoundary } from './EditBoundary';
+import { Checkbox } from '@/shared/ui/Checkbox';
 
 interface EditModalData {
   type: CompetencyType;
@@ -18,6 +20,13 @@ interface EditModalData {
     hint3: string;
     hint4: string;
     hint5: string;
+  };
+  values?: {
+    value1: string;
+    value2: string;
+    value3: string;
+    value4: string;
+    value5: string;
   };
 }
 
@@ -39,15 +48,27 @@ export default function EditSkillsModal({
     type,
     boundary: boundaryInit,
     hints: hintsInit,
+    values: valuesInit,
   } = modalData as EditModalData;
   const [value, setValue] = useState(name);
   const [boundary, setBoundary] = useState<number>(boundaryInit ?? 3);
+  const [editCompetencyHints, setEditCompetencyHints] =
+    useState<boolean>(false);
+
   const [hints, setHints] = useState<string[]>([
     hintsInit?.hint1 ?? hintsDescription[1],
     hintsInit?.hint2 ?? hintsDescription[2],
     hintsInit?.hint3 ?? hintsDescription[3],
     hintsInit?.hint4 ?? hintsDescription[4],
     hintsInit?.hint5 ?? hintsDescription[5],
+  ]);
+
+  const [hintValues, setHintValues] = useState<string[]>([
+    valuesInit?.value1 ?? hintsTitle[1],
+    valuesInit?.value2 ?? hintsTitle[2],
+    valuesInit?.value3 ?? hintsTitle[3],
+    valuesInit?.value4 ?? hintsTitle[4],
+    valuesInit?.value5 ?? hintsTitle[5],
   ]);
 
   const editCompetency = competency.edit[0];
@@ -62,9 +83,28 @@ export default function EditSkillsModal({
   const onSubmit = () => {
     if (value.length === 0) return toast.error('Поле не может быть пустым');
     switch (type) {
-      case CompetencyType.COMPETENCY:
-        editCompetency({ id, name: value });
+      case CompetencyType.COMPETENCY: {
+        const data: Parameters<typeof editCompetency>[0] = { id, name: value };
+        if (editCompetencyHints) {
+          data.boundary = boundary;
+          data.hints = {
+            1: hints[0],
+            2: hints[1],
+            3: hints[2],
+            4: hints[3],
+            5: hints[4],
+          };
+          data.values = {
+            1: hintValues[0],
+            2: hintValues[1],
+            3: hintValues[2],
+            4: hintValues[3],
+            5: hintValues[4],
+          };
+        }
+        editCompetency(data);
         break;
+      }
       case CompetencyType.COMPETENCY_BLOCK:
         editCompetencyBlock({ id, name: value });
         break;
@@ -79,6 +119,13 @@ export default function EditSkillsModal({
             3: hints[2],
             4: hints[3],
             5: hints[4],
+          },
+          values: {
+            1: hintValues[0],
+            2: hintValues[1],
+            3: hintValues[2],
+            4: hintValues[3],
+            5: hintValues[4],
           },
         });
         break;
@@ -100,24 +147,26 @@ export default function EditSkillsModal({
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
-      <div className="mt-4 flex flex-col gap-2">
-        {type === CompetencyType.INDICATOR && (
-          <>
-            <p className="text-gray-900 text-sm">
-              <span className="font-medium">Граница оценки: </span>
-              <span className="text-indigo-600">{boundary}</span>
-            </p>
+      {CompetencyType.COMPETENCY === type && (
+        <Checkbox
+          title="Редактировать подсказки"
+          className="mt-4"
+          checked={editCompetencyHints}
+          onChange={() => setEditCompetencyHints((prev) => !prev)}
+        />
+      )}
 
-            <input
-              className="w-full"
-              type="range"
-              min="1"
-              max="5"
-              value={boundary}
-              step={1}
-              onChange={(e) => setBoundary(parseInt(e.target.value))}
+      <div className="mt-4 flex flex-col gap-2">
+        {(CompetencyType.INDICATOR === type ||
+          (CompetencyType.COMPETENCY === type && editCompetencyHints)) && (
+          <>
+            <EditBoundary boundary={boundary} setBoundary={setBoundary} />
+            <EditHints
+              hitnsData={hints}
+              setHintsData={setHints}
+              valuesData={hintValues}
+              setValuesData={setHintValues}
             />
-            <EditHints data={hints} setData={setHints} />
           </>
         )}
       </div>

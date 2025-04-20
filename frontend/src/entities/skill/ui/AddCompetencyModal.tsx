@@ -1,9 +1,10 @@
 import { Modal } from '@/shared/ui/Modal';
 import { CompetencyBlock } from '../types/types';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { skillsApi } from '@/shared/api/skillsApi';
+import EditMultipleIndicators from './EditMultipleIndicators/EditMultipleIndicators';
 
 interface AddCompetencyModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function AddCompetencyModal({
   closeModal,
 }: AddCompetencyModalProps) {
   const [value, setValue] = useState('');
+  const [indicators, setIndicators] = useState<string[]>([]);
 
   const [createCompetency, comppetencyProps] =
     skillsApi.useCreateCompetencyMutation();
@@ -27,9 +29,28 @@ export default function AddCompetencyModal({
     if (!id) {
       return toast.error('Не выбран блок компетенций');
     }
-    createCompetency({ name, blockId: id });
+    if (!name) {
+      return toast.error('Необходимо указать название компетенции');
+    }
+    const indicatorsToCreate = indicators
+      .map((i) => i.trim())
+      .filter((i) => i.length > 0);
+    createCompetency({
+      name,
+      blockId: id,
+      indicators: indicatorsToCreate.length > 0 ? indicatorsToCreate : [],
+    });
     closeModal();
   };
+
+  useEffect(() => {
+    if (comppetencyProps.isError) {
+      toast.error('Не удалось создать компетенцию');
+    }
+    if (comppetencyProps.isSuccess) {
+      toast.success('Компетенция успешно создана');
+    }
+  }, [comppetencyProps.isError, comppetencyProps.isSuccess]);
 
   return (
     <Modal
@@ -48,6 +69,11 @@ export default function AddCompetencyModal({
           placeholder="Название компетенции"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+        />
+        <p className="mt-0.5 text-sm text-gray-900 font-medium">Индикаторы:</p>
+        <EditMultipleIndicators
+          indicators={indicators}
+          setIndicators={setIndicators}
         />
       </div>
     </Modal>

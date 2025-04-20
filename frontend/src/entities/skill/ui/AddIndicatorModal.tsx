@@ -1,11 +1,12 @@
 import { Modal } from '@/shared/ui/Modal';
 import { Competency } from '../types/types';
-import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { EditHints } from './EditHints';
-import { hintsDescription } from '../config/hints';
+import { hintsDescription, hintsTitle } from '../config/hints';
+import { EditBoundary } from './EditBoundary';
+import { EditMultipleIndicators } from './EditMultipleIndicators';
 
 interface AddIndicatorModalProps {
   isOpen: boolean;
@@ -18,9 +19,9 @@ export default function AddIndicatorModal({
   modalData,
   closeModal,
 }: AddIndicatorModalProps) {
-  const [value, setValue] = useState('');
   const [boundary, setBoundary] = useState<number>(3);
   const [valueError, setValueError] = useState<string | undefined>();
+  const [indicators, setIndicators] = useState<string[]>(['']);
 
   const [hints, setHints] = useState<string[]>([
     hintsDescription[1],
@@ -30,20 +31,31 @@ export default function AddIndicatorModal({
     hintsDescription[5],
   ]);
 
+  const [values, setValues] = useState<string[]>([
+    hintsTitle[1],
+    hintsTitle[2],
+    hintsTitle[3],
+    hintsTitle[4],
+    hintsTitle[5],
+  ]);
+
   const [createIndicator, indicatorProps] =
     skillsApi.useCreateIndicatorMutation();
 
   const { id, name } = modalData as Pick<Competency, 'id' | 'name'>;
 
-  const indicatorSubmit = (name: string) => {
+  const indicatorSubmit = (indicators: string[]) => {
+    const filtered = indicators
+      .map((indicator) => indicator.trim())
+      .filter((indicator) => indicator !== '');
     if (!id) {
       return toast.error('Не выбрана компетеннция');
     }
-    if (!name) {
-      return setValueError('Поле не может быть пустым');
+    if (filtered.length === 0) {
+      return setValueError('Введите хотя бы один индикатор');
     }
     createIndicator({
-      name,
+      indicators: filtered,
       competencyId: id,
       boundary,
       hints: {
@@ -52,6 +64,13 @@ export default function AddIndicatorModal({
         3: hints[2],
         4: hints[3],
         5: hints[4],
+      },
+      values: {
+        1: values[0],
+        2: values[1],
+        3: values[2],
+        4: values[3],
+        5: values[4],
       },
     });
     closeModal();
@@ -62,7 +81,7 @@ export default function AddIndicatorModal({
       open={isOpen}
       setOpen={closeModal}
       title="Новые индикаторы"
-      onSubmit={() => indicatorSubmit(value)}
+      onSubmit={() => indicatorSubmit(indicators)}
       submitText="Добавить"
       loading={indicatorProps.isLoading}
     >
@@ -70,32 +89,22 @@ export default function AddIndicatorModal({
         <p className="text-sm text-gray-500 mt-2">
           Компетенция: <span className="text-gray-900 ml-1">{name}</span>
         </p>
-        <InputWithLabelLight
-          placeholder="Название индикатора"
-          value={value}
-          onChange={(e) => {
-            setValueError(undefined);
-            setValue(e.target.value);
-          }}
-          error={valueError}
+        <EditMultipleIndicators
+          indicators={indicators}
+          setIndicators={setIndicators}
+          firstNotDeletable
         />
+        {valueError && (
+          <p className="text-red-500 text-sm mt-2">{valueError}</p>
+        )}
         <div className="mt-4 flex flex-col gap-2">
-          <p className="text-gray-900 text-sm">
-            <span className="font-medium">Граница оценки: </span>
-            <span className="text-indigo-600">{boundary}</span>
-          </p>
-
-          <input
-            className="w-full"
-            type="range"
-            min="1"
-            max="5"
-            value={boundary}
-            step={1}
-            onChange={(e) => setBoundary(parseInt(e.target.value))}
+          <EditBoundary boundary={boundary} setBoundary={setBoundary} />
+          <EditHints
+            hitnsData={hints}
+            setHintsData={setHints}
+            valuesData={values}
+            setValuesData={setValues}
           />
-
-          <EditHints data={hints} setData={setHints} />
         </div>
       </div>
     </Modal>

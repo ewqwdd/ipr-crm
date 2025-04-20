@@ -1,4 +1,6 @@
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -7,11 +9,13 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { HintsDto } from './hints.dto';
+import { ValuesDto } from './values.dto';
 
 export class CreateIndicatorDto {
-  @IsNotEmpty()
-  @IsString()
-  name: string;
+  @ArrayNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  indicators: string[];
 
   @IsString()
   @IsOptional()
@@ -29,4 +33,9 @@ export class CreateIndicatorDto {
   @ValidateNested()
   @Type(() => HintsDto)
   hints?: HintsDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ValuesDto)
+  values?: ValuesDto;
 }

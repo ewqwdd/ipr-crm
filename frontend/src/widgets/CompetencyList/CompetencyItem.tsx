@@ -36,6 +36,11 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   hint3,
   hint4,
   hint5,
+  value1,
+  value2,
+  value3,
+  value4,
+  value5,
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
 
@@ -132,6 +137,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
                   type: listItemType,
                   boundary,
                   hints: { hint1, hint2, hint3, hint4, hint5 },
+                  values: { value1, value2, value3, value4, value5 },
                 });
               }}
             >

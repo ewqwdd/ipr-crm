@@ -8,6 +8,9 @@ import { createMaterialIndicatorDto } from './dto/create-material-indicator.dto'
 import { AddBlockToSpecDto } from './dto/add-block-to-spec.dto';
 import { EditMaterialDto } from './dto/edit-material.dto';
 import { HintsDto } from './dto/hints.dto';
+import { EditMultipleBoundariesDto } from './dto/edit-multiple-boudaries.dto';
+import { EditCompetencyDto } from './dto/edit-competency.dto';
+import { ValuesDto } from './dto/values.dto';
 
 @Injectable()
 export class ProfileConstructorService {
@@ -77,19 +80,24 @@ export class ProfileConstructorService {
             id: data.blockId,
           },
         },
+        ...(data.indicators
+          ? {
+              indicators: {
+                createMany: {
+                  data: data.indicators?.map((name) => ({ name })),
+                },
+              },
+            }
+          : {}),
       },
     });
   }
 
   async createIndicator(data: CreateIndicatorDto) {
-    return this.prismaService.indicator.create({
-      data: {
-        name: data.name,
-        competency: {
-          connect: {
-            id: data.competencyId,
-          },
-        },
+    return this.prismaService.indicator.createMany({
+      data: data.indicators.map((name) => ({
+        name: name,
+        competencyId: data.competencyId,
         boundary: data.boundary,
         description: data.description,
         hint1: data.hints?.[1],
@@ -97,7 +105,12 @@ export class ProfileConstructorService {
         hint3: data.hints?.[3],
         hint4: data.hints?.[4],
         hint5: data.hints?.[5],
-      },
+        value1: data.values?.[1],
+        value2: data.values?.[2],
+        value3: data.values?.[3],
+        value4: data.values?.[4],
+        value5: data.values?.[5],
+      })),
     });
   }
 
@@ -178,15 +191,44 @@ export class ProfileConstructorService {
     });
   }
 
-  async editCompetency(id: number, name?: string) {
-    return this.prismaService.competency.update({
+  async editCompetency(id: number, data: EditCompetencyDto) {
+    await this.prismaService.competency.update({
       where: {
         id,
       },
       data: {
-        name,
+        name: data.name,
       },
     });
+    if (data.hints || data.boundary) {
+      await this.prismaService.indicator.updateMany({
+        where: {
+          competencyId: id,
+          archived: false,
+        },
+        data: {
+          ...(data.boundary ? { boundary: data.boundary } : {}),
+          ...(data.hints
+            ? {
+                hint1: data.hints?.[1],
+                hint2: data.hints?.[2],
+                hint3: data.hints?.[3],
+                hint4: data.hints?.[4],
+                hint5: data.hints?.[5],
+              }
+            : {}),
+          ...(data.values
+            ? {
+                value1: data.values?.[1],
+                value2: data.values?.[2],
+                value3: data.values?.[3],
+                value4: data.values?.[4],
+                value5: data.values?.[5],
+              }
+            : {}),
+        },
+      });
+    }
   }
 
   async editIndicator(
@@ -194,6 +236,7 @@ export class ProfileConstructorService {
     name?: string,
     boundary?: number,
     hints?: HintsDto,
+    values?: ValuesDto,
   ) {
     const indicator = await this.prismaService.indicator.update({
       where: {
@@ -207,6 +250,11 @@ export class ProfileConstructorService {
         hint3: hints?.[3],
         hint4: hints?.[4],
         hint5: hints?.[5],
+        value1: values?.[1],
+        value2: values?.[2],
+        value3: values?.[3],
+        value4: values?.[4],
+        value5: values?.[5],
       },
     });
 
@@ -466,5 +514,24 @@ export class ProfileConstructorService {
       blocks,
       date: version.date,
     };
+  }
+
+  async editMultipleBoundaries(id: number, data: EditMultipleBoundariesDto) {
+    const updated = await this.prismaService.indicator.updateMany({
+      where: {
+        competencyId: id,
+        archived: false,
+      },
+      data: {
+        boundary: data.boundary,
+        hint1: data.hints?.[1],
+        hint2: data.hints?.[2],
+        hint3: data.hints?.[3],
+        hint4: data.hints?.[4],
+        hint5: data.hints?.[5],
+      },
+    });
+
+    return updated; // Возвращаем результат обновления
   }
 }

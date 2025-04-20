@@ -1,6 +1,5 @@
 import { AddRateDto } from '@/entities/rates/types/types';
 import { TeamUser } from '@/entities/team';
-import { universalApi } from '@/shared/api/universalApi';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { ModalStateType } from './TeamList/TeamList';
@@ -24,8 +23,6 @@ export default function UserItem({
   setOpen,
   curatorSpecs,
 }: UserItemProps) {
-  const { data } = universalApi.useGetSpecsQuery();
-
   const userSpecsExist = user.specsOnTeams && user.specsOnTeams?.length > 0;
   const curatorSpecsExist = curatorSpecs && curatorSpecs?.length > 0;
 
@@ -45,7 +42,7 @@ export default function UserItem({
             .map((spec) => (
               <Checkbox
                 key={spec.specId}
-                title={data?.find((s) => s.id === spec.specId)?.name}
+                title={spec?.spec.name}
                 className="[&_label]:text-base [&_input]:size-5 h-8"
                 checked={
                   !!selected?.find(

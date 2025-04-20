@@ -10,6 +10,14 @@ export interface Hints {
   5?: string;
 }
 
+export interface HintValues {
+  1?: string;
+  2?: string;
+  3?: string;
+  4?: string;
+  5?: string;
+}
+
 export interface Competency {
   id: number;
   name: string;
@@ -30,6 +38,11 @@ export interface Indicator {
   hint3?: string;
   hint4?: string;
   hint5?: string;
+  value1?: string;
+  value2?: string;
+  value3?: string;
+  value4?: string;
+  value5?: string;
 }
 
 export interface CompetencyBlock {
@@ -50,14 +63,16 @@ export interface AddCompetencyBlockDto {
 export interface AddCompetencyDto {
   name: string;
   blockId: number;
+  indicators?: string[];
 }
 
 export interface AddIndicatorDto {
-  name: string;
+  indicators: string[];
   boundary: number;
   description?: string;
   competencyId: number;
   hints?: Hints;
+  values?: HintValues;
 }
 
 export interface Version {

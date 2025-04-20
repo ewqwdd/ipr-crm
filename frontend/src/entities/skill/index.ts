@@ -8,6 +8,7 @@ import type {
   AddIndicatorDto,
   SkillCombineType,
   Version,
+  HintValues,
 } from './types/types';
 import { CompetencyType } from './types/types';
 import AddCompetencyBlockModal from './ui/AddCompetencyBlockModal';
@@ -17,6 +18,7 @@ import AddBlockToSpecModal from './ui/AddBlockToSpecModal';
 import useSkillsService from './hooks/useSkillsService';
 import EditSkillsModal from './ui/EditSkillsModal';
 import SkillsSwitcher from './ui/SkillsSwitcher';
+import { hintsTitle } from './config/hints';
 
 export type {
   CompetencyBlock,
@@ -28,6 +30,7 @@ export type {
   AddIndicatorDto,
   SkillCombineType,
   Version,
+  HintValues,
 };
 
 export {
@@ -39,4 +42,5 @@ export {
   CompetencyType,
   EditSkillsModal,
   SkillsSwitcher,
+  hintsTitle,
 };

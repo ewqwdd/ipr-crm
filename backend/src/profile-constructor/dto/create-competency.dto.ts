@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateCompetencyDto {
   @IsNotEmpty()
@@ -8,4 +14,9 @@ export class CreateCompetencyDto {
   @IsNotEmpty()
   @IsNumber()
   blockId: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  indicators?: string[];
 }

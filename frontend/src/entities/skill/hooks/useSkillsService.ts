@@ -12,6 +12,8 @@ const useSkillsService = () => {
   const editCompetencyBlock = skillsApi.useEditCompetencyBlockMutation();
   const editCompetency = skillsApi.useEditCompetencyMutation();
   const editIndicator = skillsApi.useEditIndicatorMutation();
+  const editCompetencyBoundaries =
+    skillsApi.useEditMultipleBoundariesMutation();
 
   return {
     competencyBlock: {
@@ -23,6 +25,7 @@ const useSkillsService = () => {
       delete: competencyDelete,
       add: addCompetency,
       edit: editCompetency,
+      editBoundaries: editCompetencyBoundaries,
     },
     indicator: {
       delete: indicatorDelete,

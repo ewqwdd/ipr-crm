@@ -58,7 +58,7 @@ export default function TestTableFilter({
     updateFilters('period', value as DateObject[]);
 
   return (
-    <div>
+    <div className="px-3">
       <div className="flex gap-4 mb-4">
         <SoftButton className="relative" onClick={() => setIsOpen((s) => !s)}>
           Фильтры

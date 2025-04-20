@@ -28,8 +28,8 @@ export default function AssignedSurveys() {
 
   useReadNotifsOnClose(notifTypes);
   return (
-    <div className="px-8 py-10 flex flex-col h-full relative">
-      <div className="flex justify-between">
+    <div className="sm:px-8 sm:py-10 p-3 flex flex-col h-full relative">
+      <div className="flex justify-between max-sm:pr-12 max-sm:flex-col">
         <Heading title="Назначеные опросы" />
         <Tabs tabs={tabs} setCurrentTab={setTab} currentTab={activeTab} />
       </div>
