@@ -63,7 +63,7 @@ export default function WithAvatarsAndMultiLineContent() {
         )}
       >
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+          <div className="inline-block min-w-full align-middle md:px-6 lg:px-8">
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
@@ -99,8 +99,12 @@ export default function WithAvatarsAndMultiLineContent() {
               <tbody className="divide-y divide-gray-200 bg-white">
                 {!isLoading &&
                   data &&
-                  paginateddata.map((person) => (
-                    <TableRow key={person.id} person={person} />
+                  paginateddata.map((person, index) => (
+                    <TableRow
+                      key={person.id}
+                      person={person}
+                      last={index === paginateddata.length - 1}
+                    />
                   ))}
                 {isLoading &&
                   !data &&

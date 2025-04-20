@@ -9,9 +9,10 @@ import { Link, useNavigate } from 'react-router';
 interface TableRowProps {
   person: Partial<User>;
   edit?: boolean;
+  last?: boolean;
 }
 
-export default function TableRow({ person, edit = true }: TableRowProps) {
+export default function TableRow({ person, edit = true, last }: TableRowProps) {
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState<boolean>();
   const [deleteUser, deleteState] = usersApi.useRemoveUserMutation();
@@ -77,7 +78,9 @@ export default function TableRow({ person, edit = true }: TableRowProps) {
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         {edit && (
           <DotsDropdown
-            bodyClassName="z-50"
+            bodyClassName={cva('z-50', {
+              'origin-bottom-right bottom-full': !!last,
+            })}
             buttons={[
               {
                 text: 'Редактировать',
