@@ -58,13 +58,17 @@ export default function MultipleOption({
             <input
               value={(option as TestOption).score}
               onChange={handleScoreChange}
-              className="bg-white pl-1 pr-0 py-0.5 w-11"
+              className="bg-white pl-1 pr-0 py-0.5 sm:w-11 max-sm:text-sm w-9"
               type="number"
             />
           )}
           {onCorrectChange && (
             <Checkbox
-              title="Правильный ответ"
+              title={
+                <p className="max-sm:-ml-2 max-sm:text-xs">
+                  Правильный <span className="max-sm:hidden">ответ</span>
+                </p>
+              }
               checked={(option as TestOption).isCorrect}
               onChange={() =>
                 onCorrectChange(

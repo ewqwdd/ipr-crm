@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -24,6 +25,7 @@ import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { InviteUserDTO } from './dto/invite-user.dto';
 import { InviteAcceptDTO } from './dto/invite-accept.dto';
+import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 
 @Controller('users')
 export class UsersController {
@@ -130,5 +132,25 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async passwordReset(@Body() data: InviteAcceptDTO) {
     return this.usersService.passwordReset(data.code, data.password);
+  }
+
+  @Post('/import')
+  @UseGuards(AdminGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async importUsers(@UploadedFile() file: Express.Multer.File) {
+    return this.usersService.importUsers(file);
+  }
+
+  @Post('/multiple')
+  @UseGuards(AdminGuard)
+  async addUsers(@Body() data: CreateMultipleUsersDto) {
+    return this.usersService.createMultipleUsers(data);
+  }
+
+  @Delete(':id')
+  @UseGuards(AdminGuard)
+  @HttpCode(HttpStatus.OK)
+  async remove(@Param('id') id: number) {
+    return this.usersService.remove(id);
   }
 }

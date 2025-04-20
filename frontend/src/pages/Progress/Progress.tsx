@@ -23,8 +23,6 @@ export default memo(function Progress() {
 
   useReadNotifsOnClose(notifTypes);
 
-  console.log('Progress');
-
   const tabs = useMemo(() => {
     const confirm =
       (confirmByUser?.length ?? 0) + (confirmByCurator?.length ?? 0);
@@ -75,6 +73,8 @@ export default memo(function Progress() {
   const setTab = (tab: string) => {
     setSearchParams(`?tab=${tab}`);
   };
+
+  console.log(activeTab);
 
   return (
     <div className="flex flex-col gap-4">

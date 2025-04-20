@@ -45,7 +45,7 @@ export default function IprGoal({ ipr }: IprGoalProps) {
   return (
     <Card className="[&>div]:flex gap-2 [&>div]:items-end [&>div]:flex-row">
       <div className="flex-1 flex flex-col">
-        <h2 className="text-lg font-semibold mb-4">Цель: </h2>
+        <h2 className="text-lg font-semibold mb-2 sm:mb-4">Цель: </h2>
         {isEdit ? (
           <div className="relative self-start">
             <input

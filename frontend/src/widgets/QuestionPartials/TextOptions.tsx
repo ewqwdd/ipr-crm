@@ -56,7 +56,7 @@ export default function TextOptions({
 
   return (
     <div className="flex flex-col gap-2 mt-4">
-      <div className="flex gap-4 items-center">
+      <div className="flex max-sm:flex-col max-sm:items-start gap-4 items-center">
         <Checkbox
           title="Ограничение длины"
           checked={maxLengthToggle}

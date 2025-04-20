@@ -106,7 +106,7 @@ export default memo(function Question({
         questions={questions}
         index={index}
       />
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-2 max-sm:flex-col sm:gap-4 sm:items-center">
         <RequiredCheckbox
           onChange={onChangeRequired}
           questions={questions}

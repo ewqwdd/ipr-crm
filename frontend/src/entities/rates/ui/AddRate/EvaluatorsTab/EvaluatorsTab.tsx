@@ -95,7 +95,7 @@ export default function EvaluatorsTab({
   return (
     <>
       <div
-        className={cva('flex gap-2', {
+        className={cva('flex gap-2 max-sm:flex-col max-sm:text-left', {
           'animate-pulse pointer-events-none': isFetching || isLoading,
         })}
       >

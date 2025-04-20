@@ -19,6 +19,10 @@ export default function AddUser() {
           text: 'Пригласить по почте',
           onClick: () => openModal('INVITE'),
         },
+        {
+          text: 'Импортировать из файла',
+          onClick: () => openModal('IMPORT_USERS'),
+        },
       ]}
       button={<PrimaryButton>Добавить пользователя</PrimaryButton>}
     />

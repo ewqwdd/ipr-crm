@@ -44,7 +44,7 @@ export default function TeamItem({ team, isAdmin }: TeamItemProps) {
     <div className="flex items-center">
       <Link
         to={`/teams/${team.id}`}
-        className="text-indigo-500 px-4 py-1 ml-2 hover:bg-indigo-100 rounded-lg transition-all"
+        className="text-indigo-500 px-4 py-1 ml-2 hover:bg-indigo-100 rounded-lg transition-all truncate"
       >
         {team.name}
       </Link>
@@ -60,7 +60,7 @@ export default function TeamItem({ team, isAdmin }: TeamItemProps) {
           >
             <TrashIcon className="h-5 w-5" />
           </PrimaryButton>
-          <SoftButton onClick={openEdit} className="p-1 rounded-full mr-4">
+          <SoftButton onClick={openEdit} className="p-1 rounded-full sm:mr-4">
             <PencilAltIcon className="h-5 w-5" />
           </SoftButton>
         </>

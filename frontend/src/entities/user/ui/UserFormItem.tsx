@@ -26,12 +26,12 @@ export default function UserFormItem({
           }
         }}
       />
-      <Avatar src={user?.avatar} className="size-8" />
-      <span>
+      <Avatar src={user?.avatar} className="sm:size-8 size-4" />
+      <span className="text-nowrap">
         {user?.firstName} {user?.lastName}
       </span>
       {user?.Spec && (
-        <Badge size="sm" color="blue">
+        <Badge size="sm" color="blue" className="truncate">
           {user.Spec.name}
         </Badge>
       )}

@@ -466,7 +466,7 @@ model UserTeam {
   userId Int
   teamId Int
 
-  user  User              @relation(fields: [userId], references: [id])
+  user  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   team  Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
   specs SpecsOnUserTeam[] @relation("UserTeamToSpecs")
 

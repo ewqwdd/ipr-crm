@@ -51,7 +51,7 @@ const Competency: FC = () => {
   // TODO: update active state
   return (
     <LoadingOverlay active={isFetching}>
-      <div className="flex justify-between gap-4">
+      <div className="flex justify-between gap-4 max-sm:flex-col max-sm:mt-6">
         <InputWithLabelLight
           placeholder="Поиск..."
           value={search}
@@ -59,11 +59,11 @@ const Competency: FC = () => {
         />
         <ArchiveButton />
       </div>
-      <div className="flex gap-4 my-4">
+      <div className="sm:flex gap-4 my-4 grid grid-cols-2">
         <SkillsSwitcher value={skillsFilter} setValue={setSkillsFilter} />
         <SoftButton
           size="xs"
-          className="gap-2"
+          className="gap-2 max-sm:col-span-2"
           onClick={() => {
             openModal('ADD_COMPETENCY_BLOCK', { skillType: skillsFilter });
           }}

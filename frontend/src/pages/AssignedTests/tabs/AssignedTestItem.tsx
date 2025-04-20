@@ -13,34 +13,46 @@ interface AssignedTestItemProps {
 export default function AssignedTestItem({ test }: AssignedTestItemProps) {
   const startText = (
     <>
-      Пройти тест <ArrowRightIcon className="ml-3 size-4" />
+      Пройти тест <ArrowRightIcon className="ml-3 size-4 max-sm:hidden" />
     </>
   );
   const continueText = (
     <>
-      Продолжить <ArrowRightIcon className="ml-3 size-4" />
+      Продолжить <ArrowRightIcon className="ml-3 size-4 max-sm:hidden" />
     </>
   );
   const isContinue = !!test.startDate;
 
   return (
-    <Card className="[&>div]:flex [&>div]:gap-4 [&>div]:p-3 [&>div]:px-6  [&>div]:items-center">
-      <h3 className="font-semibold text-gray-900">{test.test?.name}</h3>
-      {test.test.endDate && (
-        <span className="text-gray-500">
-          До: {formatDateTime(test.test.endDate)}
-        </span>
-      )}
-      {isContinue && (
-        <span className="text-gray-500 ml-auto text-sm">
-          Начато: {formatDateTime(test.startDate)}
-        </span>
-      )}
+    <Card className="[&>div]:flex [&>div]:gap-2 sm:[&>div]:gap-4 [&>div]:p-4 [&>div]:px-3 sm:[&>div]:p-3 sm:[&>div]:px-6  [&>div]:items-center">
+      <h3 className="font-semibold text-gray-900 max-sm:text-sm truncate">
+        {test.test?.name}
+      </h3>
+      <div className="flex gap-2 items-center max-sm:flex-col">
+        {isContinue && (
+          <p className="text-gray-500 ml-auto text-sm truncate max-w-32">
+            <span className="max-sm:hidden">Начато:</span>
+            <span className="sm:hidden">н:</span>{' '}
+            {formatDateTime(test.startDate)}
+          </p>
+        )}
+        {test.test.endDate && (
+          <p className="text-gray-500 truncate max-w-32">
+            До: {formatDateTime(test.test.endDate)}
+          </p>
+        )}
+      </div>
       <Link
         to={`/tests/${test.id}`}
-        className={cva({ 'ml-auto': !isContinue })}
+        className={cva(' max-sm:hidden', { 'ml-auto': !isContinue })}
       >
         <PrimaryButton>{!isContinue ? startText : continueText}</PrimaryButton>
+      </Link>
+      <Link
+        to={`/tests/${test.id}`}
+        className="sm:hidden text-sm text-violet-700 font-medium"
+      >
+        {!isContinue ? startText : continueText}
       </Link>
     </Card>
   );

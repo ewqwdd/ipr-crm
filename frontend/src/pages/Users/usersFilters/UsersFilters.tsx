@@ -57,7 +57,7 @@ const UsersFilters: FC<UsersFiltersProps> = ({
   ].filter(Boolean).length;
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 max-sm:mx-4">
       <div className="flex space-x-4">
         <SoftButton className="relative" onClick={() => setIsOpen((s) => !s)}>
           Фильтры

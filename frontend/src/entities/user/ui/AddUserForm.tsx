@@ -67,7 +67,7 @@ export default function AddUserForm({
       })}
     >
       <div className="flex flex-col gap-2 mt-4">
-        <h2>Без команды</h2>
+        <h2 className="text-left">Без команды</h2>
         {noTeamUsers?.map((user) => (
           <UserFormItem
             selected={selected}

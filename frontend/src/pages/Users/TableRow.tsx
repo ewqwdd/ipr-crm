@@ -1,5 +1,10 @@
 import { User } from '@/entities/user';
-import { Link } from 'react-router';
+import { usersApi } from '@/shared/api/usersApi';
+import { cva } from '@/shared/lib/cva';
+import { DotsDropdown } from '@/shared/ui/DotsDropdown';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router';
 
 interface TableRowProps {
   person: Partial<User>;
@@ -7,9 +12,28 @@ interface TableRowProps {
 }
 
 export default function TableRow({ person, edit = true }: TableRowProps) {
+  const navigate = useNavigate();
+  const [deleting, setDeleting] = useState<boolean>();
+  const [deleteUser, deleteState] = usersApi.useRemoveUserMutation();
+
+  useEffect(() => {
+    if (deleteState.isSuccess && deleting) {
+      toast.success('Пользователь успешно удален');
+      setDeleting(false);
+    }
+    if (deleteState.isError && deleting) {
+      toast.error('Ошибка при удалении пользователя');
+      setDeleting(false);
+    }
+  }, [deleteState.isSuccess, deleteState.isError, deleting]);
+
   return (
-    <tr>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
+    <tr
+      className={cva({
+        'animate-pulse pointer-events-none opacity-50': !!deleting,
+      })}
+    >
+      <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6'}>
         <div className="flex items-center">
           <Link to={`/users/${person?.id}`} className="h-10 w-10 flex-shrink-0">
             {person.avatar ? (
@@ -52,12 +76,23 @@ export default function TableRow({ person, edit = true }: TableRowProps) {
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         {edit && (
-          <Link
-            to={'/userEdit/' + person.id}
-            className="text-indigo-600 hover:text-indigo-900"
-          >
-            Edit<span className="sr-only">, {person.username}</span>
-          </Link>
+          <DotsDropdown
+            bodyClassName="z-50"
+            buttons={[
+              {
+                text: 'Редактировать',
+                onClick: () => navigate('/userEdit/' + person.id),
+              },
+              {
+                text: 'Удалить',
+                onClick: () => {
+                  if (!person.id) return;
+                  setDeleting(true);
+                  deleteUser(person.id);
+                },
+              },
+            ]}
+          />
         )}
       </td>
     </tr>

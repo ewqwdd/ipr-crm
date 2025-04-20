@@ -30,8 +30,8 @@ export default function Pagination({
 
   return (
     <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-      <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-        <div>
+      <div className=" sm:flex-1 flex sm:items-center sm:justify-between">
+        <div className="max-sm:hidden">
           <p className="text-sm text-gray-700">
             <span className="font-medium">{(page - 1) * limit + 1}</span> из
             <span className="font-medium">

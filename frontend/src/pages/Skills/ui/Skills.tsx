@@ -18,10 +18,10 @@ export default function Skills() {
 
   return (
     <>
-      <div className="px-8 py-10 flex flex-col h-full">
-        <div className="flex">
+      <div className="sm:px-8 sm:py-10 px-4 py-6 flex flex-col sm:h-full">
+        <div className="flex max-sm:flex-col-reverse max-sm:gap-2">
           <Heading title="Конструктор профилей" description={tab.name} />
-          <div className="space-x-2">
+          <div className="space-x-2 max-sm:pr-12">
             <Tabs
               tabs={tabs}
               currentTab={tab.key}

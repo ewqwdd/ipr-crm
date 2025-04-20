@@ -10,6 +10,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InviteUserDTO } from './dto/invite-user.dto';
 import { MailService } from 'src/utils/mailer/mailer';
 import { nanoid } from 'nanoid';
+import { Workbook } from 'exceljs';
+import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +26,11 @@ export class UsersService {
       where: { email },
       include: {
         role: true,
-        Spec: true,
+        Spec: {
+          where: {
+            archived: false,
+          },
+        },
         notifications: {
           where: {
             watched: false,
@@ -47,7 +53,11 @@ export class UsersService {
       where: { id },
       include: {
         role: true,
-        Spec: true,
+        Spec: {
+          where: {
+            archived: false,
+          },
+        },
         notifications: {
           where: {
             watched: false,
@@ -83,7 +93,11 @@ export class UsersService {
     const users = await this.prisma.user.findMany({
       include: {
         role: true,
-        Spec: true,
+        Spec: {
+          where: {
+            archived: false,
+          },
+        },
         teams: {
           select: { teamId: true, team: { select: { name: true } } },
         },
@@ -92,6 +106,7 @@ export class UsersService {
         },
       },
       omit: { authCode: true, passwordHash: true, roleId: true, specId: true },
+      orderBy: { createdAt: 'desc' },
       take: limit,
       skip: page ? (page - 1) * limit : undefined,
     });
@@ -219,5 +234,185 @@ export class UsersService {
     });
 
     return;
+  }
+
+  async importUsers(file: Express.Multer.File) {
+    const workbook = new Workbook();
+    await workbook.xlsx.load(file.buffer);
+
+    const specs = await this.prisma.spec.findMany({
+      where: { archived: false },
+    });
+    const teams = await this.prisma.team.findMany();
+
+    const worksheet = workbook.worksheets[0]; // Первый лист
+
+    const headers: string[] = [];
+    const rows: Record<string, any>[] = [];
+    const newTeams: string[] = [];
+    const newSpecs: string[] = [];
+
+    worksheet.eachRow((row, rowNumber) => {
+      const values = row.values as (string | null)[];
+
+      // Строка заголовков
+      if (rowNumber === 1) {
+        for (let i = 1; i < values.length; i++) {
+          headers.push((values[i] ?? '').toString().trim());
+        }
+      } else {
+        const rowObj: Record<string, any> = {};
+        for (let i = 1; i < values.length; i++) {
+          const key = headers[i - 1];
+          rowObj[key] = values[i];
+        }
+        rows.push(rowObj);
+        const spec = rowObj['Направление'].trim();
+        const team = rowObj['Департамент'].trim();
+        if (
+          spec &&
+          !newSpecs.includes(spec) &&
+          !specs.find((s) => s.name === spec)
+        ) {
+          newSpecs.push(spec);
+        }
+        if (
+          team &&
+          !newTeams.includes(team) &&
+          !teams.find((t) => t.name === team)
+        ) {
+          newTeams.push(team);
+        }
+      }
+    });
+
+    return { data: rows, specs: newSpecs, teams: newTeams };
+  }
+
+  async createMultipleUsers(dto: CreateMultipleUsersDto) {
+    return await this.prisma.$transaction(async (tx) => {
+      const users = dto.users.map((u) => ({
+        ...u,
+        email: u.email.toLowerCase(),
+        username: u.username.toLowerCase(),
+        team: u.team?.trim(),
+        spec: u.spec?.trim(),
+      }));
+
+      const emails = users.map((u) => u.email);
+      const usernames = users.map((u) => u.username);
+      const teams = [
+        ...new Set(users.map((u) => u.team).filter((v) => v && v !== '-')),
+      ];
+      const specs = [
+        ...new Set(users.map((u) => u.spec).filter((v) => v && v !== '-')),
+      ];
+
+      const [existingUsers, existingTeams, existingSpecs] = await Promise.all([
+        tx.user.findMany({
+          where: {
+            OR: [{ email: { in: emails } }, { username: { in: usernames } }],
+          },
+        }),
+        tx.team.findMany({ where: { name: { in: teams } } }),
+        tx.spec.findMany({ where: { name: { in: specs }, archived: false } }),
+      ]);
+
+      const existingEmails = new Set(existingUsers.map((u) => u.email));
+      const existingUsernames = new Set(existingUsers.map((u) => u.username));
+
+      const newUsers = users.filter(
+        (u) =>
+          !existingEmails.has(u.email) && !existingUsernames.has(u.username),
+      );
+
+      const existingTeamNames = new Set(existingTeams.map((t) => t.name));
+      const existingSpecNames = new Set(existingSpecs.map((s) => s.name));
+
+      const newTeamNames = [
+        ...new Set(
+          newUsers
+            .map((u) => u.team)
+            .filter((t) => t && !existingTeamNames.has(t)),
+        ),
+      ];
+      const newSpecNames = [
+        ...new Set(
+          newUsers
+            .map((u) => u.spec)
+            .filter((s) => s && !existingSpecNames.has(s)),
+        ),
+      ];
+
+      const [createdTeams, createdSpecs] = await Promise.all([
+        tx.team.createManyAndReturn({
+          data: newTeamNames.map((name) => ({ name })),
+          skipDuplicates: true,
+        }),
+        tx.spec.createManyAndReturn({
+          data: newSpecNames.map((name) => ({ name })),
+          skipDuplicates: true,
+        }),
+      ]);
+
+      const allTeams = [...existingTeams, ...createdTeams];
+      const allSpecs = [...existingSpecs, ...createdSpecs];
+
+      const createdUsers = await tx.user.createManyAndReturn({
+        data: newUsers.map((u) => {
+          const spec = allSpecs.find((s) => s.name === u.spec);
+          return {
+            email: u.email,
+            username: u.username,
+            roleId: 2,
+            specId: spec?.id ?? null,
+          };
+        }),
+        skipDuplicates: true,
+      });
+
+      const createdUserMap = new Map(
+        createdUsers.map((u) => [u.email.toLowerCase(), u.id]),
+      );
+
+      await tx.userTeam.createManyAndReturn({
+        data: newUsers
+          .filter((u) => u.team)
+          .map((u) => {
+            const team = allTeams.find((t) => t.name === u.team);
+            return {
+              userId: createdUserMap.get(u.email),
+              teamId: team.id,
+            };
+          }),
+        skipDuplicates: true,
+      });
+
+      await tx.specsOnUserTeam.createMany({
+        data: newUsers
+          .filter((u) => u.team && u.spec)
+          .map((u) => {
+            const team = allTeams.find((t) => t.name === u.team);
+            const spec = allSpecs.find((s) => s.name === u.spec);
+            return {
+              userId: createdUserMap.get(u.email),
+              teamId: team.id,
+              specId: spec.id,
+            };
+          }),
+        skipDuplicates: true,
+      });
+
+      return createdUsers;
+    });
+  }
+
+  async remove(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден.');
+    }
+    await this.prisma.user.delete({ where: { id } });
+    return user;
   }
 }

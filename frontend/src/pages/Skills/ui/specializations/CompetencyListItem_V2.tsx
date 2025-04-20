@@ -62,7 +62,9 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
         'animate-pulse': loading,
       })}
     >
-      <p className="text-black min-w-[400px]">{name}</p>
+      <p className="text-black sm:min-w-[400px] min-w-[120px] max-sm:text-sm">
+        {name}
+      </p>
       <div className="flex items-center space-x-2">
         {/* {listItemType === CompetencyType.COMPETENCY_BLOCK && (
           <SoftButton
@@ -110,7 +112,7 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
         )} */}
         {listItemType !== CompetencyType.COMPETENCY_BLOCK && materials && (
           <button
-            className="text-left text-sm text-gray-500 hover:text-gray-800 mr-2"
+            className="text-left text-xs text-nowrap sm:text-sm text-gray-500 hover:text-gray-800 sm:mr-2"
             onClick={(e) => {
               if (materials.length > 0) {
                 openModal('MATERIALS_LIST', {
@@ -132,7 +134,7 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
           >
             {materials.length > 0
               ? `${materials.length} Материалов`
-              : 'Без Метериалов'}
+              : '0 Метериалов'}
           </button>
         )}
         <SoftButton

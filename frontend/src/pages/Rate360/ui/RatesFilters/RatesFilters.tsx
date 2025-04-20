@@ -49,7 +49,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
   const { changedFiltersCount } = getChangedFilters(initialFilters, filters);
 
   return (
-    <div>
+    <div className="max-sm:px-4">
       <div className="flex gap-4 mb-4">
         <SoftButton className="relative" onClick={() => setIsOpen((s) => !s)}>
           Фильтры

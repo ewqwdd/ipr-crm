@@ -71,11 +71,11 @@ export default function TeamPage() {
   return (
     <LoadingOverlay active={isLoading}>
       <div
-        className={cva('px-8 py-10 flex flex-col', {
+        className={cva('px-4 py-6 sm:px-8 sm:py-10 flex flex-col', {
           'animate-pulse pointer-events-none': isFetching || mutateLoading,
         })}
       >
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center max-sm:pr-12">
           <Heading title={data?.name} description="Состав команды" />
           <Dropdown
             btnClassName="focus:ring-0"

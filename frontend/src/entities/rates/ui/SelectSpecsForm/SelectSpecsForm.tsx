@@ -57,17 +57,21 @@ export default function SelectSpecsForm({
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-4 my-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-4">
         {setSkillTypes && (
           <>
             <div className="flex gap-3 flex-col">
-              <h3 className="text-lg font-medium text-gray-600">Навыки</h3>
+              <h3 className="max-sm:text-left sm:text-lg font-medium text-gray-600">
+                Навыки
+              </h3>
               <div className="flex gap-2">
                 <SkillsFilter skills={skillTypes} setSkills={setSkillTypes} />
               </div>
             </div>
             <div className="flex gap-3 flex-col">
-              <h3 className="text-lg font-medium text-gray-600">Вид оценки</h3>
+              <h3 className="max-sm:text-left sm:text-lg font-medium text-gray-600">
+                Вид оценки
+              </h3>
               <div className="flex gap-2">
                 {rateType && setRateType && (
                   <RateTypeRadio
@@ -79,7 +83,7 @@ export default function SelectSpecsForm({
             </div>
             <div className="col-span-1 flex justify-end">
               <PrimaryButton
-                className="self-start"
+                className="sm:self-start max-sm:w-full"
                 disabled={selectedCount === 0 || !skillTypes.length}
                 onClick={onSubmit}
               >
@@ -109,10 +113,10 @@ export default function SelectSpecsForm({
         setTeams={setTeams}
       />
 
-      <div className="text-gray-500 text-sm">
+      <div className="text-gray-500 text-sm max-sm:text-left">
         Выбрано специализаций: {selectedCount}
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 max-sm:text-left">
         <TeamList
           onChangeSpecs={onChangeSpecs}
           selectedSpecs={selectedSpecs}

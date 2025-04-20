@@ -15,7 +15,7 @@ export default function UsersList({
 }: UsersListProps) {
   return (
     <div>
-      <h2 className="text-lg font-semibold text-violet-500">
+      <h2 className="text-lg font-semibold text-violet-500 max-sm:text-left max-sm: pl-6">
         <UsersIcon className="w-5 h-5 mr-2 inline" />
         {team.team?.name}
       </h2>

@@ -5,9 +5,9 @@ import { AddUser } from '@/widgets/AddUser';
 // Компонент "Пользователи"
 export default function Users() {
   return (
-    <div className="px-4 sm:px-6 lg:px-8 pt-10 flex-1">
+    <div className=" sm:px-6 lg:px-8 pt-10 flex-1">
       {/* Заголовок и кнопка добавления пользователя */}
-      <div className="sm:flex sm:items-center">
+      <div className="max-sm:px-4 sm:flex sm:items-center">
         <Heading
           title="Пользователи"
           description="Список всех пользователей в вашей учетной записи, включая имя, должность, email и роль."
@@ -19,12 +19,8 @@ export default function Users() {
 
       {/* Таблица или список пользователей */}
       <div className="mt-2 flex flex-col">
-        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            <WithAvatarsAndMultiLineContent />{' '}
-            {/* Контент с аватарками и многострочной информацией */}
-          </div>
-        </div>
+        <WithAvatarsAndMultiLineContent />{' '}
+        {/* Контент с аватарками и многострочной информацией */}
       </div>
     </div>
   );

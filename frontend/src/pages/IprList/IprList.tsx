@@ -10,8 +10,12 @@ export default function IprList() {
 
   return (
     <LoadingOverlay active={isLoading}>
-      <div className="px-8 py-10 flex flex-col">
-        <Heading title="Планы развития" description="Список планов развития" />
+      <div className="sm:px-8 py-6 sm:py-10 flex flex-col">
+        <Heading
+          title="Планы развития"
+          description="Список планов развития"
+          className="max-sm:px-4"
+        />
         {data && <IprTable ipr={data} isLoading={isLoading} />}
       </div>
     </LoadingOverlay>

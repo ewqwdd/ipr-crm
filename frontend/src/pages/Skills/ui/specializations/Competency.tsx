@@ -38,9 +38,12 @@ const CompetencyBlock: FC<ICompetencyProps> = ({ selectedSpec }) => {
 
   return (
     <div
-      className={cva('p-4', {
-        'animate-pulse': isFetching || specsFetching,
-      })}
+      className={cva(
+        'sm:p-4 max-sm:border border-gray-200 max-sm:border-b-0 p-2 max-sm:pt-4 max-sm:pb-10 max-sm:min-h-80',
+        {
+          'animate-pulse': isFetching || specsFetching,
+        },
+      )}
     >
       {selectedSpec === null ? (
         <ChooseSpecialization />

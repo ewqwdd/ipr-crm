@@ -44,7 +44,7 @@ export default function Structure() {
   return (
     <>
       <LoadingOverlay active={isFetching}>
-        <div className="px-8 py-10 flex flex-col">
+        <div className="px-4 py-6 sm:px-6 sm:py-10 flex flex-col">
           <div className="flex justify-between items-center">
             <Heading
               title="Орагнизационная структура"
@@ -54,7 +54,7 @@ export default function Structure() {
               Добавить
             </PrimaryButton>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 max-sm:flex-col-reverse">
             <div className="flex flex-1 flex-col max-w-lg mt-8">
               {!isFetching &&
                 data?.structure?.map((team) => (

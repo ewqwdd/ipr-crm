@@ -10,7 +10,7 @@ export default function SkillsHistory() {
 
   return (
     <LoadingOverlay active={isFetching}>
-      <div className={'px-8 py-10 flex flex-col'}>
+      <div className={'sm:px-8 sm:py-10 px-4 py-6 flex flex-col'}>
         <Heading
           title="Версии профилей"
           description="История версий профилей"

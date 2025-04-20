@@ -8,8 +8,7 @@ const SpecializationsWrapper: FC = () => {
   return (
     <>
       <ArchiveButton />
-
-      <div className="grid grid-cols-2 h-full border-t border-gray-400 mt-20">
+      <div className="sm:grid grid-cols-2 flex flex-col-reverse h-full sm:border-t border-gray-400 mt-20">
         <SpecializationsTableWrapper
           selectedSpec={selectedSpec}
           setSelectSpec={setSelectedSpec}

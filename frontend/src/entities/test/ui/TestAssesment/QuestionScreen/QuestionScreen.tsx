@@ -9,7 +9,6 @@ import {
   SingleQuestion,
   TextQuestion,
 } from '@/widgets/AssesmentQuestionPartials';
-import { surveyAssesmentActions } from '@/entities/survey/surveyAssesmentSlice';
 import { testAssesmentActions } from '@/entities/test/testAssesmentSlice';
 
 interface QuestionScreenProps {
@@ -82,7 +81,7 @@ export default function QuestionScreen({
       textAnswer: value,
     };
 
-    dispatch(surveyAssesmentActions.setAnswer({ index, value: answer }));
+    dispatch(testAssesmentActions.setAnswer({ index, value: answer }));
     answerQuestion(testId, question.id, answer);
   };
 

@@ -1,4 +1,5 @@
 import { User } from '@/entities/user';
+import type { ImportMultipleUser } from '@/entities/user';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 type Pagination = { limit?: number; page?: number };
@@ -47,6 +48,21 @@ const usersApi = createApi({
         body: formData,
       }),
       invalidatesTags: ['User'],
+    }),
+    addMultipleUsers: build.mutation<void, ImportMultipleUser[]>({
+      query: (users) => ({
+        url: '/users/multiple',
+        body: { users },
+        method: 'POST',
+      }),
+      invalidatesTags: ['User'],
+    }),
+    removeUser: build.mutation<void, number>({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_, __, id) => [{ type: 'User', id }, 'User'],
     }),
   }),
 });

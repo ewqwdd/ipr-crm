@@ -56,7 +56,7 @@ export default function TeamItem({ teamId }: TeamItemProps) {
       </span>
       <span className="text-gray-800 font-medium">{user?.username}</span>
 
-      <div className="bg-indigo-50 p-3 flex flex-col gap-4">
+      <div className="bg-indigo-50 p-1.5 sm:p-3 flex flex-col gap-4">
         <div className="flex gap-2">
           <span className="text-sm text-gray-500">Специализация:</span>
           <span className="text-sm text-gray-800">{spec?.name}</span>

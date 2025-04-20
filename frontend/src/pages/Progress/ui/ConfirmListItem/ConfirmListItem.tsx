@@ -38,12 +38,12 @@ export default function ConfirmListItem({
   }
 
   return (
-    <div className="flex items-center justify-between p-3  rounded-sm border-t border-gray-300 first:border-transparent">
+    <div className="flex items-center justify-between p-1.5 sm:p-3  rounded-sm border-t border-gray-300 first:border-transparent">
       <span className="text-base font-medium text-gray-800">{spec?.name}</span>
-      <span className="text-base text-gray-500">
+      <span className="sm:text-base text-sm text-gray-500">
         {rateTypeNames[rate.type]}
       </span>
-      <span className="text-base text-gray-500">
+      <span className="sm:text-base text-sm text-gray-500">
         {rate.startDate?.slice(0, 10)}
       </span>
       <SoftButton

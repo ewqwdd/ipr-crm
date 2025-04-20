@@ -46,9 +46,13 @@ export default memo(
 
     return (
       <div className="flex gap-4 flex-col">
-        <div className="flex gap-2 items-center text-sm text-gray-600 font-medium border-b-gray-400 border-b pb-2 justify-between">
+        <div className="flex gap-2 sm:items-center text-sm text-gray-600 font-medium border-b-gray-400 border-b pb-2 justify-between max-sm:flex-col-reverse max-sm:text-xs">
           {title}
-          <SoftButton size="xs" className="shadow-none py-0" onClick={onAdd}>
+          <SoftButton
+            size="xs"
+            className="shadow-none py-0 max-sm:px-0 max-sm:justify-start"
+            onClick={onAdd}
+          >
             Добавить
           </SoftButton>
         </div>

@@ -21,7 +21,9 @@ export default memo(function StructureItem({
 }: StructureItemProps) {
   const title = (
     <>
-      <span className="font-medium text-gray-900 text-lg">{team.name}</span>
+      <span className="font-medium text-gray-900 text-lg truncate">
+        {team.name}
+      </span>
       {openModal && (
         <button className="ml-6" onClick={(e) => openModal(e, team.id)}>
           <PlusCircleIcon className="size-5 text-gray-500" />
@@ -46,7 +48,7 @@ export default memo(function StructureItem({
     return (
       <div
         className={cva(
-          'flex p-2 items-center transition-all duration-200 bg-gray-100 hover:bg-gray-200 cursor-pointer pr-14',
+          'flex p-2 items-center transition-all duration-200 bg-gray-100 hover:bg-gray-200 cursor-pointer pr-4 sm:pr-14',
           {
             'bg-gray-200': current === team.id,
           },

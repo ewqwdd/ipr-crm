@@ -24,7 +24,7 @@ const TaskListNotAssignedHeader: FC<TaskListNotAssignedHeaderProps> = ({
   };
 
   return (
-    <div className="flex gap-4 items-center mb-3 mt-5">
+    <div className="flex max-sm:flex-col-reverse max-sm:gap-2 max-sm:items-start gap-4 items-center mb-3 mt-5">
       <h4 className="font-medium">
         {`Без привязки ${type === 'COMPETENCY' ? 'Компетенции' : 'Индикатору'}`}
       </h4>

@@ -39,13 +39,13 @@ const TaskFilter: FC<TaskFilterProps> = ({
   return (
     <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6 mb-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">{title}</h3>
-        <SoftButton onClick={createTask}>
-          <PlusCircleIcon className="w-5 h-5 mr-1" />
-          Добавить задачу
+        <h3 className="font-semibold ">{title}</h3>
+        <SoftButton onClick={createTask} className="max-sm:p-1">
+          <PlusCircleIcon className="w-5 h-5 max-sm:w-6 max-sm:h-6 sm:mr-1" />
+          <span className="max-sm:hidden">Добавить задачу</span>
         </SoftButton>
       </div>
-      <div className="flex gap-6 mb-4">
+      <div className="flex gap-3 sm:gap-6 mb-4 max-sm:flex-wrap">
         {filters.map(({ label, key }) => (
           <Radio
             key={key}

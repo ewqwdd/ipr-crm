@@ -8,7 +8,7 @@ interface IprDetailsProps {
 
 export default function IprDetails({ ipr }: IprDetailsProps) {
   return (
-    <div className="grid sm:grid-cols-3 gap-6 pt-4">
+    <div className="grid sm:grid-cols-3 gap-3 sm:gap-6 pt-4">
       <Stat title="Специализация" value={ipr?.rate360.spec.name} />
       <Stat
         title="Версия"

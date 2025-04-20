@@ -18,7 +18,7 @@ const SpecializationsTableWrapper: FC<ISpecializationsTableProps> = ({
     openModal('ADD_SPECIALIZATION');
   };
   return (
-    <div className="border-r border-gray-400 pt-4 ">
+    <div className="sm:border-r max-sm:border border-gray-200 sm:pt-4 max-sm:p-2 ">
       <h2 className="text-xl font-medium mb-2">Специализации</h2>
       <div className="flex items-center space-2">
         <SoftButton className="space-2" size="xs" onClick={onClick}>

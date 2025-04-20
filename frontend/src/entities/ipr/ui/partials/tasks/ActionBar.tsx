@@ -2,6 +2,7 @@ import { TaskType } from '@/entities/ipr/model/types';
 import { iprApi } from '@/shared/api/iprApi';
 import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
+import { TrashIcon, XIcon } from '@heroicons/react/outline';
 import { FC, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
@@ -96,6 +97,27 @@ const ActionBar: FC<ActionBarProps> = ({
     transferToObviousOptions.isLoading ||
     transferToOtherOptions.isLoading;
 
+  const onBoardText = (
+    <>
+      <span className="max-sm:hidden">Добавить на доску</span>
+      <span className="sm:hidden">На доску</span>
+    </>
+  );
+
+  const transferToOtherText = (
+    <>
+      <span className="max-sm:hidden">Переместить в прочие зоны роста</span>
+      <span className="sm:hidden">В прочие зоны</span>
+    </>
+  );
+
+  const transferToObviousText = (
+    <>
+      <span className="max-sm:hidden">Переместить в очевидные зоны роста</span>
+      <span className="sm:hidden">В очевидные зоны</span>
+    </>
+  );
+
   return (
     <div
       style={{
@@ -103,38 +125,45 @@ const ActionBar: FC<ActionBarProps> = ({
         width: `calc(100% - min(33.3%, 24rem))`,
       }}
       className={cva(
-        `fixed bottom-0 p-2 bg-white border-t-black/10 border-t shadow-2xl flex items-center ${selectedMatterialsLength > 0 ? 'visible' : 'invisible'}`,
+        `fixed bottom-0 p-2 bg-white border-t-black/10 border-t shadow-2xl flex items-center max-sm:!left-0 max-sm:!w-full ${selectedMatterialsLength > 0 ? 'visible' : 'invisible'}`,
         {
           'animate-pulse pointer-events-none': !!isLoading,
         },
       )}
     >
-      <span>Выбран {selectedMatterialsLength} материал</span>
-      <SoftButton className="ml-2" onClick={resetSelection}>
-        Снять выбор
+      <span className="max-sm:hidden">
+        Выбран {selectedMatterialsLength} материал
+      </span>
+      <span className="sm:hidden text-sm mr-2">{selectedMatterialsLength}</span>
+      <SoftButton className="ml-2 max-sm:p-2" onClick={resetSelection}>
+        <span className="max-sm:hidden">Снять выбор</span>
+        <XIcon className="size-5 sm:hidden" />
       </SoftButton>
       <div className="ml-auto flex gap-2">
         {type === 'GENERAL' && (
-          <SoftButton className="ml-2" onClick={addOnBoard}>
-            Добавить на доску
+          <SoftButton className="ml-2 max-sm:p-1" onClick={addOnBoard}>
+            {onBoardText}
           </SoftButton>
         )}
         {type === 'OTHER' && (
           <div className="flex gap-2">
-            <SoftButton className="ml-2" onClick={transferToObvious}>
-              Переместить в очевидные зоны роста
+            <SoftButton className="ml-2 max-sm:p-2" onClick={transferToObvious}>
+              {transferToObviousText}
             </SoftButton>
-            <SoftButton onClick={addOnBoard}>Добавить на доску</SoftButton>
+            <SoftButton className="max-sm:p-2" onClick={addOnBoard}>
+              {onBoardText}
+            </SoftButton>
           </div>
         )}
         {type === 'OBVIOUS' && (
-          <SoftButton className="ml-2" onClick={transferToOther}>
-            Переместить в прочие зоны роста
+          <SoftButton className="ml-2 max-sm:p-2" onClick={transferToOther}>
+            {transferToOtherText}
           </SoftButton>
         )}
       </div>
-      <SoftButton className="ml-2" onClick={removeTasks} danger>
-        Удалить
+      <SoftButton className="ml-2 max-sm:p-2" onClick={removeTasks} danger>
+        <span className="max-sm:hidden">Удалить</span>
+        <TrashIcon className="size-5 sm:hidden" />
       </SoftButton>
     </div>
   );

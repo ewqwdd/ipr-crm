@@ -64,7 +64,9 @@ export default function TestAssignedForm({
   return (
     <div className="flex flex-col gap-4 min-h-96">
       <div className="flex items-center gap-2 mt-6 mb-2">
-        <span className="text-sm text-gray-500">Дата начала:</span>
+        <span className="text-sm text-gray-500 max-sm:text-left text-nowrap">
+          Дата начала:
+        </span>
         <DatePickerLight value={date} onChange={onDateChange} />
       </div>
       {role === 'admin' && (

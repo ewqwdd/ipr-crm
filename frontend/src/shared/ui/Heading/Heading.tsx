@@ -1,13 +1,19 @@
+import { cva } from '@/shared/lib/cva';
 import { memo } from 'react';
 
 interface HeadingProps {
   title?: string;
   description?: string;
+  className?: string;
 }
 
-export default memo(function Heading({ title, description }: HeadingProps) {
+export default memo(function Heading({
+  title,
+  description,
+  className,
+}: HeadingProps) {
   return (
-    <div className="sm:flex-auto">
+    <div className={cva('sm:flex-auto', className)}>
       <h1 className="text-base sm:text-xl font-semibold text-gray-900">
         {title}
       </h1>

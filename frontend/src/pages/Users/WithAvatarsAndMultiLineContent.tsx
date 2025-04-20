@@ -11,7 +11,7 @@ const LIMIT = 10;
 
 export default function WithAvatarsAndMultiLineContent() {
   const [page, setPage] = useState<number>(1);
-  const { data, isLoading } = usersApi.useGetUsersQuery({});
+  const { data, isFetching, isLoading } = usersApi.useGetUsersQuery({});
   const [filteredData, setFilteredData] = useState<User[]>([]);
 
   const [filters, setFilters] = useState<Filters>(initialFilters);
@@ -41,6 +41,12 @@ export default function WithAvatarsAndMultiLineContent() {
 
   const paginateddata = filteredData.slice((page - 1) * LIMIT, page * LIMIT);
 
+  useEffect(() => {
+    if (paginateddata.length === 0 && page > 1) {
+      setPage((prevPage) => prevPage - 1);
+    }
+  }, [filteredData, page]);
+
   return (
     <>
       <UsersFilters
@@ -50,59 +56,63 @@ export default function WithAvatarsAndMultiLineContent() {
       />
       <div
         className={cva(
-          'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg',
+          'sm:overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg',
           {
-            'animate-pulse': isLoading,
+            'animate-pulse': isFetching || isLoading,
           },
         )}
       >
-        <table className="min-w-full divide-y divide-gray-300">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-              >
-                Имя
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Имя пользователя
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Подразделение
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Роль
-              </th>
-              <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                <span className="sr-only">Редактировать</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {!isLoading &&
-              data &&
-              paginateddata.map((person) => (
-                <TableRow key={person.id} person={person} />
-              ))}
-            {isLoading &&
-              !data &&
-              new Array(LIMIT)
-                .fill(0)
-                .map((_, index) => (
-                  <TableRow edit={false} key={index} person={{}} />
-                ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+            <table className="min-w-full divide-y divide-gray-300">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                  >
+                    Имя
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Имя пользователя
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Подразделение
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Роль
+                  </th>
+                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                    <span className="sr-only">Редактировать</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {!isLoading &&
+                  data &&
+                  paginateddata.map((person) => (
+                    <TableRow key={person.id} person={person} />
+                  ))}
+                {isLoading &&
+                  !data &&
+                  new Array(LIMIT)
+                    .fill(0)
+                    .map((_, index) => (
+                      <TableRow edit={false} key={index} person={{}} />
+                    ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
         <Pagination
           count={filteredData?.length}
           limit={LIMIT}

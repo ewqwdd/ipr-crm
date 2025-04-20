@@ -33,7 +33,12 @@ export default memo(function Tabs({
           name="tabs"
           className="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
           defaultValue={tabs.find((tab) => tab.key === currentTab)?.name}
-          onChange={(e) => setCurrentTab(e.target.value)}
+          onChange={(e) => {
+            const key = tabs.find((tab) => tab.name === e.target.value)?.key;
+            if (key) {
+              setCurrentTab(key);
+            }
+          }}
         >
           {tabs.map((tab) => (
             <option key={tab.key}>{tab.name}</option>

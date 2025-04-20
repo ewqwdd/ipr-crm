@@ -59,11 +59,13 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
         'animate-pulse': loading,
       })}
     >
-      <p className="text-black min-w-[400px]">{name}</p>
+      <p className="text-black sm:min-w-[400px] min-w-[120px] max-sm:mr-2 text-nowrap max-sm:text-sm">
+        {name}
+      </p>
       <div className="flex items-center space-x-2">
         {materials && materials.length > 0 && (
           <button
-            className="text-left text-sm text-gray-500 hover:text-gray-800 mr-2"
+            className="text-left text-xs sm:text-sm text-gray-500 hover:text-gray-800 mr-2 text-nowrap"
             onClick={(e) => {
               e.stopPropagation();
               openModal('MATERIALS_LIST', {

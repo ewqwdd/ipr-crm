@@ -61,7 +61,7 @@ export default function Login() {
       .post('/auth/sign-in', { email, password })
       .then((res) => {
         dispatch(userActions.setUser(res.data));
-        toast.success('Logged in successfully');
+        toast.success('Вы вошли в аккаунт');
       })
       .catch((err) => {
         console.log(err);
@@ -69,7 +69,7 @@ export default function Login() {
           toast.error(err.response?.data.message);
           return;
         }
-        toast.error('Something went wrong');
+        toast.error('Ошибка при входе в аккаунт');
       })
       .finally(() => {
         setLoading(false);
@@ -80,7 +80,7 @@ export default function Login() {
     openModal('PASSWORD_RESET', { email: emailRef.current?.value });
 
   return (
-    <div className="min-h-full flex flex-col w-full items-center justify-center bg-gray-900">
+    <div className="min-h-full flex flex-col w-full items-center justify-center bg-gray-900 px-6">
       <form
         className={cva('flex flex-col max-w-96 w-full gap-7', {
           'animate-pulse': loading,
@@ -117,7 +117,7 @@ export default function Login() {
             </button>
           }
         />
-        <PrimaryButton type="submit">Login</PrimaryButton>
+        <PrimaryButton type="submit">Войти</PrimaryButton>
       </form>
     </div>
   );

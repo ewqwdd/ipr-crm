@@ -65,9 +65,12 @@ export default function TestAssesment() {
   return (
     <LoadingOverlay active={isLoading}>
       <div
-        className={cva('px-8 py-10 flex flex-col h-full relative', {
-          'animate-pulse pointer-events-none': finishState.isLoading,
-        })}
+        className={cva(
+          'sm:px-8 sm:py-10 px-4 py-6 flex flex-col h-full relative',
+          {
+            'animate-pulse pointer-events-none': finishState.isLoading,
+          },
+        )}
       >
         <div className="flex justify-between items-center">
           <Heading title="Прохождение теста" />

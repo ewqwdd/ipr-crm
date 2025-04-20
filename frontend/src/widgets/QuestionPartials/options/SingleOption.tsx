@@ -58,7 +58,7 @@ export default function SingleOption({
             <input
               value={(option as TestOption).score}
               onChange={handleScoreChange}
-              className="bg-white pl-1 pr-0 py-0.5 w-11"
+              className="bg-white pl-1 pr-0 py-0.5 sm:w-11 max-sm:text-sm w-9"
               type="number"
             />
           )}
@@ -67,7 +67,9 @@ export default function SingleOption({
               checked={(option as TestOption).isCorrect}
               onChange={() => onCorrectChange(questionIndex, index, true)}
             >
-              Правильный ответ
+              <p className="max-sm:-ml-2 max-sm:text-xs">
+                Правильный <span className="max-sm:hidden">ответ</span>
+              </p>
             </Radio>
           )}
         </>

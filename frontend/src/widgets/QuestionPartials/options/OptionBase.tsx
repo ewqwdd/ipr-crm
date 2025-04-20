@@ -21,7 +21,7 @@ export default function OptionBase({
   onNameChange,
 }: SingleOptionProps) {
   return (
-    <Card className="[&>div]:flex [&>div]:p-0 [&>div]:pt-0 [&>div]:items-center [&>div]:gap-4 bg-gray-100 border border-black/5 pr-2">
+    <Card className="[&>div]:flex [&>div]:p-0 [&>div]:pt-0 [&>div]:items-center sm:[&>div]:gap-4 [&>div]:gap-2 bg-gray-100 border border-black/5 pr-2">
       <div className="flex-1 relative after:content-['.'] after:absolute after:w-[calc(100%-10px)] after:h-0.5 after:bottom-1.5 after:left-2.5 after:bg-gray-300 after:z-10">
         <InputWithLabelLight
           placeholder="Ответ"

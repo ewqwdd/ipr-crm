@@ -25,8 +25,8 @@ export default function Teams() {
 
   return (
     <LoadingOverlay active={isFetching}>
-      <div className="px-8 py-10 flex flex-col">
-        <div className="flex justify-between items-center">
+      <div className="px-4 py-6 sm:px-8 sm:py-10 flex flex-col">
+        <div className="flex justify-between items-center max-sm:flex-col gap-2 max-sm:items-start">
           <Heading
             title="Подразделения"
             description="Подразделения и пользователи"

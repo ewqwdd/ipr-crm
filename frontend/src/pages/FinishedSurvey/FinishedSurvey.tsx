@@ -12,7 +12,9 @@ export default function FinishedTest() {
 
   return (
     <LoadingOverlay active={isLoading}>
-      <div className={'px-8 py-10 flex flex-col h-full relative'}>
+      <div
+        className={'px-4 py-6 sm:px-8 sm:py-10 flex flex-col h-full relative'}
+      >
         <div className="flex justify-between items-center">
           <Heading title="Прохождение теста" />
         </div>

@@ -45,9 +45,12 @@ export default function TestEdit() {
     <LoadingOverlay active={isLoading || state.isLoading}>
       {isMounted && (
         <div
-          className={cva('px-8 py-10 flex flex-col h-full relative', {
-            'animate-pulse pointer-events-none': state.isLoading,
-          })}
+          className={cva(
+            'px-4 py-6 sm:px-8 sm:py-10 flex flex-col h-full relative',
+            {
+              'animate-pulse pointer-events-none': state.isLoading,
+            },
+          )}
         >
           <div className="flex justify-between items-center">
             <Heading title="Редактирование теста" />

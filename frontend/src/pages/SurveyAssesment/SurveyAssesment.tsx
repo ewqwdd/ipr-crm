@@ -64,9 +64,12 @@ export default function SurveyAssesment() {
   return (
     <LoadingOverlay active={isLoading || finishState.isLoading}>
       <div
-        className={cva('px-8 py-10 flex flex-col h-full relative', {
-          'animate-pulse pointer-events-none': false,
-        })}
+        className={cva(
+          'sm:px-8 sm:py-10 px-4 py-6 flex flex-col h-full relative',
+          {
+            'animate-pulse pointer-events-none': false,
+          },
+        )}
       >
         <div className="flex justify-between items-center">
           <Heading title="Прохождение опроса" />

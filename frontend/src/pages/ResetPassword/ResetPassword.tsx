@@ -63,7 +63,7 @@ export default function ResetPassword() {
   const onChange = () => setError('');
 
   return (
-    <div className="min-h-full flex flex-col w-full items-center justify-center bg-gray-900">
+    <div className="min-h-full flex flex-col w-full items-center justify-center bg-gray-900 px-6">
       <form
         onSubmit={onSubmit}
         className={cva('flex flex-col max-w-96 w-full gap-7', {
