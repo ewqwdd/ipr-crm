@@ -1,5 +1,6 @@
 import { formatDate } from '@/entities/ipr/ui/partials/tasks/helpers';
 import { iprApi } from '@/shared/api/iprApi';
+import { EmptyState } from '@/shared/ui/EmptyState';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Progress } from '@/shared/ui/Progress';
@@ -13,17 +14,19 @@ export default function IprUserList() {
 
   return (
     <LoadingOverlay active={isLoading}>
-      <div className="sm:px-8 px-4 py-6 sm:py-10 flex flex-col">
+      <div className="min-[1440px]:px-8 py-6 sm:py-10 flex flex-col">
         <Heading
           title="Планы развития"
           description="Список планов развития"
-          className="max-sm:px-4"
+          className="max-[1440px]:px-8 max-sm:px-4"
         />
-        <div className="max-sm:max-w-full max-sm:overflow-x-auto">
+        <div className="max-sm:max-w-full overflow-x-auto">
           <table className="sm:min-w-full divide-y divide-gray-300 mt-10">
             <TableHeading
               headings={[
                 '',
+                'Специализация',
+                'Навык',
                 'Дата',
                 'Новая',
                 'В работе',
@@ -34,13 +37,25 @@ export default function IprUserList() {
                 '',
               ]}
             />
-            {data && (
+            {data ? (
               <TableBody
                 data={data}
                 columnRender={[
                   {
                     render: (item) => (
                       <span className="text-gray-900">{item.id}</span>
+                    ),
+                  },
+                  {
+                    render: (item) => (
+                      <span className="text-violet-500 font-medium">
+                        {item.rate360.spec.name}
+                      </span>
+                    ),
+                  },
+                  {
+                    render: (item) => (
+                      <span className="text-gray-900">{item.rate360.type}</span>
                     ),
                   },
                   {
@@ -89,7 +104,7 @@ export default function IprUserList() {
                   },
                   {
                     render: (item) => (
-                      <span>
+                      <span className="text-red-500">
                         {
                           item.tasks.filter(
                             (t) =>
@@ -126,6 +141,8 @@ export default function IprUserList() {
                   },
                 ]}
               />
+            ) : (
+              <EmptyState />
             )}
           </table>
         </div>

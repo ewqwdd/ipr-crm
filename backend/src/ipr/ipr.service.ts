@@ -659,7 +659,11 @@ export class IprService {
       },
       include: {
         tasks: true,
-        rate360: true,
+        rate360: {
+          include: {
+            spec: true,
+          },
+        },
       },
       orderBy: {
         startDate: 'desc',
