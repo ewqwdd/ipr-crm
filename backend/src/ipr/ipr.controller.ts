@@ -168,4 +168,19 @@ export class IprController {
   async findAll(@SessionInfo() sessionInfo: GetSessionInfoDto) {
     return this.iprService.findAll(sessionInfo);
   }
+
+  @Get('/user/:id')
+  @UseGuards(AuthGuard)
+  async findIprById(
+    @Param('id') id: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.findUserIprById(id, sessionInfo);
+  }
+
+  @Get('/user')
+  @UseGuards(AuthGuard)
+  async finduserIprMany(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return this.iprService.finduserIprMany(sessionInfo);
+  }
 }

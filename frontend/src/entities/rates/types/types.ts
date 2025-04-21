@@ -23,7 +23,11 @@ export interface Rate {
   evaluators: RateEveloper[];
   user: { id: number; username: string };
   spec: { id: number; name: string };
-  team?: { id: number; name: string };
+  team?: {
+    id: number;
+    name: string;
+    curator: { id: number; username: string; avatar?: string };
+  };
   userComment?: string;
   curatorComment?: string;
   userRates: {

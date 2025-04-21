@@ -20,14 +20,14 @@ const iprApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['ipr', 'board'],
+  tagTypes: ['ipr', 'board', 'user-ipr'],
   endpoints: (build) => ({
     createIpr: build.mutation<void, number>({
       query: (id) => ({
         url: '/ipr/360/' + id,
         method: 'POST',
       }),
-      invalidatesTags: ['ipr'],
+      invalidatesTags: ['ipr', 'user-ipr'],
     }),
     findRate: build.query<Ipr, number>({
       query: (id) => ({
@@ -59,6 +59,7 @@ const iprApi = createApi({
       invalidatesTags: (_, __, { planId, userId }) => [
         { type: 'ipr', id: planId },
         { type: 'board', id: userId },
+        { type: 'user-ipr', id: userId },
       ],
     }),
     deleteTasks: build.mutation<
@@ -73,6 +74,7 @@ const iprApi = createApi({
       invalidatesTags: (_, __, { userId, planId }) => [
         { type: 'ipr', id: planId },
         { type: 'board', id: userId },
+        { type: 'user-ipr', id: userId },
       ],
     }),
     addToBoard: build.mutation<
@@ -87,6 +89,8 @@ const iprApi = createApi({
       invalidatesTags: (_, __, { userId, planId }) => [
         { type: 'ipr', id: planId },
         { type: 'board', id: userId },
+
+        { type: 'user-ipr', id: userId },
       ],
     }),
     transferToObvious: build.mutation<
@@ -101,6 +105,7 @@ const iprApi = createApi({
       invalidatesTags: (_, __, { userId, planId }) => [
         { type: 'ipr', id: planId },
         { type: 'board', id: userId },
+        { type: 'user-ipr', id: userId },
       ],
     }),
     transferToOther: build.mutation<
@@ -115,6 +120,7 @@ const iprApi = createApi({
       invalidatesTags: (_, __, { userId, planId }) => [
         { type: 'ipr', id: planId },
         { type: 'board', id: userId },
+        { type: 'user-ipr', id: userId },
       ],
     }),
     findAllIpr: build.query<Ipr[], void>({
@@ -123,6 +129,20 @@ const iprApi = createApi({
         method: 'GET',
       }),
       providesTags: ['ipr'],
+    }),
+    findUserIprById: build.query<Ipr, number>({
+      query: (id) => ({
+        url: '/ipr/user/' + id,
+        method: 'GET',
+      }),
+      providesTags: (_, __, id) => [{ type: 'user-ipr', id }],
+    }),
+    findUserIprs: build.query<Ipr[], void>({
+      query: () => ({
+        url: '/ipr/user',
+        method: 'GET',
+      }),
+      providesTags: ['user-ipr'],
     }),
   }),
 });

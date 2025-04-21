@@ -925,4 +925,38 @@ export class Rate360Service {
       }
     }
   }
+
+  async findMyRates(userId: number) {
+    const rates = await this.prismaService.rate360.findMany({
+      where: {
+        userId,
+        archived: false,
+      },
+      include: {
+        spec: true,
+        userRates: {
+          select: {
+            user: {
+              select: {
+                username: true,
+                id: true,
+              },
+            },
+          },
+        },
+        team: true,
+        competencyBlocks: {
+          include: {
+            competencies: {
+              include: {
+                indicators: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return rates;
+  }
 }

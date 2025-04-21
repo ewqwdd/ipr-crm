@@ -54,6 +54,13 @@ export const userNavigation: (user: User | null) => NavType[] = (
       (n) => typesTasks.includes(n.type) && !n.watched,
     ).length,
   },
+  {
+    name: 'Мои планы развития',
+    icon: ChartBarIcon,
+    current: false,
+    href: '/ipr/me',
+  },
+
   ...((user?.teamCurator?.length ?? 0) > 0
     ? [
         { name: 'Команды', icon: UsersIcon, href: '/teams' },

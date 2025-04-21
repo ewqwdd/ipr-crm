@@ -47,7 +47,9 @@ const RateCell = ({
         ? 'text-black'
         : 'text-red-500';
   return (
-    <td className={`whitespace-nowrap px-3 py-4 text-sm ${color}`}>{rate}</td>
+    <td className={`whitespace-nowrap px-3 py-4 text-sm ${color}`}>
+      {rate.toFixed(2)}
+    </td>
   );
 };
 

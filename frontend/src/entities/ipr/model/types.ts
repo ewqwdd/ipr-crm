@@ -5,9 +5,18 @@ import { User } from '@/entities/user';
 import { Badge } from '@/shared/ui/Badge';
 import { Card } from '@caldwell619/react-kanban';
 
-export type TaskStatus = 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED' | 'IN_REVIEW';
-export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
-export type TaskType = 'GENERAL' | 'OBVIOUS' | 'OTHER';
+export const taskStatuses = [
+  'TO_DO',
+  'IN_PROGRESS',
+  'COMPLETED',
+  'IN_REVIEW',
+] as const;
+
+export const taskTypes = ['GENERAL', 'OBVIOUS', 'OTHER'] as const;
+
+export type TaskStatus = (typeof taskStatuses)[number];
+export type TaskType = (typeof taskTypes)[number];
+export type TaskPriority = 'HIGH' | 'MEDIUM' | 'LOW';
 
 export interface Task {
   id: number;

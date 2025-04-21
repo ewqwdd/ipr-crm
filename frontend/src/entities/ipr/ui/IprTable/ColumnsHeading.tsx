@@ -30,6 +30,12 @@ export default function ColumnsHeading() {
           scope="col"
           className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-center"
         >
+          На проверке
+        </th>
+        <th
+          scope="col"
+          className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-center"
+        >
           Готово
         </th>
         <th

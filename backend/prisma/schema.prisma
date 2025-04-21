@@ -64,6 +64,7 @@ model Rate360 {
   curatorComment   String?
   finished         Boolean     @default(false)
   rateType         Rate360Type @default(Rate360)
+  showReportToUser Boolean     @default(false)
 
   competencyBlocks CompetencyBlock[]
   userRates        UserRates[]

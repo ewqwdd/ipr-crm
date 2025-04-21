@@ -134,7 +134,7 @@ export default function Board({ data, userId }: BoardProps) {
   const cols = controlledBoard?.columns;
 
   const percent = cols
-    ? (cols[2].cards.length + cols[3].cards.length) /
+    ? cols[3].cards.length /
       cols.reduce((acc, cur) => cur.cards.length + acc, 0)
     : 0;
 
@@ -159,6 +159,7 @@ export default function Board({ data, userId }: BoardProps) {
               className="min-w-52 [&_figure]:bg-indigo-500"
               percent={percent}
             />
+            {Math.round(percent * 100)}%
           </Card>
         )}
         {controlledBoard && (

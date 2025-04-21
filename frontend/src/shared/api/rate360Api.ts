@@ -16,7 +16,14 @@ const rate360Api = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Rate360', 'Assigned', 'Self', 'ConfirmCurator', 'ConfirmUser'],
+  tagTypes: [
+    'Rate360',
+    'Assigned',
+    'Self',
+    'ConfirmCurator',
+    'ConfirmUser',
+    'UserRates',
+  ],
   endpoints: (build) => ({
     getRates: build.query<Rate[], void>({
       query: () => '/rate360',
@@ -37,14 +44,14 @@ const rate360Api = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Rate360'],
+      invalidatesTags: ['Rate360', 'UserRates'],
     }),
     deleteRate: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
         url: `/rate360/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Rate360'],
+      invalidatesTags: ['Rate360', 'UserRates'],
     }),
     assignedRates: build.query<Rate[], void>({
       query: () => '/rate360/assigned-rates',
@@ -72,21 +79,21 @@ const rate360Api = createApi({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Rate360', 'Assigned', 'Self'],
+      invalidatesTags: ['Rate360', 'Assigned', 'Self', 'UserRates'],
     }),
     approveSelf: build.mutation<void, { rateId: number }>({
       query: ({ rateId }) => ({
         url: `/rate360/assesment/approve-self/${rateId}`,
         method: 'POST',
       }),
-      invalidatesTags: ['Rate360', 'Assigned', 'Self'],
+      invalidatesTags: ['Rate360', 'Assigned', 'Self', 'UserRates'],
     }),
     approveAssigned: build.mutation<void, { rateId: number }>({
       query: ({ rateId }) => ({
         url: `/rate360/assesment/approve-assigned/${rateId}`,
         method: 'POST',
       }),
-      invalidatesTags: ['Rate360', 'Assigned', 'Self'],
+      invalidatesTags: ['Rate360', 'Assigned', 'Self', 'UserRates'],
     }),
     confirmByCurator: build.query<Rate[], void>({
       query: () => '/rate360/confirm-by-curator',
@@ -102,7 +109,7 @@ const rate360Api = createApi({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Rate360', 'ConfirmCurator', 'Assigned'],
+      invalidatesTags: ['Rate360', 'ConfirmCurator', 'Assigned', 'UserRates'],
     }),
     confirmRateByUser: build.mutation<void, ConfirmDto>({
       query: (data) => ({
@@ -110,7 +117,7 @@ const rate360Api = createApi({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Rate360', 'ConfirmUser', 'Self'],
+      invalidatesTags: ['Rate360', 'ConfirmUser', 'Self', 'UserRates'],
     }),
     deleteRates: build.mutation<void, { ids: number[] }>({
       query: ({ ids }) => ({
@@ -125,6 +132,10 @@ const rate360Api = createApi({
         'ConfirmCurator',
         'ConfirmUser',
       ],
+    }),
+    findMyRates: build.query<Rate[], void>({
+      query: () => '/rate360/me',
+      providesTags: ['UserRates'],
     }),
   }),
 });

@@ -15,14 +15,19 @@ export default function RateRow({ index, task }: RateRowProps) {
     (task) => task.status === 'IN_PROGRESS',
   );
 
-  const requiredTasks = task.tasks.filter(
-    (task) => ['OBVIOUS', 'GENERAL'].includes(task.type) && task.onBoard,
-  );
-  const obviousTasksCompleted = requiredTasks.filter((task) =>
-    ['COMPLETED', 'IN_REVIEW'].includes(task.status),
-  ).length;
+  // const requiredTasks = task.tasks.filter(
+  //   (task) => ['OBVIOUS', 'GENERAL'].includes(task.type) && task.onBoard,
+  // );
+  // const obviousTasksCompleted = requiredTasks.filter((task) =>
+  //   ['COMPLETED', 'IN_REVIEW'].includes(task.status),
+  // ).length;
 
-  const percent = obviousTasksCompleted / requiredTasks.length || 0;
+  const inReviewTasks = task.tasks.filter(
+    (task) => task.status === 'IN_REVIEW',
+  );
+  const tasksCompleted = task.tasks.filter((t) => t.status === 'COMPLETED');
+
+  const percent = tasksCompleted.length / task.tasks.length || 0;
 
   return (
     <tr
@@ -33,7 +38,7 @@ export default function RateRow({ index, task }: RateRowProps) {
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
         <Link
           className="font-medium text-gray-900  hover:text-violet-900 transition-all"
-          to={'/users/' + task?.id}
+          to={'/users/' + task?.userId}
         >
           {task?.user?.firstName} {task?.user?.lastName}
         </Link>
@@ -56,7 +61,11 @@ export default function RateRow({ index, task }: RateRowProps) {
       </td>
 
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
-        {task.tasks.filter((task) => task.status === 'COMPLETED').length}
+        {inReviewTasks.length}
+      </td>
+
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
+        {tasksCompleted.length}
       </td>
 
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">

@@ -9,9 +9,10 @@ import toast from 'react-hot-toast';
 
 interface IprGoalProps {
   ipr?: Ipr;
+  edittable?: boolean;
 }
 
-export default function IprGoal({ ipr }: IprGoalProps) {
+export default function IprGoal({ ipr, edittable }: IprGoalProps) {
   const [isEdit, setIsEdit] = useState(false);
   const [focused, setFocused] = useState(false);
   const initial = useRef(ipr?.goal);
@@ -69,20 +70,22 @@ export default function IprGoal({ ipr }: IprGoalProps) {
           <p>{value}</p>
         )}
       </div>
-      <div className="flex gap-2">
-        {isEdit && (
-          <PrimaryButton danger className="p-1" onClick={onCancel}>
-            <XIcon className="size-5" />
-          </PrimaryButton>
-        )}
-        <PrimaryButton className="p-1" onClick={isEdit ? onSave : onEdit}>
-          {!isEdit ? (
-            <PencilIcon className="size-5" />
-          ) : (
-            <SaveIcon className="size-5" />
+      {edittable && (
+        <div className="flex gap-2">
+          {isEdit && (
+            <PrimaryButton danger className="p-1" onClick={onCancel}>
+              <XIcon className="size-5" />
+            </PrimaryButton>
           )}
-        </PrimaryButton>
-      </div>
+          <PrimaryButton className="p-1" onClick={isEdit ? onSave : onEdit}>
+            {!isEdit ? (
+              <PencilIcon className="size-5" />
+            ) : (
+              <SaveIcon className="size-5" />
+            )}
+          </PrimaryButton>
+        </div>
+      )}
     </Card>
   );
 }

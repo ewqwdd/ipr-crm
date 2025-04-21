@@ -6,8 +6,6 @@ import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 export default function IprList() {
   const { data, isLoading } = iprApi.useFindAllIprQuery();
 
-  // TODO: replace loading
-
   return (
     <LoadingOverlay active={isLoading}>
       <div className="sm:px-8 py-6 sm:py-10 flex flex-col">

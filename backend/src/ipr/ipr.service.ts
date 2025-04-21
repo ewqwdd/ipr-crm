@@ -92,6 +92,17 @@ export class IprService {
         userRates: true,
         plan: true,
         evaluators: true,
+        team: {
+          include: {
+            curator: {
+              select: {
+                username: true,
+                id: true,
+                avatar: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         startDate: 'desc',
@@ -159,6 +170,7 @@ export class IprService {
         startDate: new Date(),
         status: 'ACTIVE',
         userId: rate360.userId,
+        mentorId: rate360.team.curator.id,
         tasks: {
           create: [...competencyTasks, ...indicatorTasks],
         },
@@ -583,5 +595,75 @@ export class IprService {
           }
         : {}),
     };
+  }
+
+  async findUserIprById(id: number, sessionInfo: GetSessionInfoDto) {
+    const ipr = await this.prismaService.individualGrowthPlan.findFirst({
+      where: {
+        id: id,
+        userId: sessionInfo.id,
+      },
+      include: {
+        tasks: {
+          include: {
+            material: true,
+            indicator: true,
+            competency: true,
+          },
+        },
+        rate360: {
+          include: {
+            spec: {
+              select: {
+                name: true,
+              },
+            },
+            team: {
+              select: {
+                name: true,
+                id: true,
+                curator: {
+                  select: {
+                    username: true,
+                    id: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        mentor: {
+          select: {
+            username: true,
+            id: true,
+            avatar: true,
+          },
+        },
+        user: {
+          select: {
+            username: true,
+            id: true,
+          },
+        },
+      },
+    });
+    if (!ipr) throw new NotFoundException('Ipr not found');
+    return ipr;
+  }
+
+  async finduserIprMany(sessionInfo: GetSessionInfoDto) {
+    return this.prismaService.individualGrowthPlan.findMany({
+      where: {
+        userId: sessionInfo.id,
+      },
+      include: {
+        tasks: true,
+        rate360: true,
+      },
+      orderBy: {
+        startDate: 'desc',
+      },
+    });
   }
 }

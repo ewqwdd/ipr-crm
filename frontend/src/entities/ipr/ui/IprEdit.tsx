@@ -26,7 +26,7 @@ export default function IprEdit({ ipr }: IprEditProps) {
     <div className="px-4 py-6 sm:px-8 sm:py-10 flex flex-col gap-4">
       <IprHeading ipr={ipr} />
       <IprDetails ipr={ipr} />
-      <IprGoal ipr={ipr} />
+      <IprGoal ipr={ipr} edittable />
       <TasksSection
         tasks={ipr?.tasks}
         userId={ipr?.userId}

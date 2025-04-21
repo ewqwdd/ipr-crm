@@ -161,4 +161,10 @@ export class Rate360Controller {
   async deleteRates(@Body() data: DeleteRatesDto) {
     return await this.rate360Service.deleteRates(data.ids);
   }
+
+  @Get('/me')
+  @UseGuards(AuthGuard)
+  async findMyRates(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return await this.rate360Service.findMyRates(sessionInfo.id);
+  }
 }
