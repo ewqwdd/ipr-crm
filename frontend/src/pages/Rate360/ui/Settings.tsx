@@ -24,7 +24,6 @@ export default memo(function Settings({
   setSelected,
   data,
 }: SettingsProps) {
-
   const { openModal } = useModal();
   const [removeRates, removeRatesProps] = rate360Api.useDeleteRatesMutation();
   const [toggleReportVisibility, toggleReportVisibilityState] =
@@ -68,7 +67,7 @@ export default memo(function Settings({
         return await $api.post('/rate360/notify', { ids: selected });
       },
     });
-  }
+  };
 
   return (
     <div

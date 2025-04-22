@@ -141,10 +141,9 @@ export default function IprUserList() {
                   },
                 ]}
               />
-            ) : (
-              <EmptyState />
-            )}
+            ) : null}
           </table>
+          {data?.length === 0 && <EmptyState />}
         </div>
       </div>
     </LoadingOverlay>

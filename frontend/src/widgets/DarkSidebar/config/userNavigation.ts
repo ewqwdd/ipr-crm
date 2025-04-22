@@ -67,9 +67,9 @@ export const userNavigation: (user: User | null) => NavType[] = (
 
   ...((user?.teamCurator?.length ?? 0) > 0
     ? [
-      {
-        name: 'Администрирование',
-      },
+        {
+          name: 'Администрирование',
+        },
         { name: 'Команды', icon: UsersIcon, href: '/teams' },
         {
           name: 'Планы развития',

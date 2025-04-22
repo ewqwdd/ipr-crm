@@ -114,10 +114,9 @@ export default function Rate360MeList() {
                   },
                 ]}
               />
-            ) : (
-              <EmptyState />
-            )}
+            ) : null}
           </table>
+          {data?.length === 0 && <EmptyState />}
         </div>
       </div>
     </LoadingOverlay>
