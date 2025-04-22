@@ -23,6 +23,7 @@ const rate360Api = createApi({
     'ConfirmCurator',
     'ConfirmUser',
     'UserRates',
+    'Report',
   ],
   endpoints: (build) => ({
     getRates: build.query<Rate[], void>({
@@ -86,14 +87,14 @@ const rate360Api = createApi({
         url: `/rate360/assesment/approve-self/${rateId}`,
         method: 'POST',
       }),
-      invalidatesTags: ['Rate360', 'Assigned', 'Self', 'UserRates'],
+      invalidatesTags: ['Rate360', 'Assigned', 'Self', 'UserRates', 'Report'],
     }),
     approveAssigned: build.mutation<void, { rateId: number }>({
       query: ({ rateId }) => ({
         url: `/rate360/assesment/approve-assigned/${rateId}`,
         method: 'POST',
       }),
-      invalidatesTags: ['Rate360', 'Assigned', 'Self', 'UserRates'],
+      invalidatesTags: ['Rate360', 'Assigned', 'Self', 'UserRates', 'Report'],
     }),
     confirmByCurator: build.query<Rate[], void>({
       query: () => '/rate360/confirm-by-curator',
@@ -131,11 +132,28 @@ const rate360Api = createApi({
         'Self',
         'ConfirmCurator',
         'ConfirmUser',
+        'Report',
       ],
     }),
     findMyRates: build.query<Rate[], void>({
       query: () => '/rate360/me',
       providesTags: ['UserRates'],
+    }),
+    findReport: build.query<Rate, number>({
+      query: (id) => `/rate360/${id}/report`,
+      providesTags: (_, __, id) => [{ type: 'Report', id }],
+      keepUnusedDataFor: 60 * 5 * 1000,
+    }),
+    toggleReportVisibility: build.mutation<
+      void,
+      { ids: number[]; visible: boolean }
+    >({
+      query: ({ ids, visible }) => ({
+        url: '/rate360/report-visibility',
+        method: 'POST',
+        body: { isVisible: visible, ids },
+      }),
+      invalidatesTags: ['Rate360', 'UserRates', 'Report'],
     }),
   }),
 });

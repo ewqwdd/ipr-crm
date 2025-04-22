@@ -1,11 +1,13 @@
 import { Ipr } from '@/entities/ipr';
 import { CompetencyBlock } from '@/entities/skill';
+import { User } from '@/entities/user';
 
 type RateEveloper = {
   userId: number;
   type: EvaulatorType;
   user: {
     username: string;
+    avatar?: string;
   };
 };
 
@@ -19,9 +21,10 @@ export interface Rate {
   specId: number;
   teamId?: number;
   archived: boolean;
+  showReportToUser?: boolean;
   type: 'HARD' | 'SOFT';
   evaluators: RateEveloper[];
-  user: { id: number; username: string };
+  user: User;
   spec: { id: number; name: string };
   team?: {
     id: number;

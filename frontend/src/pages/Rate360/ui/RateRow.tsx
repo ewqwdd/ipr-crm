@@ -4,7 +4,6 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
 import { usersApi } from '@/shared/api/usersApi';
 import { cva } from '@/shared/lib/cva';
-import { Progress } from '@/shared/ui/Progress';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { DocumentReportIcon, DocumentTextIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router';
@@ -12,6 +11,7 @@ import { useNavigate } from 'react-router';
 import IprButton from './IprButton';
 import { SetStateAction } from 'react';
 import { Checkbox } from '@/shared/ui/Checkbox';
+import { Rate360Progress } from '@/widgets/Rate360Progress';
 
 interface RateRowProps {
   rate: Rate;
@@ -110,8 +110,7 @@ export default function RateRow({
         {rate.type}
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center flex items-center gap-2">
-        {Math.floor(percent * 100)}%
-        <Progress percent={percent} className="w-full max-w-14" />
+        <Rate360Progress rate={rate} percent={percent} />
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
         <SoftButton
@@ -131,7 +130,9 @@ export default function RateRow({
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
         <SoftButton
           className="rounded-full p-1"
-          onClick={() => navigate(`/360rate/report/${rate.id}`)}
+          onClick={() =>
+            navigate(`/360rate/report/${rate.id}`, { state: { rate } })
+          }
         >
           <DocumentReportIcon className="h-5 w-5" />
         </SoftButton>

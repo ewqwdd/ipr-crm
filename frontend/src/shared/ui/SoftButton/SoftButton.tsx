@@ -8,6 +8,7 @@ interface SoftButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   to?: string;
   danger?: boolean;
+  success?: boolean;
 }
 
 export default memo(function SoftButton({
@@ -16,6 +17,7 @@ export default memo(function SoftButton({
   children,
   to,
   danger,
+  success,
   ...props
 }: SoftButtonProps) {
   const sizes: Record<ButtonSize, string> = {
@@ -34,6 +36,8 @@ export default memo(function SoftButton({
       {
         'bg-red-50 text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500':
           !!danger,
+        'bg-green-50 text-green-600 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500':
+          !!success,
       },
       className,
     ),

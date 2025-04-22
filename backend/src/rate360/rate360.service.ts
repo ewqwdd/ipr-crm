@@ -10,6 +10,7 @@ import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
+import { ToggleReportVisibilityDto } from './dto/toggle-report-visibility.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -565,33 +566,96 @@ export class Rate360Service {
     return;
   }
 
-  async report(rateId: number) {
+  async report(rateId: number, sessionInfo: GetSessionInfoDto) {
     return await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
+        archived: false,
+        ...(sessionInfo.role !== 'admin'
+          ? {
+              OR: [
+                {
+                  userId: sessionInfo.id,
+                  userConfirmed: true,
+                  curatorConfirmed: true,
+                  showReportToUser: true,
+                },
+                {
+                  team: {
+                    curatorId: sessionInfo.id,
+                  },
+                },
+              ],
+            }
+          : {}),
       },
       include: {
-        spec: {
+        evaluators: {
+          select: {
+            userId: true,
+            type: true,
+            user: {
+              select: {
+                username: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+                id: true,
+              },
+            },
+          },
+        },
+        user: {
           include: {
-            competencyBlocks: {
+            teams: {
               include: {
-                competencies: {
-                  include: {
-                    indicators: true,
+                team: {
+                  select: {
+                    name: true,
+                    id: true,
                   },
                 },
               },
             },
           },
         },
-
-        evaluators: {
+        spec: {
           select: {
-            type: true,
+            id: true,
+            name: true,
+          },
+        },
+        team: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        comments: {
+          select: {
+            comment: true,
+            competencyId: true,
             userId: true,
           },
         },
-        userRates: {},
+        userRates: {
+          include: {
+            indicator: true,
+          },
+          where: {
+            approved: true,
+          },
+        },
+        competencyBlocks: {
+          include: {
+            competencies: {
+              include: {
+                indicators: true,
+              },
+            },
+          },
+        },
+        plan: true,
       },
     });
   }
@@ -935,6 +999,9 @@ export class Rate360Service {
       include: {
         spec: true,
         userRates: {
+          where: {
+            approved: true,
+          },
           select: {
             user: {
               select: {
@@ -954,9 +1021,37 @@ export class Rate360Service {
             },
           },
         },
+        evaluators: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
     return rates;
+  }
+
+  async toggleReportVisibility(
+    data: ToggleReportVisibilityDto,
+    sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.prismaService.rate360.updateMany({
+      where: {
+        id: {
+          in: data.ids,
+        },
+        ...(sessionInfo.role !== 'admin'
+          ? {
+              team: {
+                curatorId: sessionInfo.id,
+              },
+            }
+          : {}),
+      },
+      data: {
+        showReportToUser: !!data.isVisible,
+      },
+    });
   }
 }

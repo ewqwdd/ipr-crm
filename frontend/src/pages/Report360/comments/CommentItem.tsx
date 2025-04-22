@@ -1,9 +1,8 @@
 import { TeamUser } from '@/entities/team';
-import { User } from '@/entities/user';
 import { Avatar } from '@/shared/ui/Avatar';
 import { FC } from 'react';
 type CommentItemProps = {
-  user?: User | TeamUser;
+  user?: { username: string; avatar?: string } | TeamUser;
   comment?: string;
 };
 

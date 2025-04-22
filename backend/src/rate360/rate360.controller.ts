@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   UseGuards,
@@ -18,6 +19,7 @@ import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
 import { DeleteRatesDto } from './dto/delete-rates.dto';
+import { ToggleReportVisibilityDto } from './dto/toggle-report-visibility.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -46,6 +48,15 @@ export class Rate360Controller {
   @UseGuards(AdminGuard)
   async deleteRate(@Param('id', { transform: (v) => parseInt(v) }) id: number) {
     return this.rate360Service.deleteRate(id);
+  }
+
+  @Post('/report-visibility')
+  @UseGuards(AuthGuard)
+  async toggleReportVisibility(
+    @Body() data: ToggleReportVisibilityDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.rate360Service.toggleReportVisibility(data, sessionInfo);
   }
 
   @Get('/assigned-rates')
@@ -166,5 +177,17 @@ export class Rate360Controller {
   @UseGuards(AuthGuard)
   async findMyRates(@SessionInfo() sessionInfo: GetSessionInfoDto) {
     return await this.rate360Service.findMyRates(sessionInfo.id);
+  }
+
+  @Get('/:id/report')
+  @UseGuards(AuthGuard)
+  async getReport(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    const rate = await this.rate360Service.report(id, sessionInfo);
+
+    if (!rate) throw new NotFoundException('Отчет недоступен');
+    return rate;
   }
 }

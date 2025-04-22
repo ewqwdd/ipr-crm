@@ -35,6 +35,7 @@ import { SurveyAssesment } from '@/pages/SurveyAssesment';
 import { FinishedSurvey } from '@/pages/FinishedSurvey';
 import { IprUser } from '@/pages/IprUser';
 import { IprMeList } from '@/pages/IprMeList';
+import { Rate360MeList } from '@/pages/Rate360MeList';
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -53,11 +54,10 @@ export const routerItems: RouterItemType[] = [
   { path: '/teams', element: <Teams />, onlyAdmin: true, curator: true },
   { path: '/teams/:id', element: <TeamPage />, onlyAdmin: true, curator: true },
   { path: '/360rate', element: <Rate360 />, onlyAdmin: true, curator: true },
+  { path: '/360rate/me', element: <Rate360MeList /> },
   {
     path: '/360rate/report/:id',
     element: <Report360 />,
-    onlyAdmin: true,
-    curator: true,
   },
   { path: '/skills', element: <Skills />, onlyAdmin: true },
   { path: '/profile', element: <Profile /> },
@@ -137,6 +137,7 @@ export const routerItems: RouterItemType[] = [
     path: '/ipr/me',
     element: <IprMeList />,
   },
+  { path: '/360rate/me', element: <Rate360MeList /> },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];

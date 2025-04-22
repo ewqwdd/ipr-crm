@@ -17,7 +17,7 @@ export default function IprUserList() {
       <div className="min-[1440px]:px-8 py-6 sm:py-10 flex flex-col">
         <Heading
           title="Планы развития"
-          description="Список планов развития"
+          description="Список ваших планов развития"
           className="max-[1440px]:px-8 max-sm:px-4"
         />
         <div className="max-sm:max-w-full overflow-x-auto">
@@ -25,7 +25,7 @@ export default function IprUserList() {
             <TableHeading
               headings={[
                 '',
-                'Специализация',
+                'Спец-я',
                 'Навык',
                 'Дата',
                 'Новая',

@@ -1,4 +1,4 @@
-import { Team } from '@/entities/team';
+import { Rate } from '@/entities/rates';
 
 export const calculateAverage = (values: number[]): number => {
   if (!values.length) return 0;
@@ -19,62 +19,24 @@ export const dateFormatter = (date: string | null | undefined) => {
   return d.toLocaleDateString(undefined, options);
 };
 
-type TeamUser = {
-  teamId: number;
-  team: { name: string };
-};
-
-type CuratorUser = {
-  id: number;
-  name: string;
-};
-
 type Result = {
   curators: string[];
   members: string[];
+  subbordinates: string[];
 };
 
 export const getCuratorsAndMembers = (
-  teams: Team[],
-  userTeams: TeamUser[],
-  currentUserName: string,
+  evaluators: Rate['evaluators'],
 ): Result => {
-  if (!teams || !userTeams || !currentUserName)
-    return { curators: [], members: [] };
-  const curators: string[] = [];
-  const members: string[] = [];
-  userTeams.forEach(({ teamId }) => {
-    const team = teams.find((team) => team.id === teamId);
-    if (team) {
-      if (team.curator) {
-        curators.push(team.curator.username);
-      }
-      team.users?.forEach((user) => {
-        if (user.user.username !== currentUserName) {
-          members.push(user.user.username);
-        }
-      });
-    }
-  });
   return {
-    curators: [...new Set(curators)],
-    members: [...new Set(members)],
+    curators: evaluators
+      .filter((evaluator) => evaluator.type === 'CURATOR')
+      .map((evaluator) => evaluator.user.username),
+    members: evaluators
+      .filter((evaluator) => evaluator.type === 'TEAM_MEMBER')
+      .map((evaluator) => evaluator.user.username),
+    subbordinates: evaluators
+      .filter((evaluator) => evaluator.type === 'SUBORDINATE')
+      .map((evaluator) => evaluator.user.username),
   };
-};
-
-export const getTeamMembers = (
-  teams: Team[],
-  teamCurator: CuratorUser[],
-): string[] => {
-  if (!teams || !teamCurator) return [];
-  const teamMembers: string[] = [];
-  teamCurator.forEach(({ id }) => {
-    const team = teams.find((team) => team.id === id);
-    if (team) {
-      team.users?.forEach((user) => {
-        teamMembers.push(user.user.username);
-      });
-    }
-  });
-  return [...new Set(teamMembers)];
 };

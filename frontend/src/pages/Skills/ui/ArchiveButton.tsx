@@ -52,7 +52,7 @@ export default function ArchiveButton() {
         onClick={onClick}
         className={cva({ 'animate-pulse pointer-events-none': isLoading })}
       >
-        Зафиксировать <span className="max-sm:hidden">версию</span>
+        Зафиксировать <span className="max-sm:hidden ml-1">версию</span>
       </PrimaryButton>
     </div>
   );

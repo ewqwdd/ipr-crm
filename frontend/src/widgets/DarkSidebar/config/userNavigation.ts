@@ -48,7 +48,6 @@ export const userNavigation: (user: User | null) => NavType[] = (
   {
     name: 'Доска задач',
     icon: MapIcon,
-    current: false,
     href: '/board',
     count: user?.notifications.filter(
       (n) => typesTasks.includes(n.type) && !n.watched,
@@ -57,8 +56,12 @@ export const userNavigation: (user: User | null) => NavType[] = (
   {
     name: 'Мои планы развития',
     icon: ChartBarIcon,
-    current: false,
     href: '/ipr/me',
+  },
+  {
+    name: 'Мои оценки 360',
+    icon: InboxIcon,
+    href: '/360rate/me',
   },
 
   ...((user?.teamCurator?.length ?? 0) > 0

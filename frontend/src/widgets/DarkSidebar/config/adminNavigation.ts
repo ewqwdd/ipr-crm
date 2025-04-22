@@ -24,6 +24,16 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
     ).length,
   },
   {
+    name: 'Мои планы развития',
+    icon: ChartBarIcon,
+    href: '/ipr/me',
+  },
+  {
+    name: 'Мои оценки 360',
+    icon: InboxIcon,
+    href: '/360rate/me',
+  },
+  {
     name: 'Мне назначено',
     icon: InboxIcon,
     children: [
