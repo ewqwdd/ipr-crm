@@ -3,6 +3,7 @@ import {
   ClipboardListIcon,
   HomeIcon,
   InboxIcon,
+  InboxInIcon,
   MapIcon,
   QuestionMarkCircleIcon,
   UsersIcon,
@@ -60,12 +61,15 @@ export const userNavigation: (user: User | null) => NavType[] = (
   },
   {
     name: 'Мои оценки 360',
-    icon: InboxIcon,
+    icon: InboxInIcon,
     href: '/360rate/me',
   },
 
   ...((user?.teamCurator?.length ?? 0) > 0
     ? [
+      {
+        name: 'Администрирование',
+      },
         { name: 'Команды', icon: UsersIcon, href: '/teams' },
         {
           name: 'Планы развития',

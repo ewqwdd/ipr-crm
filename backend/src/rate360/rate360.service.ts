@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -18,6 +19,16 @@ export class Rate360Service {
     private prismaService: PrismaService,
     private notificationsService: NotificationsService,
   ) {}
+
+  accessCheck(sessionInfo: GetSessionInfoDto) {
+    return sessionInfo.role !== 'admin'
+    ? {
+        team: {
+          curatorId: sessionInfo.id,
+        },
+      }
+    : {}
+    }
 
   async findAll(curatorId?: number) {
     const rates = await this.prismaService.rate360.findMany({
@@ -947,6 +958,12 @@ export class Rate360Service {
     });
   }
 
+  async notifyRates(ids: number[]) {
+    const promises = ids.map(id => this.sendNotificationStatus(id));
+    await Promise.all(promises);
+    return HttpStatus.OK;
+  }
+
   async sendNotificationStatus(rateId: number) {
     const rate = await this.prismaService.rate360.findFirst({
       where: {
@@ -1041,13 +1058,7 @@ export class Rate360Service {
         id: {
           in: data.ids,
         },
-        ...(sessionInfo.role !== 'admin'
-          ? {
-              team: {
-                curatorId: sessionInfo.id,
-              },
-            }
-          : {}),
+        ...this.accessCheck(sessionInfo),
       },
       data: {
         showReportToUser: !!data.isVisible,

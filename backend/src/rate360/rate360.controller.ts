@@ -190,4 +190,13 @@ export class Rate360Controller {
     if (!rate) throw new NotFoundException('Отчет недоступен');
     return rate;
   }
+
+  @Post('/notify')
+  @UseGuards(AuthGuard)
+  async notify(
+    @Body() data: DeleteRatesDto,
+
+  ) {
+    return await this.rate360Service.notifyRates(data.ids);
+  }
 }

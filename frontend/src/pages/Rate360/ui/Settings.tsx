@@ -2,6 +2,7 @@ import { useAppSelector } from '@/app';
 import { useModal } from '@/app/hooks/useModal';
 import { Rate } from '@/entities/rates';
 import { rate360Api } from '@/shared/api/rate360Api';
+import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import {
@@ -23,6 +24,7 @@ export default memo(function Settings({
   setSelected,
   data,
 }: SettingsProps) {
+
   const { openModal } = useModal();
   const [removeRates, removeRatesProps] = rate360Api.useDeleteRatesMutation();
   const [toggleReportVisibility, toggleReportVisibilityState] =
@@ -56,6 +58,17 @@ export default memo(function Settings({
       },
     });
   };
+
+  const notifyRates = () => {
+    openModal('CONFIRM', {
+      submitText: 'Напомнить',
+      title: `Напомнить о завершении оценки ${selected?.length} оценкам?`,
+      onSubmit: async () => {
+        setSelected([]);
+        return await $api.post('/rate360/notify', { ids: selected });
+      },
+    });
+  }
 
   return (
     <div
@@ -97,7 +110,7 @@ export default memo(function Settings({
       </SoftButton>
 
       {!isFinished && (
-        <SoftButton className="max-sm:p-2">
+        <SoftButton className="max-sm:p-2" onClick={notifyRates}>
           <BellIcon className="h-5 w-5" />
           <span className="max-sm:hidden">Напомнить</span>
         </SoftButton>

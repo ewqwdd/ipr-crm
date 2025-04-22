@@ -5,6 +5,7 @@ import {
   FolderIcon,
   HomeIcon,
   InboxIcon,
+  InboxInIcon,
   MapIcon,
   QuestionMarkCircleIcon,
   UserIcon,
@@ -30,7 +31,7 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
   },
   {
     name: 'Мои оценки 360',
-    icon: InboxIcon,
+    icon: InboxInIcon,
     href: '/360rate/me',
   },
   {
