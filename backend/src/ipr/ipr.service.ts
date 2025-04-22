@@ -653,7 +653,7 @@ export class IprService {
   }
 
   async finduserIprMany(sessionInfo: GetSessionInfoDto) {
-    return this.prismaService.individualGrowthPlan.findMany({
+    return await this.prismaService.individualGrowthPlan.findMany({
       where: {
         userId: sessionInfo.id,
       },

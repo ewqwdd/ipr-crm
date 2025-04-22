@@ -8,12 +8,14 @@ interface UserIprMaterialsBlockProps {
   tasks: Task[];
   competency?: Competency | null;
   indicator?: Indicator | null;
+  iprId: number;
 }
 
 export default memo(function UserIprMaterialsBlock({
   tasks,
   competency,
   indicator,
+  iprId,
 }: UserIprMaterialsBlockProps) {
   let filtered;
   let title;
@@ -75,7 +77,7 @@ export default memo(function UserIprMaterialsBlock({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filtered.map((task) => (
-              <UserIprMaterial key={task.id} task={task} />
+              <UserIprMaterial iprId={iprId} key={task.id} task={task} />
             ))}
           </tbody>
         </table>

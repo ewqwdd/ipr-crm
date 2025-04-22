@@ -2,19 +2,33 @@ import { Task } from '@/entities/ipr/model/types';
 import { $api } from '@/shared/lib/$api';
 import { Overlay } from '@/shared/ui/Overlay';
 import { MapIcon } from '@heroicons/react/outline';
-import { useState } from 'react';
 import TaskItem from '../tasks/TaskItem';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import { taskStatusOptions } from '../tasks/constants';
 import { formatDateTime } from '@/shared/lib/formatDateTime';
 import { cva } from '@/shared/lib/cva';
+import { iprApi } from '@/shared/api/iprApi';
+import { useAppDispatch } from '@/app';
 
 interface UserIprTaskProps {
   task: Task;
+  iprId: number;
 }
 
-export default function UserIprMaterial({ task }: UserIprTaskProps) {
-  const [status, setStatus] = useState<Task['status']>(task.status);
+export default function UserIprMaterial({ task, iprId }: UserIprTaskProps) {
+  const dispatch = useAppDispatch();
+
+  const setStatus = (status: Task['status']) => {
+    dispatch(
+      iprApi.util.updateQueryData('findUserIprById', iprId, (draft) => {
+        const taskIndex = draft.tasks.findIndex((t) => t.id === task.id);
+        if (taskIndex !== -1) {
+          draft.tasks[taskIndex].status = status;
+        }
+      }),
+    );
+    dispatch(iprApi.util.invalidateTags(['user-ipr']));
+  };
 
   const changeStatus = (status: Task['status']) => {
     setStatus(status);
@@ -63,7 +77,7 @@ export default function UserIprMaterial({ task }: UserIprTaskProps) {
 
       <td className="py-4 px-3 text-sm font-medium text-gray-900 w-44">
         <SelectLight
-          value={status}
+          value={task.status}
           onChange={(e) => changeStatus(e.target.value as Task['status'])}
         >
           {taskStatusOptions.map(({ label, value }) => (

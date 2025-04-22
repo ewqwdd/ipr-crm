@@ -41,7 +41,7 @@ export default function BoardCard({ card, deletable, userId }: BoardCardProps) {
         </span>
       )}
       <button
-        className=" font-medium text-gray-800 cursor-pointer hover:text-indigo-600 transition-all self-start"
+        className="text-left font-medium text-gray-800 cursor-pointer hover:text-indigo-600 transition-all self-start"
         onClick={onOpen}
       >
         {card.title}

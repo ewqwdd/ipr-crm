@@ -49,13 +49,15 @@ export default function IprUserList() {
                   {
                     render: (item) => (
                       <span className="text-violet-500 font-medium">
-                        {item.rate360.spec.name}
+                        {item.rate360?.spec.name}
                       </span>
                     ),
                   },
                   {
                     render: (item) => (
-                      <span className="text-gray-900">{item.rate360.type}</span>
+                      <span className="text-gray-900">
+                        {item.rate360?.type}
+                      </span>
                     ),
                   },
                   {

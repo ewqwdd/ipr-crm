@@ -27,6 +27,7 @@ export default memo(function UserIprTypeBlock({
   if (type === 'GENERAL') {
     return allCompetencies.map((competency) => (
       <UserIprMaterialsBlock
+        iprId={ipr.id}
         key={competency?.id ?? -1}
         tasks={filtereedByType}
         competency={competency}
@@ -35,6 +36,7 @@ export default memo(function UserIprTypeBlock({
   } else {
     return allIndicators.map((indicator) => (
       <UserIprMaterialsBlock
+        iprId={ipr.id}
         key={indicator?.id ?? -1}
         tasks={filtereedByType}
         indicator={indicator}
