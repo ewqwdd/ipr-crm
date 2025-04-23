@@ -20,6 +20,8 @@ import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
 import { DeleteRatesDto } from './dto/delete-rates.dto';
 import { ToggleReportVisibilityDto } from './dto/toggle-report-visibility.dto';
+import { SingleRateIdDto } from './dto/single-rate-id.dto';
+import { SingleCommentDto } from './dto/single-comment.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -89,6 +91,24 @@ export class Rate360Controller {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     return await this.rate360Service.userAssessment(sessionInfo.id, data);
+  }
+
+  @Post('/assesment/indicator')
+  @UseGuards(AuthGuard)
+  async assesmentIndicator(
+    @Body() data: SingleRateIdDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.singleAssessment(sessionInfo.id, data);
+  }
+
+  @Post('/assesment/comment')
+  @UseGuards(AuthGuard)
+  async assesmentComment(
+    @Body() data: SingleCommentDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.singleComment(sessionInfo.id, data);
   }
 
   @Post('/assesment/approve-self/:rateId')
@@ -193,10 +213,7 @@ export class Rate360Controller {
 
   @Post('/notify')
   @UseGuards(AuthGuard)
-  async notify(
-    @Body() data: DeleteRatesDto,
-
-  ) {
+  async notify(@Body() data: DeleteRatesDto) {
     return await this.rate360Service.notifyRates(data.ids);
   }
 }

@@ -12,7 +12,7 @@ export default function Tests() {
   return (
     <LoadingOverlay active={isLoading}>
       <div className="sm:px-8 sm:py-10 py-3 flex flex-col h-full relative">
-        <div className="flex justify-between items-center max-sm: pr-16 pl-3">
+        <div className="flex justify-between items-center max-sm:pr-16 pl-3">
           <Heading title="Тесты" />
           <PrimaryButton
             onClick={() => navigate('/tests/create')}

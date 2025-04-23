@@ -133,17 +133,22 @@ const Deadline: FC<{
   };
 
   return initialDeadline ? (
-    <div className={cva('flex gap-2 items-center', className)}>
+    <div className={cva('flex gap-2 items-center max-sm:text-sm', className)}>
       <div>{formatDate(initialDeadline)}</div>
-      <SoftButton className="rounded-full p-2" size="xs" onClick={openModal}>
-        <PencilIcon className="size-5" />
+      <SoftButton
+        className="rounded-full sm:p-2 p-1"
+        size="xs"
+        onClick={openModal}
+      >
+        <PencilIcon className="sm:size-5 size-4" />
       </SoftButton>
       <SoftButton
-        className="rounded-full p-2"
+        danger
+        className="rounded-full sm:p-2 p-1"
         size="xs"
         onClick={deleteDeadline}
       >
-        <TrashIcon className="w-5 h-5" />
+        <TrashIcon className="sm:size-5 size-4" />
       </SoftButton>
       <DeadlineTooltip
         closeModal={closeModal}

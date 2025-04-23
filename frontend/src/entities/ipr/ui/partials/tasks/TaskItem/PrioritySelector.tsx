@@ -55,9 +55,12 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
     <SelectLight
       value={priority_}
       onChange={onChange}
-      className={cva('basic-multi-select', {
-        'animate-pulse': !!isLoading,
-      })}
+      className={cva(
+        'basic-multi-select text-sm [&>select]:max-xl:pl-2 [&>select]:max-xl:pr-6',
+        {
+          'animate-pulse': !!isLoading,
+        },
+      )}
       label={label}
       required={required}
     >

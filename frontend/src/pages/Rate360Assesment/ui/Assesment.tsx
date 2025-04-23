@@ -3,6 +3,7 @@ import { Assesment as AssesmentType } from '../types/types';
 import Question from './Question';
 import React from 'react';
 import { TextArea } from '@/shared/ui/TextArea';
+import { $api } from '@/shared/lib/$api';
 
 interface AssesmentProps {
   block: CompetencyBlock;
@@ -12,6 +13,8 @@ interface AssesmentProps {
   setComments: React.Dispatch<
     React.SetStateAction<Record<number, string | undefined>>
   >;
+  rateId: number;
+  setLoading?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function Assesment({
@@ -20,6 +23,8 @@ export default function Assesment({
   setAssesment,
   comments,
   setComments,
+  rateId,
+  setLoading,
 }: AssesmentProps) {
   return (
     <div className="flex flex-col gap-6 px-8 flex-1 overflow-y-auto">
@@ -46,6 +51,41 @@ export default function Assesment({
                       if (!newAssesment[block.id][competency.id]) {
                         newAssesment[block.id][competency.id] = {};
                       }
+                      const prevValue =
+                        newAssesment[block.id][competency.id][indicator.id];
+
+                      if (
+                        prevValue.rate === rate &&
+                        prevValue.comment === comment
+                      )
+                        return prev;
+
+                      setLoading?.((prev) => prev + 1);
+                      $api
+                        .post('/rate360/assesment/indicator', {
+                          rate,
+                          rateId,
+                          indicatorId: indicator.id,
+                        })
+                        .catch(() => {
+                          setAssesment((prev) => {
+                            const newAssesment = { ...prev };
+                            if (!newAssesment[block.id]) {
+                              newAssesment[block.id] = {};
+                            }
+                            if (!newAssesment[block.id][competency.id]) {
+                              newAssesment[block.id][competency.id] = {};
+                            }
+                            newAssesment[block.id][competency.id][
+                              indicator.id
+                            ] = prevValue;
+                            return newAssesment;
+                          });
+                        })
+                        .finally(() => {
+                          setLoading?.((prev) => prev - 1);
+                        });
+
                       newAssesment[block.id][competency.id][indicator.id] = {
                         rate,
                         comment,
@@ -65,6 +105,18 @@ export default function Assesment({
                     [competency.id]: e.target.value || undefined,
                   })
                 }
+                onBlur={() => {
+                  setLoading?.((prev) => prev + 1);
+                  $api
+                    .post('/rate360/assesment/comment', {
+                      rateId,
+                      competencyId: competency.id,
+                      comment: comments[competency.id],
+                    })
+                    .finally(() => {
+                      setLoading?.((prev) => prev - 1);
+                    });
+                }}
               />
             </div>
           </React.Fragment>

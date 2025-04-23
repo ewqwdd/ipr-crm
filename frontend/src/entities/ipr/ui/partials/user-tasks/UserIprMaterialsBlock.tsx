@@ -41,7 +41,7 @@ export default memo(function UserIprMaterialsBlock({
     <>
       <div className="mt-5 mb-3">
         <div className="flex space-x-2 items-center">
-          <ArchiveIcon className="w-5 h-5 text-gray-500 max-sm:hidden" />
+          <ArchiveIcon className="w-5 h-5 text-gray-500 max-sm:hidden min-w-5" />
           <h3 className="font-medium">{title}</h3>
         </div>
       </div>

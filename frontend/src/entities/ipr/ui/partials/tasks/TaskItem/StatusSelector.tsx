@@ -46,9 +46,12 @@ const StatusSelector: FC<StatusSelectorProps> = ({
       name="status"
       value={status_}
       onChange={onChange}
-      className={cva('basic-multi-select', {
-        'animate-pulse': !!isLoading,
-      })}
+      className={cva(
+        'basic-multi-select text-sm [&>select]:max-xl:pl-2 [&>select]:pr-6',
+        {
+          'animate-pulse': !!isLoading,
+        },
+      )}
     >
       {taskStatusOptions.map(({ value, label }) => (
         <option key={value} value={value}>

@@ -26,7 +26,7 @@ const TaskListRow: FC<Task & TaskListRowProps> = ({
 }) => {
   return (
     <tr>
-      <td className="w-[40%] py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
+      <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 w-2/5">
         <div className="flex items-center gap-2">
           <Checkbox
             id={`${id}`}
@@ -42,19 +42,19 @@ const TaskListRow: FC<Task & TaskListRowProps> = ({
           )}
         </div>
       </td>
-      <td className="w-[18%] px-3 py-4 ">
+      <td className="px-3 py-4 w-36">
         <TaskItem.MaterialType
           contentType={material?.contentType}
           url={material?.url}
         />
       </td>
-      <td className="w-[12%] px-3 py-4 text-sm text-gray-500">
+      <td className="px-3 py-4 text-sm text-gray-500 min-w-32 xl:min-w-36">
         <TaskItem.Priority id={id} priority={priority} userId={userId} />
       </td>
-      <td className="w-[18%] px-3 py-4 text-sm text-gray-500">
+      <td className=" px-3 py-4 text-sm text-gray-500">
         <TaskItem.Deadline deadline={deadline} status={status} id={id} />
       </td>
-      <td className="w-[12%] px-3 py-4 text-sm text-gray-500">
+      <td className="px-3 py-4 text-sm text-gray-500 min-w-36">
         <TaskItem.Status id={id} status={status} userId={userId} />
       </td>
     </tr>

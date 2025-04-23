@@ -2,7 +2,6 @@ import { rate360Api } from '@/shared/api/rate360Api';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
-  Link,
   useLocation,
   useNavigate,
   useParams,
@@ -13,23 +12,26 @@ import Assesment from './ui/Assesment';
 import { Assesment as AssesmentType } from './types/types';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
-import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { tranformAssesment } from '@/shared/lib/transformAssesment';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { useAppSelector } from '@/app';
+import Tooltip from '@/shared/ui/Tooltip';
 
 export default function Rate360Assesment() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(0);
   const { data, isFetching, isError } = rate360Api.useFindForUserQuery(
     parseInt(id ?? ''),
   );
+  const userId = useAppSelector((state) => state.user.user!.id);
 
   const { state } = useLocation();
 
-  const [
-    mutateAssesment,
-    { isLoading: mutateAssesmentLoading, isSuccess: mutateAssesmentSuccess },
-  ] = rate360Api.useAssesmentMutation();
+  const [mutateApproval, approvalState] =
+    rate360Api.useApproveAssignedMutation();
+  const [mutateApproveSelf, approvalSelfState] =
+    rate360Api.useApproveSelfMutation();
 
   const [assessment, setAssessment] = useState<AssesmentType>({});
   const [comments, setComments] = useState<Record<string, string | undefined>>(
@@ -64,20 +66,37 @@ export default function Rate360Assesment() {
   const currentBlock = blocks.find((block) => block.id.toString() === tab);
 
   const onSave = () => {
-    const body = Object.values(assessment)
-      .flatMap((a) => Object.values(a))
-      .reduce((acc, val) => ({ ...acc, ...val }), {});
+    const indicators =
+      blocks?.flatMap((block) =>
+        block.competencies.flatMap((competency) => competency.indicators),
+      ) ?? [];
+    const userRates = Object.values(assessment)
+      .flatMap((a) => Object.values(a).flatMap((b) => Object.values(b)))
+      .filter((q) => q.rate !== undefined);
 
-    // @ts-expect-error похуй
-    mutateAssesment({ rateId: data?.id, ratings: body, comments });
+    const isCompleted = (userRates?.length ?? 0) >= indicators.length;
+
+    if (!isCompleted) return toast.error('Ответьте на все вопросы');
+    if (!data) return;
+    if (data?.userId === userId) {
+      mutateApproveSelf({ rateId: data.id });
+    } else {
+      mutateApproval({ rateId: data.id });
+    }
   };
 
   useEffect(() => {
-    if (mutateAssesmentSuccess) {
+    if (approvalSelfState.isSuccess || approvalState.isSuccess) {
       toast.success('Оценка сохранена');
       navigate(typeof state === 'string' ? state : '/progress');
     }
-  }, [mutateAssesmentSuccess]);
+  }, [approvalSelfState.isSuccess, approvalState.isSuccess, navigate, state]);
+
+  useEffect(() => {
+    if (approvalSelfState.isError || approvalState.isError) {
+      toast.error('Ошибка при сохранении оценки');
+    }
+  }, [approvalSelfState.isError, approvalState.isError]);
 
   if (!id) return null;
 
@@ -85,24 +104,33 @@ export default function Rate360Assesment() {
     <LoadingOverlay active={isFetching}>
       <div
         className={cva('flex flex-col gap-4 h-full max-h-full pb-6', {
-          'animate-pulse pointer-events-none': mutateAssesmentLoading,
+          'animate-pulse pointer-events-none':
+            approvalSelfState.isLoading || approvalState.isLoading,
         })}
       >
         <TabsHeader blocks={blocks} />
         {currentBlock && (
           <Assesment
+            rateId={data?.id ?? 0}
             comments={comments}
             setComments={setComments}
             assesment={assessment}
             setAssesment={setAssessment}
             block={currentBlock}
+            setLoading={setLoading}
           />
         )}
-        <div className="flex justify-between px-6">
-          <Link to={'/progress'}>
+        <div className="flex justify-end px-6">
+          {/* <Link to={'/progress'}>
             <SecondaryButton>Назад</SecondaryButton>
-          </Link>
-          <PrimaryButton onClick={() => onSave()}>Сохранить</PrimaryButton>
+          </Link> */}
+          {loading > 0 ? (
+            <Tooltip content="Подождите...">
+              <PrimaryButton disabled={true}>Сохранить</PrimaryButton>
+            </Tooltip>
+          ) : (
+            <PrimaryButton onClick={onSave}>Сохранить</PrimaryButton>
+          )}
         </div>
       </div>
     </LoadingOverlay>

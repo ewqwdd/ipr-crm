@@ -119,8 +119,10 @@ export default function IprUserList() {
                   {
                     render: (item) => {
                       const percent =
-                        item.tasks.filter((t) => t.status === 'COMPLETED')
-                          .length / item.tasks.length;
+                        item.tasks.length > 0
+                          ? item.tasks.filter((t) => t.status === 'COMPLETED')
+                              .length / item.tasks.length
+                          : 1;
                       return (
                         <div className="flex items-center gap-2 justify-center">
                           <Progress percent={percent} className="min-w-20" />

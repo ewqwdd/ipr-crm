@@ -12,6 +12,8 @@ import { ConfirmRateDto } from './dto/confirm-rate.dto';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { ToggleReportVisibilityDto } from './dto/toggle-report-visibility.dto';
+import { SingleRateIdDto } from './dto/single-rate-id.dto';
+import { SingleCommentDto } from './dto/single-comment.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -22,13 +24,13 @@ export class Rate360Service {
 
   accessCheck(sessionInfo: GetSessionInfoDto) {
     return sessionInfo.role !== 'admin'
-    ? {
-        team: {
-          curatorId: sessionInfo.id,
-        },
-      }
-    : {}
-    }
+      ? {
+          team: {
+            curatorId: sessionInfo.id,
+          },
+        }
+      : {};
+  }
 
   async findAll(curatorId?: number) {
     const rates = await this.prismaService.rate360.findMany({
@@ -411,6 +413,42 @@ export class Rate360Service {
     }
   }
 
+  async singleAssessment(userId: number, data: SingleRateIdDto) {
+    const { rate, indicatorId, rateId } = data;
+    const found = await this.findForUser(userId, rateId);
+    if (!found) {
+      throw new NotFoundException('Rate not found');
+    }
+
+    const indicatorRate = await this.prismaService.userRates.findFirst({
+      where: {
+        userId,
+        rate360Id: rateId,
+        indicatorId,
+      },
+    });
+
+    if (indicatorRate) {
+      await this.prismaService.userRates.update({
+        where: {
+          id: indicatorRate.id,
+        },
+        data: {
+          rate,
+        },
+      });
+    } else {
+      await this.prismaService.userRates.create({
+        data: {
+          userId,
+          rate360Id: rateId,
+          indicatorId,
+          rate,
+        },
+      });
+    }
+  }
+
   async userAssessment(
     userId: number,
     { rateId, ratings, comments }: RatingsDto,
@@ -464,6 +502,41 @@ export class Rate360Service {
     ]);
   }
 
+  async singleComment(userId: number, data: SingleCommentDto) {
+    const found = await this.findForUser(userId, data.rateId);
+    if (!found) {
+      throw new NotFoundException('Rate not found');
+    }
+
+    const comment = await this.prismaService.userComments.findFirst({
+      where: {
+        userId,
+        rate360Id: data.rateId,
+        competencyId: data.competencyId,
+      },
+    });
+    if (comment) {
+      await this.prismaService.userComments.update({
+        where: {
+          id: comment.id,
+        },
+        data: {
+          comment: data.comment,
+        },
+      });
+    } else {
+      await this.prismaService.userComments.create({
+        data: {
+          userId,
+          rate360Id: data.rateId,
+          competencyId: data.competencyId,
+          comment: data.comment,
+        },
+      });
+    }
+    return HttpStatus.OK;
+  }
+
   async approveSelfRate(userId: number, rateId: number) {
     const rate = await this.prismaService.rate360.findFirst({
       where: {
@@ -515,7 +588,7 @@ export class Rate360Service {
         approved: true,
       },
     });
-    return;
+    return HttpStatus.OK;
   }
 
   async approveAssignedRate(userId: number, rateId: number) {
@@ -959,7 +1032,7 @@ export class Rate360Service {
   }
 
   async notifyRates(ids: number[]) {
-    const promises = ids.map(id => this.sendNotificationStatus(id));
+    const promises = ids.map((id) => this.sendNotificationStatus(id));
     await Promise.all(promises);
     return HttpStatus.OK;
   }
