@@ -14,6 +14,8 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { useAppSelector } from '@/app';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Rate } from '@/entities/rates';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const evaluatorTypes = [
   'CURATOR',
@@ -116,10 +118,80 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
   const { overallAverage, blocksRaiting, competenciesRaiting } =
     useAggregatedAverages(filteredBlocksCompetencies, indicatorRatings);
 
-  const onClickExport = () => {
-    console.log('innerHTML => ', ref?.current?.innerHTML);
-  };
-
+    const onClickExport = async () => {
+      const element = ref.current;
+      if (!element) return;
+    
+      // Клонируем блок
+      const clone = element.cloneNode(true) as HTMLElement;
+    
+      // Заменяем canvas на img
+      const canvases = clone.querySelectorAll('canvas');
+      canvases.forEach((canvas) => {
+        const img = document.createElement('img');
+        img.src = (canvas as HTMLCanvasElement).toDataURL('image/png');
+        img.style.width = canvas.style.width;
+        img.style.height = canvas.style.height;
+        canvas.parentNode?.replaceChild(img, canvas);
+      });
+    
+      // Оформляем клон
+      Object.assign(clone.style, {
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        zIndex: '-1',
+        width: `${element.scrollWidth}px`,
+        height: `${element.scrollHeight}px`,
+        overflow: 'visible',
+        backgroundColor: 'white',
+        padding: '20px',
+      });
+    
+      document.body.appendChild(clone);
+    
+      // ⏳ ОЖИДАЕМ, пока ВСЕ картинки (в том числе бывшие canvas) загрузятся
+      await Promise.all(
+        Array.from(clone.querySelectorAll('img')).map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((res) => {
+            img.onload = img.onerror = res;
+          });
+        })
+      );
+    
+      // Теперь точно можно рендерить
+      const canvas = await html2canvas(clone, {
+        backgroundColor: '#fff',
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: clone.scrollWidth,
+        windowHeight: clone.scrollHeight,
+        scale: 2,
+      });
+    
+      document.body.removeChild(clone);
+    
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageHeight = 297;
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = 210;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+      let position = 0;
+    
+      while (position < pdfHeight) {
+        pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, pdfHeight);
+        position += pageHeight;
+        if (position < pdfHeight) pdf.addPage();
+      }
+    
+      pdf.save('report.pdf');
+    };
+    
+    
+    
   return (
     <LoadingOverlay active={isLoading || teamsFetching}>
       <div className="h-full">
@@ -129,7 +201,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
           </h1>
           <SoftButton onClick={onClickExport}>Экспорт</SoftButton>
         </div>
-        <div className="p-5 overflow-x-auto" ref={ref}>
+        <div className="p-5" ref={ref}>
           <div className="p-5 min-w-[1100px]">
             <div>
               <h2 className="mt-2 text-sm font-semibold tracking-tight text-pretty text-gray-900">
