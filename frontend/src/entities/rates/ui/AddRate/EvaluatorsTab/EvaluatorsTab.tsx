@@ -2,14 +2,18 @@ import { useAppDispatch, useAppSelector } from '@/app';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { TabType } from '../AddRate';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
-import TeamItem from './TeamItem';
-import { useEffect, useLayoutEffect, useMemo } from 'react';
-import { EvaluateUser, Rate } from '@/entities/rates/types/types';
+import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
+import {
+  EvaluateUser,
+  EvaulatorType,
+  Rate,
+} from '@/entities/rates/types/types';
 import { ratesActions } from '@/entities/rates/model/rateSlice';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
 import { rate360Api } from '@/shared/api/rate360Api';
 import toast from 'react-hot-toast';
+import { TeamItem } from '../../EvaluatorsTeamForm';
 
 interface EvaluatorsTabProps {
   setTab: (tab: TabType) => void;
@@ -92,6 +96,60 @@ export default function EvaluatorsTab({
     }
   }, [isError]);
 
+  const onDelete = useCallback(
+    ({
+      evaluatorId,
+      specId,
+      teamId,
+      type,
+      userId,
+    }: {
+      evaluatorId: number;
+      teamId: number;
+      specId: number;
+      userId: number;
+      type: EvaulatorType;
+    }) => {
+      dispatch(
+        ratesActions.removeEvaluator({
+          teamId,
+          specId,
+          userId,
+          evaluatorId,
+          type,
+        }),
+      );
+    },
+    [],
+  );
+
+  const onSubmit = useCallback(
+    ({
+      evaluators,
+      specId,
+      teamId,
+      type,
+      userId,
+    }: {
+      evaluators: EvaluateUser[];
+      teamId: number;
+      specId: number;
+      userId: number;
+      type: EvaulatorType;
+    }) => {
+      dispatch(
+        ratesActions.setSpecsForUser({
+          teamId,
+          specId,
+          userId,
+          type,
+          evaluators,
+        }),
+      );
+    },
+    [],
+  );
+
   return (
     <>
       <div
@@ -140,6 +198,8 @@ export default function EvaluatorsTab({
           <TeamItem
             key={`${teamId.teamId}_${teamId.userId}_${teamId.specId}`}
             teamId={teamId}
+            onDelete={onDelete}
+            onSubmit={onSubmit}
           />
         ))}
       </div>

@@ -14,6 +14,8 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { ToggleReportVisibilityDto } from './dto/toggle-report-visibility.dto';
 import { SingleRateIdDto } from './dto/single-rate-id.dto';
 import { SingleCommentDto } from './dto/single-comment.dto';
+import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
+import { AddEvaluatorsDto } from './dto/add-evalators.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -1137,5 +1139,130 @@ export class Rate360Service {
         showReportToUser: !!data.isVisible,
       },
     });
+  }
+
+  async deleteEvaluators(id: number, data: DeleteEvaluatorsDto) {
+    const promises = [
+      this.prismaService.rate360Evaluator.deleteMany({
+        where: {
+          rate360Id: id,
+          userId: {
+            in: data.ids,
+          },
+        },
+      }),
+      this.prismaService.notification.deleteMany({
+        where: {
+          rateId: id,
+          userId: {
+            in: data.ids,
+          },
+        },
+      }),
+      this.prismaService.userRates.deleteMany({
+        where: {
+          rate360Id: id,
+          userId: {
+            in: data.ids,
+          },
+        },
+      }),
+    ];
+    const result = await Promise.all(promises);
+    return result[0];
+  }
+
+  async setEvaluators(id: number, data: AddEvaluatorsDto) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (!rate) {
+      throw new NotFoundException('Rate not found');
+    }
+
+    const evaluators = await this.prismaService.rate360Evaluator.findMany({
+      where: {
+        rate360Id: id,
+      },
+    });
+
+    const allIds = [
+      ...data.evaluateCurators,
+      ...data.evaluateSubbordinate,
+      ...data.evaluateTeam,
+    ];
+
+    const evaluatorsIds = evaluators.map((evaluator) => evaluator.userId);
+    const evaluatorsToAdd = allIds.filter((id) => !evaluatorsIds.includes(id));
+    const evaluatorsToDelete = evaluatorsIds.filter(
+      (id) => !allIds.includes(id),
+    );
+
+    // deletion of evaluators
+    await this.prismaService.$transaction([
+      this.prismaService.rate360Evaluator.deleteMany({
+        where: {
+          rate360Id: id,
+          userId: {
+            in: evaluatorsToDelete,
+          },
+        },
+      }),
+      this.prismaService.notification.deleteMany({
+        where: {
+          rateId: id,
+          userId: {
+            in: evaluatorsToDelete,
+          },
+        },
+      }),
+      this.prismaService.userRates.deleteMany({
+        where: {
+          rate360Id: id,
+          userId: {
+            in: evaluatorsToDelete,
+          },
+        },
+      }),
+    ]);
+
+    const newEvaluators = await this.prismaService.rate360Evaluator.createMany({
+      data: [
+        ...data.evaluateCurators
+          .filter((id) => evaluatorsToAdd.includes(id))
+          .map((evaluator) => ({
+            userId: evaluator,
+            type: EvaluatorType.CURATOR,
+            rate360Id: id,
+          })),
+        ...data.evaluateSubbordinate
+          .filter((id) => evaluatorsToAdd.includes(id))
+          .map((evaluator) => ({
+            userId: evaluator,
+            type: EvaluatorType.SUBORDINATE,
+            rate360Id: id,
+          })),
+        ...data.evaluateTeam
+          .filter((id) => evaluatorsToAdd.includes(id))
+          .map((evaluator) => ({
+            userId: evaluator,
+            type: EvaluatorType.TEAM_MEMBER,
+            rate360Id: id,
+          })),
+      ],
+    });
+
+    if (rate.curatorConfirmed && rate.userConfirmed) {
+      evaluatorsToAdd.forEach(async (id) => {
+        await this.notificationsService.sendRateAssignedNotification(
+          id,
+          rate.id,
+        );
+      });
+    }
+
+    return newEvaluators;
   }
 }

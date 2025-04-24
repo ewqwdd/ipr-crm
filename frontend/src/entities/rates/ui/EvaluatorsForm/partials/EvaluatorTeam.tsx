@@ -37,15 +37,16 @@ export default function EvaluatorTeam({
         </SecondaryButton>
       </div>
       <div className="flex flex-col p-2 bg-violet-50">
-        {team.curator && (
-          <Evaluator
-            key={team.curator.id}
-            selected={selected}
-            setSelected={setSelected}
-            user={team.curator}
-            curator
-          />
-        )}
+        {team.curator &&
+          !excluded?.find((e) => e.userId === team.curator?.id) && (
+            <Evaluator
+              key={team.curator.id}
+              selected={selected}
+              setSelected={setSelected}
+              user={team.curator}
+              curator
+            />
+          )}
         {filtered?.map((user) => (
           <Evaluator
             key={user.user.id}

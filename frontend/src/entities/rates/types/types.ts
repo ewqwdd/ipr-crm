@@ -1,6 +1,7 @@
 import { Ipr } from '@/entities/ipr';
 import { CompetencyBlock } from '@/entities/skill';
 import { User } from '@/entities/user';
+import { TeamItemIds } from '../ui/AddRate/EvaluatorsTab/EvaluatorsTab';
 
 type RateEveloper = {
   userId: number;
@@ -73,4 +74,5 @@ export interface RateStoreSchema {
   selectedSpecs: AddRateDto[];
   confirmUser: boolean;
   confirmCurator: boolean;
+  editEvaluators?: TeamItemIds;
 }

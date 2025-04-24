@@ -155,6 +155,26 @@ const rate360Api = createApi({
       }),
       invalidatesTags: ['Rate360', 'UserRates', 'Report'],
     }),
+    editEvaluators: build.mutation<
+      void,
+      {
+        rateId: number;
+        evaluateCurators: number[];
+        evaluateTeam: number[];
+        evaluateSubbordinate: number[];
+      }
+    >({
+      query: (data) => ({
+        url: `/rate360/${data.rateId}/evaluator`,
+        method: 'POST',
+        body: {
+          evaluateCurators: data.evaluateCurators,
+          evaluateTeam: data.evaluateTeam,
+          evaluateSubbordinate: data.evaluateSubbordinate,
+        },
+      }),
+      invalidatesTags: ['Rate360', 'Assigned', 'UserRates'],
+    }),
   }),
 });
 

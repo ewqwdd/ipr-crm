@@ -46,6 +46,7 @@ export default function TeamListItem({
               }
               onChange={onChangeSpecs}
               curatorSpecs={team.curatorSpecs}
+              curator
             />
           )}
           {team.users?.map((user) => (

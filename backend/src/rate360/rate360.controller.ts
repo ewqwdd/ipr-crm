@@ -22,6 +22,8 @@ import { DeleteRatesDto } from './dto/delete-rates.dto';
 import { ToggleReportVisibilityDto } from './dto/toggle-report-visibility.dto';
 import { SingleRateIdDto } from './dto/single-rate-id.dto';
 import { SingleCommentDto } from './dto/single-comment.dto';
+import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
+import { AddEvaluatorsDto } from './dto/add-evalators.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -215,5 +217,23 @@ export class Rate360Controller {
   @UseGuards(AuthGuard)
   async notify(@Body() data: DeleteRatesDto) {
     return await this.rate360Service.notifyRates(data.ids);
+  }
+
+  @Delete('/:id/evaluator')
+  @UseGuards(AdminGuard)
+  async deleteEvaluators(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @Body() data: DeleteEvaluatorsDto,
+  ) {
+    return await this.rate360Service.deleteEvaluators(id, data);
+  }
+
+  @Post('/:id/evaluator')
+  @UseGuards(AdminGuard)
+  async setEvaluators(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @Body() data: AddEvaluatorsDto,
+  ) {
+    return await this.rate360Service.setEvaluators(id, data);
   }
 }

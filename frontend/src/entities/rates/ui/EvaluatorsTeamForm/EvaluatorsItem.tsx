@@ -1,6 +1,4 @@
-import { useAppDispatch } from '@/app';
 import { useModal } from '@/app/hooks/useModal';
-import { ratesActions } from '@/entities/rates/model/rateSlice';
 import { EvaluateUser, EvaulatorType } from '@/entities/rates/types/types';
 import { Badge } from '@/shared/ui/Badge';
 import { SoftButton } from '@/shared/ui/SoftButton';
@@ -14,6 +12,21 @@ interface EvaluatorsItemProps {
   specId: number;
   userId: number;
   type: EvaulatorType;
+  onDelete: (data: {
+    evaluatorId: number;
+    teamId: number;
+    specId: number;
+    userId: number;
+    type: EvaulatorType;
+  }) => void;
+  onSubmit: (data: {
+    evaluators: EvaluateUser[];
+    teamId: number;
+    specId: number;
+    userId: number;
+    type: EvaulatorType;
+  }) => void;
+  onAdd?: () => void;
 }
 
 export default memo(
@@ -24,24 +37,28 @@ export default memo(
     teamId,
     userId,
     type,
+    onDelete,
+    onSubmit,
+    onAdd: onAdd_,
   }: EvaluatorsItemProps) {
-    const dispatch = useAppDispatch();
     const { openModal } = useModal();
 
-    const onDelete = (evaluatorId: number) => {
-      dispatch(
-        ratesActions.removeEvaluator({
-          teamId,
-          specId,
-          userId,
-          evaluatorId,
-          type,
-        }),
-      );
-    };
-
     const onAdd = () => {
-      openModal('ADD_EVALUATOR', { type, userId, teamId, specId });
+      onAdd_?.();
+      openModal('ADD_EVALUATOR', {
+        type,
+        userId,
+        teamId,
+        specId,
+        onSubmit: (evaluators: EvaluateUser[]) =>
+          onSubmit({
+            evaluators,
+            teamId: teamId!,
+            specId,
+            userId,
+            type,
+          }),
+      });
     };
 
     return (
@@ -62,7 +79,15 @@ export default memo(
               {evaluator.username}
               <button
                 className="ml-1 hover:opacity-50 transition-all"
-                onClick={() => onDelete(evaluator.userId)}
+                onClick={() =>
+                  onDelete({
+                    evaluatorId: evaluator.userId,
+                    teamId: teamId!,
+                    specId: specId,
+                    userId: userId,
+                    type: type,
+                  })
+                }
               >
                 <XIcon className="size-4" />
               </button>

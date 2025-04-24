@@ -21,16 +21,34 @@ export const useFilteredTeams = ({
       specs.length > 0
         ? data?.list?.map((t) => ({
             ...t,
-            curator: t.curator?.specsOnTeams?.find((s) =>
+            curator: t.curatorSpecs?.find((s) =>
               specs.find((sp) => sp.value === s.specId),
             )
               ? t.curator
               : undefined,
-            users: t.users?.filter((u) =>
-              u.user.specsOnTeams?.find((s) =>
-                specs.find((sp) => sp.value === s.specId),
-              ),
-            ),
+            curatorSpecs:
+              specs.length > 0
+                ? t.curatorSpecs?.filter((s) =>
+                    specs.find((sp) => sp.value === s.specId),
+                  )
+                : t.curatorSpecs,
+            users: t.users
+              ?.filter((u) =>
+                u.user.specsOnTeams?.find((s) =>
+                  specs.find((sp) => sp.value === s.specId),
+                ),
+              )
+              .map((u) => ({
+                user: {
+                  ...u.user,
+                  specsOnTeams:
+                    specs.length > 0
+                      ? u.user.specsOnTeams?.filter((s) =>
+                          specs.find((sp) => sp.value === s.specId),
+                        )
+                      : u.user.specsOnTeams,
+                },
+              })),
           }))
         : data?.list,
     [data, specs],

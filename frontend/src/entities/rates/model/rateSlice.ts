@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EvaluateUser, EvaulatorType, RateStoreSchema } from '../types/types';
+import {
+  AddRateDto,
+  EvaluateUser,
+  EvaulatorType,
+  Rate,
+  RateStoreSchema,
+} from '../types/types';
+import { TeamItemIds } from '../ui/AddRate/EvaluatorsTab/EvaluatorsTab';
 
 const initialState: RateStoreSchema = {
   selectedSpecs: [],
@@ -178,6 +185,43 @@ const rateSlice = createSlice({
     },
     setConfirmUser: (state, action: PayloadAction<boolean>) => {
       state.confirmUser = action.payload;
+    },
+    setEditEvaluatorsFromRate: (
+      state,
+      action: PayloadAction<Rate | undefined>,
+    ) => {
+      if (!action.payload) {
+        state.editEvaluators = undefined;
+        return;
+      }
+      const rate = action.payload;
+      state.editEvaluators = {
+        specId: rate.specId,
+        teamId: rate.teamId,
+        userId: rate.userId,
+        evaluateCurators: rate.evaluators
+          .filter((e) => e.type === 'CURATOR')
+          .map((e) => ({ ...e, username: e.user.username })),
+        evaluateTeam: rate.evaluators
+          .filter((e) => e.type === 'TEAM_MEMBER')
+          .map((e) => ({ ...e, username: e.user.username })),
+        evaluateSubbordinate: rate.evaluators
+          .filter((e) => e.type === 'SUBORDINATE')
+          .map((e) => ({ ...e, username: e.user.username })),
+      };
+    },
+    setEditEvaluators: (
+      state,
+      action: PayloadAction<TeamItemIds | undefined>,
+    ) => {
+      if (!action.payload) {
+        state.editEvaluators = undefined;
+        return;
+      }
+      state.editEvaluators = action.payload;
+    },
+    setSelectedSpecs: (state, action: PayloadAction<AddRateDto[]>) => {
+      state.selectedSpecs = action.payload;
     },
   },
 });

@@ -62,6 +62,14 @@ export default function TeamList({
           user?.teamCurator?.find((t) => t.id === team.id),
         );
 
+  const allSpecs = teamsToShow
+    ?.flatMap((team) => [
+      ...(team?.users?.map((u) => ({ ...u.user, teamId: team.id })) ?? []),
+      { ...team.curator, teamId: team.id, specsOnTeams: team.curatorSpecs },
+    ])
+    .filter((u) => u?.specsOnTeams && u?.specsOnTeams?.length > 0);
+  console.log(allSpecs);
+
   return (
     <>
       {teamsToShow?.map((team) => (

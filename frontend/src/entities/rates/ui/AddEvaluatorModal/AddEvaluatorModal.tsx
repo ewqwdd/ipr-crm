@@ -1,11 +1,11 @@
 import { Modal } from '@/shared/ui/Modal';
 import { EvaluateUser, EvaulatorType } from '../../types/types';
-import { useAppDispatch, useAppSelector } from '@/app';
+import { useAppSelector } from '@/app';
 import { useState } from 'react';
-import { ratesActions } from '../../model/rateSlice';
 import EvaluatorsForm from '../EvaluatorsForm/EvaluatorsForm';
 
 interface AddEvaluatorModalData {
+  onSubmit: (data: EvaluateUser[]) => void;
   type: EvaulatorType;
   userId: number;
   teamId: number;
@@ -22,30 +22,20 @@ export default function AddEvaluatorModal({
   isOpen,
   modalData,
 }: AddEvaluatorModalProps) {
-  const { type, userId, teamId, specId } = modalData as AddEvaluatorModalData;
+  const { type, userId, teamId, specId, onSubmit } =
+    modalData as AddEvaluatorModalData;
   const [selected, setSelected] = useState<EvaluateUser[]>([]);
-  const dispatch = useAppDispatch();
   const selectedSpecs = useAppSelector((state) => state.rates.selectedSpecs);
-
-  const onSubmit = () => {
-    dispatch(
-      ratesActions.setSpecsForUser({
-        teamId,
-        specId,
-        userId,
-        type,
-        evaluators: selected,
-      }),
-    );
-    closeModal();
-  };
 
   return (
     <Modal
       open={isOpen}
       setOpen={closeModal}
       title="Добавить оценщика"
-      onSubmit={onSubmit}
+      onSubmit={() => {
+        onSubmit(selected);
+        closeModal();
+      }}
       submitText="Добавить"
       className="w-full sm:max-w-4xl"
     >

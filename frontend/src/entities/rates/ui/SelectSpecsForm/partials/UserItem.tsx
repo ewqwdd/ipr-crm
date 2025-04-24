@@ -5,6 +5,7 @@ import { Checkbox } from '@/shared/ui/Checkbox';
 import { ModalStateType } from './TeamList/TeamList';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { PencilAltIcon } from '@heroicons/react/outline';
+import { StarIcon } from '@heroicons/react/solid';
 
 interface UserItemProps {
   user: TeamUser;
@@ -13,6 +14,7 @@ interface UserItemProps {
   teamId: number;
   setOpen?: (v: ModalStateType) => void;
   curatorSpecs?: TeamUser['specsOnTeams'];
+  curator?: boolean;
 }
 
 export default function UserItem({
@@ -22,6 +24,7 @@ export default function UserItem({
   teamId,
   setOpen,
   curatorSpecs,
+  curator,
 }: UserItemProps) {
   const userSpecsExist = user.specsOnTeams && user.specsOnTeams?.length > 0;
   const curatorSpecsExist = curatorSpecs && curatorSpecs?.length > 0;
@@ -29,6 +32,7 @@ export default function UserItem({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
+        {curator && <StarIcon className="text-yellow-500 size-4" />}
         <Avatar src={user.avatar} />
         <span>{user.username}</span>
         <SoftButton className="p-1" onClick={() => setOpen?.({ teamId, user })}>

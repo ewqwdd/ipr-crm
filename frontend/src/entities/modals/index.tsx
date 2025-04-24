@@ -16,6 +16,7 @@ import ChooseCompetencyBlockModal from '../skill/ui/ChooseCompetencyBlockModal';
 import {
   AddEvaluatorModal,
   ConfirmEvaluatorsModal,
+  EditEvaluatorsModal,
   EvaluateModal,
   RateStatsModal,
 } from '../rates';
@@ -93,6 +94,8 @@ const ModalWrapper: FC = () => {
       return <RateTestsModal {...updatedModalProps} />;
     case 'IMPORT_USERS':
       return <ImportUsers {...updatedModalProps} />;
+    case 'EDIT_EVALUATORS':
+      return <EditEvaluatorsModal {...updatedModalProps} />;
     default:
       break;
   }

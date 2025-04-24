@@ -2,16 +2,37 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { cva } from '@/shared/lib/cva';
 import { UsersIcon } from '@heroicons/react/outline';
 import { useMemo } from 'react';
-import { TeamItemIds } from './EvaluatorsTab';
 import { universalApi } from '@/shared/api/universalApi';
 import EvaluatorsItem from './EvaluatorsItem';
 import { usersApi } from '@/shared/api/usersApi';
+import { TeamItemIds } from '../AddRate/EvaluatorsTab/EvaluatorsTab';
+import { EvaluateUser, EvaulatorType } from '../../types/types';
 
 interface TeamItemProps {
   teamId: TeamItemIds;
+  onDelete: (data: {
+    evaluatorId: number;
+    teamId: number;
+    specId: number;
+    userId: number;
+    type: EvaulatorType;
+  }) => void;
+  onSubmit: (data: {
+    evaluators: EvaluateUser[];
+    teamId: number;
+    specId: number;
+    userId: number;
+    type: EvaulatorType;
+  }) => void;
+  onAdd?: () => void;
 }
 
-export default function TeamItem({ teamId }: TeamItemProps) {
+export default function TeamItem({
+  teamId,
+  onDelete,
+  onSubmit,
+  onAdd,
+}: TeamItemProps) {
   const { data, isFetching } = teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
@@ -40,9 +61,10 @@ export default function TeamItem({ teamId }: TeamItemProps) {
     userId: teamId.userId,
     specId: teamId.specId,
     teamId: teamId.teamId,
+    onDelete,
+    onSubmit,
+    onAdd,
   };
-
-  console.log('TeamItem', teamId.evaluateTeam);
 
   return (
     <div

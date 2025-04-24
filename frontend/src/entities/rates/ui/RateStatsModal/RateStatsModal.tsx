@@ -5,6 +5,11 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import EvaluatorsList from './partials/EvaluatorsList';
 import { Indicator } from '@/entities/skill';
 import { useMemo } from 'react';
+import { useModal } from '@/app/hooks/useModal';
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
+import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { useAppDispatch } from '@/app';
+import { ratesActions } from '../../model/rateSlice';
 
 interface RateStatsModalData {
   rate: Rate;
@@ -24,6 +29,9 @@ export default function RateStatsModal({
   modalData,
 }: RateStatsModalProps) {
   const { rate, spec, user } = modalData as RateStatsModalData;
+  const isAdmin = useIsAdmin();
+  const { openModal } = useModal();
+  const dispatch = useAppDispatch();
 
   const selfRates = rate.userRates.filter((r) => r.userId === user.id);
   const indicators = useMemo(
@@ -56,7 +64,7 @@ export default function RateStatsModal({
             <h3 className="text-lg text-gray-800">{user.username}</h3>
             <p className="flex gap-2 text-gray-500 text-sm">
               <span>Специализация:</span>
-              <span className="text-gray-800">{spec.name}</span>
+              <span className="text-gray-800">{spec?.name}</span>
             </p>
           </div>
           {/* CHANGE TO VALID STATS LATER */}
@@ -82,6 +90,16 @@ export default function RateStatsModal({
           rates={rate.userRates}
           type="SUBORDINATE"
         />
+        {isAdmin && (
+          <PrimaryButton
+            onClick={() => {
+              dispatch(ratesActions.setEditEvaluatorsFromRate(rate));
+              openModal('EDIT_EVALUATORS', { rate });
+            }}
+          >
+            Изменить
+          </PrimaryButton>
+        )}
       </div>
     </Modal>
   );
