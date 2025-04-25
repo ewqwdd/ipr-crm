@@ -3,11 +3,12 @@ import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
 import { CreateTeamDto, Team } from '../../types/types';
 import { cva } from '@/shared/lib/cva';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { TeamsSelect } from '@/widgets/TeamsSelect';
 import { TextArea } from '@/shared/ui/TextArea';
 import { usersApi } from '@/shared/api/usersApi';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
 import { findDisabledTeams } from '@/shared/lib/findDisabledTeams';
+import { TeamsSelect } from '@/widgets/TeamSelect';
+import { teamsApi } from '@/shared/api/teamsApi';
 
 type ErrorType = {
   name?: string;
@@ -35,6 +36,7 @@ export default forwardRef(function TeamForm(
     parentTeamId: parentId,
   });
   const { data: usersData, isLoading } = usersApi.useGetUsersQuery({});
+  const { data: teamsData } = teamsApi.useGetTeamsQuery();
 
   const { users } = usersData || {};
 
@@ -65,6 +67,13 @@ export default forwardRef(function TeamForm(
     }
   }, [initData, parentId]);
 
+  const groups =
+    teamsData?.structure
+      .flatMap((g) =>
+        g.subTeams?.flatMap((t) => t.subTeams).flatMap((g) => g?.subTeams),
+      )
+      .filter((g) => !!g) ?? [];
+
   const disabledTeams = initData ? findDisabledTeams(initData) : [];
   // const disabledUsers = initData ? initData.users?.map(u => u.user.id) : []
 
@@ -92,7 +101,7 @@ export default forwardRef(function TeamForm(
       />
       <TeamsSelect
         label="Родительская команда"
-        disabledTeams={disabledTeams}
+        disabledTeams={[...disabledTeams, ...groups.map((g) => g.id)]}
         team={data.parentTeamId}
         setTeam={({ id }) => fieldChange(id, 'parentTeamId')}
       />

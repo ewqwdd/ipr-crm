@@ -90,6 +90,17 @@ export class TeamsService {
             avatar: true,
           },
         },
+        subTeams: {
+          select: {
+            id: true,
+            name: true,
+            users: {
+              select: {
+                userId: true,
+              },
+            },
+          },
+        },
       },
     });
     if (!team) {

@@ -2,7 +2,7 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { Navigate, useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import UserItem from './UserItem';
 import { UsersIcon } from '@heroicons/react/outline';
 import { useEffect, useMemo, useState } from 'react';
@@ -14,6 +14,7 @@ import { SpecsFilter } from '@/widgets/SpecsFilter';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useAppDispatch, useAppSelector } from '@/app';
 import { usersApi } from '@/shared/api/usersApi';
+import { SoftButton } from '@/shared/ui/SoftButton';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -64,12 +65,9 @@ export default function TeamPage() {
   if (user?.role.name === 'admin') {
     accessType = 'admin';
   }
-  if (user && accessType === 'user') {
-    return <Navigate to="/404" />;
-  }
 
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading || isFetching}>
       <div
         className={cva('px-4 py-6 sm:px-8 sm:py-10 flex flex-col', {
           'animate-pulse pointer-events-none': isFetching || mutateLoading,
@@ -77,26 +75,28 @@ export default function TeamPage() {
       >
         <div className="flex justify-between items-center max-sm:pr-12">
           <Heading title={data?.name} description="Состав команды" />
-          <Dropdown
-            btnClassName="focus:ring-0"
-            button={
-              <PrimaryButton className="self-start">Добавить</PrimaryButton>
-            }
-            buttons={[
-              {
-                text: 'Добавить участника',
-                onClick: () => setOpenNewUser(true),
-              },
-              ...(accessType === 'admin'
-                ? [
-                    {
-                      text: 'Назначить лидера',
-                      onClick: () => setOpenNewCurator(true),
-                    },
-                  ]
-                : []),
-            ]}
-          />
+          {accessType === 'admin' && (
+            <Dropdown
+              btnClassName="focus:ring-0"
+              button={
+                <PrimaryButton className="self-start">Добавить</PrimaryButton>
+              }
+              buttons={[
+                {
+                  text: 'Добавить участника',
+                  onClick: () => setOpenNewUser(true),
+                },
+                ...(accessType === 'admin'
+                  ? [
+                      {
+                        text: 'Назначить лидера',
+                        onClick: () => setOpenNewCurator(true),
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+          )}
         </div>
         <div className="flex mt-4 items-center gap-6">
           <SpecsFilter setSpec={setSpec} spec={spec} />
@@ -124,6 +124,18 @@ export default function TeamPage() {
               accessType={accessType}
             />
           ))}
+        </div>
+        <div className="flex flex-col gap-2 mt-4">
+          <h3 className="text-lg font-medium text-gray-900">
+            Дочерние команды
+          </h3>
+          <div className="flex gap-2">
+            {data?.subTeams?.map((team) => (
+              <Link to={`/teams/${team.id}`} key={team.id}>
+                <SoftButton>{team.name}</SoftButton>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
       <CuratorModal

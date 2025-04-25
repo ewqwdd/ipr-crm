@@ -39,8 +39,6 @@ export default function Structure() {
     }
   }, [isSuccess]);
 
-  // TODO: replace loading
-
   return (
     <>
       <LoadingOverlay active={isFetching}>

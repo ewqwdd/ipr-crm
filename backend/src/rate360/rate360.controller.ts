@@ -31,11 +31,15 @@ export class Rate360Controller {
 
   @Get('/')
   @UseGuards(AuthGuard)
-  async rates(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+  async rates(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
     if (sessionInfo.role === 'admin') {
-      return await this.rate360Service.findAll();
+      return await this.rate360Service.findAll({ page, limit });
     } else {
-      return await this.rate360Service.findAll(sessionInfo.id);
+      return await this.rate360Service.findAll({ page, limit }, sessionInfo.id);
     }
   }
 

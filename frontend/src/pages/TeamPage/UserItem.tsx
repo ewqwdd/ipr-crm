@@ -124,12 +124,14 @@ export default memo(function UserItem({
                 {specsData?.find((spec) => spec.id === e.specId)?.name}
               </Badge>
             ))}
-            <button
-              className="rounded-full p-1 hover:bg-gray-300 ml-1"
-              onClick={() => setOpen(true)}
-            >
-              <PencilIcon className="size-4 text-indigo-500" />
-            </button>
+            {accessType !== 'user' && (
+              <button
+                className="rounded-full p-1 hover:bg-gray-300 ml-1"
+                onClick={() => setOpen(true)}
+              >
+                <PencilIcon className="size-4 text-indigo-500" />
+              </button>
+            )}
           </div>
         </div>
         {!leader && (

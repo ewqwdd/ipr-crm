@@ -1,8 +1,9 @@
 import { Accordion } from '@/shared/ui/Accordion';
-import { Team } from '../../types/types';
+import { Team, teamTypeNames } from '../../types/types';
 import { memo, MouseEvent } from 'react';
 import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/outline';
 import { cva } from '@/shared/lib/cva';
+import { Link } from 'react-router';
 
 interface StructureItemProps {
   team: Team;
@@ -21,10 +22,18 @@ export default memo(function StructureItem({
 }: StructureItemProps) {
   const title = (
     <>
-      <span className="font-medium text-gray-900 text-lg truncate">
+      <Link
+        to={'/teams/' + team.id}
+        className="font-medium text-gray-900 hover:bg-violet-200 transition-all rounded-md text-lg px-1.5 truncate"
+      >
         {team.name}
-      </span>
-      {openModal && (
+      </Link>
+      {team.type && (
+        <span className="text-gray-500 text-sm ml-2 self-end mb-0.5">
+          {teamTypeNames[team.type]}
+        </span>
+      )}
+      {openModal && !!team.type && team.type !== 'GROUP' && (
         <button className="ml-6" onClick={(e) => openModal(e, team.id)}>
           <PlusCircleIcon className="size-5 text-gray-500" />
         </button>

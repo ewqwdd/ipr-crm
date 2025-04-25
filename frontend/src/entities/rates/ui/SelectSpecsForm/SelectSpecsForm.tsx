@@ -29,6 +29,7 @@ interface SelectSpecsFormProps {
   onChangeConfirmCurator?: (v: boolean) => void;
   onChageConfirmUser?: (v: boolean) => void;
   onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
+  onDeselectAll: () => void;
 }
 
 export default function SelectSpecsForm({
@@ -49,6 +50,7 @@ export default function SelectSpecsForm({
   onChangeConfirmCurator,
   rateType,
   setRateType,
+  onDeselectAll,
 }: SelectSpecsFormProps) {
   const selectedCount = useMemo(
     () => selectedSpecs.reduce((acc, s) => acc + s.specs.length, 0),
@@ -119,6 +121,7 @@ export default function SelectSpecsForm({
       <div className="flex flex-col gap-2 max-sm:text-left">
         <TeamList
           onChangeSpecs={onChangeSpecs}
+          onDeselectAll={onDeselectAll}
           selectedSpecs={selectedSpecs}
           search={search}
           specs={specs}

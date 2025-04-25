@@ -17,6 +17,11 @@ import { SingleCommentDto } from './dto/single-comment.dto';
 import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
 import { AddEvaluatorsDto } from './dto/add-evalators.dto';
 
+type SubTeam = {
+  id: number;
+  subTeams?: SubTeam[];
+  curatorId?: number;
+};
 @Injectable()
 export class Rate360Service {
   constructor(
@@ -34,7 +39,29 @@ export class Rate360Service {
       : {};
   }
 
-  async findAll(curatorId?: number) {
+  async accessCheckWithSubTeams(sessionInfo: GetSessionInfoDto) {
+    if (sessionInfo.role === 'admin') {
+      return {};
+    }
+    const allowedTeamIds = await this.findAllowedTeams(sessionInfo.id);
+
+    return {
+      team: {
+        id: { in: allowedTeamIds },
+      },
+    };
+  }
+
+  async findAll(
+    { limit, page }: { page?: number; limit?: number },
+    curatorId?: number,
+  ) {
+    let allowedTeamIds: number[] = [];
+
+    if (curatorId) {
+      allowedTeamIds = await this.findAllowedTeams(curatorId);
+    }
+
     const rates = await this.prismaService.rate360.findMany({
       where: {
         archived: false,
@@ -42,7 +69,7 @@ export class Rate360Service {
           ? {
               teamId: { not: null }, // защита от null team
               team: {
-                curatorId,
+                id: { in: allowedTeamIds },
               },
             }
           : {}),
@@ -103,6 +130,8 @@ export class Rate360Service {
         },
         plan: true,
       },
+      ...(Number.isInteger(page) ? { skip: (page - 1) * limit } : {}),
+      ...(limit ? { take: limit } : {}),
       orderBy: {
         createdAt: 'desc',
       },
@@ -114,6 +143,56 @@ export class Rate360Service {
     return await this.prismaService.rate360.delete({
       where: { id },
     });
+  }
+
+  findSubTeams = (teams: SubTeam[] = []) => {
+    const filterTeam = (team: SubTeam) => {
+      const allSubTeams =
+        team.subTeams?.flatMap((subTeam) => filterTeam(subTeam)) ?? [];
+      return [team, ...allSubTeams];
+    };
+
+    return teams.flatMap((team) => filterTeam(team)).filter((t) => t !== null);
+  };
+
+  async findAllowedTeams(userId: number) {
+    const curatorTeams = await this.prismaService.team.findMany({
+      where: {
+        curatorId: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        subTeams: {
+          select: {
+            id: true,
+            name: true,
+            subTeams: {
+              select: {
+                id: true,
+                name: true,
+                subTeams: {
+                  select: {
+                    id: true,
+                    name: true,
+                    subTeams: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const allTeams = this.findSubTeams(curatorTeams);
+    const allowedTeamIds = allTeams.map((team) => team.id);
+    return allowedTeamIds;
   }
 
   async createRate(data: CreateRateDto, sessionInfo: GetSessionInfoDto) {
@@ -136,12 +215,41 @@ export class Rate360Service {
         },
         select: {
           id: true,
+          name: true,
+          subTeams: {
+            select: {
+              id: true,
+              name: true,
+              subTeams: {
+                select: {
+                  id: true,
+                  name: true,
+                  subTeams: {
+                    select: {
+                      id: true,
+                      name: true,
+                      subTeams: {
+                        select: {
+                          id: true,
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
 
+      const allTeams = this.findSubTeams(curatorTeams);
+      const allowedTeamIds = allTeams.map((team) => team.id);
+
       const rateTeamIds = ratesToCreate.map((rate) => rate.teamId);
-      const teamIds = curatorTeams.map((team) => team.id);
-      const found = rateTeamIds.some((teamId) => !teamIds.includes(teamId));
+      const found = rateTeamIds.some(
+        (teamId) => !allowedTeamIds.includes(teamId),
+      );
       if (found) {
         throw new ForbiddenException('You are not allowed to create this rate');
       }
@@ -180,12 +288,18 @@ export class Rate360Service {
           },
           select: {
             curatorId: true,
+            parentTeamId: true,
+            parentTeam: {
+              include: {
+                curator: true,
+              },
+            },
           },
         });
 
         let curatorConfirm = data.confirmCurator;
 
-        if (team.curatorId === rate.userId) {
+        if (team.curatorId === rate.userId && !team.parentTeamId) {
           curatorConfirm = false;
         }
 
@@ -195,10 +309,17 @@ export class Rate360Service {
             createdRates[index].id,
           );
         } else if (curatorConfirm) {
-          await this.notificationsService.sendRateConfirmNotification(
-            team.curatorId,
-            createdRates[index].id,
-          );
+          if (team.curatorId === rate.userId) {
+            await this.notificationsService.sendRateConfirmNotification(
+              team.parentTeam.curator.id,
+              createdRates[index].id,
+            );
+          } else {
+            await this.notificationsService.sendRateConfirmNotification(
+              team.curatorId,
+              createdRates[index].id,
+            );
+          }
         } else {
           await this.notificationsService.sendRateAssignedNotification(
             rate.userId,
@@ -667,9 +788,7 @@ export class Rate360Service {
                   showReportToUser: true,
                 },
                 {
-                  team: {
-                    curatorId: sessionInfo.id,
-                  },
+                  ...(await this.accessCheckWithSubTeams(sessionInfo)),
                 },
               ],
             }
@@ -848,10 +967,19 @@ export class Rate360Service {
   }
 
   async findRatesToConfirmByCurator(userId: number) {
-    return await this.prismaService.rate360.findMany({
+    const rates = await this.prismaService.rate360.findMany({
       where: {
         team: {
-          curatorId: userId,
+          OR: [
+            {
+              curatorId: userId,
+            },
+            {
+              parentTeam: {
+                curatorId: userId,
+              },
+            },
+          ],
         },
         curatorConfirmed: false,
         userConfirmed: true,
@@ -887,10 +1015,24 @@ export class Rate360Service {
         team: {
           select: {
             name: true,
+            curatorId: true,
+            parentTeam: {
+              select: {
+                curatorId: true,
+              },
+            },
           },
         },
       },
     });
+
+    const filtered = rates.filter((rate) => {
+      if (rate.team.curatorId !== rate.userId) return true;
+      if (rate.team.parentTeam && rate.team.parentTeam.curatorId === userId)
+        return true;
+      return false;
+    });
+    return filtered;
   }
 
   async confirmByCurator(
@@ -907,7 +1049,16 @@ export class Rate360Service {
       where: {
         id: rateId,
         team: {
-          curatorId,
+          OR: [
+            {
+              curatorId,
+            },
+            {
+              parentTeam: {
+                curatorId,
+              },
+            },
+          ],
         },
       },
     });

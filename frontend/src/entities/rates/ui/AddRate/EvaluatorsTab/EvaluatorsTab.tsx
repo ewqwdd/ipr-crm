@@ -63,12 +63,24 @@ export default function EvaluatorsTab({
           userId: u.user.id,
           username: u.user.username,
         })) ?? [];
-      const teamCurators = team?.curator
-        ? [{ userId: team.curator.id, username: team.curator.username }]
-        : [];
+      const teamCurator = team?.curator && {
+        userId: team.curator.id,
+        username: team.curator.username,
+      };
+
+      const parentTeam = data?.list.find((t) => t.id === team?.parentTeamId);
+
       const updatedSpecs = s.specs.map((spec) => ({
         ...spec,
-        evaluateCurators: teamCurators.filter((c) => c.userId !== spec.userId),
+        evaluateCurators: [
+          teamCurator?.userId === spec.userId
+            ? parentTeam?.curator &&
+              parentTeam?.curator.id !== spec.userId && {
+                userId: parentTeam?.curator.id,
+                username: parentTeam?.curator.username,
+              }
+            : teamCurator,
+        ].filter((c) => !!c),
         evaluateTeam:
           rateType === 'Rate360'
             ? teamUsers.filter((c) => c.userId !== spec.userId)

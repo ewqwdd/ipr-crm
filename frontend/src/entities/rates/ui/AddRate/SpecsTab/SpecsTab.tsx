@@ -42,6 +42,10 @@ export default function SpecsTab({
     dispatch(ratesActions.setConfirmUser(v));
   };
 
+  const onDeselectAll = () => {
+    dispatch(ratesActions.setSpecs([]));
+  };
+
   return (
     <SelectSpecsForm
       onChangeSpecs={onChangeSpecs}
@@ -61,6 +65,7 @@ export default function SpecsTab({
       onChageConfirmUser={onChangeConfirmUser}
       rateType={rateType}
       setRateType={setRateType}
+      onDeselectAll={onDeselectAll}
     />
   );
 }

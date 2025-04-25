@@ -1,4 +1,4 @@
-import { CreateTeamDto, Team, TeamSingle } from '@/entities/team';
+import { CreateTeamDto, Team, TeamSingle, teamTypes } from '@/entities/team';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const teamsApi = createApi({
@@ -13,12 +13,16 @@ const teamsApi = createApi({
       query: () => '/teams',
       providesTags: ['Team'],
       transformResponse: (response: Team[]) => {
-        const noParent = response.filter((team) => !team.parentTeamId);
-        const findChildren = (team: Team) => {
-          team.subTeams = response.filter((t) => t.parentTeamId === team.id);
-          team.subTeams.forEach(findChildren);
+        const noParent = response
+          .filter((team) => !team.parentTeamId)
+          .map((t) => ({ ...t, type: teamTypes[0] }));
+        const findChildren = (team: Team, index: number) => {
+          team.subTeams = response
+            .filter((t) => t.parentTeamId === team.id)
+            .map((t) => ({ ...t, type: teamTypes[index] }));
+          team.subTeams.forEach((t) => findChildren(t, index + 1));
         };
-        noParent.forEach(findChildren);
+        noParent.forEach((t) => findChildren(t, 1));
         return { structure: noParent, list: response };
       },
     }),

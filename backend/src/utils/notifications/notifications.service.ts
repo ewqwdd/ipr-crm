@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../db/prisma.service';
 import { MailService } from '../mailer/mailer';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { errorLogger } from '../filters/logger';
 
 @Injectable()
 export class NotificationsService {
@@ -114,35 +115,39 @@ export class NotificationsService {
   }
 
   async sendRateConfirmNotification(userId: number, rateId: number) {
-    const user = await this.prismaService.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
 
-    if (process.env.MAIL_ENABLED === 'true') {
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = `Вам назначено утверждение оценки №${rateId}`;
-      const link = `${process.env.FRONTEND_URL}/progress?tab=confirm-list`;
+      if (process.env.MAIL_ENABLED === 'true') {
+        const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+        const message = `Вам назначено утверждение оценки №${rateId}`;
+        const link = `${process.env.FRONTEND_URL}/progress?tab=confirm-list`;
 
-      const html = this.generateText(heading, message, link);
+        const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(
-        user.email,
-        'Вам назначено утверждение оценки',
-        html,
-      );
+        await this.mailService.sendMail(
+          user.email,
+          'Вам назначено утверждение оценки',
+          html,
+        );
+      }
+
+      await this.prismaService.notification.create({
+        data: {
+          title: 'Вам назначено утверждение оценки',
+          userId: userId,
+          type: 'RATE_CONFIRM',
+          rateId: rateId,
+          url: '/progress?tab=confirm-list',
+        },
+      });
+    } catch (error) {
+      errorLogger.error('Error sending rate confirmation notification:', error);
     }
-
-    await this.prismaService.notification.create({
-      data: {
-        title: 'Вам назначено утверждение оценки',
-        userId: userId,
-        type: 'RATE_CONFIRM',
-        rateId: rateId,
-        url: '/progress?tab=confirm-list',
-      },
-    });
   }
 
   async sendTestAssignedNotification(userId: number, testAssignedId?: number) {

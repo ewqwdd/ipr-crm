@@ -4,12 +4,14 @@ import { Accordion } from '@/shared/ui/Accordion';
 import { UsersIcon } from '@heroicons/react/outline';
 import UserItem from '../UserItem';
 import { ModalStateType } from './TeamList';
+import { cva } from '@/shared/lib/cva';
 
 interface TeamListItemProps {
   team: Team;
   selectedSpecs: AddRateDto[];
   onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
   setOpen?: (v: ModalStateType) => void;
+  nesting?: number;
 }
 
 export default function TeamListItem({
@@ -17,6 +19,7 @@ export default function TeamListItem({
   selectedSpecs,
   team,
   setOpen,
+  nesting = 0,
 }: TeamListItemProps) {
   const specs = selectedSpecs.find((s) => s.teamId === team.id)?.specs ?? [];
   return (
@@ -31,7 +34,11 @@ export default function TeamListItem({
         defaultOpen
         titleClassName="text-indigo-600 pl-4 flex gap-2 items-center"
       >
-        <div className="flex flex-col gap-2 ml-4">
+        <div
+          className={cva('flex flex-col gap-2 pl-3', {
+            'border-l-gray-200  border-l pl-6': nesting > 0,
+          })}
+        >
           {team.curator && (
             <UserItem
               user={team.curator}
@@ -59,6 +66,18 @@ export default function TeamListItem({
               onChange={onChangeSpecs}
             />
           ))}
+          <div className="flex flex-col">
+            {team.subTeams?.map((subTeam) => (
+              <TeamListItem
+                nesting={nesting + 1}
+                key={subTeam.id}
+                onChangeSpecs={onChangeSpecs}
+                selectedSpecs={selectedSpecs}
+                team={subTeam}
+                setOpen={setOpen}
+              />
+            ))}
+          </div>
         </div>
       </Accordion>
     </div>

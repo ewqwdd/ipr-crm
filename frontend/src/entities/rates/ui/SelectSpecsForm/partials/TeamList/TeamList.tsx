@@ -2,13 +2,16 @@ import { AddRateDto } from '@/entities/rates/types/types';
 import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
 import TeamListItem from './TeamListItem';
-import { useFilteredTeams } from '@/entities/rates/hooks/useFilteredTeams';
 import { AddSpecModal } from '@/widgets/AddSpecModal';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { useEffect, useState } from 'react';
 import { SelectOption } from '@/shared/types/SelectType';
-import { TeamUser } from '@/entities/team';
+import { Team, TeamUser } from '@/entities/team';
 import { useAppSelector } from '@/app';
+import { useFilteredStructure } from '@/entities/rates/hooks/useFilteredStructure';
+import { curatorFiltered } from '@/entities/rates/hooks/curatorFiltered';
+import { SpecOnUser } from '@/entities/team/types/types';
+import { Checkbox } from '@/shared/ui/Checkbox';
 
 interface TeamListProps {
   teams: MultiValue<Option>;
@@ -16,7 +19,24 @@ interface TeamListProps {
   search: string;
   selectedSpecs: AddRateDto[];
   onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
+  onDeselectAll: () => void;
 }
+
+type SpecElement =
+  | {
+      teamId: number;
+      id: number;
+      username: string;
+      avatar?: string;
+      specsOnTeams?: SpecOnUser[];
+    }
+  | {
+      teamId: number;
+      specsOnTeams: SpecOnUser[];
+      id?: number | undefined;
+      username?: string | undefined;
+      avatar?: string;
+    };
 
 export interface ModalStateType {
   teamId: number;
@@ -30,8 +50,14 @@ export default function TeamList({
   search,
   teams,
   onChangeSpecs,
+  onDeselectAll,
 }: TeamListProps) {
-  const filteredTeams = useFilteredTeams({ specs, teams, search });
+  const { data } = teamsApi.useGetTeamsQuery();
+  const filteredTeams = useFilteredStructure(data?.structure, data?.list, {
+    specs,
+    teams,
+    search,
+  });
   const [mutate, { isLoading: mutateLoading, isSuccess }] =
     teamsApi.useSetTeamSpecsMutation();
   const [open, setOpen] = useState<ModalStateType | undefined>();
@@ -58,20 +84,54 @@ export default function TeamList({
   const teamsToShow =
     user?.role.name === 'admin'
       ? filteredTeams
-      : filteredTeams?.filter((team) =>
-          user?.teamCurator?.find((t) => t.id === team.id),
-        );
+      : curatorFiltered(user!, filteredTeams);
 
-  const allSpecs = teamsToShow
-    ?.flatMap((team) => [
+  const getSpecs = (teams: Team[]): SpecElement[] => {
+    const specs = teams.flatMap((team) => [
       ...(team?.users?.map((u) => ({ ...u.user, teamId: team.id })) ?? []),
       { ...team.curator, teamId: team.id, specsOnTeams: team.curatorSpecs },
-    ])
-    .filter((u) => u?.specsOnTeams && u?.specsOnTeams?.length > 0);
-  console.log(allSpecs);
+      ...(team.subTeams
+        ?.flatMap((subTeam) => getSpecs([subTeam]))
+        .filter((s) => s.specsOnTeams && s.specsOnTeams?.length > 0) ?? []),
+    ]);
+    return specs;
+  };
+
+  const allSpecs = getSpecs(teamsToShow)
+    .flatMap((spec) =>
+      spec.specsOnTeams?.map((inner) => ({
+        userId: spec.id,
+        specId: inner.specId,
+        teamId: spec.teamId,
+      })),
+    )
+    .filter((s) => !!s);
+  const allSelected =
+    selectedSpecs.flatMap((s) => s.specs).length === allSpecs.length;
+
+  const onSelectAll = () => {
+    if (allSelected) {
+      onDeselectAll();
+      return;
+    }
+    allSpecs.forEach((spec) => {
+      const findSelected = selectedSpecs
+        .find((s) => s.teamId === spec.teamId)
+        ?.specs.find(
+          (s) => s.specId === spec.specId && s.userId === spec.userId,
+        );
+      if (!spec.userId || findSelected) return;
+      onChangeSpecs(spec.teamId, spec.specId, spec.userId);
+    });
+  };
 
   return (
     <>
+      <Checkbox
+        title="Выбрать все"
+        onChange={onSelectAll}
+        checked={allSelected}
+      />
       {teamsToShow?.map((team) => (
         <TeamListItem
           key={team.id}
