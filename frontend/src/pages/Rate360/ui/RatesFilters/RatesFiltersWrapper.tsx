@@ -1,27 +1,34 @@
-import { Rate } from '@/entities/rates';
 import { FC, useCallback, useMemo } from 'react';
 import RatesFilters from './RatesFilters';
 import { initialFilters } from './constatnts';
 import { Option } from '@/shared/types/Option';
-import { getUniqueOptions } from './helpers';
 import { MultiValue } from 'react-select';
 import { DateObject } from 'react-multi-date-picker';
-import { Filters, FiltersProgress, FiltersSkillType } from './types';
+import { Filters, FiltersSkillType } from './types';
+import { usersApi } from '@/shared/api/usersApi';
+import { teamsApi } from '@/shared/api/teamsApi';
+import { useAppSelector } from '@/app';
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
+import { universalApi } from '@/shared/api/universalApi';
 
 interface RatesFiltersWrapperProps {
-  data?: Rate[];
   filters: Filters;
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
 }
 
 const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
-  data,
   filters,
   setFilters,
 }) => {
   const updateFilters = useCallback((newFilters: Partial<Filters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   }, []);
+
+  const { data: users } = usersApi.useGetUsersQuery({});
+  const { data: teams } = teamsApi.useGetTeamsQuery();
+  const { data: specs } = universalApi.useGetSpecsQuery();
+  const teamAccess = useAppSelector((state) => state.user.user?.teamAccess);
+  const isAdmin = useIsAdmin();
 
   const resetFilters = useCallback(() => {
     updateFilters(initialFilters);
@@ -42,7 +49,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
 
   const onChangeProgress = useCallback(
     (value: string | number) =>
-      handleFilterChange('progress', value as FiltersProgress),
+      handleFilterChange('status', value as Filters['status']),
     [handleFilterChange],
   );
 
@@ -69,11 +76,23 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
 
   const { teamsOptions, specsOptions, usersOptions } = useMemo(
     () => ({
-      teamsOptions: getUniqueOptions(data, 'team'),
-      specsOptions: getUniqueOptions(data, 'spec'),
-      usersOptions: getUniqueOptions(data, 'user'),
+      teamsOptions: (isAdmin
+        ? teams?.list
+        : teams?.list.filter((team) => teamAccess?.includes(team.id))
+      )?.map((team) => ({
+        value: team.id,
+        label: team.name,
+      })) as Option[],
+      specsOptions: specs?.map((spec) => ({
+        value: spec.id,
+        label: spec.name,
+      })) as Option[],
+      usersOptions: (users?.users ?? []).map((user) => ({
+        value: user.id,
+        label: user.username,
+      })) as Option[],
     }),
-    [data],
+    [users, teams, teamAccess, isAdmin, specs],
   );
 
   return (

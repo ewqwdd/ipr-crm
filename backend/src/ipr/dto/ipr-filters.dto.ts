@@ -2,13 +2,12 @@ import { Transform } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
-  IsInt,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 
-export class RateFiltersDto {
+export class IprFiltersDto {
   @IsOptional()
   @Transform(({ value }) => Number(value))
   @IsNumber()
@@ -23,11 +22,6 @@ export class RateFiltersDto {
   @IsOptional()
   @IsEnum(['HARD', 'SOFT'])
   skill?: 'HARD' | 'SOFT';
-
-  @IsString()
-  @IsOptional()
-  @IsEnum(['COMPLETED', 'NOT_COMPLETED'])
-  status?: 'COMPLETED' | 'NOT_COMPLETED';
 
   @IsOptional()
   @Transform(({ value }) => Number(value))

@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { IprService } from './ipr.service';
@@ -20,6 +21,7 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { AddTaskDto } from './dto/add-task.dto';
 import { SetDeadlineDto } from './dto/set-deadline.dto';
 import { RemoveFromBoardDto } from './dto/remove-from-board.dto';
+import { IprFiltersDto } from './dto/ipr-filters.dto';
 
 @Controller('ipr')
 export class IprController {
@@ -165,8 +167,11 @@ export class IprController {
 
   @Get('/')
   @UseGuards(AuthGuard)
-  async findAll(@SessionInfo() sessionInfo: GetSessionInfoDto) {
-    return this.iprService.findAll(sessionInfo);
+  async findAll(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: IprFiltersDto,
+  ) {
+    return this.iprService.findAll(sessionInfo, params);
   }
 
   @Get('/user/:id')

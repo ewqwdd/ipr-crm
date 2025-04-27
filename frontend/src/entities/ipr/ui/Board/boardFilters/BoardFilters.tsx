@@ -2,9 +2,9 @@ import { Task } from '@/entities/ipr/model/types';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, memo, useState } from 'react';
 import { BoardFiltersType, initialFilters } from './constants';
-import StaticSelectFilter from '@/pages/Rate360/ui/RatesFilters/StaticSelectFilter';
+import StaticSelectFilter from '@/shared/ui/StaticSelectFilter/StaticSelectFilter';
 import { taskPriorityOptions } from '../../partials/tasks/constants';
-import PeriodSelector from '@/pages/Rate360/ui/RatesFilters/PeriodSelector';
+import PeriodSelector from '@/shared/ui/PeriodSelector/PeriodSelector';
 import { DateObject } from 'react-multi-date-picker';
 
 interface BoardFiltersProps {

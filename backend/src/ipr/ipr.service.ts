@@ -16,12 +16,15 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { AddTaskDto } from './dto/add-task.dto';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
+import { IprFiltersDto } from './dto/ipr-filters.dto';
+import { UsersAccessService } from 'src/users/users-access.service';
 
 @Injectable()
 export class IprService {
   constructor(
     private prismaService: PrismaService,
     private notificationsService: NotificationsService,
+    private usersAccessService: UsersAccessService,
   ) {}
 
   async findOneby360Id(id: number, sessionInfo: GetSessionInfoDto) {
@@ -30,11 +33,26 @@ export class IprService {
         id: id,
         ...(sessionInfo.role !== 'admin'
           ? {
-              rate360: {
-                team: {
-                  curatorId: sessionInfo.id,
+              OR: [
+                {
+                  rate360: {
+                    team: {
+                      id: {
+                        in: await this.usersAccessService.findAllowedTeams(
+                          sessionInfo.id,
+                        ),
+                      },
+                    },
+                  },
                 },
-              },
+                {
+                  planCurators: {
+                    some: {
+                      userId: sessionInfo.id,
+                    },
+                  },
+                },
+              ],
             }
           : {}),
       },
@@ -68,7 +86,11 @@ export class IprService {
         ...(sessionInfo.role !== 'admin'
           ? {
               team: {
-                curatorId: sessionInfo.id,
+                id: {
+                  in: await this.usersAccessService.findAllowedTeams(
+                    sessionInfo.id,
+                  ),
+                },
               },
             }
           : {}),
@@ -194,7 +216,7 @@ export class IprService {
     return created;
   }
 
-  updatePlan(
+  async updatePlan(
     id: number,
     data: Partial<IndividualGrowthPlan>,
     sessionInfo: GetSessionInfoDto,
@@ -208,7 +230,11 @@ export class IprService {
         {
           rate360: {
             team: {
-              curatorId: sessionInfo.id,
+              id: {
+                in: await this.usersAccessService.findAllowedTeams(
+                  sessionInfo.id,
+                ),
+              },
             },
           },
         },
@@ -245,7 +271,9 @@ export class IprService {
         {
           rate360: {
             team: {
-              curatorId: session.id,
+              id: {
+                in: await this.usersAccessService.findAllowedTeams(session.id),
+              },
             },
           },
         },
@@ -255,9 +283,6 @@ export class IprService {
               userId: session.id,
             },
           },
-        },
-        {
-          userId: session.id,
         },
       ];
     }
@@ -429,8 +454,10 @@ export class IprService {
     }
 
     if (
-      plan.rate360.team.curator.id !== clientInfo.id &&
-      clientInfo.role !== 'admin'
+      clientInfo.role !== 'admin' &&
+      !(await this.usersAccessService.findAllowedTeams(clientInfo.id)).includes(
+        plan.rate360.team.id,
+      )
     ) {
       throw new ForbiddenException(
         'You are not allowed to add tasks to this plan',
@@ -474,9 +501,119 @@ export class IprService {
     return material;
   }
 
-  async findAll(sessionInfo: GetSessionInfoDto) {
+  async findAll(
+    sessionInfo: GetSessionInfoDto,
+    {
+      limit,
+      page,
+      endDate,
+      skill,
+      specId,
+      startDate,
+      teams,
+      user,
+    }: IprFiltersDto,
+  ) {
+    const teamFilters = teams?.split(',').map((t) => Number(t)) || [];
+
+    const where: Prisma.IndividualGrowthPlanWhereInput = {
+      ...(startDate
+        ? {
+            startDate: {
+              gte: new Date(startDate),
+            },
+          }
+        : {}),
+      ...(endDate
+        ? {
+            endDate: {
+              lte: new Date(endDate),
+            },
+          }
+        : {}),
+      ...(user ? { userId: user } : {}),
+    };
+
+    if (teamFilters.length > 0 || specId || skill) {
+      where.rate360 = {
+        ...(teamFilters.length > 0
+          ? {
+              teamId: {
+                in: teamFilters,
+              },
+            }
+          : {}),
+        ...(specId ? { specId } : {}),
+        ...(skill ? { type: skill } : {}),
+      };
+    }
+
     if (sessionInfo.role === 'admin') {
-      return this.prismaService.individualGrowthPlan.findMany({
+      const [data, total] = await Promise.all([
+        this.prismaService.individualGrowthPlan.findMany({
+          where,
+          include: {
+            user: true,
+            mentor: true,
+            rate360: {
+              select: {
+                team: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+            tasks: true,
+            spec: true,
+          },
+          orderBy: {
+            id: 'desc',
+          },
+          ...(Number.isInteger(page) ? { skip: (page - 1) * limit } : {}),
+          ...(limit ? { take: limit } : {}),
+        }),
+        this.prismaService.individualGrowthPlan.count({ where }),
+      ]);
+
+      return {
+        data,
+        total,
+      };
+    }
+
+    const accessTeams = await this.usersAccessService.findAllowedTeams(
+      sessionInfo.id,
+    );
+
+    where.OR = [
+      {
+        planCurators: {
+          some: {
+            userId: sessionInfo.id,
+          },
+        },
+      },
+      {
+        rate360: {
+          team: {
+            id: {
+              in:
+                teamFilters.length > 0
+                  ? teamFilters.filter((t) => accessTeams.includes(t))
+                  : accessTeams,
+            },
+          },
+        },
+      },
+    ];
+    if (where.rate360?.teamId) {
+      delete where.rate360.teamId;
+    }
+
+    const [data, total] = await Promise.all([
+      this.prismaService.individualGrowthPlan.findMany({
+        where,
         include: {
           user: true,
           mentor: true,
@@ -490,50 +627,22 @@ export class IprService {
             },
           },
           tasks: true,
-          spec: true,
         },
         orderBy: {
           id: 'desc',
         },
-      });
-    }
-    return this.prismaService.individualGrowthPlan.findMany({
-      where: {
-        OR: [
-          {
-            planCurators: {
-              some: {
-                userId: sessionInfo.id,
-              },
-            },
-          },
-          {
-            rate360: {
-              team: {
-                curatorId: sessionInfo.id,
-              },
-            },
-          },
-        ],
-      },
-      include: {
-        user: true,
-        mentor: true,
-        rate360: {
-          select: {
-            team: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-        tasks: true,
-      },
-      orderBy: {
-        id: 'desc',
-      },
-    });
+        ...(Number.isInteger(page) ? { skip: (page - 1) * limit } : {}),
+        ...(limit ? { take: limit } : {}),
+      }),
+      this.prismaService.individualGrowthPlan.count({
+        where,
+      }),
+    ]);
+
+    return {
+      data,
+      total,
+    };
   }
 
   async checkBoardAccess(taskId: number, sessionInfo: GetSessionInfoDto) {

@@ -5,7 +5,7 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, memo, useCallback, useMemo, useState } from 'react';
 import { MultiValue } from 'react-select';
 import { getAllFilterOptions } from './helpers';
-import StaticSelectFilter from '@/pages/Rate360/ui/RatesFilters/StaticSelectFilter';
+import StaticSelectFilter from '@/shared/ui/StaticSelectFilter/StaticSelectFilter';
 import SpecSelector from './SpecSelector';
 import { Filters, initialFilters } from './constants';
 

@@ -1,3 +1,4 @@
+import { useAppDispatch } from '@/app';
 import { Rate } from '@/entities/rates';
 import { iprApi } from '@/shared/api/iprApi';
 import { rate360Api } from '@/shared/api/rate360Api';
@@ -10,11 +11,11 @@ interface IprButtonProps {
 
 export default function IprButton({ rate }: IprButtonProps) {
   const [mutate, { isLoading }] = iprApi.useCreateIprMutation();
-  const { refetch } = rate360Api.useGetRatesQuery();
+  const dispatch = useAppDispatch();
 
   const handleClick = async () => {
     await mutate(rate.id);
-    refetch();
+    dispatch(rate360Api.util.invalidateTags(['Rate360', 'UserRates']));
   };
 
   if (!rate.plan) {

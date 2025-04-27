@@ -1,7 +1,5 @@
 import { Rate } from '@/entities/rates';
-import { Filters } from './RatesFiltersWrapper';
-
-export type RateProgress = 'COMPLETED' | 'IN_PROGRESS';
+import { Filters } from './types';
 
 export const skillTypeOptions: Array<{ value: Rate['type']; label: string }> = [
   { value: 'SOFT', label: 'Soft skills' },
@@ -12,19 +10,18 @@ export const skillTypeOptions: Array<{ value: Rate['type']; label: string }> = [
 // export const rate360StatusOptions = [];
 
 export const progressOptions: Array<{
-  value: RateProgress;
+  value: 'COMPLETED' | 'NOT_COMPLETED' | 'ALL';
   label: string;
 }> = [
   { value: 'COMPLETED', label: 'Завершён' },
-  { value: 'IN_PROGRESS', label: 'Не завершён' },
+  { value: 'NOT_COMPLETED', label: 'Не завершён' },
 ] as const;
 
 export const initialFilters: Filters = {
   teams: [],
   skillType: 'ALL',
-  progress: 'ALL',
   userId: 'ALL',
   specId: 'ALL',
   period: undefined,
-  // status: 'ALL', // TODO: add status
+  status: 'ALL', // TODO: add status
 };

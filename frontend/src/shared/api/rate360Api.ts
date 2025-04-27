@@ -43,7 +43,7 @@ const rate360Api = createApi({
         url: '/rate360',
         params,
       }),
-      providesTags: (_, __, { page }) => [{ type: 'Rate360', page }],
+      providesTags: (_, __, params) => [{ type: 'Rate360', params }],
     }),
     createRate: build.mutation<
       void,

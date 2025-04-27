@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import StaticSelectFilter from '@/pages/Rate360/ui/RatesFilters/StaticSelectFilter';
+import StaticSelectFilter from '@/shared/ui/StaticSelectFilter/StaticSelectFilter';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
-import PeriodSelector from '@/pages/Rate360/ui/RatesFilters/PeriodSelector';
+import PeriodSelector from '@/shared/ui/PeriodSelector/PeriodSelector';
 import { DateObject } from 'react-multi-date-picker';
 import debounce from 'lodash.debounce';
 import {

@@ -1,9 +1,7 @@
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useState } from 'react';
-import PeriodSelector from './PeriodSelector';
-import { Filters } from './RatesFiltersWrapper';
+import PeriodSelector from '../../../../shared/ui/PeriodSelector/PeriodSelector';
 import TeamSelector from './TeamSelector';
-import StaticSelectFilter from './StaticSelectFilter';
 import {
   initialFilters,
   progressOptions,
@@ -14,6 +12,8 @@ import { Option } from '@/shared/types/Option';
 import { MultiValue } from 'react-select';
 import { DateObject } from 'react-multi-date-picker';
 import { PingCircle } from '@/shared/ui/PingCircle';
+import { Filters } from './types';
+import { StaticSelectFilter } from '@/shared/ui/StaticSelectFilter';
 
 type OnChange = (value: string | number) => void;
 
@@ -97,7 +97,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
             label="Прогресс"
             options={progressOptions}
             onChange={onChangeProgress}
-            value={filters.progress}
+            value={filters.status}
           />
           <PeriodSelector value={filters.period} onChange={onChangePeriod} />
         </div>

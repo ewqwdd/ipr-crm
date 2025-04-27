@@ -1,6 +1,6 @@
 import { Rate } from '@/entities/rates';
-import { Filters } from './RatesFiltersWrapper';
 import { Option } from '@/shared/types/Option';
+import { Filters } from './types';
 
 export const getChangedFilters = (
   initialFilters: Filters,
@@ -62,10 +62,10 @@ export const filterBySpecId = (rate: Rate, specId: Filters['specId']) => {
   return specId === 'ALL' || Number(rate.spec.id) === Number(specId);
 };
 
-export const filterByProgress = (rate: Rate, progress: Filters['progress']) => {
+export const filterByProgress = (rate: Rate, progress: Filters['status']) => {
   if (progress === 'ALL') return true;
   const isCompleted = progress === 'COMPLETED' && rate.finished;
-  const isInProgress = progress === 'IN_PROGRESS' && !rate.finished;
+  const isInProgress = progress === 'NOT_COMPLETED' && !rate.finished;
   return isCompleted || isInProgress;
 };
 

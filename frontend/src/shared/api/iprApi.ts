@@ -14,6 +14,17 @@ export interface AddTaskDto {
   userId: number;
 }
 
+interface IprFiltersDto {
+  page?: number;
+  limit?: number;
+  skill?: 'HARD' | 'SOFT';
+  specId?: number;
+  user?: number;
+  teams?: number[];
+  startDate?: string;
+  endDate?: string;
+}
+
 const iprApi = createApi({
   reducerPath: 'iprApi',
   baseQuery: fetchBaseQuery({
@@ -123,12 +134,31 @@ const iprApi = createApi({
         { type: 'user-ipr', id: userId },
       ],
     }),
-    findAllIpr: build.query<Ipr[], void>({
-      query: () => ({
+    findAllIpr: build.query<{ data: Ipr[]; total: number }, IprFiltersDto>({
+      query: ({
+        limit,
+        page,
+        endDate,
+        skill,
+        specId,
+        startDate,
+        teams,
+        user,
+      }) => ({
         url: '/ipr',
         method: 'GET',
+        params: {
+          limit,
+          page,
+          endDate,
+          skill,
+          specId,
+          startDate,
+          teams: teams?.join(','),
+          user,
+        },
       }),
-      providesTags: ['ipr'],
+      providesTags: (_, __, params) => [{ type: 'ipr', params }],
     }),
     findUserIprById: build.query<Ipr, number>({
       query: (id) => ({

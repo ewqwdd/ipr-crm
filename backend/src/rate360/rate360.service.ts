@@ -61,26 +61,39 @@ export class Rate360Service {
       specId,
       startDate,
       status,
-      teams,
+      teams: teams_,
       user,
     }: RateFiltersDto,
     curatorId?: number,
   ) {
+    const teams = teams_ ? teams_.split(',').map(Number) : [];
     let teamsFilter: number[] = teams ?? [];
 
     if (curatorId) {
       teamsFilter = await this.usersService.findAllowedTeams(curatorId);
       if (teams) {
-        teamsFilter = teams.filter((team) => teamsFilter.includes(team));
+        teamsFilter =
+          teams.length > 0
+            ? teams.filter((team) => teamsFilter.includes(team))
+            : teamsFilter;
       }
     }
 
     const where = {
       archived: false,
-      ...(curatorId || teams ? { team: { id: { in: teamsFilter } } } : {}),
+      ...(curatorId || teams.length > 0
+        ? { team: { id: { in: teamsFilter } } }
+        : {}),
       ...(user ? { userId: user } : {}),
       ...(specId ? { specId } : {}),
       ...(skill ? { type: skill } : {}),
+      ...(status === 'COMPLETED'
+        ? { finished: true }
+        : status === 'NOT_COMPLETED'
+          ? { finished: false }
+          : {}),
+      ...(startDate ? { startDate: { gte: new Date(startDate) } } : {}),
+      ...(endDate ? { endDate: { lte: new Date(endDate) } } : {}),
     };
 
     const [total, rates] = await this.prismaService.$transaction([
