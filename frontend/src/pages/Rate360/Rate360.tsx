@@ -10,12 +10,23 @@ import RatesTable from './ui/RatesTable';
 import Settings from './ui/Settings';
 import RatesFiltersWrapper from './ui/RatesFilters';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { Pagination } from '@/shared/ui/Pagination';
+import { Filters } from './ui/RatesFilters/types';
+import { initialFilters } from './ui/RatesFilters/constatnts';
+
+const LIMIT = 20;
 
 export default function Rate360() {
-  const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery();
   const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState<Filters>(initialFilters);
+
   const dispatch = useAppDispatch();
+  const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery({
+    page,
+    limit: LIMIT,
+  });
 
   const handleClose = () => {
     setOpen(false);
@@ -35,16 +46,23 @@ export default function Rate360() {
             Добавить
           </PrimaryButton>
         </div>
-        <RatesFiltersWrapper data={data}>
-          {(filteredData) => (
-            <RatesTable
-              selected={selected}
-              data={filteredData}
-              isLoading={isFetching}
-              setSelected={setSelected}
-            />
-          )}
-        </RatesFiltersWrapper>
+        <RatesFiltersWrapper
+          filters={filters}
+          setFilters={setFilters}
+          data={data?.data}
+        />
+        <RatesTable
+          selected={selected}
+          data={data?.data}
+          isLoading={isFetching}
+          setSelected={setSelected}
+        />
+        <Pagination
+          limit={LIMIT}
+          page={page}
+          count={data?.total}
+          setPage={setPage}
+        />
         <Settings selected={selected} setSelected={setSelected} />
       </div>
       <Modal

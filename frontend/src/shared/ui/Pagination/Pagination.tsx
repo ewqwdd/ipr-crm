@@ -35,6 +35,7 @@ export default function Pagination({
           <p className="text-sm text-gray-700">
             <span className="font-medium">{(page - 1) * limit + 1}</span> из
             <span className="font-medium">
+              {' '}
               {Math.min(page * limit, count)}
             </span>{' '}
             всего <span className="font-medium">{count}</span>

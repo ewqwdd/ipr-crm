@@ -40,7 +40,7 @@ export interface User {
 }
 
 export interface UserStoreSchema {
-  user: User | null;
+  user: (User & { teamAccess: number[] }) | null;
   isMounted: boolean;
   isAdmin: boolean;
 }

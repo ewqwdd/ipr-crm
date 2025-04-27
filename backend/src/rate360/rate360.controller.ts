@@ -8,6 +8,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { Rate360Service } from './rate360.service';
@@ -24,6 +25,7 @@ import { SingleRateIdDto } from './dto/single-rate-id.dto';
 import { SingleCommentDto } from './dto/single-comment.dto';
 import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
 import { AddEvaluatorsDto } from './dto/add-evalators.dto';
+import { RateFiltersDto } from './dto/rate-filters.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -33,13 +35,13 @@ export class Rate360Controller {
   @UseGuards(AuthGuard)
   async rates(
     @SessionInfo() sessionInfo: GetSessionInfoDto,
-    @Param('page') page: number,
-    @Param('limit') limit: number,
+    @Query() params: RateFiltersDto,
   ) {
+    console.log(params);
     if (sessionInfo.role === 'admin') {
-      return await this.rate360Service.findAll({ page, limit });
+      return await this.rate360Service.findAll(params);
     } else {
-      return await this.rate360Service.findAll({ page, limit }, sessionInfo.id);
+      return await this.rate360Service.findAll(params, sessionInfo.id);
     }
   }
 

@@ -3,13 +3,15 @@ import { CreateTeamDto, Team } from '../../types/types';
 import TeamForm from '../TeamForm/TeamForm';
 import { usersApi } from '@/shared/api/usersApi';
 import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 interface TeamEditProps {
   team?: Team;
 }
 
 export default function TeamEdit({ team }: TeamEditProps) {
-  const [mutate, { isLoading, isSuccess }] = teamsApi.useUpdateTeamMutation();
+  const [mutate, { isLoading, isSuccess, error }] =
+    teamsApi.useUpdateTeamMutation();
   const { refetch } = usersApi.useGetUsersQuery({});
 
   useEffect(() => {
@@ -17,6 +19,13 @@ export default function TeamEdit({ team }: TeamEditProps) {
       refetch();
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    if (error) {
+      // @ts-ignore
+      toast.error(error?.data?.message || 'Ошибка при редактировании команды');
+    }
+  }, [error]);
 
   if (!team) return null;
 

@@ -59,8 +59,11 @@ export default function TeamPage() {
 
   let accessType: 'user' | 'admin' | 'curator' = 'user';
 
-  if (user?.teamCurator?.find((t) => t.id === Number(id))) {
-    accessType = 'curator';
+  if (user?.teamAccess?.find((t) => t === Number(id))) {
+    accessType = 'admin';
+    if (user?.teamCurator?.find((t) => t.id === Number(id))) {
+      accessType = 'curator';
+    }
   }
   if (user?.role.name === 'admin') {
     accessType = 'admin';
@@ -75,7 +78,7 @@ export default function TeamPage() {
       >
         <div className="flex justify-between items-center max-sm:pr-12">
           <Heading title={data?.name} description="Состав команды" />
-          {accessType === 'admin' && (
+          {['curator', 'admin'].includes(accessType) && (
             <Dropdown
               btnClassName="focus:ring-0"
               button={
@@ -132,7 +135,12 @@ export default function TeamPage() {
           <div className="flex gap-2">
             {data?.subTeams?.map((team) => (
               <Link to={`/teams/${team.id}`} key={team.id}>
-                <SoftButton>{team.name}</SoftButton>
+                <SoftButton>
+                  {team.name}{' '}
+                  <span className="opacity-80 font-normal">
+                    {team.users && team.users.length} чел.
+                  </span>
+                </SoftButton>
               </Link>
             ))}
           </div>

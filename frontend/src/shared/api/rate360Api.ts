@@ -10,6 +10,18 @@ interface ConfirmDto {
   comment?: string;
 }
 
+interface RateFiltersDto {
+  page?: number;
+  limit?: number;
+  skill?: 'HARD' | 'SOFT';
+  status?: 'COMPLETED' | 'NOT_COMPLETED';
+  specId?: number;
+  user?: number;
+  teams?: number[];
+  startDate?: string;
+  endDate?: string;
+}
+
 const rate360Api = createApi({
   reducerPath: 'rate360Api',
   baseQuery: fetchBaseQuery({
@@ -26,9 +38,12 @@ const rate360Api = createApi({
     'Report',
   ],
   endpoints: (build) => ({
-    getRates: build.query<Rate[], void>({
-      query: () => '/rate360',
-      providesTags: ['Rate360'],
+    getRates: build.query<{ data: Rate[]; total: number }, RateFiltersDto>({
+      query: (params) => ({
+        url: '/rate360',
+        params,
+      }),
+      providesTags: (_, __, { page }) => [{ type: 'Rate360', page }],
     }),
     createRate: build.mutation<
       void,

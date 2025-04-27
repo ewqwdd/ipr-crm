@@ -48,19 +48,23 @@ export class TeamsController {
 
   @HttpCode(HttpStatus.OK)
   @Delete('/curators/:id')
-  @UseGuards(AdminGuard)
-  async removeCurator(@Param('id') id: number) {
-    return this.teamsService.curatorRemove(id);
+  @UseGuards(AuthGuard)
+  async removeCurator(
+    @Param('id') id: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.teamsService.curatorRemove(id, sessionInfo);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('/curators/:id')
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   async addCurator(
     @Param('id') id: number,
     @Body() body: { curatorId: number },
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    return this.teamsService.setCurator(id, body.curatorId);
+    return this.teamsService.setCurator(id, body.curatorId, sessionInfo);
   }
 
   @Get(':id')

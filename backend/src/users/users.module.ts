@@ -5,6 +5,8 @@ import { PrismaService } from 'src/utils/db/prisma.service';
 import { PasswordService } from 'src/utils/password/password';
 import { S3Service } from 'src/utils/s3/s3.service';
 import { MailService } from 'src/utils/mailer/mailer';
+import { CreateProductsService } from './create-products.service';
+import { UsersAccessService } from './users-access.service';
 
 @Module({
   controllers: [UsersController],
@@ -14,6 +16,8 @@ import { MailService } from 'src/utils/mailer/mailer';
     PasswordService,
     S3Service,
     MailService,
+    CreateProductsService,
+    UsersAccessService,
   ],
   exports: [UsersService],
 })

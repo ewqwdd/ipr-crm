@@ -8,11 +8,13 @@ import { Dispatch, SetStateAction } from 'react';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { TrashIcon } from '@heroicons/react/outline';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { StarIcon } from '@heroicons/react/solid';
 
 interface ImportUsersTablrProps {
   rows: ImportUsersRowType[];
-  specs: string[];
-  teams: string[];
+  directions: string[];
+  products: string[];
+  departments: string[];
   setRows: Dispatch<SetStateAction<ImportUsersStateType>>;
   onSubmit: () => void;
   isLoading: boolean;
@@ -20,8 +22,9 @@ interface ImportUsersTablrProps {
 
 export default function ImportUsersTable({
   rows,
-  specs,
-  teams,
+  departments,
+  directions,
+  products,
   setRows,
   isLoading,
   onSubmit,
@@ -29,8 +32,15 @@ export default function ImportUsersTable({
   const { data: usersData, isLoading: usersLoading } =
     usersApi.useGetUsersQuery({});
 
-  const newSpecs = specs.filter((s) => s.trim() !== '-' && s.trim() !== '');
-  const newTeams = teams.filter((t) => t.trim() !== '-' && t.trim() !== '');
+  const newProducts = products.filter(
+    (s) => s.trim() !== '-' && s.trim() !== '',
+  );
+  const newDepartments = departments.filter(
+    (t) => t.trim() !== '-' && t.trim() !== '',
+  );
+  const newDirections = directions.filter(
+    (t) => t.trim() !== '-' && t.trim() !== '',
+  );
 
   return (
     <>
@@ -44,8 +54,9 @@ export default function ImportUsersTable({
             headings={[
               { label: 'Имя пользователя', className: 'pl-12' },
               'Почта',
-              'Команда',
-              'Специализация',
+              'Продукт',
+              'Департамент',
+              'Направление',
               '',
             ]}
           />
@@ -53,20 +64,30 @@ export default function ImportUsersTable({
             data={rows}
             columnRender={[
               {
-                render: (_, index) =>
-                  usersData?.users.find(
+                render: (_, index) => {
+                  const label = (
+                    <div className="flex items-start gap-0.5">
+                      {rows[index].Ник}{' '}
+                      {rows[index].Лидер?.toLowerCase() === 'да' && (
+                        <StarIcon className="size-4 text-yellow-500" />
+                      )}
+                    </div>
+                  );
+
+                  return usersData?.users.find(
                     (u) => u.username === rows[index].Ник,
                   ) ? (
                     <Tooltip content="Имя пользователя занято" position="top">
                       <span className="text-red-500 text-sm font-medium">
-                        {rows[index].Ник}
+                        {label}
                       </span>
                     </Tooltip>
                   ) : (
                     <span className="text-gray-800 text-sm font-medium">
-                      {rows[index].Ник}
+                      {label}
                     </span>
-                  ),
+                  );
+                },
                 className: 'pl-12',
               },
               {
@@ -85,6 +106,13 @@ export default function ImportUsersTable({
                       {rows[index].Почта}
                     </span>
                   ),
+              },
+              {
+                render: (_, index) => (
+                  <span className="text-gray-500 text-sm font-medium">
+                    {rows[index].Продукт}
+                  </span>
+                ),
               },
               {
                 render: (_, index) => (
@@ -118,10 +146,10 @@ export default function ImportUsersTable({
             ]}
           />
         </table>
-        {newSpecs.length > 0 && (
+        {newProducts.length > 0 && (
           <div className="sm:px-6 px-4 mt-2 flex gap-2 flex-wrap text-sm font-medium">
-            Специцфикации к созданию:{' '}
-            {newSpecs.map((s, index) => (
+            Продукты к созданию:{' '}
+            {newProducts.map((s, index) => (
               <span key={index} className="text-gray-700 font-normal">
                 {s}
               </span>
@@ -129,12 +157,23 @@ export default function ImportUsersTable({
           </div>
         )}
 
-        {newTeams.length > 0 && (
+        {newDepartments.length > 0 && (
           <div className="sm:px-6 px-4 mt-2 flex gap-2 flex-wrap text-sm font-medium">
-            Команды к созданию:{' '}
-            {newTeams.map((t, index) => (
+            Департаменты к созданию:{' '}
+            {newDepartments.map((t, index) => (
               <span key={index} className="text-gray-700 font-normal">
                 {t}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {newDirections.length > 0 && (
+          <div className="sm:px-6 px-4 mt-2 flex gap-2 flex-wrap text-sm font-medium">
+            Направления к созданию:{' '}
+            {newDirections.map((s, index) => (
+              <span key={index} className="text-gray-700 font-normal">
+                {s}
               </span>
             ))}
           </div>

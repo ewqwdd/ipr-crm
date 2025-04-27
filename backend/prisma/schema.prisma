@@ -57,7 +57,7 @@ model Rate360 {
   userId           Int
   specId           Int
   teamId           Int?
-  user             User        @relation(fields: [userId], references: [id])
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
   archived         Boolean     @default(false)
   type             SkillType
   userComment      String?
@@ -432,14 +432,14 @@ model Notification {
   iprId Int?
   ipr   IndividualGrowthPlan? @relation(fields: [iprId], references: [id], onDelete: Cascade)
 
-  user           User                  @relation(fields: [userId], references: [id])
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   assignedTest   User_Assigned_Test?   @relation(fields: [assignedTestId], references: [id], onDelete: Cascade)
   assignedSurvey User_Assigned_Survey? @relation(fields: [assignedSurveyId], references: [id], onDelete: Cascade)
 }
 
 model Team {
   id           Int            @id @default(autoincrement())
-  name         String         @unique
+  name         String         
   description  String?
   users        UserTeam[]
   parentTeamId Int?

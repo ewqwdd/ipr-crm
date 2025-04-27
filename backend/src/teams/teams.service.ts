@@ -1,13 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { SetTeamUserSpecs } from './dto/set-team-user-specs';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { Prisma } from '@prisma/client';
+import { UsersAccessService } from 'src/users/users-access.service';
 
 @Injectable()
 export class TeamsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private usersAccessService: UsersAccessService,
+  ) {}
 
   async create(
     name: string,
@@ -15,6 +23,15 @@ export class TeamsService {
     parentId?: number,
     curatorId?: number,
   ) {
+    if (parentId) {
+      const parentTeam = await this.prisma.team.findUnique({
+        where: { id: parentId, name: name },
+      });
+      if (parentTeam) {
+        throw new NotFoundException('Команда с таким именем уже существует.');
+      }
+    }
+
     const team = await this.prisma.team.create({
       data: {
         name,
@@ -136,26 +153,51 @@ export class TeamsService {
       throw new NotFoundException('Команда не найдена.');
     }
 
+    if (body.parentTeamId) {
+      const parentTeam = await this.prisma.team.findUnique({
+        where: { id: body.parentTeamId },
+        include: {
+          subTeams: {
+            where: {
+              name: body.name,
+            },
+          },
+        },
+      });
+      if (!parentTeam) {
+        throw new NotFoundException('Родительская команда не найдена.');
+      }
+      if (parentTeam.subTeams.length > 0) {
+        throw new ForbiddenException('Конфликт имен команд.');
+      }
+    }
+
     const updated = await this.prisma.team.update({
       where: { id },
       data: {
-        ...body,
+        description: body.description,
+        name: body.name,
+        parentTeamId: body.parentTeamId ? body.parentTeamId : undefined,
         curatorId: body.curatorId ? body.curatorId : undefined,
-        users: {
-          deleteMany: {
-            userId: { equals: body.curatorId },
-            teamId: { equals: id },
-          },
-        },
         subTeams: body.subTeams
-          ? { deleteMany: {}, connect: body.subTeams.map((e) => ({ id: e })) }
+          ? { connect: body.subTeams.map((e) => ({ id: e })) }
           : undefined,
       },
     });
+
+    if (body.curatorId && team.users.find((e) => e.userId === body.curatorId)) {
+      await this.prisma.userTeam.deleteMany({
+        where: {
+          userId: body.curatorId,
+          teamId: id,
+        },
+      });
+    }
+
     return updated;
   }
 
-  async curatorRemove(teamId: number) {
+  async curatorRemove(teamId: number, sessionInfo: GetSessionInfoDto) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       include: {
@@ -169,6 +211,19 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }
+
+    if (sessionInfo.role !== 'admin') {
+      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
+      if (
+        !accessibleTeamIds.includes(teamId) ||
+        team.curatorId === sessionInfo.id
+      ) {
+        throw new ForbiddenException('У вас нет доступа к этой команде.');
+      }
+    }
+
     await this.prisma.team.update({
       where: { id: teamId },
       data: {
@@ -195,7 +250,11 @@ export class TeamsService {
     return;
   }
 
-  async setCurator(teamId: number, curatorId: number) {
+  async setCurator(
+    teamId: number,
+    curatorId: number,
+    sessionInfo: GetSessionInfoDto,
+  ) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       include: {
@@ -205,6 +264,19 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }
+
+    if (sessionInfo.role !== 'admin') {
+      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
+      if (
+        !accessibleTeamIds.includes(teamId) ||
+        team.curatorId === sessionInfo.id
+      ) {
+        throw new ForbiddenException('У вас нет доступа к этой команде.');
+      }
+    }
+
     const specs = await this.prisma.specsOnUserTeam.findMany({
       where: { teamId, userId: curatorId },
     });
@@ -275,7 +347,12 @@ export class TeamsService {
     const filters = { id: teamId } as Prisma.TeamWhereUniqueInput;
 
     if (sessionInfo.role !== 'admin') {
-      filters.curatorId = sessionInfo.id;
+      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
+      if (!accessibleTeamIds.includes(teamId)) {
+        throw new ForbiddenException('У вас нет доступа к этой команде.');
+      }
     }
 
     // Проверяем, существует ли команда
@@ -375,7 +452,12 @@ export class TeamsService {
     const filters = { id: teamId } as Prisma.TeamWhereUniqueInput;
 
     if (sessionInfo.role !== 'admin') {
-      filters.curatorId = sessionInfo.id;
+      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
+      if (!accessibleTeamIds.includes(teamId)) {
+        throw new ForbiddenException('У вас нет доступа к этой команде.');
+      }
     }
 
     const team = await this.prisma.team.findUnique({ where: filters });
@@ -413,7 +495,16 @@ export class TeamsService {
     const filters = { teamId, userId } as Prisma.UserTeamWhereInput;
 
     if (sessionInfo.role !== 'admin') {
-      filters.team = { curatorId: sessionInfo.id };
+      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
+      if (!accessibleTeamIds.includes(teamId)) {
+        throw new ForbiddenException('У вас нет доступа к этой команде.');
+      }
+      // const team = await this.prisma.team.findUnique({
+      //   where: { id: teamId }
+      // });
+      // if (team.curatorId === sessionInfo.id) throw new ForbiddenException('У вас нет доступа к этой команде.');
     }
 
     return this.prisma.userTeam.deleteMany({

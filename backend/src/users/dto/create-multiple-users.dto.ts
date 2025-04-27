@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsOptional,
   IsString,
@@ -17,11 +18,19 @@ class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  team: string;
+  department?: string;
 
   @IsOptional()
   @IsString()
-  spec: string;
+  direction?: string;
+
+  @IsOptional()
+  @IsString()
+  product?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  leader?: boolean;
 }
 
 export class CreateMultipleUsersDto {

@@ -39,10 +39,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       sendToTelegram(message, stack ?? '', session, body);
     }
 
-    response.status(status).json({
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-    });
+    response.status(status).json(errorResponse);
   }
 }

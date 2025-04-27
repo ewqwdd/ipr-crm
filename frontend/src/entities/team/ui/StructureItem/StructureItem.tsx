@@ -29,9 +29,12 @@ export default memo(function StructureItem({
         {team.name}
       </Link>
       {team.type && (
-        <span className="text-gray-500 text-sm ml-2 self-end mb-0.5">
-          {teamTypeNames[team.type]}
-        </span>
+        <p className="text-gray-500 text-sm ml-2 self-end mb-0.5">
+          {teamTypeNames[team.type]}{' '}
+          <span className="ml-1 text-xs">
+            {team.users && team.users?.length + ' чел.'}
+          </span>
+        </p>
       )}
       {openModal && !!team.type && team.type !== 'GROUP' && (
         <button className="ml-6" onClick={(e) => openModal(e, team.id)}>

@@ -1,44 +1,24 @@
 import { Rate } from '@/entities/rates';
-import { FC, ReactNode, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import RatesFilters from './RatesFilters';
-import { initialFilters, RateProgress } from './constatnts';
+import { initialFilters } from './constatnts';
 import { Option } from '@/shared/types/Option';
-import {
-  filterByPeriod,
-  filterByProgress,
-  filterBySkillType,
-  filterBySpecId,
-  filterByTeam,
-  filterByUserId,
-  getUniqueOptions,
-} from './helpers';
+import { getUniqueOptions } from './helpers';
 import { MultiValue } from 'react-select';
 import { DateObject } from 'react-multi-date-picker';
+import { Filters, FiltersProgress, FiltersSkillType } from './types';
 
 interface RatesFiltersWrapperProps {
-  children: (filteredData: Rate[]) => ReactNode;
   data?: Rate[];
+  filters: Filters;
+  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
 }
 
-export type FiltersSkillType = 'ALL' | Rate['type'];
-export type FiltersProgress = 'ALL' | RateProgress;
-
-export type Filters = {
-  teams: MultiValue<Option>;
-  userId: number | 'ALL';
-  specId: number | 'ALL';
-  progress: FiltersProgress;
-  status?: string;
-  skillType: FiltersSkillType;
-  period?: DateObject[];
-};
-
 const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
-  children,
   data,
+  filters,
+  setFilters,
 }) => {
-  const [filters, setFilters] = useState<Filters>(initialFilters);
-
   const updateFilters = useCallback((newFilters: Partial<Filters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   }, []);
@@ -96,28 +76,6 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
     [data],
   );
 
-  const filteredData: Rate[] = useMemo(() => {
-    if (!data) return [];
-    return data.filter((rate: Rate) => {
-      return (
-        filterByTeam(rate, filters.teams) &&
-        filterByUserId(rate, filters.userId) &&
-        filterBySpecId(rate, filters.specId) &&
-        filterBySkillType(rate, filters.skillType) &&
-        filterByProgress(rate, filters.progress) &&
-        filterByPeriod(rate, filters.period)
-      );
-    });
-  }, [
-    data,
-    filters.teams,
-    filters.progress,
-    filters.skillType,
-    filters.specId,
-    filters.userId,
-    filters.period,
-  ]);
-
   return (
     <div className="mt-6">
       <RatesFilters
@@ -133,7 +91,6 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
         onChangeUser={onChangeUser}
         onChangePeriod={onChangePeriod}
       />
-      {children(filteredData)}
     </div>
   );
 };

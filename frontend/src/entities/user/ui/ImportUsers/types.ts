@@ -1,19 +1,24 @@
 export interface ImportUsersRowType {
   Департамент: string;
   Направление: string;
+  Продукт: string;
   Ник: string;
   Почта: string;
+  Лидер?: string;
 }
 
 export type ImportUsersStateType = {
   data: ImportUsersRowType[];
-  specs: string[];
-  teams: string[];
+  products: string[];
+  departments: string[];
+  directions: string[];
 } | null;
 
 export interface ImportMultipleUser {
   username: string;
   email: string;
-  spec?: string;
-  team?: string;
+  department?: string;
+  direction?: string;
+  product?: string;
+  leader?: boolean;
 }

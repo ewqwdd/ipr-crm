@@ -18,7 +18,7 @@ export default function Teams() {
       return data.list;
     } else {
       return data.list.filter(
-        (team) => !!user?.teamCurator?.find((t) => t.id === team.id),
+        (team) => !!user?.teamAccess?.find((id) => id === team.id),
       );
     }
   }, [data, isAdmin, user]);

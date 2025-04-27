@@ -12,6 +12,14 @@ import { MailService } from 'src/utils/mailer/mailer';
 import { nanoid } from 'nanoid';
 import { Workbook } from 'exceljs';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
+import { CreateProductsService } from './create-products.service';
+import { UsersAccessService } from './users-access.service';
+
+type SubTeam = {
+  id: number;
+  subTeams?: SubTeam[];
+  curatorId?: number;
+};
 
 @Injectable()
 export class UsersService {
@@ -19,6 +27,8 @@ export class UsersService {
     private prisma: PrismaService,
     private passwordService: PasswordService,
     private mailService: MailService,
+    private createProductsService: CreateProductsService,
+    private usersAccessService: UsersAccessService,
   ) {}
 
   async findOneByEmail(email: string) {
@@ -72,7 +82,10 @@ export class UsersService {
       },
       omit: { passwordHash: true, roleId: true, specId: true, authCode: true },
     });
-    return user;
+
+    const teamAccess = await this.usersAccessService.findAllowedTeams(id);
+
+    return { ...user, teamAccess };
   }
 
   async create(data: CreateUserDto) {
@@ -240,17 +253,22 @@ export class UsersService {
     const workbook = new Workbook();
     await workbook.xlsx.load(file.buffer);
 
-    const specs = await this.prisma.spec.findMany({
-      where: { archived: false },
-    });
     const teams = await this.prisma.team.findMany();
 
     const worksheet = workbook.worksheets[0]; // Первый лист
 
     const headers: string[] = [];
     const rows: Record<string, any>[] = [];
-    const newTeams: string[] = [];
-    const newSpecs: string[] = [];
+    const newProducts: string[] = [];
+    const newDepartments: string[] = [];
+    const newDirections: string[] = [];
+
+    const findParent = (
+      team?: { parentTeamId?: number; id: number; name: string },
+      name?: string,
+    ) =>
+      team?.parentTeamId &&
+      teams.find((t) => t.id === team.parentTeamId && t.name === name);
 
     worksheet.eachRow((row, rowNumber) => {
       const values = row.values as (string | null)[];
@@ -267,26 +285,45 @@ export class UsersService {
           rowObj[key] = values[i];
         }
         rows.push(rowObj);
-        const spec = rowObj['Направление'].trim();
-        const team = rowObj['Департамент'].trim();
+        const product = rowObj['Продукт'].trim();
+        const direction = rowObj['Направление'].trim();
+        const department = rowObj['Департамент'].trim();
         if (
-          spec &&
-          !newSpecs.includes(spec) &&
-          !specs.find((s) => s.name === spec)
+          product &&
+          !newProducts.includes(product) &&
+          !teams.find((s) => s.name === product && s.parentTeamId === null)
         ) {
-          newSpecs.push(spec);
+          newProducts.push(product);
         }
+
         if (
-          team &&
-          !newTeams.includes(team) &&
-          !teams.find((t) => t.name === team)
+          newDepartments &&
+          !newDepartments.includes(department) &&
+          !teams.find((s) => s.name === department && findParent(s, product))
         ) {
-          newTeams.push(team);
+          newDepartments.push(department);
+        }
+
+        if (
+          direction &&
+          !newDirections.includes(direction) &&
+          !teams.find(
+            (s) =>
+              s.name === direction &&
+              findParent(findParent(s, department), product),
+          )
+        ) {
+          newDirections.push(direction);
         }
       }
     });
 
-    return { data: rows, specs: newSpecs, teams: newTeams };
+    return {
+      data: rows,
+      products: newProducts,
+      departments: newDepartments,
+      directions: newDirections,
+    };
   }
 
   async createMultipleUsers(dto: CreateMultipleUsersDto) {
@@ -295,27 +332,29 @@ export class UsersService {
         ...u,
         email: u.email.toLowerCase(),
         username: u.username.toLowerCase(),
-        team: u.team?.trim(),
-        spec: u.spec?.trim(),
+        team: (u.direction ?? u.department ?? u.product)?.trim(),
       }));
 
       const emails = users.map((u) => u.email);
       const usernames = users.map((u) => u.username);
       const teams = [
-        ...new Set(users.map((u) => u.team).filter((v) => v && v !== '-')),
-      ];
-      const specs = [
-        ...new Set(users.map((u) => u.spec).filter((v) => v && v !== '-')),
+        ...new Set(
+          users
+            .flatMap((u) => [u.department, u.direction, u.product])
+            .filter((v) => v && v !== '-'),
+        ),
       ];
 
-      const [existingUsers, existingTeams, existingSpecs] = await Promise.all([
+      const [existingUsers, existingTeams] = await Promise.all([
         tx.user.findMany({
           where: {
             OR: [{ email: { in: emails } }, { username: { in: usernames } }],
           },
         }),
-        tx.team.findMany({ where: { name: { in: teams } } }),
-        tx.spec.findMany({ where: { name: { in: specs }, archived: false } }),
+        tx.team.findMany({
+          where: { name: { in: teams } },
+          include: { parentTeam: { select: { name: true } } },
+        }),
       ]);
 
       const existingEmails = new Set(existingUsers.map((u) => u.email));
@@ -326,49 +365,137 @@ export class UsersService {
           !existingEmails.has(u.email) && !existingUsernames.has(u.username),
       );
 
-      const existingTeamNames = new Set(existingTeams.map((t) => t.name));
-      const existingSpecNames = new Set(existingSpecs.map((s) => s.name));
+      const products = users.reduce((acc, u) => {
+        if (!u.product) return acc;
+        if (!acc[u.product]) {
+          acc[u.product] = {};
+        }
+        if (!u.department) return acc;
+        if (!acc[u.product][u.department]) {
+          acc[u.product][u.department] = new Set();
+        }
+        if (!u.direction) return acc;
+        acc[u.product][u.department].add(u.direction);
+        return acc;
+      }, {});
 
-      const newTeamNames = [
-        ...new Set(
-          newUsers
-            .map((u) => u.team)
-            .filter((t) => t && !existingTeamNames.has(t)),
+      const productsToCreate = this.createProductsService.getProductsToCreate(
+        products,
+        existingTeams,
+      );
+      const departmentsToCreate =
+        this.createProductsService.getDepartmentsToCreate(
+          products,
+          existingTeams,
+        );
+      const directionsToCreate =
+        this.createProductsService.getDirectionsToCreate(
+          products,
+          existingTeams,
+        );
+
+      // throw new ForbiddenException('Пользователи не найдены.');
+      const createdProducts = await tx.team.createManyAndReturn({
+        data: productsToCreate.map((name) => ({ name, parentTeamId: null })),
+        // skipDuplicates: true,
+      });
+
+      // Создыне продукты
+      const productNameToId = new Map();
+
+      createdProducts.forEach((p) => {
+        productNameToId.set(p.name, p.id);
+      });
+      existingTeams
+        .filter((t) => !t.parentTeamId)
+        .forEach((t) => {
+          if (!productNameToId.has(t.name)) {
+            productNameToId.set(t.name, t.id);
+          }
+        });
+
+      const createdDepartments = await tx.team.createManyAndReturn({
+        data: Object.keys(departmentsToCreate).flatMap((product) =>
+          departmentsToCreate[product].map((name) => {
+            return {
+              name,
+              parentTeamId: productNameToId.get(product),
+            };
+          }),
         ),
-      ];
-      const newSpecNames = [
-        ...new Set(
-          newUsers
-            .map((u) => u.spec)
-            .filter((s) => s && !existingSpecNames.has(s)),
+        // skipDuplicates: true,
+      });
+
+      // Создать мапу департаментов
+      const departmentKeyToId = new Map();
+
+      // сначала новые департаменты
+      createdDepartments.forEach((d) => {
+        const productName = Array.from(productNameToId.entries()).find(
+          ([name, id]) => id === d.parentTeamId,
+        )?.[0];
+        if (productName) {
+          departmentKeyToId.set(`${productName}:${d.name}`, d.id);
+        }
+      });
+
+      // затем существующие департаменты
+      existingTeams.forEach((team) => {
+        if (!team.parentTeamId) return; // пропускаем продукты и корневые
+        const parentProduct = existingTeams.find(
+          (p) => p.id === team.parentTeamId,
+        );
+        if (!parentProduct || parentProduct.parentTeamId !== null) return; // только департаменты под продуктами
+        departmentKeyToId.set(`${parentProduct.name}:${team.name}`, team.id);
+      });
+
+      const createdDirections = await tx.team.createManyAndReturn({
+        data: Object.keys(directionsToCreate).flatMap((product) =>
+          Object.keys(directionsToCreate[product]).flatMap((department) =>
+            directionsToCreate[product][department].map((direction) => ({
+              name: direction,
+              parentTeamId: departmentKeyToId.get(`${product}:${department}`),
+            })),
+          ),
         ),
-      ];
+        // skipDuplicates: true,
+      });
 
-      const [createdTeams, createdSpecs] = await Promise.all([
-        tx.team.createManyAndReturn({
-          data: newTeamNames.map((name) => ({ name })),
-          skipDuplicates: true,
-        }),
-        tx.spec.createManyAndReturn({
-          data: newSpecNames.map((name) => ({ name })),
-          skipDuplicates: true,
-        }),
-      ]);
+      const directionsKeyToId = new Map();
 
-      const allTeams = [...existingTeams, ...createdTeams];
-      const allSpecs = [...existingSpecs, ...createdSpecs];
+      createdDirections.forEach((d) => {
+        const productName = Array.from(departmentKeyToId.entries()).find(
+          ([name, id]) => id === d.parentTeamId,
+        )?.[0];
+        if (productName) {
+          directionsKeyToId.set(`${productName}:${d.name}`, d.id);
+        }
+      });
+
+      existingTeams.forEach((team) => {
+        if (!team.parentTeamId) return;
+        const parentDepartment = existingTeams.find(
+          (d) => d.id === team.parentTeamId,
+        );
+        if (!parentDepartment || parentDepartment.parentTeamId === null) return;
+        const parentProduct = existingTeams.find(
+          (p) => p.id === parentDepartment.parentTeamId,
+        );
+        if (!parentProduct || parentProduct.parentTeamId !== null) return;
+        directionsKeyToId.set(
+          `${parentProduct.name}:${parentDepartment.name}:${team.name}`,
+          team.id,
+        );
+      });
 
       const createdUsers = await tx.user.createManyAndReturn({
         data: newUsers.map((u) => {
-          const spec = allSpecs.find((s) => s.name === u.spec);
           return {
             email: u.email,
             username: u.username,
             roleId: 2,
-            specId: spec?.id ?? null,
           };
         }),
-        skipDuplicates: true,
       });
 
       const createdUserMap = new Map(
@@ -377,30 +504,23 @@ export class UsersService {
 
       await tx.userTeam.createManyAndReturn({
         data: newUsers
-          .filter((u) => u.team)
+          .filter((u) => u.product ?? u.department ?? u.direction)
           .map((u) => {
-            const team = allTeams.find((t) => t.name === u.team);
+            let teamId;
+            if (u.direction) {
+              teamId = directionsKeyToId.get(
+                `${u.product}:${u.department}:${u.direction}`,
+              );
+            } else if (u.department) {
+              teamId = departmentKeyToId.get(`${u.product}:${u.department}`);
+            } else if (u.product) {
+              teamId = productNameToId.get(u.product);
+            }
             return {
               userId: createdUserMap.get(u.email),
-              teamId: team.id,
+              teamId: teamId,
             };
           }),
-        skipDuplicates: true,
-      });
-
-      await tx.specsOnUserTeam.createMany({
-        data: newUsers
-          .filter((u) => u.team && u.spec)
-          .map((u) => {
-            const team = allTeams.find((t) => t.name === u.team);
-            const spec = allSpecs.find((s) => s.name === u.spec);
-            return {
-              userId: createdUserMap.get(u.email),
-              teamId: team.id,
-              specId: spec.id,
-            };
-          }),
-        skipDuplicates: true,
       });
 
       return createdUsers;

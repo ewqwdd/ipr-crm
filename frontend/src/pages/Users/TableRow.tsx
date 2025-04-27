@@ -28,6 +28,8 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
     }
   }, [deleteState.isSuccess, deleteState.isError, deleting]);
 
+  const name = (person?.firstName ?? '') + ' ' + (person?.lastName ?? '');
+
   return (
     <tr
       className={cva({
@@ -52,7 +54,7 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
               to={`/users/${person?.id}`}
               className="font-medium text-gray-900"
             >
-              {person.firstName} {person.lastName}
+              {name === ' ' ? person.username : name}
             </Link>
             <div className="text-gray-500">{person.email}</div>
           </div>

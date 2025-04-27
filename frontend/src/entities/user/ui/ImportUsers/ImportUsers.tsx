@@ -7,7 +7,6 @@ import { ImportUsersStateType } from './types';
 import ImportUsersTable from './ImportUsersTable';
 import { usersApi } from '@/shared/api/usersApi';
 import toast from 'react-hot-toast';
-import { universalApi } from '@/shared/api/universalApi';
 import { useAppDispatch } from '@/app';
 import { teamsApi } from '@/shared/api/teamsApi';
 
@@ -35,8 +34,11 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
       response.data.map((row) => ({
         email: row.Почта,
         username: row.Ник,
-        spec: row.Направление.trim() !== '-' ? row.Направление : undefined,
-        team: row.Департамент.trim() !== '-' ? row.Департамент : undefined,
+        department:
+          row.Департамент.trim() !== '-' ? row.Департамент : undefined,
+        direction: row.Направление.trim() !== '-' ? row.Направление : undefined,
+        product: row.Продукт.trim() !== '-' ? row.Продукт : undefined,
+        leader: row.Лидер?.trim() === 'Да',
       })),
     );
   };
@@ -77,11 +79,17 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
   useEffect(() => {
     if (addMultipleState.isSuccess) {
       toast.success('Пользователи успешно добавлены');
-      if (response?.specs && response?.specs.length > 0) {
-        dispatch(universalApi.util.invalidateTags(['Spec']));
-      }
-      if (response?.teams && response?.teams.length > 0) {
-        dispatch(teamsApi.util.invalidateTags(['Team']));
+      if (response) {
+        const { departments, directions, products } = response;
+        const teams = [
+          ...(departments || []),
+          ...(directions || []),
+          ...(products || []),
+        ];
+
+        if (teams.length > 0) {
+          dispatch(teamsApi.util.invalidateTags(['Team']));
+        }
       }
       closeModal();
     }
@@ -125,8 +133,9 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
           isLoading={addMultipleState.isLoading}
           setRows={setReponse}
           rows={response.data}
-          specs={response.specs}
-          teams={response.teams}
+          departments={response.departments}
+          products={response.products}
+          directions={response.directions}
         />
       )}
     </Modal>
