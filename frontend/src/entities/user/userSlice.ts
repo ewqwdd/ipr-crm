@@ -14,8 +14,20 @@ const userSlice = createSlice({
     setMounted: (state, action: PayloadAction<boolean>) => {
       state.isMounted = action.payload;
     },
-    setUser: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload;
+    setUser: (
+      state,
+      action: PayloadAction<UserStoreSchema['user'] | User | null>,
+    ) => {
+      if (!action.payload) {
+        state.user = null;
+        return;
+      }
+      const user = action.payload as UserStoreSchema['user'];
+      if (!user!.teamAccess) {
+        user!.teamAccess = state.user?.teamAccess ?? [];
+      }
+
+      state.user = user;
       state.isMounted = true;
       state.isAdmin = action.payload?.role.name === 'admin';
     },

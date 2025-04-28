@@ -2,9 +2,11 @@ import { useAuthControl } from '@/shared/hooks/useAuthControl';
 import './App.css';
 import AppRouter from './router/AppRouter';
 import { DarkSidebar } from '@/widgets/DarkSidebar';
-import ModalWrapper from '@/entities/modals';
 import Loading from '@/shared/ui/Loading';
 import { useCheckNotifications } from '@/shared/hooks/useCheckNotifications';
+import { lazy, Suspense } from 'react';
+
+const ModalWrapper = lazy(() => import('@/entities/modals/index'));
 
 function App() {
   const { isMounted } = useAuthControl();
@@ -24,7 +26,9 @@ function App() {
       <div className="relative flex-1 overflow-y-auto">
         <AppRouter />
       </div>
-      <ModalWrapper />
+      <Suspense>
+        <ModalWrapper />
+      </Suspense>
     </main>
   );
 }
