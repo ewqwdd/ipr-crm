@@ -3,6 +3,7 @@ import { rate360Api } from '@/shared/api/rate360Api';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { Pagination } from '@/shared/ui/Pagination';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { Rate360Progress } from '@/widgets/Rate360Progress';
 import { TableBody } from '@/widgets/TableBody';
@@ -12,10 +13,17 @@ import {
   ClockIcon,
   DocumentReportIcon,
 } from '@heroicons/react/outline';
+import { useState } from 'react';
 import { Link } from 'react-router';
 
+const LIMIT = 20;
+
 export default function Rate360MeList() {
-  const { data, isLoading } = rate360Api.useFindMyRatesQuery();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = rate360Api.useFindMyRatesQuery({
+    page,
+    limit: LIMIT,
+  });
 
   return (
     <LoadingOverlay active={isLoading}>
@@ -40,9 +48,9 @@ export default function Rate360MeList() {
                 'Отчет',
               ]}
             />
-            {data ? (
+            {data?.data ? (
               <TableBody
-                data={data}
+                data={data?.data}
                 columnRender={[
                   {
                     render: (item) => (
@@ -116,8 +124,16 @@ export default function Rate360MeList() {
               />
             ) : null}
           </table>
-          {data?.length === 0 && <EmptyState />}
+          {data?.data.length === 0 && <EmptyState />}
         </div>
+        {data?.total && data?.total > 0 && (
+          <Pagination
+            limit={LIMIT}
+            page={page}
+            count={data?.total}
+            setPage={setPage}
+          />
+        )}
       </div>
     </LoadingOverlay>
   );

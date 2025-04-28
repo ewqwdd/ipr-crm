@@ -3,14 +3,22 @@ import { iprApi } from '@/shared/api/iprApi';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { Pagination } from '@/shared/ui/Pagination';
 import { Progress } from '@/shared/ui/Progress';
 import { TableBody } from '@/widgets/TableBody';
 import { TableHeading } from '@/widgets/TableHeading';
 import { ArrowRightIcon } from '@heroicons/react/outline';
+import { useState } from 'react';
 import { Link } from 'react-router';
 
+const LIMIT = 20;
+
 export default function IprUserList() {
-  const { data, isLoading } = iprApi.useFindUserIprsQuery();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = iprApi.useFindUserIprsQuery({
+    limit: LIMIT,
+    page,
+  });
 
   return (
     <LoadingOverlay active={isLoading}>
@@ -37,9 +45,9 @@ export default function IprUserList() {
                 '',
               ]}
             />
-            {data ? (
+            {data?.data ? (
               <TableBody
-                data={data}
+                data={data.data}
                 columnRender={[
                   {
                     render: (item) => (
@@ -147,8 +155,16 @@ export default function IprUserList() {
               />
             ) : null}
           </table>
-          {data?.length === 0 && <EmptyState />}
+          {data?.data.length === 0 && <EmptyState />}
         </div>
+        {data?.total && data?.total > 0 && (
+          <Pagination
+            limit={LIMIT}
+            page={page}
+            count={data?.total}
+            setPage={setPage}
+          />
+        )}
       </div>
     </LoadingOverlay>
   );

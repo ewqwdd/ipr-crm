@@ -185,7 +185,10 @@ export class IprController {
 
   @Get('/user')
   @UseGuards(AuthGuard)
-  async finduserIprMany(@SessionInfo() sessionInfo: GetSessionInfoDto) {
-    return this.iprService.finduserIprMany(sessionInfo);
+  async finduserIprMany(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: IprFiltersDto,
+  ) {
+    return this.iprService.finduserIprMany(sessionInfo, params);
   }
 }

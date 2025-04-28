@@ -150,9 +150,12 @@ const rate360Api = createApi({
         'Report',
       ],
     }),
-    findMyRates: build.query<Rate[], void>({
-      query: () => '/rate360/me',
-      providesTags: ['UserRates'],
+    findMyRates: build.query<{ data: Rate[]; total: number }, RateFiltersDto>({
+      query: ({ page, limit }) => ({
+        url: '/rate360/me',
+        params: { page, limit },
+      }),
+      providesTags: (_, __, params) => [{ type: 'UserRates', params }],
     }),
     findReport: build.query<Rate, number>({
       query: (id) => `/rate360/${id}/report`,

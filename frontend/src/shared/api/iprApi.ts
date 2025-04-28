@@ -167,12 +167,13 @@ const iprApi = createApi({
       }),
       providesTags: (_, __, id) => [{ type: 'user-ipr', id }],
     }),
-    findUserIprs: build.query<Ipr[], void>({
-      query: () => ({
+    findUserIprs: build.query<{ data: Ipr[]; total: number }, IprFiltersDto>({
+      query: ({ limit, page }) => ({
         url: '/ipr/user',
         method: 'GET',
+        params: { limit, page },
       }),
-      providesTags: ['user-ipr'],
+      providesTags: (_, __, params) => [{ type: 'user-ipr', params }],
     }),
   }),
 });

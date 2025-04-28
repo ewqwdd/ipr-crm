@@ -1266,46 +1266,56 @@ export class Rate360Service {
     }
   }
 
-  async findMyRates(userId: number) {
-    const rates = await this.prismaService.rate360.findMany({
-      where: {
-        userId,
-        archived: false,
-      },
-      include: {
-        spec: true,
-        userRates: {
-          where: {
-            approved: true,
-          },
-          select: {
-            user: {
-              select: {
-                username: true,
-                id: true,
+  async findMyRates(userId: number, params: RateFiltersDto) {
+    const where = {
+      userId,
+      archived: false,
+    };
+    const [data, total] = await Promise.all([
+      this.prismaService.rate360.findMany({
+        where,
+        include: {
+          spec: true,
+          userRates: {
+            where: {
+              approved: true,
+            },
+            select: {
+              user: {
+                select: {
+                  username: true,
+                  id: true,
+                },
               },
             },
           },
-        },
-        team: true,
-        competencyBlocks: {
-          include: {
-            competencies: {
-              include: {
-                indicators: true,
+          team: true,
+          competencyBlocks: {
+            include: {
+              competencies: {
+                include: {
+                  indicators: true,
+                },
               },
             },
           },
-        },
-        evaluators: {
-          select: {
-            id: true,
+          evaluators: {
+            select: {
+              id: true,
+            },
           },
         },
-      },
-    });
+        ...(Number.isInteger(params.page)
+          ? { skip: (params.page - 1) * params.limit }
+          : {}),
+        ...(params.limit ? { take: params.limit } : {}),
+      }),
+      this.prismaService.rate360.count({
+        where,
+      }),
+    ]);
 
-    return rates;
+    return { data, total };
   }
 
   async toggleReportVisibility(

@@ -203,8 +203,11 @@ export class Rate360Controller {
 
   @Get('/me')
   @UseGuards(AuthGuard)
-  async findMyRates(@SessionInfo() sessionInfo: GetSessionInfoDto) {
-    return await this.rate360Service.findMyRates(sessionInfo.id);
+  async findMyRates(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: RateFiltersDto,
+  ) {
+    return await this.rate360Service.findMyRates(sessionInfo.id, params);
   }
 
   @Get('/:id/report')

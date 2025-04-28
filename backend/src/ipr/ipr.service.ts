@@ -761,22 +761,35 @@ export class IprService {
     return ipr;
   }
 
-  async finduserIprMany(sessionInfo: GetSessionInfoDto) {
-    return await this.prismaService.individualGrowthPlan.findMany({
-      where: {
-        userId: sessionInfo.id,
-      },
-      include: {
-        tasks: true,
-        rate360: {
-          include: {
-            spec: true,
+  async finduserIprMany(sessionInfo: GetSessionInfoDto, params: IprFiltersDto) {
+    const where = {
+      userId: sessionInfo.id,
+    };
+
+    const [data, total] = await Promise.all([
+      await this.prismaService.individualGrowthPlan.findMany({
+        where,
+        include: {
+          tasks: true,
+          rate360: {
+            include: {
+              spec: true,
+            },
           },
         },
-      },
-      orderBy: {
-        startDate: 'desc',
-      },
-    });
+        orderBy: {
+          startDate: 'desc',
+        },
+        ...(Number.isInteger(params.page)
+          ? { skip: (params.page - 1) * params.limit }
+          : {}),
+        ...(params.limit ? { take: params.limit } : {}),
+      }),
+      await this.prismaService.individualGrowthPlan.count({
+        where,
+      }),
+    ]);
+
+    return { data, total };
   }
 }
