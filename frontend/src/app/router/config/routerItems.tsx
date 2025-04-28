@@ -1,41 +1,65 @@
-import { AddUser } from '@/pages/AddUser';
 import Login from '@/pages/Login/Login';
-import { Rate360 } from '@/pages/Rate360';
-import { Skills } from '@/pages/Skills';
-import { Structure } from '@/pages/Structure';
-import { TeamPage } from '@/pages/TeamPage';
-import { Teams } from '@/pages/Teams';
-import { UserEdit } from '@/pages/UserEdit';
-import { UserPage } from '@/pages/UserPage';
-import Users from '@/pages/Users/Users';
 import { RouterItemType } from './types';
-import { Profile } from '@/pages/Profile';
-import { ProfileEdit } from '@/pages/ProfileEdit';
-import { Progress } from '@/pages/Progress';
-import { Rate360Assesment } from '@/pages/Rate360Assesment';
-import Report360 from '@/pages/Report360';
 import { ResetPassword } from '@/pages/ResetPassword';
-import { Ipr } from '@/pages/Ipr';
-import { Board } from '@/pages/Board';
-import { AdminBoard } from '@/pages/AdminBoard';
-import { IprList } from '@/pages/IprList';
-import { SkillsHistory } from '@/pages/SkillsHistory';
-import { SkillsHistoryElement } from '@/pages/SkillsHistoryElement';
-import { Tests } from '@/pages/Tests';
-import { TestCreate } from '@/pages/TestCreate';
-import { TestAssesment } from '@/pages/TestAssesment';
-import { AssignedTests } from '@/pages/AssignedTests';
-import { FinishedTest } from '@/pages/FinishedTest';
-import { TestEdit } from '@/pages/TestEdit';
-import { Surveys } from '@/pages/Surveys';
-import { SurveyCreate } from '@/pages/SurveyCreate';
-import { SurveyEdit } from '@/pages/SurveyEdit';
-import { AssignedSurveys } from '@/pages/AssignedSurveys';
-import { SurveyAssesment } from '@/pages/SurveyAssesment';
-import { FinishedSurvey } from '@/pages/FinishedSurvey';
-import { IprUser } from '@/pages/IprUser';
-import { IprMeList } from '@/pages/IprMeList';
-import { Rate360MeList } from '@/pages/Rate360MeList';
+import { Profile } from '@/pages/Profile';
+import React from 'react';
+
+const UserPage = React.lazy(() => import('@/pages/UserPage/UserPage'));
+const Users = React.lazy(() => import('@/pages/Users/Users'));
+const UserEdit = React.lazy(() => import('@/pages/UserEdit/UserEdit'));
+const ProfileEdit = React.lazy(() => import('@/pages/ProfileEdit/ProfileEdit'));
+const AddUser = React.lazy(() => import('@/pages/AddUser/AddUser'));
+const Structure = React.lazy(() => import('@/pages/Structure/Structure'));
+const Teams = React.lazy(() => import('@/pages/Teams/Teams'));
+const TeamPage = React.lazy(() => import('@/pages/TeamPage/TeamPage'));
+const Rate360 = React.lazy(() => import('@/pages/Rate360/Rate360'));
+const Rate360MeList = React.lazy(
+  () => import('@/pages/Rate360MeList/Rate360MeList'),
+);
+const Report360 = React.lazy(() => import('@/pages/Report360/index'));
+const Skills = React.lazy(() => import('@/pages/Skills/ui/Skills'));
+const Progress = React.lazy(() => import('@/pages/Progress/Progress'));
+const Ipr = React.lazy(() => import('@/pages/Ipr/Ipr'));
+const IprList = React.lazy(() => import('@/pages/IprList/IprList'));
+const Board = React.lazy(() => import('@/pages/Board/BoardPage'));
+const AdminBoard = React.lazy(() => import('@/pages/AdminBoard/AdminBoard'));
+const SkillsHistory = React.lazy(
+  () => import('@/pages/SkillsHistory/SkillsHistory'),
+);
+const SkillsHistoryElement = React.lazy(
+  () => import('@/pages/SkillsHistoryElement/SkillsHistoryElement'),
+);
+const Tests = React.lazy(() => import('@/pages/Tests/Tests'));
+const TestCreate = React.lazy(() => import('@/pages/TestCreate/TestCreate'));
+const TestAssesment = React.lazy(
+  () => import('@/pages/TestAssesment/TestAssesment'),
+);
+const TestEdit = React.lazy(() => import('@/pages/TestEdit/TestEdit'));
+const FinishedTest = React.lazy(
+  () => import('@/pages/FinishedTest/FinishedTest'),
+);
+const AssignedTests = React.lazy(
+  () => import('@/pages/AssignedTests/AssignedTests'),
+);
+const Surveys = React.lazy(() => import('@/pages/Surveys/Surveys'));
+const SurveyCreate = React.lazy(
+  () => import('@/pages/SurveyCreate/SurveyCreate'),
+);
+const SurveyEdit = React.lazy(() => import('@/pages/SurveyEdit/SurveyEdit'));
+const FinishedSurvey = React.lazy(
+  () => import('@/pages/FinishedSurvey/FinishedSurvey'),
+);
+const AssignedSurveys = React.lazy(
+  () => import('@/pages/AssignedSurveys/AssignedSurveys'),
+);
+const SurveyAssesment = React.lazy(
+  () => import('@/pages/SurveyAssesment/SurveyAssesment'),
+);
+const IprUser = React.lazy(() => import('@/pages/IprUser/IprUser'));
+const IprMeList = React.lazy(() => import('@/pages/IprMeList/IprMeList'));
+const Rate360Assesment = React.lazy(
+  () => import('@/pages/Rate360Assesment/Rate360Assesment'),
+);
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },

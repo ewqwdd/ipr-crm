@@ -1,30 +1,25 @@
 import { Route, Routes } from 'react-router';
 import { routerItems } from './config/routerItems';
-import { RouterItemType } from './config/types';
 import AdminWrapper from './AdminWrapper';
-import { memo } from 'react';
+import { memo, Suspense } from 'react';
+import { SuspenseLoader } from '@/widgets/SuspenseLoader';
 
 export default memo(function AppRouter() {
-  const renderRoute = (item: RouterItemType) => {
-    const { element, path, children, onlyAdmin } = item;
-
-    return (
-      <Route
-        key={path}
-        path={path}
-        element={
-          onlyAdmin ? (
-            <AdminWrapper curator={item.curator}>{element}</AdminWrapper>
+  const content = routerItems.map(({ element, path, curator, onlyAdmin }) => (
+    <Route
+      key={path}
+      path={path}
+      element={
+        <Suspense fallback={<SuspenseLoader />}>
+          {onlyAdmin ? (
+            <AdminWrapper curator={curator}>{element}</AdminWrapper>
           ) : (
             element
-          )
-        }
-        children={children?.map((child) => renderRoute(child))}
-      />
-    );
-  };
-
-  const content = routerItems.map((item) => renderRoute(item));
+          )}
+        </Suspense>
+      }
+    />
+  ));
 
   return <Routes>{content}</Routes>;
 });
