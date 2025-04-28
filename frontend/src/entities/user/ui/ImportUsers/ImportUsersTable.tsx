@@ -94,7 +94,8 @@ export default function ImportUsersTable({
                 render: (_, index) =>
                   usersData?.users.find(
                     (u) =>
-                      u.email.toLowerCase() === rows[index].Почта.toLowerCase(),
+                      u.email.toLowerCase() ===
+                      rows[index].Почта?.toLowerCase(),
                   ) ? (
                     <Tooltip content="Почта занята" position="top">
                       <span className="text-red-500 text-sm font-medium">

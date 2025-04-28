@@ -42,10 +42,7 @@ export default memo(function StructureItem({
         </button>
       )}
       {openDeleteModal && (
-        <button
-          className="ml-auto mr-4"
-          onClick={(e) => openDeleteModal(e, team)}
-        >
+        <button className="ml-auto" onClick={(e) => openDeleteModal(e, team)}>
           <MinusCircleIcon className="ml-auto size-5 text-red-700" />
         </button>
       )}

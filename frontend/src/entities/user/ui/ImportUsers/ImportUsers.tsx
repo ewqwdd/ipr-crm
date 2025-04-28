@@ -30,6 +30,12 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
     if (response.data.length === 0)
       return toast.error('Пожалуйста, добавьте пользователей для импорта');
 
+    if (response.data.find((row) => !row.Почта))
+      return toast.error('Пожалуйста, введите почту для всех пользователей');
+
+    if (response.data.find((row) => !row.Ник))
+      return toast.error('Пожалуйста, введите ник для всех пользователей');
+
     addMultiple(
       response.data.map((row) => ({
         email: row.Почта,

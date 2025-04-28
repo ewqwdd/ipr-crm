@@ -157,7 +157,7 @@ export default function IprUserList() {
           </table>
           {data?.data.length === 0 && <EmptyState />}
         </div>
-        {data?.total && data?.total > 0 && (
+        {!!data && data?.total > 0 && (
           <Pagination
             limit={LIMIT}
             page={page}

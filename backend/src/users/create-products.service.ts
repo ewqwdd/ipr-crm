@@ -91,7 +91,6 @@ export class CreateProductsService {
   ): DepartmentsToCreate {
     return Object.keys(products).reduce<DepartmentsToCreate>((acc, product) => {
       const departments = Object.keys(products[product]);
-      console.log('departments', departments);
       acc[product] = departments.filter((department) => {
         const foundTeam = existingTeams.find(
           (t) => t.name === department && t.parentTeam?.name === product,

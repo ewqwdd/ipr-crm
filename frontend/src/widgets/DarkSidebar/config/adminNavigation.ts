@@ -72,7 +72,7 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
     children: [
       { name: 'Сотрудники', href: '/users' },
       {
-        name: 'Орагнизационная структура',
+        name: 'Организационная структура',
         href: '/structure',
       },
     ],
