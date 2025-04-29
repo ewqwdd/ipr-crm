@@ -1,26 +1,58 @@
-import { Team } from '@/entities/team';
+import { Team, TeamUser } from '@/entities/team';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import React from 'react';
 import Evaluator from './Evaluator';
 import { EvaluateUser } from '@/entities/rates/types/types';
+import toast from 'react-hot-toast';
 
 interface EvaluatorTeamProps {
   team: Team;
   excluded?: EvaluateUser[];
   selected?: EvaluateUser[];
   setSelected: React.Dispatch<React.SetStateAction<EvaluateUser[]>>;
+  evaluateTeam?: Team;
 }
+
+const OTHER_TEAM_LINMIT = 10;
 
 export default function EvaluatorTeam({
   excluded = [],
   team,
   setSelected,
   selected = [],
+  evaluateTeam,
 }: EvaluatorTeamProps) {
   const filtered = team.users?.filter(
     (user) => !excluded?.find((e) => e.userId === user.user.id),
   );
+
+  const filterFn = (user: EvaluateUser) =>
+    !evaluateTeam?.users?.find((u) => u.user.id === user.userId) &&
+    evaluateTeam?.curatorId !== user.userId;
+
+  const otherTeamCount =
+    (excluded?.filter(filterFn)?.length ?? 0) +
+    (selected.filter(filterFn)?.length ?? 0);
+
+  const onChange = (user: TeamUser) => {
+    if (
+      filterFn({ userId: user.id }) &&
+      otherTeamCount >= OTHER_TEAM_LINMIT &&
+      !selected?.find((e) => e.userId === user.id)
+    ) {
+      toast.error(
+        `Вы можете выбрать только ${OTHER_TEAM_LINMIT} человека из другой команды`,
+      );
+      return;
+    }
+    setSelected((prev) =>
+      prev?.find((e) => e.userId === user.id)
+        ? prev.filter((e) => e.userId !== user.id)
+        : [...prev, { userId: user.id, username: user.username }],
+    );
+  };
+
   if (filtered?.length === 0) {
     return null;
   }
@@ -42,7 +74,7 @@ export default function EvaluatorTeam({
             <Evaluator
               key={team.curator.id}
               selected={selected}
-              setSelected={setSelected}
+              onChange={onChange}
               user={team.curator}
               curator
             />
@@ -51,7 +83,7 @@ export default function EvaluatorTeam({
           <Evaluator
             key={user.user.id}
             selected={selected}
-            setSelected={setSelected}
+            onChange={onChange}
             user={user.user}
           />
         ))}

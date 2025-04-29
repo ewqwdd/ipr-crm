@@ -6,6 +6,7 @@ import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
 import { useFilteredTeams } from '../../hooks/useFilteredTeams';
 import TeamFilters from '../SelectSpecsForm/partials/TeamFilters';
+import { teamsApi } from '@/shared/api/teamsApi';
 
 interface EvaluatorsFormProps {
   teamId?: number;
@@ -29,6 +30,8 @@ export default memo(function EvaluatorsForm({
   const [teams, setTeams] = useState<MultiValue<Option>>([]);
   const [specs, setSpecs] = useState<MultiValue<Option>>([]);
   const [search, setSearch] = useState('');
+
+  const { data } = teamsApi.useGetTeamsQuery();
 
   const teamSpecs = useMemo(
     () => selectedSpecs.find((s) => s.teamId === teamId)?.specs ?? [],
@@ -71,6 +74,11 @@ export default memo(function EvaluatorsForm({
 
   const filteredTeams = useFilteredTeams({ specs, teams, search });
 
+  const evaluateTeam = useMemo(
+    () => data?.list.find((t) => t.id === teamId),
+    [data, teamId],
+  );
+
   return (
     <div className="flex flex-col gap-4 pt-4">
       <TeamFilters
@@ -85,6 +93,7 @@ export default memo(function EvaluatorsForm({
         setSelected={setSelected}
         excluded={excluded}
         selected={selected}
+        evaluateTeam={evaluateTeam}
       />
       {filteredTeams?.map((team) => (
         <EvaluatorTeam
@@ -93,6 +102,7 @@ export default memo(function EvaluatorsForm({
           setSelected={setSelected}
           key={team.id}
           team={team}
+          evaluateTeam={evaluateTeam}
         />
       ))}
     </div>

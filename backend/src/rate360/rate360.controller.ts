@@ -142,6 +142,16 @@ export class Rate360Controller {
     );
   }
 
+  @Post('/assesment/leave-assigned/:rateId')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async leaveAssigned(
+    @Param('rateId', { transform: (v) => parseInt(v) }) rateId: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.leaveAssignedRate(sessionInfo.id, rateId);
+  }
+
   @Post('/approve-curator/:rateId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)

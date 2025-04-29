@@ -1459,4 +1459,38 @@ export class Rate360Service {
 
     return newEvaluators;
   }
+
+  async leaveAssignedRate(userId: number, rateId: number) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+        userConfirmed: true,
+        curatorConfirmed: true,
+        archived: false,
+      },
+      include: {
+        evaluators: {
+          where: {
+            userId,
+          },
+        },
+      },
+    });
+    if (!rate) {
+      throw new NotFoundException('Оценка не найдена');
+    }
+    await this.prismaService.rate360Evaluator.deleteMany({
+      where: {
+        rate360Id: rateId,
+        userId,
+      },
+    });
+    await this.prismaService.userRates.deleteMany({
+      where: {
+        rate360Id: rateId,
+        userId,
+      },
+    });
+    return HttpStatus.OK;
+  }
 }

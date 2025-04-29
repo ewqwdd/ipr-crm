@@ -19,7 +19,7 @@ export default function TableHeading({ headings }: TableHeadingProps) {
             scope="col"
             key={index}
             className={cva(
-              'px-3 py-3.5 text-sm font-semibold text-gray-900 text-center',
+              'px-3 py-3.5 text-[13px] lg:text-sm font-semibold text-gray-900 text-center',
               typeof heading !== 'string' ? heading?.className : '',
             )}
           >

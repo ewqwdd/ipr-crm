@@ -90,7 +90,7 @@ export default function RateStatsModal({
           rates={rate.userRates}
           type="SUBORDINATE"
         />
-        {isAdmin && (
+        {isAdmin && !rate.plan && (
           <PrimaryButton
             onClick={() => {
               dispatch(ratesActions.setEditEvaluatorsFromRate(rate));

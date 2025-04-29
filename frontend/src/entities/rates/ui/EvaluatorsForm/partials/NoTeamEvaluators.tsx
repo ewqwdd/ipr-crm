@@ -8,6 +8,7 @@ interface EvaluatorTeamProps {
   excluded?: EvaluateUser[];
   selected?: EvaluateUser[];
   setSelected: React.Dispatch<React.SetStateAction<EvaluateUser[]>>;
+  evaluateTeam?: Team;
 }
 
 export default function NoTeamEvaluators(props: EvaluatorTeamProps) {

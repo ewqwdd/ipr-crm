@@ -1,8 +1,11 @@
 import { useModal } from '@/app/hooks/useModal';
 import { Rate, rateTypeNames } from '@/entities/rates';
 import { Spec } from '@/entities/user';
+import { rate360Api } from '@/shared/api/rate360Api';
 import { Badge } from '@/shared/ui/Badge';
 import { SoftButton } from '@/shared/ui/SoftButton';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 interface RateItemProps {
   rate: Rate;
@@ -12,6 +15,24 @@ interface RateItemProps {
 export default function RateItem({ rate, specs }: RateItemProps) {
   const { openModal } = useModal();
   const spec = specs.find((spec) => spec.id === rate.specId);
+  const [leaveAssigned, { error }] = rate360Api.useLeaveAssignedMutation();
+
+  const cancelAssesment = () => {
+    openModal('CONFIRM', {
+      submitText: 'Потвердить',
+      title: 'Не могу оценить',
+      onSubmit: async () => {
+        return await leaveAssigned({ rateId: rate.id });
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (error) {
+      // @ts-ignore
+      toast.error(error?.data?.message || 'Ошибка при отмене оценки');
+    }
+  }, [error]);
 
   return (
     <div className="flex items-center justify-between p-1.5 sm:p-3 rounded-sm border-t border-gray-300 first:border-transparent">
@@ -29,9 +50,14 @@ export default function RateItem({ rate, specs }: RateItemProps) {
           <span className="text-xs">{rate.startDate?.slice(0, 10)}</span>
         </div>
       </div>
-      <SoftButton size="xs" onClick={() => openModal('EVALUATE', { rate })}>
-        Пройти тест
-      </SoftButton>
+      <div className="flex gap-3">
+        <SoftButton danger size="xs" onClick={cancelAssesment}>
+          Не могу оценить
+        </SoftButton>
+        <SoftButton size="xs" onClick={() => openModal('EVALUATE', { rate })}>
+          Пройти тест
+        </SoftButton>
+      </div>
     </div>
   );
 }

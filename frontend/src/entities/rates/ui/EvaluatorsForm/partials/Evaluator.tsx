@@ -5,14 +5,14 @@ import { StarIcon } from '@heroicons/react/solid';
 
 interface EvaluatorProps {
   selected?: EvaluateUser[];
-  setSelected: React.Dispatch<React.SetStateAction<EvaluateUser[]>>;
+  onChange: (e: TeamUser) => void;
   user: TeamUser;
   curator?: boolean;
 }
 
 export default function Evaluator({
   selected,
-  setSelected,
+  onChange,
   user,
   curator,
 }: EvaluatorProps) {
@@ -26,13 +26,7 @@ export default function Evaluator({
           {curator && <StarIcon className="size-5 text-yellow-400 ml-1" />}
         </span>
       }
-      onChange={() =>
-        setSelected((prev) =>
-          prev?.find((e) => e.userId === user.id)
-            ? prev.filter((e) => e.userId !== user.id)
-            : [...prev, { userId: user.id, username: user.username }],
-        )
-      }
+      onChange={() => onChange(user)}
     />
   );
 }

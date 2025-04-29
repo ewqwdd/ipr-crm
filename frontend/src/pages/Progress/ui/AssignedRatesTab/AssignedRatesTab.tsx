@@ -3,13 +3,13 @@ import RateList from '../RatesList/RateList';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 
 export default function AssignedRatesTab() {
-  const { data, isLoading } = rate360Api.useAssignedRatesQuery();
+  const { data, isLoading, isFetching } = rate360Api.useAssignedRatesQuery();
 
   return (
     <LoadingOverlay active={isLoading}>
       <RateList
         data={data}
-        isLoading={isLoading}
+        isLoading={isFetching}
         heading="По другим пользователям"
       />
     </LoadingOverlay>
