@@ -21,6 +21,8 @@ export default function MaterialIcon({ type, ...props }: MaterialIconProps) {
       return <DesktopComputerIcon {...props} />;
     case 'ARTICLE':
       return <PaperClipIcon {...props} />;
+    case 'TASK':
+      return <PaperClipIcon {...props} />;
   }
   return null;
 }

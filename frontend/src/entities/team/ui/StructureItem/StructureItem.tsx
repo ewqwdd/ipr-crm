@@ -32,7 +32,8 @@ export default memo(function StructureItem({
         <p className="text-gray-500 text-sm ml-2 self-end mb-0.5">
           {teamTypeNames[team.type]}{' '}
           <span className="ml-1 text-xs">
-            {team.users && team.users?.length + ' чел.'}
+            {team.users &&
+              (team.users?.length ?? 0) + (team.curator ? 1 : 0) + ' чел.'}
           </span>
         </p>
       )}

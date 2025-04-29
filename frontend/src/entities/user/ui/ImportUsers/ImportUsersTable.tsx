@@ -15,6 +15,7 @@ interface ImportUsersTablrProps {
   directions: string[];
   products: string[];
   departments: string[];
+  groups: string[];
   setRows: Dispatch<SetStateAction<ImportUsersStateType>>;
   onSubmit: () => void;
   isLoading: boolean;
@@ -25,6 +26,7 @@ export default function ImportUsersTable({
   departments,
   directions,
   products,
+  groups,
   setRows,
   isLoading,
   onSubmit,
@@ -57,6 +59,7 @@ export default function ImportUsersTable({
               'Продукт',
               'Департамент',
               'Направление',
+              'Группа',
               '',
             ]}
           />
@@ -131,6 +134,13 @@ export default function ImportUsersTable({
               },
               {
                 render: (_, index) => (
+                  <span className="text-gray-500 text-sm font-medium">
+                    {rows[index].Группа}
+                  </span>
+                ),
+              },
+              {
+                render: (_, index) => (
                   <SecondaryButton
                     onClick={() =>
                       setRows((prev) => ({
@@ -173,6 +183,17 @@ export default function ImportUsersTable({
           <div className="sm:px-6 px-4 mt-2 flex gap-2 flex-wrap text-sm font-medium">
             Направления к созданию:{' '}
             {newDirections.map((s, index) => (
+              <span key={index} className="text-gray-700 font-normal">
+                {s}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {groups.length > 0 && (
+          <div className="sm:px-6 px-4 mt-2 flex gap-2 flex-wrap text-sm font-medium">
+            Группы к созданию:{' '}
+            {groups.map((s, index) => (
               <span key={index} className="text-gray-700 font-normal">
                 {s}
               </span>

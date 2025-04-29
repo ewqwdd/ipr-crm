@@ -1,8 +1,9 @@
 export const materialTypes = {
   VIDEO: 'Видео',
-  BOOK: 'Кнгига',
+  BOOK: 'Книга',
   COURSE: 'Курс',
   ARTICLE: 'Статья',
+  TASK: 'Задание',
 };
 
 export type MaterialType = keyof typeof materialTypes;

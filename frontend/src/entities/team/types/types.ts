@@ -36,6 +36,7 @@ interface Team {
   curator?: TeamUser;
   curatorSpecs: SpecOnUser[];
   type?: TeamType;
+  curatorId?: number;
 }
 
 interface CreateTeamDto {

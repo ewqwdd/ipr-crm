@@ -607,6 +607,7 @@ enum MaterialContentType {
   ARTICLE
   BOOK
   COURSE
+  TASK
 }
 
 enum TaskMaterialType {

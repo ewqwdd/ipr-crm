@@ -116,6 +116,7 @@ export class TeamsService {
                 userId: true,
               },
             },
+            curatorId: true,
           },
         },
       },

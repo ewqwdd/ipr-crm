@@ -12,6 +12,7 @@ import { CompetencyType } from '../../types/types';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { useDispatch } from 'react-redux';
 import { setModalData } from '@/app/store/modalSlice';
+import { materialTypes } from '@/entities/material/model/types';
 
 interface MaterialsListData {
   materials: { material: Material }[];
@@ -143,7 +144,7 @@ export default function MaterialsList({
                       {row.material.url ?? '-'}
                     </td>
                     <td className="p-3 text-sm text-gray-700">
-                      {row.material.contentType ?? '-'}
+                      {materialTypes[row.material.contentType] ?? '-'}
                     </td>
                     <td className="p-3 text-sm text-gray-700">
                       <div className="flex space-x-2">

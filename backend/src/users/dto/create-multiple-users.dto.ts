@@ -18,6 +18,10 @@ class CreateUserDto {
 
   @IsOptional()
   @IsString()
+  group?: string;
+
+  @IsOptional()
+  @IsString()
   department?: string;
 
   @IsOptional()

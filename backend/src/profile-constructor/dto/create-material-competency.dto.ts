@@ -16,8 +16,8 @@ export class createMaterialCompetencyDto {
   description?: string;
 
   @IsNotEmpty()
-  @IsEnum(['VIDEO', 'BOOK', 'COURSE', 'ARTICLE'])
-  contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
+  @IsEnum(['VIDEO', 'BOOK', 'COURSE', 'ARTICLE', 'TASK'])
+  contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE' | 'TASK';
 
   @IsOptional()
   @IsString()

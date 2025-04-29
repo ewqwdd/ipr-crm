@@ -14,6 +14,7 @@ import DatePickerLight from '@/shared/ui/DatePickerLight';
 import { AddTaskDto, iprApi } from '@/shared/api/iprApi';
 import toast from 'react-hot-toast';
 import { DateObject } from 'react-multi-date-picker';
+import { Checkbox } from '@/shared/ui/Checkbox';
 
 type AddTaskModalProps = {
   type?: 'COMPETENCY' | 'INDICATOR';
@@ -52,6 +53,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
   );
   const [priority, setPriority] = useState<TaskPriority>('LOW');
   const [materialType, setMaterialType] = useState<MaterialType>('VIDEO');
+  const [addToConstructor, setAddToConstructor] = useState(false);
   const [date, setDate] = useState<Date | undefined>();
   const [errors, setErrors] = useState<ErorrsType>({});
 
@@ -89,6 +91,10 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
     setMaterialWrapperId(id);
   }, []);
 
+  const toggleAddToConstructor = useCallback(() => {
+    setAddToConstructor((prev) => !prev);
+  }, []);
+
   const onChangeDate = useCallback((date?: DateObject | DateObject[]) => {
     if (Array.isArray(date)) return;
     setDate(date ? date.toDate() : undefined);
@@ -116,6 +122,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
       planId,
       taskType,
       userId,
+      addToConstructor,
     };
     mutate(payload);
   };
@@ -183,6 +190,13 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
           priority={priority}
           onChange={selectPriority}
         />
+        {materialWrapperId !== -1 && (
+          <Checkbox
+            title="Добавить в конструктор профилей"
+            checked={addToConstructor}
+            onChange={toggleAddToConstructor}
+          />
+        )}
         <SoftButton onClick={onSubmit} className="ml-auto">
           Сохранить
         </SoftButton>

@@ -40,11 +40,14 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
       response.data.map((row) => ({
         email: row.Почта,
         username: row.Ник,
+        group: !['-', ''].includes(row.Группа?.trim() ?? '')
+          ? row.Группа
+          : undefined,
         department:
           row.Департамент.trim() !== '-' ? row.Департамент : undefined,
         direction: row.Направление.trim() !== '-' ? row.Направление : undefined,
         product: row.Продукт.trim() !== '-' ? row.Продукт : undefined,
-        leader: row.Лидер?.trim() === 'Да',
+        leader: row.Лидер?.trim().toLowerCase() === 'да',
       })),
     );
   };
@@ -60,6 +63,8 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
   };
 
   const handleUpload = async () => {
+    setError(null);
+    setReponse(null);
     if (!value) {
       setError('Пожалуйста, выберите файл для загрузки');
       return;
@@ -86,11 +91,12 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
     if (addMultipleState.isSuccess) {
       toast.success('Пользователи успешно добавлены');
       if (response) {
-        const { departments, directions, products } = response;
+        const { departments, directions, products, groups } = response;
         const teams = [
           ...(departments || []),
           ...(directions || []),
           ...(products || []),
+          ...(groups || []),
         ];
 
         if (teams.length > 0) {
@@ -141,6 +147,7 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
           rows={response.data}
           departments={response.departments}
           products={response.products}
+          groups={response.groups}
           directions={response.directions}
         />
       )}

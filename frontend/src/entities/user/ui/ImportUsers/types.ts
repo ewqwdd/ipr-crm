@@ -1,6 +1,7 @@
 export interface ImportUsersRowType {
   Департамент: string;
   Направление: string;
+  Группа?: string;
   Продукт: string;
   Ник: string;
   Почта: string;
@@ -12,11 +13,13 @@ export type ImportUsersStateType = {
   products: string[];
   departments: string[];
   directions: string[];
+  groups: string[];
 } | null;
 
 export interface ImportMultipleUser {
   username: string;
   email: string;
+  group?: string;
   department?: string;
   direction?: string;
   product?: string;

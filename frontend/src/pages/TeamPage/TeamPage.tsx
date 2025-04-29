@@ -138,7 +138,7 @@ export default function TeamPage() {
                 <SoftButton>
                   {team.name}{' '}
                   <span className="opacity-80 font-normal">
-                    {team.users && team.users.length} чел.
+                    {(team.users?.length ?? 0) + (team.curatorId ? 1 : 0)} чел.
                   </span>
                 </SoftButton>
               </Link>

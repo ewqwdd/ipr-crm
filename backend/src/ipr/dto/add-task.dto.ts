@@ -1,5 +1,6 @@
 import { TaskMaterialType, TaskPriority } from '@prisma/client';
 import {
+  IsBoolean,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -27,17 +28,22 @@ export class AddTaskDto {
   url?: string;
 
   @IsDateString()
-  deadline: string;
+  @IsOptional()
+  deadline?: string;
 
   @IsNotEmpty()
-  @IsEnum(['VIDEO', 'BOOK', 'COURSE', 'ARTICLE'])
-  contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
+  @IsEnum(['VIDEO', 'BOOK', 'COURSE', 'ARTICLE', 'TASK'])
+  contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE' | 'TASK';
 
   @IsEnum(['HIGH', 'MEDIUM', 'LOW'])
   priority: TaskPriority;
 
   @IsEnum(['GENERAL', 'OBVIOUS', 'OTHER'])
   taskType: TaskMaterialType;
+
+  @IsOptional()
+  @IsBoolean()
+  addToConstructor?: boolean;
 
   @IsNumber()
   userId: number;

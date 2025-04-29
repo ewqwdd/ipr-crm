@@ -7,6 +7,7 @@ const materialTypes = [
   { text: 'Книга', id: 'BOOK' },
   { text: 'Курс', id: 'COURSE' },
   { text: 'Статья', id: 'ARTICLE' },
+  { text: 'Задание', id: 'TASK' },
 ];
 
 const AddMaterialType: FC<{

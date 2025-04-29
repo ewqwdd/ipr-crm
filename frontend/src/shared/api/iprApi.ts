@@ -8,10 +8,11 @@ export interface AddTaskDto {
   indicatorId?: number;
   url?: string;
   deadline: string | null;
-  contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE';
+  contentType: 'VIDEO' | 'BOOK' | 'COURSE' | 'ARTICLE' | 'TASK';
   priority: TaskPriority;
   taskType: TaskType;
   userId: number;
+  addToConstructor?: boolean;
 }
 
 interface IprFiltersDto {

@@ -14,6 +14,7 @@ export const typeColors: Record<MaterialType, BadgeProps['color']> = {
   BOOK: 'pink',
   COURSE: 'indigo',
   VIDEO: 'purple',
+  TASK: 'green',
 };
 
 export const priorityNames: Record<TaskPriority, string> = {

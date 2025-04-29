@@ -262,6 +262,7 @@ export class UsersService {
     const newProducts: string[] = [];
     const newDepartments: string[] = [];
     const newDirections: string[] = [];
+    const newGroups: string[] = [];
 
     const findParent = (
       team?: { parentTeamId?: number; id: number; name: string },
@@ -285,9 +286,11 @@ export class UsersService {
           rowObj[key] = values[i];
         }
         rows.push(rowObj);
-        const product = rowObj['Продукт'].trim();
-        const direction = rowObj['Направление'].trim();
-        const department = rowObj['Департамент'].trim();
+        const product = rowObj['Продукт']?.trim();
+        const direction = rowObj['Направление']?.trim();
+        const department = rowObj['Департамент']?.trim();
+        const group = rowObj['Группа']?.trim();
+
         if (
           product &&
           !newProducts.includes(product) &&
@@ -315,6 +318,21 @@ export class UsersService {
         ) {
           newDirections.push(direction);
         }
+
+        if (
+          group &&
+          !newGroups.includes(group) &&
+          !teams.find(
+            (s) =>
+              s.name === group &&
+              findParent(
+                findParent(findParent(s, direction), department),
+                product,
+              ),
+          )
+        ) {
+          newGroups.push(group);
+        }
       }
     });
 
@@ -323,6 +341,7 @@ export class UsersService {
       products: newProducts,
       departments: newDepartments,
       directions: newDirections,
+      groups: newGroups,
     };
   }
 
@@ -332,7 +351,7 @@ export class UsersService {
         ...u,
         email: u.email.toLowerCase(),
         username: u.username.toLowerCase(),
-        team: (u.direction ?? u.department ?? u.product)?.trim(),
+        team: (u.group ?? u.direction ?? u.department ?? u.product)?.trim(),
       }));
 
       const emails = users.map((u) => u.email);
@@ -340,7 +359,7 @@ export class UsersService {
       const teams = [
         ...new Set(
           users
-            .flatMap((u) => [u.department, u.direction, u.product])
+            .flatMap((u) => [u.group, u.department, u.direction, u.product])
             .filter((v) => v && v !== '-'),
         ),
       ];
@@ -372,10 +391,14 @@ export class UsersService {
         }
         if (!u.department) return acc;
         if (!acc[u.product][u.department]) {
-          acc[u.product][u.department] = new Set();
+          acc[u.product][u.department] = {};
         }
         if (!u.direction) return acc;
-        acc[u.product][u.department].add(u.direction);
+        if (!acc[u.product][u.department][u.direction]) {
+          acc[u.product][u.department][u.direction] = new Set();
+        }
+        if (!u.group) return acc;
+        acc[u.product][u.department][u.direction].add(u.group);
         return acc;
       }, {});
 
@@ -394,7 +417,11 @@ export class UsersService {
           existingTeams,
         );
 
-      // throw new ForbiddenException('Пользователи не найдены.');
+      const groupsToCreate = this.createProductsService.getGroupsToCreate(
+        products,
+        existingTeams,
+      );
+
       const createdProducts = await tx.team.createManyAndReturn({
         data: productsToCreate.map((name) => ({ name, parentTeamId: null })),
         // skipDuplicates: true,
@@ -472,6 +499,7 @@ export class UsersService {
         }
       });
 
+      // затем существующие направления
       existingTeams.forEach((team) => {
         if (!team.parentTeamId) return;
         const parentDepartment = existingTeams.find(
@@ -484,6 +512,54 @@ export class UsersService {
         if (!parentProduct || parentProduct.parentTeamId !== null) return;
         directionsKeyToId.set(
           `${parentProduct.name}:${parentDepartment.name}:${team.name}`,
+          team.id,
+        );
+      });
+
+      const createdGroups = await tx.team.createManyAndReturn({
+        data: Object.keys(groupsToCreate).flatMap((product) =>
+          Object.keys(groupsToCreate[product]).flatMap((department) =>
+            Object.keys(groupsToCreate[product][department]).flatMap(
+              (direction) =>
+                groupsToCreate[product][department][direction].map((group) => ({
+                  name: group,
+                  parentTeamId: directionsKeyToId.get(
+                    `${product}:${department}:${direction}`,
+                  ),
+                })),
+            ),
+          ),
+        ),
+        // skipDuplicates: true,
+      });
+
+      const groupsKeyToId = new Map();
+
+      createdGroups.forEach((d) => {
+        const productName = Array.from(directionsKeyToId.entries()).find(
+          ([name, id]) => id === d.parentTeamId,
+        )?.[0];
+        if (productName) {
+          groupsKeyToId.set(`${productName}:${d.name}`, d.id);
+        }
+      });
+
+      existingTeams.forEach((team) => {
+        if (!team.parentTeamId) return;
+        const parentDirection = existingTeams.find(
+          (d) => d.id === team.parentTeamId,
+        );
+        if (!parentDirection || parentDirection.parentTeamId === null) return;
+        const parentDepartment = existingTeams.find(
+          (d) => d.id === parentDirection.parentTeamId,
+        );
+        if (!parentDepartment || parentDepartment.parentTeamId === null) return;
+        const parentProduct = existingTeams.find(
+          (p) => p.id === parentDepartment.parentTeamId,
+        );
+        if (!parentProduct || parentProduct.parentTeamId !== null) return;
+        groupsKeyToId.set(
+          `${parentProduct.name}:${parentDepartment.name}:${parentDirection.name}:${team.name}`,
           team.id,
         );
       });
@@ -504,10 +580,16 @@ export class UsersService {
 
       await tx.userTeam.createManyAndReturn({
         data: newUsers
-          .filter((u) => u.product ?? u.department ?? u.direction)
+          .filter(
+            (u) => (u.product || u.department || u.direction) && !u.leader,
+          )
           .map((u) => {
             let teamId;
-            if (u.direction) {
+            if (u.group) {
+              teamId = groupsKeyToId.get(
+                `${u.product}:${u.department}:${u.direction}:${u.group}`,
+              );
+            } else if (u.direction) {
               teamId = directionsKeyToId.get(
                 `${u.product}:${u.department}:${u.direction}`,
               );
@@ -522,6 +604,41 @@ export class UsersService {
             };
           }),
       });
+
+      const leaderUsers = newUsers.filter((u) => u.leader);
+      for (const user of leaderUsers) {
+        let teamId;
+        if (user.group) {
+          teamId = groupsKeyToId.get(
+            `${user.product}:${user.department}:${user.direction}:${user.group}`,
+          );
+        } else if (user.direction) {
+          teamId = directionsKeyToId.get(
+            `${user.product}:${user.department}:${user.direction}`,
+          );
+        } else if (user.department) {
+          teamId = departmentKeyToId.get(`${user.product}:${user.department}`);
+        } else if (user.product) {
+          teamId = productNameToId.get(user.product);
+        }
+        const team = existingTeams.find((t) => t.id === teamId);
+        if (team && team.curatorId) {
+          await tx.userTeam.createMany({
+            data: {
+              userId: createdUserMap.get(user.email),
+              teamId: team.id,
+            },
+            skipDuplicates: true,
+          });
+        } else {
+          await tx.team.update({
+            where: { id: teamId },
+            data: {
+              curatorId: createdUserMap.get(user.email),
+            },
+          });
+        }
+      }
 
       return createdUsers;
     });

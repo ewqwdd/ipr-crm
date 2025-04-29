@@ -471,14 +471,14 @@ export class IprService {
         description: '',
         level: 3,
         url: data.url,
-        ...(data.competencyId
+        ...(data.addToConstructor && data.competencyId
           ? {
               competencyMaterials: {
                 create: { competencyId: data.competencyId },
               },
             }
           : {}),
-        ...(data.indicatorId
+        ...(data.addToConstructor && data.indicatorId
           ? {
               indicatorMaterials: { create: { indicatorId: data.indicatorId } },
             }
@@ -488,7 +488,6 @@ export class IprService {
             status: TaskStatus.TO_DO,
             priority: data.priority,
             type: data.taskType,
-            competencyId: data.competencyId,
             planId: plan.id,
             ...(data.competencyId ? { competencyId: data.competencyId } : {}),
             ...(data.indicatorId ? { indicatorId: data.indicatorId } : {}),
