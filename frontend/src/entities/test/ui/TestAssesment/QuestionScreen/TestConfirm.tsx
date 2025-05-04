@@ -10,6 +10,7 @@ interface TestConfirmProps {
 
 export default function TestConfirm({ test, onFinish }: TestConfirmProps) {
   const answers = useAppSelector((state) => state.testAssesment.answers);
+  const errors = useAppSelector((state) => state.testAssesment.errors);
 
   const allQuestionsAnswered = useMemo(() => {
     let requiredNotAnswered = false;
@@ -42,7 +43,7 @@ export default function TestConfirm({ test, onFinish }: TestConfirmProps) {
     <PrimaryButton
       onClick={onFinish}
       className="self-end mt-auto"
-      disabled={!allQuestionsAnswered}
+      disabled={!allQuestionsAnswered || Object.keys(errors).length > 0}
     >
       Завершить
     </PrimaryButton>

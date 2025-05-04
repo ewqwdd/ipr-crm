@@ -3,6 +3,7 @@ import DatePickerLight from '@/shared/ui/DatePickerLight';
 import React, { useMemo } from 'react';
 import { DateObject } from 'react-multi-date-picker';
 import UsersList from './UsersList';
+import { useAppSelector } from '@/app';
 
 interface TestAssignedFormProps {
   users: User[];
@@ -21,6 +22,8 @@ export default function TestAssignedForm({
   setDate,
   role,
 }: TestAssignedFormProps) {
+  const teamAccess =
+    useAppSelector((state) => state.user.user?.teamAccess) ?? [];
   const groupedUsers = useMemo(() => {
     const teamMap = new Map<
       number,
@@ -28,23 +31,37 @@ export default function TestAssignedForm({
     >();
 
     users.forEach((user) => {
+      const check = (id: number) =>
+        !teamMap.has(id) && (role === 'admin' || teamAccess.includes(id));
       user.teams?.forEach((team) => {
-        if (!teamMap.has(team.teamId)) {
+        if (check(team.teamId)) {
           teamMap.set(team.teamId, team);
+        }
+      });
+      user.teamCurator?.forEach((team) => {
+        if (check(team.id)) {
+          teamMap.set(team.id, { teamId: team.id, team: { name: team.name } });
         }
       });
     });
 
     return Array.from(teamMap.values()).map((team) => ({
       ...team,
-      users: users.filter((user) =>
-        user.teams?.some((t) => t.teamId === team.teamId),
-      ),
+      users: [
+        ...users.filter((user) =>
+          user.teamCurator?.find((c) => c.id === team.teamId),
+        ),
+        ...users.filter((user) =>
+          user.teams?.some((t) => t.teamId === team.teamId),
+        ),
+      ],
     }));
   }, [users]);
 
   const noTeamUsers = useMemo(() => {
-    return users.filter((user) => !user.teams || user.teams.length === 0);
+    return users.filter(
+      (user) => (!user.teams || user.teams.length === 0) && !user.teamCurator,
+    );
   }, [users]);
 
   const onDateChange = (date: DateObject | DateObject[] | undefined) => {
@@ -69,7 +86,7 @@ export default function TestAssignedForm({
         </span>
         <DatePickerLight value={date} onChange={onDateChange} />
       </div>
-      {role === 'admin' && (
+      {role === 'admin' && noTeamUsers.length > 0 && (
         <UsersList
           {...defaultProps}
           team={{

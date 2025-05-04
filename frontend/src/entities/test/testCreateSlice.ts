@@ -29,6 +29,9 @@ const ifMaxMinToggle = (question: CreateQuestion) => {
   if (question.type === 'NUMBER') {
     return !!question.maxNumber || !!question.minNumber;
   }
+  if (question.type === 'TEXT') {
+    return Number.isInteger(question.maxLength);
+  }
   return false;
 };
 
@@ -132,7 +135,7 @@ const testCreateSlice = createSlice({
       if (!state.questions[index].options) {
         state.questions[index].options = [];
       }
-      state.questions[index].options?.push({ value: '', score: 1 });
+      state.questions[index].options?.push({ value: '', score: 0 });
       state.questions[index].error = undefined;
       state.errors.questions = undefined;
     },

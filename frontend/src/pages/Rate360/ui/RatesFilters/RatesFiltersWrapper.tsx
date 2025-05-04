@@ -96,7 +96,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
   );
 
   return (
-    <div className="mt-6">
+    <div className="">
       <RatesFilters
         teamsOptions={teamsOptions}
         specsOptions={specsOptions}

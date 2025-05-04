@@ -23,8 +23,9 @@ export default function UsersList({
         {team.users.map((user) => (
           <UserCheckbox
             key={user.id}
-            user={{ ...user, teamCurator: [] }}
+            user={{ ...user }}
             selected={selected.includes(user.id)}
+            teamId={team.teamId}
             onChange={(e) => {
               if (e.target.checked) {
                 setSelected([...selected, user.id]);

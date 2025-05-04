@@ -10,7 +10,7 @@ import {
 } from './IprFilters/config';
 import IprFilters from './IprFilters/IprFilters';
 
-const LIMIT = 20;
+const LIMIT = 10;
 
 export default function IprList() {
   const [page, setPage] = useState(1);

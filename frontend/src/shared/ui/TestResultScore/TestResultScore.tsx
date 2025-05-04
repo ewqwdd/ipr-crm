@@ -14,7 +14,10 @@ interface TestScoreProps {
   finished?: boolean;
 }
 
-export default function TestScore({ test, finished = true }: TestScoreProps) {
+export default function TestResultScore({
+  test,
+  finished = true,
+}: TestScoreProps) {
   return (
     <>
       {test.test.minimumScore && finished ? (
@@ -26,10 +29,12 @@ export default function TestScore({ test, finished = true }: TestScoreProps) {
       ) : (
         <MinusCircleIcon className="text-gray-500 size-4" />
       )}
-      <span className="text-gray-500 text-sm">
-        {test.score ?? 0}{' '}
-        {Boolean(test.questionsCount) && `из ${test.questionsCount}`}
-      </span>
+      {finished && (
+        <span className="text-gray-500 text-sm">
+          {test.score ?? 0}{' '}
+          {Boolean(test.questionsCount) && `из ${test.questionsCount}`}
+        </span>
+      )}
     </>
   );
 }

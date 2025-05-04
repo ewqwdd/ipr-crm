@@ -17,7 +17,19 @@ export const testsApi = createApi({
       query: (body) => ({
         url: '/test',
         method: 'POST',
-        body,
+        body: {
+          ...body,
+          startDate: body.startDate
+            ? new Date(
+                new Date(body.startDate).setHours(0, 0, 0, 0),
+              ).toISOString()
+            : undefined,
+          endDate: body.endDate
+            ? new Date(
+                new Date(body.endDate).setHours(23, 59, 59, 999),
+              ).toISOString()
+            : undefined,
+        },
       }),
       invalidatesTags: ['Test'],
     }),
@@ -25,7 +37,19 @@ export const testsApi = createApi({
       query: (body) => ({
         url: `/test/admin/${body.id}`,
         method: 'PUT',
-        body,
+        body: {
+          ...body,
+          startDate: body.startDate
+            ? new Date(
+                new Date(body.startDate).setHours(0, 0, 0, 0),
+              ).toISOString()
+            : undefined,
+          endDate: body.endDate
+            ? new Date(
+                new Date(body.endDate).setHours(23, 59, 59, 999),
+              ).toISOString()
+            : undefined,
+        },
       }),
       invalidatesTags: ['Test', 'Assigned', 'Finished'],
     }),
@@ -52,16 +76,21 @@ export const testsApi = createApi({
       query: ({ testId, userIds, startDate }) => ({
         url: `/test/assigned/${testId}`,
         method: 'POST',
-        body: { userIds, startDate },
+        body: {
+          userIds,
+          startDate: startDate
+            ? new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString()
+            : undefined,
+        },
       }),
-      invalidatesTags: ['Assigned'],
+      invalidatesTags: ['Assigned', 'Test'],
     }),
     finishTest: build.mutation<void, number>({
       query: (id) => ({
         url: `/test/assigned/${id}/finish`,
         method: 'POST',
       }),
-      invalidatesTags: ['Assigned', 'Finished'],
+      invalidatesTags: ['Finished', 'Assigned', 'Test'],
     }),
     getFinishedTests: build.query<AssignedTest[], void>({
       query: () => '/test/finished',

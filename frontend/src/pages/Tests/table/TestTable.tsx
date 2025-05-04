@@ -81,9 +81,7 @@ const TestTable = ({ tests, isFetching }: TestTableProps) => {
       <TestTableFilter filters={filters} updateFilters={updateFilters} />
       {filteredTests.length > 0 ? (
         <div className="w-full max-sm:overflow-x-auto">
-          <table
-            className={`min-w-[800px] w-full divide-y divide-gray-300 mt-5`}
-          >
+          <table className={`w-full divide-y divide-gray-300 mt-5`}>
             <thead className="bg-gray-50">
               <tr>
                 <th

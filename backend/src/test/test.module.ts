@@ -5,6 +5,7 @@ import { NotificationsService } from 'src/utils/notifications/notifications.serv
 import { TestService } from './test.service';
 import { MailService } from 'src/utils/mailer/mailer';
 import { ExcelService } from 'src/utils/excel/excel.service';
+import { UsersAccessService } from 'src/users/users-access.service';
 
 @Module({
   controllers: [TestController],
@@ -14,6 +15,7 @@ import { ExcelService } from 'src/utils/excel/excel.service';
     MailService,
     TestService,
     ExcelService,
+    UsersAccessService,
   ],
 })
 export class TestModule {}

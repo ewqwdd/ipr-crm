@@ -13,6 +13,7 @@ import { AssignUsersDTO } from './dto/assign-users.dto';
 import { ExcelService } from 'src/utils/excel/excel.service';
 import { Response } from 'express';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { UsersAccessService } from 'src/users/users-access.service';
 
 type AssignedType = Prisma.User_Assigned_TestGetPayload<{
   include: {
@@ -27,6 +28,7 @@ export class TestService {
     private prismaService: PrismaService,
     private notificationsService: NotificationsService,
     private excelService: ExcelService,
+    private usersAccessService: UsersAccessService,
   ) {}
 
   async createTest(data: CreateTestDTO) {
@@ -48,12 +50,12 @@ export class TestService {
       },
     });
 
-    data.questions.forEach(async (question, index) => {
+    data.questions.forEach(async (question) => {
       await this.prismaService.question.create({
         data: {
           label: question.label,
           type: question.type,
-          order: index,
+          order: question.order,
           description: question.description,
           maxLength: question.maxLength,
           maxNumber: question.maxNumber,
@@ -140,19 +142,58 @@ export class TestService {
     }, 0);
   }
 
-  async getTests(name?: string, startDate?: Date, endDate?: Date) {
+  async getTests(
+    sessionInfo: GetSessionInfoDto,
+    name?: string,
+    startDate?: Date,
+    endDate?: Date,
+  ) {
     const filters = {
       ...(name ? { name: { contains: name } } : {}),
       ...(startDate ? { startDate: { gte: startDate } } : {}),
       ...(endDate ? { endDate: { lte: endDate } } : {}),
       archived: false,
     };
+    const userAssignedFilters: Prisma.User_Assigned_TestAggregateArgs = {};
+
+    if (sessionInfo.role !== 'admin') {
+      const accessTeams = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
+      userAssignedFilters.where = {
+        user: {
+          OR: [
+            {
+              teams: {
+                some: {
+                  id: {
+                    in: accessTeams,
+                  },
+                },
+              },
+            },
+            {
+              teamCurator: {
+                some: {
+                  id: {
+                    in: accessTeams,
+                  },
+                },
+              },
+            },
+          ],
+        },
+      };
+    }
 
     const tests = await this.prismaService.test.findMany({
       include: {
         testQuestions: {
           where: {
             archived: false,
+          },
+          orderBy: {
+            order: 'asc',
           },
           include: {
             options: {
@@ -191,6 +232,7 @@ export class TestService {
               },
             },
           },
+          ...userAssignedFilters,
         },
       },
       ...(Object.keys(filters).length > 0 ? { where: filters } : {}),
@@ -230,6 +272,9 @@ export class TestService {
         testQuestions: {
           where: {
             archived: false,
+          },
+          orderBy: {
+            order: 'asc',
           },
           include: {
             options: {
@@ -275,6 +320,9 @@ export class TestService {
           where: {
             archived: false,
           },
+          orderBy: {
+            order: 'asc',
+          },
           include: {
             options: {
               where: {
@@ -297,14 +345,30 @@ export class TestService {
         where: {
           userId: sessionInfo.id,
           finished: false,
-          OR: [
+          AND: [
             {
-              availableFrom: {
-                lte: new Date(new Date().setHours(23, 59, 59, 999)),
-              },
+              OR: [
+                {
+                  availableFrom: {
+                    lte: new Date(new Date().setHours(0, 0, 0, 0)),
+                  },
+                },
+                {
+                  availableFrom: null,
+                },
+              ],
             },
             {
-              availableFrom: null,
+              OR: [
+                {
+                  endDate: {
+                    gte: new Date(),
+                  },
+                },
+                {
+                  endDate: null,
+                },
+              ],
             },
           ],
           test: {
@@ -338,14 +402,30 @@ export class TestService {
       where: {
         id: testId,
         userId: sessionInfo.id,
-        OR: [
+        AND: [
           {
-            availableFrom: {
-              lte: new Date(),
-            },
+            OR: [
+              {
+                availableFrom: {
+                  lte: new Date(new Date().setHours(0, 0, 0, 0)),
+                },
+              },
+              {
+                availableFrom: null,
+              },
+            ],
           },
           {
-            availableFrom: null,
+            OR: [
+              {
+                endDate: {
+                  gte: new Date(),
+                },
+              },
+              {
+                endDate: null,
+              },
+            ],
           },
         ],
         test: {
@@ -361,6 +441,9 @@ export class TestService {
             testQuestions: {
               where: {
                 archived: false,
+              },
+              orderBy: {
+                order: 'asc',
               },
               select: {
                 id: true,
@@ -517,20 +600,21 @@ export class TestService {
     let allowedUsers = userIds;
 
     if (sessionInfo.role !== 'admin') {
-      const user = await this.prismaService.user.findFirst({
-        where: { id: sessionInfo.id },
-        include: {
-          teamCurator: { select: { id: true } },
-        },
-      });
-
-      if (!user?.teamCurator?.length) throw new ForbiddenException();
-
-      const teamIds = user.teamCurator.map((team) => team.id);
+      const teamAccess = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
+      if (!teamAccess.length) throw new ForbiddenException();
 
       const teamUsers = await this.prismaService.user.findMany({
         where: {
-          teams: { some: { teamId: { in: teamIds } } },
+          OR: [
+            {
+              teams: { some: { teamId: { in: teamAccess } } },
+            },
+            {
+              teamCurator: { some: { id: { in: teamAccess } } },
+            },
+          ],
         },
         select: { id: true },
       });
@@ -603,25 +687,41 @@ export class TestService {
       ...test,
       questionsCount: test.test.testQuestions.reduce((acc, question) => {
         if (question.type === QuestionType.SINGLE) {
+          const options = question.options
+            .filter((o) => o.isCorrect)
+            .map((q) => q.score ?? 0);
           return (
             acc +
-            Math.max(
-              ...question.options
-                .filter((o) => o.isCorrect)
-                .map((q) => q.score),
-            )
+            (options.length > 0
+              ? Math.max(...(options.length > 0 ? options : [0]))
+              : 0)
           );
         } else if (question.type === QuestionType.MULTIPLE) {
           return (
             acc +
-            question.options.reduce(
-              (optAcc, option) =>
-                optAcc + (option.isCorrect ? option.score : 0),
-              0,
-            )
+            question.options
+              .filter((o) => o.isCorrect)
+              .reduce((sum, q) => sum + (q.score || 0), 0)
           );
         } else {
-          return acc + (question.score || 1);
+          return acc + (question.score || 0);
+        }
+      }, 0),
+      maxScore: test.test.testQuestions.reduce((acc, question) => {
+        if (question.type === QuestionType.SINGLE) {
+          const options = question.options
+            .filter((o) => o.isCorrect)
+            .map((q) => q.score ?? 0);
+          return acc + (options.length > 0 ? Math.max(...options) : 0);
+        } else if (question.type === QuestionType.MULTIPLE) {
+          return (
+            acc +
+            question.options
+              .filter((o) => o.isCorrect)
+              .reduce((sum, q) => sum + (q.score || 0), 0)
+          );
+        } else {
+          return acc + (question.score || 0);
         }
       }, 0),
       answeredQUestions: null,
@@ -652,6 +752,9 @@ export class TestService {
             testQuestions: {
               where: {
                 archived: false,
+              },
+              orderBy: {
+                order: 'asc',
               },
               include: {
                 options: {
@@ -710,6 +813,7 @@ export class TestService {
       orderBy: {
         id: 'desc',
       },
+      take: 1,
     });
 
     const withResults = finishedTests.map((test) => {
@@ -770,31 +874,43 @@ export class TestService {
   }
 
   async notifyTestAssigned(testId: number, sessionInfo: GetSessionInfoDto) {
-    const access = await this.checkAccess(sessionInfo);
+    const access = sessionInfo.role === 'admin';
 
-    let filters = {};
-    if (typeof access !== 'boolean') {
+    let filters: Prisma.User_Assigned_TestWhereInput = {};
+    if (!access) {
+      const allowedTeams = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
       filters = {
-        usersAssigned: {
-          every: {
-            user: {
+        user: {
+          OR: [
+            {
               teams: {
                 some: {
                   id: {
-                    in: access.teamCurator.map((team) => team.id),
+                    in: allowedTeams,
                   },
                 },
               },
             },
-          },
+            {
+              teamCurator: {
+                some: {
+                  id: {
+                    in: allowedTeams,
+                  },
+                },
+              },
+            },
+          ],
         },
       };
     }
 
     const tests = await this.prismaService.user_Assigned_Test.findMany({
       where: {
+        ...filters,
         test: {
-          ...filters,
           id: testId,
           hidden: false,
           archived: false,
@@ -811,7 +927,7 @@ export class TestService {
       ),
     );
     await Promise.all(promisesNotifs);
-    return true;
+    return { count: tests.length };
   }
 
   async generateResults(
@@ -819,31 +935,43 @@ export class TestService {
     testId: number,
     sessionInfo: GetSessionInfoDto,
   ) {
-    const access = await this.checkAccess(sessionInfo);
+    const access = sessionInfo.role === 'admin';
 
-    let filters = {};
-    if (typeof access !== 'boolean') {
+    let filters: Prisma.User_Assigned_TestWhereInput = {};
+    if (!access) {
+      const allowedTeams = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
       filters = {
-        usersAssigned: {
-          every: {
-            user: {
+        user: {
+          OR: [
+            {
               teams: {
                 some: {
                   id: {
-                    in: access.teamCurator.map((team) => team.id),
+                    in: allowedTeams,
                   },
                 },
               },
             },
-          },
+            {
+              teamCurator: {
+                some: {
+                  id: {
+                    in: allowedTeams,
+                  },
+                },
+              },
+            },
+          ],
         },
       };
     }
 
     const test = await this.prismaService.user_Assigned_Test.findMany({
       where: {
+        ...filters,
         test: {
-          ...filters,
           id: testId,
         },
       },
@@ -877,7 +1005,6 @@ export class TestService {
       },
     });
     if (!test) throw new NotFoundException('Тест не найден');
-
     const questions = test.flatMap((t) => t.test.testQuestions);
     const ids = Array.from(new Set(questions.map((q) => q.id)));
 
@@ -1086,6 +1213,7 @@ export class TestService {
             textCorrectValue: found.textCorrectValue ?? null,
             allowDecimal: !!found.allowDecimal,
             score: found.score,
+            order: found.order,
           },
         });
         const options = await this.prismaService.option.findMany({
@@ -1146,7 +1274,7 @@ export class TestService {
           data: {
             label: question.label,
             type: question.type,
-            order: index,
+            order: question.order,
             description: question.description,
             maxLength: question.maxLength,
             maxNumber: question.maxNumber,

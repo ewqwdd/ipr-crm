@@ -16,7 +16,7 @@ import {
 import { useState } from 'react';
 import { Link } from 'react-router';
 
-const LIMIT = 20;
+const LIMIT = 10;
 
 export default function Rate360MeList() {
   const [page, setPage] = useState(1);
@@ -34,7 +34,7 @@ export default function Rate360MeList() {
           className="max-[1440px]:px-8 max-sm:px-4"
         />
         <div className="max-sm:max-w-full overflow-x-auto">
-          <table className="sm:min-w-full divide-y divide-gray-300 mt-10">
+          <table className="sm:min-w-full divide-y divide-gray-300 mt-2">
             <TableHeading
               headings={[
                 '',

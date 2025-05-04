@@ -13,8 +13,9 @@ import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Pagination } from '@/shared/ui/Pagination';
 import { Filters } from './ui/RatesFilters/types';
 import { initialFilters } from './ui/RatesFilters/constatnts';
+import { SelectAll } from '@/widgets/SelectAll';
 
-const LIMIT = 20;
+const LIMIT = 12;
 
 export default function Rate360() {
   const [selected, setSelected] = useState<number[]>([]);
@@ -56,19 +57,28 @@ export default function Rate360() {
             Добавить
           </PrimaryButton>
         </div>
-        <RatesFiltersWrapper filters={filters} setFilters={setFilters} />
+        <div className="flex gap-1 justify-between items-start mt-6">
+          <RatesFiltersWrapper filters={filters} setFilters={setFilters} />
+          <SelectAll
+            data={data?.data ?? []}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        </div>
         <RatesTable
           selected={selected}
           data={data?.data}
           isLoading={isFetching}
           setSelected={setSelected}
         />
-        <Pagination
-          limit={LIMIT}
-          page={page}
-          count={data?.total}
-          setPage={setPage}
-        />
+        {data?.total && data?.total < LIMIT && (
+          <Pagination
+            limit={LIMIT}
+            page={page}
+            count={data?.total}
+            setPage={setPage}
+          />
+        )}
         <Settings selected={selected} setSelected={setSelected} />
       </div>
       <Modal

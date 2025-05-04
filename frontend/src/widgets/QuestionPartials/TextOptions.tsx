@@ -4,7 +4,6 @@ import { cva } from '@/shared/lib/cva';
 import { digitRegex } from '@/shared/lib/regex';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
-import { useEffect, useState } from 'react';
 
 interface TextOptionsProps {
   index: number;
@@ -12,6 +11,7 @@ interface TextOptionsProps {
   onMaxLengthChange: (index: number, value: string | undefined) => void;
   onTextCorrectChange?: (index: number, value: string) => void;
   questions: CreateQuestion[] | CreateSurveyQuestion[];
+  setMaxMinToggle: (index: number, value: boolean) => void;
 }
 
 export default function TextOptions({
@@ -20,18 +20,21 @@ export default function TextOptions({
   onMaxLengthChange,
   onTextCorrectChange,
   questions,
+  setMaxMinToggle,
 }: TextOptionsProps) {
-  const type = questions[index].type;
+  const question = questions[index];
+  const type = question.type;
+  const maxLength = question.maxLength;
 
-  const [maxLengthToggle, setMaxLengthToggle] = useState(false);
-  const [maxLength, setMaxLength] = useState('');
+  const maxLengthToggle = questions[index].maxMinToggle;
+
   // @ts-expect-error TODO fix type
   const textCorrectValue = questions[index].textCorrectValue;
 
   const onChangeMaxLength = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (digitRegex.test(value)) {
-      setMaxLength(value);
+      onMaxLengthChange(index, value);
     }
   };
 
@@ -44,14 +47,6 @@ export default function TextOptions({
     }
   };
 
-  useEffect(() => {
-    if (maxLengthToggle) {
-      onMaxLengthChange(index, maxLength);
-    } else {
-      onMaxLengthChange(index, undefined);
-    }
-  }, [maxLengthToggle, maxLength, index, onMaxLengthChange]);
-
   if (type !== 'TEXT') return null;
 
   return (
@@ -60,7 +55,7 @@ export default function TextOptions({
         <Checkbox
           title="Ограничение длины"
           checked={maxLengthToggle}
-          onChange={() => setMaxLengthToggle((p) => !p)}
+          onChange={() => setMaxMinToggle(index, !maxLengthToggle)}
         />
         <InputWithLabelLight
           className={cva('transition-opacity', {
@@ -78,6 +73,9 @@ export default function TextOptions({
           label="Правильный ответ"
           onChange={onChangeCorrect}
           value={textCorrectValue}
+          className={cva({
+            'ring ring-red-500': textCorrectValue === '',
+          })}
         />
       )}
     </div>

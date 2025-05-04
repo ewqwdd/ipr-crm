@@ -477,14 +477,30 @@ export class SurveyService {
         where: {
           userId: sessionInfo.id,
           finished: false,
-          OR: [
+          AND: [
             {
-              availableFrom: {
-                lte: new Date(new Date().setHours(23, 59, 59, 999)),
-              },
+              OR: [
+                {
+                  availableFrom: {
+                    lte: new Date(new Date().setHours(0, 0, 0, 0)),
+                  },
+                },
+                {
+                  availableFrom: null,
+                },
+              ],
             },
             {
-              availableFrom: null,
+              OR: [
+                {
+                  endDate: {
+                    gte: new Date(),
+                  },
+                },
+                {
+                  endDate: null,
+                },
+              ],
             },
           ],
           survey: {
@@ -634,14 +650,30 @@ export class SurveyService {
       where: {
         id: surveyId,
         userId: sessionInfo.id,
-        OR: [
+        AND: [
           {
-            availableFrom: {
-              lte: new Date(),
-            },
+            OR: [
+              {
+                availableFrom: {
+                  lte: new Date(new Date().setHours(0, 0, 0, 0)),
+                },
+              },
+              {
+                availableFrom: null,
+              },
+            ],
           },
           {
-            availableFrom: null,
+            OR: [
+              {
+                endDate: {
+                  gte: new Date(),
+                },
+              },
+              {
+                endDate: null,
+              },
+            ],
           },
         ],
         survey: {

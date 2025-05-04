@@ -62,6 +62,17 @@ export default function TestAssesment() {
     }
   }, [data]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(
+        testsApi.util.invalidateTags([
+          { type: 'Assigned' },
+          { type: 'Assigned', id },
+        ]),
+      );
+    };
+  }, [id, dispatch]);
+
   return (
     <LoadingOverlay active={isLoading}>
       <div

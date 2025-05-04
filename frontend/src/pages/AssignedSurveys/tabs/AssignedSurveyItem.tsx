@@ -39,7 +39,7 @@ export default function AssignedSurveyItem({
           </p>
         )}
         {survey.survey.endDate && (
-          <p className="text-gray-500 truncate max-w-32">
+          <p className="text-gray-500 truncate max-sm:max-w-32">
             До: {formatDateTime(survey.survey.endDate)}
           </p>
         )}

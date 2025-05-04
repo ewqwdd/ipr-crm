@@ -4,6 +4,8 @@ import { Answer, AssignedTest, TestAssesmentStoreSchema } from './types/types';
 const initialState: TestAssesmentStoreSchema = {
   screen: -1,
   answers: {},
+  errors: {},
+  answerLoading: [],
 };
 
 const testAssesmentSlice = createSlice({
@@ -37,6 +39,21 @@ const testAssesmentSlice = createSlice({
           return acc;
         },
         {} as Record<number, Answer>,
+      );
+    },
+    setError(state, action: PayloadAction<{ index: number; error?: string }>) {
+      if (action.payload.error === undefined) {
+        delete state.errors[action.payload.index];
+      } else {
+        state.errors[action.payload.index] = action.payload.error;
+      }
+    },
+    addAnswerLoading(state, action: PayloadAction<number>) {
+      state.answerLoading.push(action.payload);
+    },
+    removeAnswerLoading(state, action: PayloadAction<number>) {
+      state.answerLoading = state.answerLoading.filter(
+        (id) => id !== action.payload,
       );
     },
   },

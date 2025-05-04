@@ -1,5 +1,4 @@
 import { AssignedTest } from '@/entities/test';
-import { cva } from '@/shared/lib/cva';
 import { formatDateTime } from '@/shared/lib/formatDateTime';
 import { Card } from '@/shared/ui/Card';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
@@ -37,20 +36,17 @@ export default function AssignedTestItem({ test }: AssignedTestItemProps) {
           </p>
         )}
         {test.test.endDate && (
-          <p className="text-gray-500 truncate max-w-32">
+          <p className="text-gray-500 truncate max-sm:max-w-32">
             До: {formatDateTime(test.test.endDate)}
           </p>
         )}
       </div>
-      <Link
-        to={`/tests/${test.id}`}
-        className={cva(' max-sm:hidden', { 'ml-auto': !isContinue })}
-      >
+      <Link to={`/tests/${test.id}`} className={'max-sm:hidden ml-auto'}>
         <PrimaryButton>{!isContinue ? startText : continueText}</PrimaryButton>
       </Link>
       <Link
         to={`/tests/${test.id}`}
-        className="sm:hidden text-sm text-violet-700 font-medium"
+        className="sm:hidden text-sm text-violet-700 font-medium ml-auto"
       >
         {!isContinue ? startText : continueText}
       </Link>

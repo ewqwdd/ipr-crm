@@ -80,6 +80,8 @@ export interface Answer {
 export interface TestAssesmentStoreSchema {
   screen: number;
   answers: Record<number, Answer>;
+  errors: Record<number, string>;
+  answerLoading: number[];
 }
 export interface Test {
   id: number;

@@ -40,7 +40,7 @@ export default memo(function TestScore({
             questions: acc.questions + 1,
           };
         } else if (
-          (question.type === 'SINGLE' || question.type === 'MULTIPLE') &&
+          question.type === 'SINGLE' &&
           question.options?.some((option) => option.isCorrect)
         ) {
           const maxScore = Math.max(
@@ -49,6 +49,16 @@ export default memo(function TestScore({
               .map((q) => q.score ?? 1),
           );
           return { score: acc.score + maxScore, questions: acc.questions + 1 };
+        } else if (
+          question.type === 'MULTIPLE' &&
+          question.options?.some((option) => option.isCorrect)
+        ) {
+          const score = question.options
+            .filter((q) => q.isCorrect)
+            .reduce((sum, o) => sum + (o.score ?? 1), 0);
+          console.log(score);
+
+          return { score: acc.score + score, questions: acc.questions + 1 };
         }
         return acc;
       },
@@ -62,7 +72,7 @@ export default memo(function TestScore({
     }
   }, [count, minimumScore, onChangeMinimumScore]);
 
-  console.log(count);
+  console.log(count, questions);
 
   return (
     <div className="flex flex-col gap-4 mt-6 max-w-xl">

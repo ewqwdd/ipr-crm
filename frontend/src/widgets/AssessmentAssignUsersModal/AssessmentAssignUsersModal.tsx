@@ -1,11 +1,11 @@
 import { useAppSelector } from '@/app';
-import { useFilterUsersByCurator } from '@/shared/hooks/useFilterUsersByCurator';
 import { Modal } from '@/shared/ui/Modal';
 import { useEffect, useState } from 'react';
 import AssessmentAssignUsersForm from './AssessmentAssignUsersForm';
 import { testsApi } from '@/shared/api/testsApi';
 import toast from 'react-hot-toast';
 import { surveyApi } from '@/shared/api/surveyApi';
+import { usersApi } from '@/shared/api/usersApi';
 
 interface AssessmentAssignUsersModalProps {
   isOpen: boolean;
@@ -22,12 +22,12 @@ export default function AssessmentAssignUsersModal({
     testId?: number;
     surveyId?: number;
   };
-  const teamCurator = useAppSelector((state) => state.user?.user?.teamCurator);
-  const role = useAppSelector((state) => state.user?.user?.role.name);
+  const user = useAppSelector((state) => state.user.user);
+  const role = user?.role;
   const [mutateTest, testState] = testsApi.useAssignUsersMutation();
   const [mutateSurvey, surveyState] = surveyApi.useAssignUsersMutation();
 
-  const { data, isFetching } = useFilterUsersByCurator(teamCurator, role);
+  const { data, isFetching } = usersApi.useGetUsersQuery({});
   const [selected, setSelected] = useState<number[]>([]);
   const [date, setDate] = useState<Date>(new Date());
 
@@ -62,12 +62,12 @@ export default function AssessmentAssignUsersModal({
       onSubmit={handleAssignUsers}
     >
       <AssessmentAssignUsersForm
-        role={role}
+        role={role?.name}
         date={date}
         setDate={setDate}
         selected={selected}
         setSelected={setSelected}
-        users={data ?? []}
+        users={data?.users ?? []}
       />
     </Modal>
   );

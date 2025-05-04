@@ -13,6 +13,12 @@ export default function UserFormItem({
   setSelected,
   user,
 }: UserFormItemProps) {
+  let nameToShow = (user?.firstName ?? '') + ' ' + (user?.lastName ?? '');
+
+  if (nameToShow === ' ') {
+    nameToShow = user?.username ?? '';
+  }
+
   return (
     <label className="flex gap-4 items-center">
       <input
@@ -27,9 +33,7 @@ export default function UserFormItem({
         }}
       />
       <Avatar src={user?.avatar} className="sm:size-8 size-4" />
-      <span className="text-nowrap">
-        {user?.firstName} {user?.lastName}
-      </span>
+      <span className="text-nowrap">{nameToShow}</span>
       {user?.Spec && (
         <Badge size="sm" color="blue" className="truncate">
           {user.Spec.name}

@@ -118,11 +118,13 @@ export default memo(function Question({
           setCorrectRequired={setCorrectRequired}
         />
       </div>
-      <QuestionScore
-        index={index}
-        questions={questions}
-        onChange={setQuestionScore}
-      />
+      {correctRequired && (
+        <QuestionScore
+          index={index}
+          questions={questions}
+          onChange={setQuestionScore}
+        />
+      )}
       <TestOptions
         onNameOptionChange={onNameOptionChange}
         onDeleteOption={onDeleteOption}
@@ -139,6 +141,7 @@ export default memo(function Question({
         onMaxLengthChange={onMaxLengthChange}
         correctRequired={correctRequired}
         index={index}
+        setMaxMinToggle={setMaxMinToggle}
       />
       <NumberOptions
         setMaxMinToggle={setMaxMinToggle}

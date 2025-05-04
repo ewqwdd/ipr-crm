@@ -1,16 +1,13 @@
 import {
   IsBoolean,
   IsDateString,
-  IsNotEmpty,
   IsNumber,
-  IsObject,
   IsOptional,
   IsString,
   IsArray,
   ValidateNested,
   IsEnum,
   IsInt,
-  IsNumberString,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { TestAccess } from '@prisma/client';
@@ -45,6 +42,10 @@ class QuestionDTO {
   @IsOptional()
   @IsInt()
   id?: number;
+
+  @IsNumber()
+  @IsInt()
+  order?: number;
 
   @IsEnum(QuestionType)
   type: QuestionType;
@@ -134,7 +135,6 @@ export class CreateTestDTO {
   timeLimit?: number;
 
   @IsOptional()
-  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   minimumScore?: number;
 

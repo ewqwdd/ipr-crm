@@ -118,7 +118,9 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
       url: link,
       contentType: materialType,
       priority,
-      deadline: date ? date.toISOString() : null,
+      deadline: date
+        ? new Date(new Date(date).setHours(23, 59, 59, 999)).toISOString()
+        : null,
       planId,
       taskType,
       userId,

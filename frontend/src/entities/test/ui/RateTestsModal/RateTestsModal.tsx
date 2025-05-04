@@ -1,14 +1,18 @@
 import { Modal } from '@/shared/ui/Modal';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { testsApi } from '@/shared/api/testsApi';
 import { TestResultScore } from '@/shared/ui/TestResultScore';
 import { testScoreCount } from '@/shared/lib/testScoreCount';
+import { displayName } from '@/shared/lib/displayName';
+import { Pagination } from '@/shared/ui/Pagination';
 
 type RateTestsModalProps = {
   isOpen: boolean;
   modalData: unknown;
   closeModal: () => void;
 };
+
+const LIMIT = 10;
 
 const RateTestsModal: FC<RateTestsModalProps> = ({
   closeModal,
@@ -19,6 +23,7 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
     testId?: number;
     testName?: string;
   };
+  const [page, setPage] = useState(1);
   const { data: finishedTests, isLoading: finishedTestsLoading } =
     testsApi.useGetTestsQuery();
 
@@ -27,7 +32,7 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
     const { score, maxScore } = testScoreCount(user, test);
     return {
       id: `${user.userId}_${testId}`,
-      name: `${user.user?.firstName} ${user.user?.lastName}`,
+      name: displayName(user.user),
       finished: user.finished,
       score,
       questionsCount: maxScore,
@@ -47,23 +52,33 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
       <div className="flex flex-col">
         <div className="text-sm text-gray-500 mb-4">Тест: {testName}</div>
         <div className="flex flex-col divide-y divide-gray-200">
-          {users?.map(({ id, name, finished, questionsCount, score }) => (
-            <div
-              key={id}
-              className="flex items-center justify-between py-3 gap-4"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-gray-900">{name}</span>
-                {test && (
-                  <TestResultScore
-                    test={{ test, questionsCount, score }}
-                    finished={finished}
-                  />
-                )}
+          {users
+            ?.slice((page - 1) * LIMIT, LIMIT * page)
+            ?.map(({ id, name, finished, questionsCount, score }) => (
+              <div
+                key={id}
+                className="flex items-center justify-between py-3 gap-4"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-900">{name}</span>
+                  {test && (
+                    <TestResultScore
+                      test={{ test, questionsCount, score }}
+                      finished={finished}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
+        {users && users.length > LIMIT && (
+          <Pagination
+            limit={LIMIT}
+            page={page}
+            setPage={setPage}
+            count={users.length}
+          />
+        )}
         {users?.length === 0 && (
           <div className="text-gray-500 text-sm text-center py-4">
             Нет завершенных тестов

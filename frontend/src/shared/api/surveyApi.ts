@@ -17,7 +17,19 @@ const surveyApi = createApi({
       query: (body) => ({
         url: '/survey',
         method: 'POST',
-        body,
+        body: {
+          ...body,
+          startDate: body.startDate
+            ? new Date(
+                new Date(body.startDate).setHours(0, 0, 0, 0),
+              ).toISOString()
+            : undefined,
+          endDate: body.endDate
+            ? new Date(
+                new Date(body.endDate).setHours(23, 59, 59, 999),
+              ).toISOString()
+            : undefined,
+        },
       }),
       invalidatesTags: ['Survey'],
     }),
@@ -28,7 +40,12 @@ const surveyApi = createApi({
       query: ({ surveyId, userIds, startDate }) => ({
         url: `/survey/assigned/${surveyId}`,
         method: 'POST',
-        body: { userIds, startDate },
+        body: {
+          userIds,
+          startDate: startDate
+            ? new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString()
+            : undefined,
+        },
       }),
       invalidatesTags: ['Assigned'],
     }),
@@ -55,7 +72,19 @@ const surveyApi = createApi({
       query: (body) => ({
         url: `/survey/admin/${body.id}`,
         method: 'PUT',
-        body,
+        body: {
+          ...body,
+          startDate: body.startDate
+            ? new Date(
+                new Date(body.startDate).setHours(0, 0, 0, 0),
+              ).toISOString()
+            : undefined,
+          endDate: body.endDate
+            ? new Date(
+                new Date(body.endDate).setHours(23, 59, 59, 999),
+              ).toISOString()
+            : undefined,
+        },
       }),
       invalidatesTags: ['Survey', 'Assigned', 'Finished'],
     }),

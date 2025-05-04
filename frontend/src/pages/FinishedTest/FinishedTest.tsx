@@ -1,3 +1,4 @@
+import { useAppSelector } from '@/app';
 import { testsApi } from '@/shared/api/testsApi';
 import { Card } from '@/shared/ui/Card';
 import { EmptyState } from '@/shared/ui/EmptyState';
@@ -8,11 +9,16 @@ import { useParams } from 'react-router';
 
 export default function FinishedTest() {
   const { id } = useParams<{ id: string }>();
+  const answerLoading = useAppSelector(
+    (state) => state.testAssesment.answerLoading,
+  );
   const { data, isLoading, isSuccess, isError } =
-    testsApi.useGetFinishedTestForUserQuery(parseInt(id ?? '-1'));
+    testsApi.useGetFinishedTestForUserQuery(parseInt(id ?? '-1'), {
+      skip: answerLoading.length > 0,
+    });
 
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading || answerLoading.length > 0}>
       <div
         className={'px-4 py-6 sm:px-8 sm:py-10 flex flex-col h-full relative'}
       >

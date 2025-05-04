@@ -26,6 +26,7 @@ export default function QuestionScreen({
 }: QuestionScreenProps) {
   const dispatch = useAppDispatch();
   const answers = useAppSelector((state) => state.testAssesment.answers);
+  const errors = useAppSelector((state) => state.testAssesment.errors);
 
   const handleForward = () => {
     if (screen < test.testQuestions.length - 1) {
@@ -51,7 +52,7 @@ export default function QuestionScreen({
     };
 
     dispatch(testAssesmentActions.setAnswer({ index, value: newAnswer }));
-    answerQuestion(testId, question.id, newAnswer);
+    answerQuestion(testId, question.id, newAnswer, dispatch);
   };
 
   const onChangeSingle = (index: number) => (optionId: number) => {
@@ -59,7 +60,7 @@ export default function QuestionScreen({
       optionAnswer: [optionId],
     };
     dispatch(testAssesmentActions.setAnswer({ index, value: answer }));
-    answerQuestion(testId, question.id, answer);
+    answerQuestion(testId, question.id, answer, dispatch);
   };
 
   const onChangeNumber = (index: number) => (value: string) => {
@@ -71,9 +72,14 @@ export default function QuestionScreen({
         },
       }),
     );
-    answerQuestion(testId, question.id, {
-      numberAnswer: Number(value),
-    });
+    answerQuestion(
+      testId,
+      question.id,
+      {
+        numberAnswer: Number(value),
+      },
+      dispatch,
+    );
   };
 
   const onChangeText = (index: number) => (value: string) => {
@@ -82,12 +88,18 @@ export default function QuestionScreen({
     };
 
     dispatch(testAssesmentActions.setAnswer({ index, value: answer }));
-    answerQuestion(testId, question.id, answer);
+    answerQuestion(testId, question.id, answer, dispatch);
+  };
+
+  const setError = (index: number) => (error?: string) => {
+    dispatch(testAssesmentActions.setError({ index, error }));
   };
 
   const defaultProps = {
     answer: answers[screen],
     question: question,
+    setError: setError(screen),
+    error: errors[screen],
   };
 
   return (

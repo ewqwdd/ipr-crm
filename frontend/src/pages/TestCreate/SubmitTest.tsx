@@ -91,7 +91,7 @@ export default function SubmitTest({
         toast.error(error);
       }
     });
-    return !Object.keys(errors).length || invalid;
+    return !Object.keys(errors).length && !invalid;
   };
 
   const onSubmit = () => {
@@ -99,10 +99,11 @@ export default function SubmitTest({
     if (!isValid) {
       return;
     }
-    const questions = test.questions.map((question) => {
+    const questions = test.questions.map((question, index) => {
       if (question.type === 'NUMBER') {
         return {
           ...question,
+          order: index,
           maxNumber: question.maxNumber
             ? Number(question.maxNumber)
             : undefined,
@@ -119,9 +120,11 @@ export default function SubmitTest({
       } else if (question.type === 'TEXT') {
         return {
           ...question,
-          maxLength: question.maxLength
-            ? Number(question.maxLength)
-            : undefined,
+          order: index,
+          maxLength:
+            question.maxLength && question.maxMinToggle
+              ? Number(question.maxLength)
+              : undefined,
           options: undefined,
           numberCorrectValue: undefined,
           maxNumber: undefined,
@@ -134,6 +137,7 @@ export default function SubmitTest({
       } else {
         return {
           ...question,
+          order: index,
           numberCorrectValue: undefined,
           maxNumber: undefined,
           minNumber: undefined,
@@ -148,6 +152,7 @@ export default function SubmitTest({
 
     handleSubmit({
       ...test,
+      minimumScore: test.minimumScore ? Number(test.minimumScore) : undefined,
       timeLimit: test.timeLimit ? Number(test.timeLimit) : undefined,
       questions,
     });

@@ -21,7 +21,7 @@ export default function RatesTable({
     <LoadingOverlay active={isLoading}>
       <div className="overflow-x-auto">
         {data?.length !== 0 ? (
-          <table className="min-w-full divide-y divide-gray-300 mt-10">
+          <table className="min-w-full divide-y divide-gray-300 mt-1">
             <ColumnsHeading />
             <tbody
               className={cva('bg-white', {

@@ -21,7 +21,7 @@ export class UsersAccessService {
     return teams.flatMap((team) => filterTeam(team)).filter((t) => t !== null);
   };
 
-  async findAllowedTeams(userId: number) {
+  async findAllowedTeams(userId: number): Promise<number[]> {
     const curatorTeams = await this.prisma.team.findMany({
       where: {
         curatorId: userId,

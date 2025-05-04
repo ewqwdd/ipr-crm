@@ -37,13 +37,14 @@ export class TestController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async getTests(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
     @Query('name') name: string,
     @Query('startDate', { transform: (d) => (d ? new Date(d) : undefined) })
     startDate: Date,
     @Query('endDate', { transform: (d) => (d ? new Date(d) : undefined) })
     endDate: Date,
   ) {
-    return this.testService.getTests(name, startDate, endDate);
+    return this.testService.getTests(sessionInfo, name, startDate, endDate);
   }
 
   @UseGuards(AuthGuard)
