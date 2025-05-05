@@ -137,6 +137,7 @@ const surveyCreateSlice = createSlice({
       state.endDate = survey.endDate ? new Date(survey.endDate) : undefined;
       state.access = survey.access;
       state.anonymous = survey.anonymous;
+      state.finishMessage = survey.finishMessage;
 
       state.surveyQuestions = survey.surveyQuestions.map((question) => ({
         ...question,

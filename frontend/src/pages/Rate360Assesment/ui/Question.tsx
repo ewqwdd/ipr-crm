@@ -41,9 +41,9 @@ export default function Question({
     2: indicator.hint2 ?? rateDescriptions[2],
     3: indicator.hint3 ?? rateDescriptions[3],
     4: indicator.hint4 ?? rateDescriptions[4],
-    // @ts-expect-error
     ...(skillType === 'SOFT'
-      ? { 5: indicator.hint5 ?? rateDescriptions[5] }
+      ? // @ts-expect-error
+        { 5: indicator.hint5 ?? rateDescriptions[5] }
       : {}),
   };
 

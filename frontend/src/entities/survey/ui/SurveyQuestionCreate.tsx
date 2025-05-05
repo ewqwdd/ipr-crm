@@ -258,6 +258,7 @@ export default function SurveyQuestionCreate({
         onMaxLengthChange={onMaxLengthChange}
         correctRequired={false}
         index={index}
+        setMaxMinToggle={setMaxMinToggle}
       />
       <NumberOptions
         setMaxMinToggle={setMaxMinToggle}

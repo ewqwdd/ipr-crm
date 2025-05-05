@@ -11,6 +11,7 @@ import { NotificationsService } from 'src/utils/notifications/notifications.serv
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
 import { Prisma } from '@prisma/client';
 import { S3Service } from 'src/utils/s3/s3.service';
+import { UsersAccessService } from 'src/users/users-access.service';
 
 @Injectable()
 export class SurveyService {
@@ -18,6 +19,7 @@ export class SurveyService {
     private prismaService: PrismaService,
     private notificationsService: NotificationsService,
     private s3Service: S3Service,
+    private usersAccessService: UsersAccessService,
   ) {}
 
   async checkAccess(sessionInfo: GetSessionInfoDto) {
@@ -122,20 +124,16 @@ export class SurveyService {
     let allowedUsers = userIds;
 
     if (sessionInfo.role !== 'admin') {
-      const user = await this.prismaService.user.findFirst({
-        where: { id: sessionInfo.id },
-        include: {
-          teamCurator: { select: { id: true } },
-        },
-      });
-
-      if (!user?.teamCurator?.length) throw new ForbiddenException();
-
-      const teamIds = user.teamCurator.map((team) => team.id);
+      const teamIds = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
 
       const teamUsers = await this.prismaService.user.findMany({
         where: {
-          teams: { some: { teamId: { in: teamIds } } },
+          OR: [
+            { teams: { some: { teamId: { in: teamIds } } } },
+            { teamCurator: { some: { id: { in: teamIds } } } },
+          ],
         },
         select: { id: true },
       });
@@ -236,31 +234,43 @@ export class SurveyService {
   }
 
   async notifySurveyAssigned(surveyId: number, sessionInfo: GetSessionInfoDto) {
-    const access = await this.checkAccess(sessionInfo);
+    let filters: Prisma.User_Assigned_SurveyWhereInput = {};
 
-    let filters = {};
-    if (typeof access !== 'boolean') {
+    if (sessionInfo.role !== 'admin') {
+      const allowedTeams = await this.usersAccessService.findAllowedTeams(
+        sessionInfo.id,
+      );
+
       filters = {
-        usersAssigned: {
-          every: {
-            user: {
+        user: {
+          OR: [
+            {
               teams: {
                 some: {
                   id: {
-                    in: access.teamCurator.map((team) => team.id),
+                    in: allowedTeams,
                   },
                 },
               },
             },
-          },
+            {
+              teamCurator: {
+                some: {
+                  id: {
+                    in: allowedTeams,
+                  },
+                },
+              },
+            },
+          ],
         },
       };
     }
 
     const surveys = await this.prismaService.user_Assigned_Survey.findMany({
       where: {
+        ...filters,
         survey: {
-          ...filters,
           id: surveyId,
           hidden: false,
           archived: false,
@@ -277,7 +287,7 @@ export class SurveyService {
       ),
     );
     await Promise.all(promisesNotifs);
-    return true;
+    return { count: surveys.length };
   }
 
   async editSurvey(

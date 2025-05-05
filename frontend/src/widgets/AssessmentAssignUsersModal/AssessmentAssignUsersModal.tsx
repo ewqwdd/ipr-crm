@@ -57,7 +57,7 @@ export default function AssessmentAssignUsersModal({
     <Modal
       open={isOpen}
       setOpen={closeModal}
-      loading={isFetching || testState.isLoading}
+      loading={isFetching || testState.isLoading || surveyState.isLoading}
       title="Назначить тест"
       onSubmit={handleAssignUsers}
     >

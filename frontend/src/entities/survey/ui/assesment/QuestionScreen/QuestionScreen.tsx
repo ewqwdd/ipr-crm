@@ -83,6 +83,8 @@ export default function QuestionScreen({
         },
       }),
     );
+    if (question.minNumber && Number(value) < question.minNumber) return;
+    if (question.maxNumber && Number(value) > question.maxNumber) return;
     answerSurveyQuestion(surveyId, question.id, {
       numberAnswer: Number(value),
     });

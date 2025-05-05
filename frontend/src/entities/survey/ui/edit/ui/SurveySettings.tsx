@@ -13,7 +13,7 @@ export default memo(function SurveySettings() {
   const name = useAppSelector((state) => state.surveyCreate.name);
   const description = useAppSelector((state) => state.surveyCreate.description);
   const passedMessage = useAppSelector(
-    (state) => state.surveyCreate.passedMessage,
+    (state) => state.surveyCreate.finishMessage,
   );
 
   const errors = useAppSelector((state) => state.surveyCreate.errors);
@@ -43,7 +43,7 @@ export default memo(function SurveySettings() {
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       dispatch(
         surveyCreateActions.setField({
-          field: 'passedMessage',
+          field: 'finishMessage',
           value: e.target.value,
         }),
       );
@@ -67,7 +67,7 @@ export default memo(function SurveySettings() {
       <PassedMessage
         onChange={onChangePassedMessage}
         passedMessage={passedMessage}
-        error={errors?.passedMessage}
+        error={errors?.finishMessage}
       />
     </div>
   );

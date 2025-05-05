@@ -63,7 +63,7 @@ export interface SurveyCreate {
   id?: number;
   name?: string;
   description?: string;
-  passedMessage?: string;
+  finishMessage?: string;
 
   startDate?: Date;
   endDate?: Date;
