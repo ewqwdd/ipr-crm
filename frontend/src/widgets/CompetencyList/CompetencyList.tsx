@@ -34,6 +34,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                 listItemType={CompetencyType.COMPETENCY_BLOCK}
                 openModal={openModal}
                 disabled={disabled}
+                skillType={skill.type}
               />
             </>
           }
@@ -51,6 +52,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                       listItemType={CompetencyType.COMPETENCY}
                       openModal={openModal}
                       disabled={disabled}
+                      skillType={skill.type}
                     />
                   }
                 >
@@ -61,6 +63,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                       listItemType={CompetencyType.INDICATOR}
                       openModal={openModal}
                       disabled={disabled}
+                      skillType={skill.type}
                     />
                   ))}
                 </Accordion>

@@ -6,7 +6,6 @@ import { cva } from '@/shared/lib/cva';
 import { dateFormatter } from './helpers';
 import { useCalculateAvgIndicatorRaitings } from './useCalculateAvgIndicatorRaitings';
 import { useAggregatedAverages } from './useAggregatedAverages';
-import { Competency, CompetencyBlock } from '@/entities/skill';
 import WorkSpace from './WorkSpace';
 import AyeChart from './ayeChart';
 import CommentItem from './comments/CommentItem';
@@ -14,8 +13,7 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { useAppSelector } from '@/app';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Rate } from '@/entities/rates';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { exportReportPDF } from '@/features/exportReportPDF';
 
 const evaluatorTypes = [
   'CURATOR',
@@ -63,14 +61,9 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
   const { data: teams, isFetching: teamsFetching } =
     teamsApi.useGetTeamsQuery();
 
-  const skills = rate?.competencyBlocks;
-
-  const foundSpec = rate?.spec;
-
+  const spec = rate?.spec;
   const curator = teams?.list.find((team) => team.id === rate?.teamId)?.curator;
-  const foundUser = rate?.user;
-
-  const { avatar, firstName, lastName, id: userId } = foundUser || {};
+  const { avatar, firstName, lastName, id: userId } = rate?.user || {};
 
   const indicatorRatings = useCalculateAvgIndicatorRaitings(
     rate?.evaluators,
@@ -79,121 +72,21 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
   );
 
   const ref = useRef<HTMLDivElement>(null);
+  const loaderRef = useRef<HTMLDivElement>(null);
   const currentUser = useAppSelector((state) => state.user.user);
   const isAdmin = currentUser?.role?.name === 'admin';
 
-  const neededIndicatorIdsSet = new Set(
-    userRates?.map((rate) => rate.indicatorId),
-  );
-
   // TODO: replace loading
 
-  // Фильтрация скиллов по индикатору типу и id
-  const filteredBlocksCompetencies = rate?.competencyBlocks
-    ?.map((block) => {
-      const skill = skills?.find(
-        (skill) => skill.id === block.id && skill.type === rate?.type,
-      );
-
-      if (!skill) return null;
-
-      const filteredCompetencies = skill.competencies
-        .map((competency) => {
-          const filteredIndicators = competency.indicators.filter((indicator) =>
-            neededIndicatorIdsSet.has(indicator.id),
-          );
-
-          return filteredIndicators.length > 0
-            ? { ...competency, indicators: filteredIndicators }
-            : null;
-        })
-        .filter((competency): competency is Competency => competency !== null);
-
-      return filteredCompetencies.length > 0
-        ? { ...skill, competencies: filteredCompetencies.filter(Boolean) }
-        : null;
-    })
-    .filter(Boolean) as CompetencyBlock[];
-
   const { overallAverage, blocksRaiting, competenciesRaiting } =
-    useAggregatedAverages(filteredBlocksCompetencies, indicatorRatings);
+    useAggregatedAverages(rate?.competencyBlocks, indicatorRatings);
 
-  const onClickExport = async () => {
-    const element = ref.current;
-    if (!element) return;
-
-    // Клонируем блок
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // Заменяем canvas на img
-    const canvases = clone.querySelectorAll('canvas');
-    canvases.forEach((canvas) => {
-      const img = document.createElement('img');
-      img.src = (canvas as HTMLCanvasElement).toDataURL('image/png');
-      img.style.width = canvas.style.width;
-      img.style.height = canvas.style.height;
-      canvas.parentNode?.replaceChild(img, canvas);
-    });
-
-    // Оформляем клон
-    Object.assign(clone.style, {
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      zIndex: '-1',
-      width: `${element.scrollWidth}px`,
-      height: `${element.scrollHeight}px`,
-      overflow: 'visible',
-      backgroundColor: 'white',
-      padding: '20px',
-    });
-
-    document.body.appendChild(clone);
-
-    // ⏳ ОЖИДАЕМ, пока ВСЕ картинки (в том числе бывшие canvas) загрузятся
-    await Promise.all(
-      Array.from(clone.querySelectorAll('img')).map((img) => {
-        if (img.complete) return Promise.resolve();
-        return new Promise((res) => {
-          img.onload = img.onerror = res;
-        });
-      }),
-    );
-
-    // Теперь точно можно рендерить
-    const canvas = await html2canvas(clone, {
-      backgroundColor: '#fff',
-      scrollX: 0,
-      scrollY: 0,
-      windowWidth: clone.scrollWidth,
-      windowHeight: clone.scrollHeight,
-      scale: 2,
-    });
-
-    document.body.removeChild(clone);
-
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageHeight = 297;
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = 210;
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    let position = 0;
-
-    while (position < pdfHeight) {
-      pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, pdfHeight);
-      position += pageHeight;
-      if (position < pdfHeight) pdf.addPage();
-    }
-
-    pdf.save('report.pdf');
-  };
+  const onClickExport = () => exportReportPDF(ref.current!, loaderRef.current!);
 
   return (
     <LoadingOverlay active={isLoading || teamsFetching}>
       <div className="h-full">
-        <div className="mt-16 mb-5 flex items-center justify-between px-5">
+        <div className="pt-16 mb-5 flex items-center justify-between px-5">
           <h1 className="text-sm font-bold tracking-tight text-gray-900">
             Просмотр отчёта
           </h1>
@@ -210,7 +103,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
               <Avatar src={avatar} className="size-10" />
               <div>
                 <p className="text-indigo-400 text-sm">{`${firstName} ${lastName}`}</p>
-                <p className="text-sm">{`${foundSpec?.name} (${rate?.type})`}</p>
+                <p className="text-sm">{`${spec?.name} (${rate?.type})`}</p>
               </div>
             </div>
 
@@ -219,7 +112,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
             <div>
               <ProgressBarBlock />
               <div className="mt-16">
-                {filteredBlocksCompetencies?.map((blocksCompetencies) => {
+                {rate?.competencyBlocks?.map((blocksCompetencies) => {
                   return (
                     <div
                       className="mb-16 last:mb-0"
@@ -416,7 +309,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                 </table>
               </div>
             </div>
-            <AyeChart data={overallAverage} label={foundSpec?.name} />
+            <AyeChart data={overallAverage} label={spec?.name} />
             {isAdmin && (rate?.userComment || rate?.curatorComment) && (
               <>
                 <h2 className="text-2xl mt-10">Комментарии</h2>
@@ -428,7 +321,10 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                     />
                   )}
                   {rate?.userComment && (
-                    <CommentItem user={foundUser} comment={rate?.userComment} />
+                    <CommentItem
+                      user={rate?.user}
+                      comment={rate?.userComment}
+                    />
                   )}
                 </div>
               </>
@@ -436,6 +332,10 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
           </div>
         </div>
       </div>
+      <div
+        ref={loaderRef}
+        className="absolute top-0 left-0 w-full h-full bg-gray-100/80 animate-pulse hidden"
+      />
     </LoadingOverlay>
   );
 };

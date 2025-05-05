@@ -101,18 +101,18 @@ export default function EditEvaluatorsModal({
         teamId={editEvaluators}
         onDelete={({ evaluatorId }) => {
           dispatch(
-            ratesActions.setEditEvaluators({
-              ...editEvaluators,
-              evaluateCurators: editEvaluators.evaluateCurators.filter(
+            ratesActions.setEditEvaluators((state) => ({
+              ...state,
+              evaluateCurators: state.evaluateCurators.filter(
                 (e) => e.userId !== evaluatorId,
               ),
-              evaluateTeam: editEvaluators.evaluateTeam.filter(
+              evaluateTeam: state.evaluateTeam.filter(
                 (e) => e.userId !== evaluatorId,
               ),
-              evaluateSubbordinate: editEvaluators.evaluateSubbordinate.filter(
+              evaluateSubbordinate: state.evaluateSubbordinate.filter(
                 (e) => e.userId !== evaluatorId,
               ),
-            }),
+            })),
           );
         }}
         onSubmit={({ evaluators, type }) => {

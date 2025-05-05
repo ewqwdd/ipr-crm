@@ -3,6 +3,7 @@ import { Material } from '@/entities/material';
 export type SkillType = 'SOFT' | 'HARD';
 
 export interface Hints {
+  0?: string;
   1?: string;
   2?: string;
   3?: string;
@@ -11,6 +12,7 @@ export interface Hints {
 }
 
 export interface HintValues {
+  0?: string;
   1?: string;
   2?: string;
   3?: string;
@@ -43,6 +45,8 @@ export interface Indicator {
   value3?: string;
   value4?: string;
   value5?: string;
+  skipHint?: string;
+  skipValue?: string;
 }
 
 export interface CompetencyBlock {

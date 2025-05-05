@@ -6,6 +6,7 @@ import {
   Competency,
   CompetencyBlock,
   Indicator,
+  SkillType,
   useSkillsService,
 } from '@/entities/skill';
 import { cva } from '@/shared/lib/cva';
@@ -34,6 +35,7 @@ type CombineType = Competency | Indicator | CompetencyBlock;
 
 type CompetencyListItemProps = CombineType & {
   listItemType: CompetencyType;
+  skillType: SkillType;
   openModal: (type: string, data?: unknown) => void;
 };
 
@@ -42,6 +44,7 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
   name,
   openModal,
   id,
+  skillType,
   materials,
   ...props
 }) => {
@@ -142,7 +145,12 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
           size="xs"
           onClick={(e) => {
             e.stopPropagation();
-            openModal('EDIT_SKILL', { id, name, type: listItemType });
+            openModal('EDIT_SKILL', {
+              id,
+              name,
+              type: listItemType,
+              skillType,
+            });
           }}
         >
           <PencilIcon className="h-5 w-5" />

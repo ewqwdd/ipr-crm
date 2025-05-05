@@ -25,9 +25,10 @@ const calculateCompetencyAverage = (
       Object.keys(indicatorValues).forEach((type) => {
         const evaluatorType = type as EvaluatorType;
         indicatorValuesByType[evaluatorType] ??= [];
-        indicatorValuesByType[evaluatorType]!.push(
-          indicatorValues[evaluatorType],
-        );
+        const value = indicatorValues[evaluatorType];
+        if (value !== 0) {
+          indicatorValuesByType[evaluatorType]!.push(value);
+        }
       });
     }
   });
@@ -42,7 +43,6 @@ const calculateCompetencyAverage = (
       indicatorValuesByType[evaluatorType]!,
     );
   });
-
   return avg;
 };
 
@@ -59,7 +59,10 @@ const calculateBlockAverage = (
       Object.keys(competencyAvg).forEach((type) => {
         const evaluatorType = type as EvaluatorType;
         blockAggregated[evaluatorType] ??= [];
-        blockAggregated[evaluatorType]!.push(competencyAvg[evaluatorType]);
+        const value = competencyAvg[evaluatorType];
+        if (value !== 0) {
+          blockAggregated[evaluatorType]!.push(value);
+        }
       });
     }
   });

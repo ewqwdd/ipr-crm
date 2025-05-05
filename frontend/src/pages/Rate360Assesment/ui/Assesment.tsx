@@ -1,4 +1,4 @@
-import { CompetencyBlock } from '@/entities/skill';
+import { CompetencyBlock, SkillType } from '@/entities/skill';
 import { Assesment as AssesmentType } from '../types/types';
 import Question from './Question';
 import React from 'react';
@@ -15,6 +15,7 @@ interface AssesmentProps {
   >;
   rateId: number;
   setLoading?: React.Dispatch<React.SetStateAction<number>>;
+  skillType: SkillType;
 }
 
 export default function Assesment({
@@ -25,9 +26,10 @@ export default function Assesment({
   setComments,
   rateId,
   setLoading,
+  skillType,
 }: AssesmentProps) {
   return (
-    <div className="flex flex-col gap-6 px-8 flex-1 overflow-y-auto">
+    <div className="flex flex-col gap-6 px-6 flex-1 overflow-y-auto overflow-x-clip pt-2">
       {block.competencies
         .filter((c) => c.indicators.length > 0)
         .map((competency) => (
@@ -39,6 +41,7 @@ export default function Assesment({
                   indicator={indicator}
                   index={index}
                   key={indicator.id}
+                  skillType={skillType}
                   current={
                     assesment[block.id]?.[competency.id]?.[indicator.id] ?? {}
                   }

@@ -212,10 +212,15 @@ const rateSlice = createSlice({
     },
     setEditEvaluators: (
       state,
-      action: PayloadAction<TeamItemIds | undefined>,
+      action: PayloadAction<
+        TeamItemIds | undefined | ((state: TeamItemIds) => TeamItemIds)
+      >,
     ) => {
       if (!action.payload) {
         state.editEvaluators = undefined;
+        return;
+      } else if (typeof action.payload === 'function') {
+        state.editEvaluators = action.payload(state.editEvaluators!);
         return;
       }
       state.editEvaluators = action.payload;

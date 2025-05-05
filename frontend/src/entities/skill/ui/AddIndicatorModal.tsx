@@ -1,10 +1,15 @@
 import { Modal } from '@/shared/ui/Modal';
-import { Competency } from '../types/types';
+import { Competency, Hints, HintValues, SkillType } from '../types/types';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { EditHints } from './EditHints';
-import { hintsDescription, hintsTitle } from '../config/hints';
+import {
+  hintsDescriptionHard,
+  hintsDescriptionSoft,
+  hintsTitleHard,
+  hintsTitleSoft,
+} from '../config/hints';
 import { EditBoundary } from './EditBoundary';
 import { EditMultipleIndicators } from './EditMultipleIndicators';
 
@@ -22,27 +27,28 @@ export default function AddIndicatorModal({
   const [boundary, setBoundary] = useState<number>(3);
   const [valueError, setValueError] = useState<string | undefined>();
   const [indicators, setIndicators] = useState<string[]>(['']);
+  const { id, name, skillType } = modalData as Pick<
+    Competency,
+    'id' | 'name'
+  > & { skillType: SkillType };
 
-  const [hints, setHints] = useState<string[]>([
-    hintsDescription[1],
-    hintsDescription[2],
-    hintsDescription[3],
-    hintsDescription[4],
-    hintsDescription[5],
-  ]);
+  const hintsTitle = skillType === 'HARD' ? hintsTitleHard : hintsTitleSoft;
+  const hintsDescription =
+    skillType === 'HARD' ? hintsDescriptionHard : hintsDescriptionSoft;
 
-  const [values, setValues] = useState<string[]>([
-    hintsTitle[1],
-    hintsTitle[2],
-    hintsTitle[3],
-    hintsTitle[4],
-    hintsTitle[5],
-  ]);
+  const [hints, setHints] = useState<string[]>(
+    Object.keys(hintsDescription).map(
+      (key) => hintsDescription[Number(key) as keyof typeof hintsDescription],
+    ),
+  );
+  const [values, setValues] = useState<string[]>(
+    Object.keys(hintsTitle).map(
+      (key) => hintsTitle[Number(key) as keyof typeof hintsTitle],
+    ),
+  );
 
   const [createIndicator, indicatorProps] =
     skillsApi.useCreateIndicatorMutation();
-
-  const { id, name } = modalData as Pick<Competency, 'id' | 'name'>;
 
   const indicatorSubmit = (indicators: string[]) => {
     const filtered = indicators
@@ -58,20 +64,16 @@ export default function AddIndicatorModal({
       indicators: filtered,
       competencyId: id,
       boundary,
-      hints: {
-        1: hints[0],
-        2: hints[1],
-        3: hints[2],
-        4: hints[3],
-        5: hints[4],
-      },
-      values: {
-        1: values[0],
-        2: values[1],
-        3: values[2],
-        4: values[3],
-        5: values[4],
-      },
+      hints: Object.keys(hintsDescription).reduce((acc, key) => {
+        // @ts-expect-error
+        acc[key] = hints[key];
+        return acc;
+      }, {} as Hints),
+      values: Object.keys(hintsTitle).reduce((acc, key) => {
+        // @ts-expect-error
+        acc[key] = values[key];
+        return acc;
+      }, {} as HintValues),
     });
     closeModal();
   };

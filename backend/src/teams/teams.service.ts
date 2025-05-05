@@ -48,6 +48,7 @@ export class TeamsService {
       orderBy: { createdAt: 'desc' },
       include: {
         curatorSpecs: {
+          where: { spec: { archived: false } },
           select: {
             specId: true,
             spec: { select: { name: true, active: true } },
@@ -61,6 +62,7 @@ export class TeamsService {
                 id: true,
                 username: true,
                 specsOnTeams: {
+                  where: { spec: { archived: false } },
                   select: {
                     specId: true,
                     spec: { select: { name: true, active: true } },
@@ -81,6 +83,7 @@ export class TeamsService {
       where: { id },
       include: {
         curatorSpecs: {
+          where: { spec: { archived: false } },
           select: {
             specId: true,
             spec: { select: { name: true } },
@@ -93,7 +96,9 @@ export class TeamsService {
             user: {
               select: {
                 specId: true,
-                specsOnTeams: { where: { teamId: id } },
+                specsOnTeams: {
+                  where: { teamId: id, spec: { archived: false } },
+                },
                 username: true,
                 avatar: true,
               },

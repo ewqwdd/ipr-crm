@@ -100,6 +100,8 @@ export class ProfileConstructorService {
         competencyId: data.competencyId,
         boundary: data.boundary,
         description: data.description,
+        skipHint: data.hints?.[0],
+        skipValue: data.values?.[0],
         hint1: data.hints?.[1],
         hint2: data.hints?.[2],
         hint3: data.hints?.[3],
@@ -210,6 +212,7 @@ export class ProfileConstructorService {
           ...(data.boundary ? { boundary: data.boundary } : {}),
           ...(data.hints
             ? {
+                skipHint: data.hints?.[0],
                 hint1: data.hints?.[1],
                 hint2: data.hints?.[2],
                 hint3: data.hints?.[3],
@@ -219,6 +222,7 @@ export class ProfileConstructorService {
             : {}),
           ...(data.values
             ? {
+                skipValue: data.values?.[0],
                 value1: data.values?.[1],
                 value2: data.values?.[2],
                 value3: data.values?.[3],
@@ -245,6 +249,8 @@ export class ProfileConstructorService {
       data: {
         name,
         boundary,
+        skipHint: hints?.[0],
+        skipValue: values?.[0],
         hint1: hints?.[1],
         hint2: hints?.[2],
         hint3: hints?.[3],
@@ -403,6 +409,8 @@ export class ProfileConstructorService {
               boundary: indicator.boundary,
               archived: false,
               id: indicator.id,
+              skipHint: indicator.skipHint,
+              skipValue: indicator.skipValue,
               hint1: indicator.hint1,
               hint2: indicator.hint2,
               hint3: indicator.hint3,
@@ -524,6 +532,7 @@ export class ProfileConstructorService {
       },
       data: {
         boundary: data.boundary,
+        skipHint: data.hints?.[0],
         hint1: data.hints?.[1],
         hint2: data.hints?.[2],
         hint3: data.hints?.[3],

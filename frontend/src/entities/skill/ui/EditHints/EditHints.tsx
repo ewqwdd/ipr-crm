@@ -17,7 +17,7 @@ export default memo(function EditHints({
   valuesData,
 }: EditHintsProps) {
   return (
-    <table className="w-full">
+    <table className="w-full first:[&_tbody_tr]:bg-red-100">
       <TableHeading
         headings={[
           {

@@ -18,7 +18,12 @@ import AddBlockToSpecModal from './ui/AddBlockToSpecModal';
 import useSkillsService from './hooks/useSkillsService';
 import EditSkillsModal from './ui/EditSkillsModal';
 import SkillsSwitcher from './ui/SkillsSwitcher';
-import { hintsTitle } from './config/hints';
+import {
+  hintsTitleHard,
+  hintsDescriptionHard,
+  hintsDescriptionSoft,
+  hintsTitleSoft,
+} from './config/hints';
 
 export type {
   CompetencyBlock,
@@ -42,5 +47,8 @@ export {
   CompetencyType,
   EditSkillsModal,
   SkillsSwitcher,
-  hintsTitle,
+  hintsTitleHard,
+  hintsDescriptionHard,
+  hintsDescriptionSoft,
+  hintsTitleSoft,
 };

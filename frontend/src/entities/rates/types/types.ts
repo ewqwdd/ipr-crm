@@ -3,7 +3,7 @@ import { CompetencyBlock } from '@/entities/skill';
 import { User } from '@/entities/user';
 import { TeamItemIds } from '../ui/AddRate/EvaluatorsTab/EvaluatorsTab';
 
-type RateEveloper = {
+type RateEvaluator = {
   userId: number;
   type: EvaulatorType;
   user: {
@@ -24,7 +24,7 @@ export interface Rate {
   archived: boolean;
   showReportToUser?: boolean;
   type: 'HARD' | 'SOFT';
-  evaluators: RateEveloper[];
+  evaluators: RateEvaluator[];
   user: User;
   spec: { id: number; name: string };
   team?: {

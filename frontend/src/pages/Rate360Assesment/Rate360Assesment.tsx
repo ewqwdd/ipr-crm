@@ -109,15 +109,16 @@ export default function Rate360Assesment() {
         })}
       >
         <TabsHeader blocks={blocks} />
-        {currentBlock && (
+        {currentBlock && data && (
           <Assesment
-            rateId={data?.id ?? 0}
+            rateId={data.id ?? 0}
             comments={comments}
             setComments={setComments}
             assesment={assessment}
             setAssesment={setAssessment}
             block={currentBlock}
             setLoading={setLoading}
+            skillType={data.type}
           />
         )}
         <div className="flex justify-end px-6">

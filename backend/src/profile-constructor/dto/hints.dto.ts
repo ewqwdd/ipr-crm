@@ -3,6 +3,10 @@ import { IsOptional, IsString } from 'class-validator';
 export class HintsDto {
   @IsOptional()
   @IsString()
+  0?: string;
+
+  @IsOptional()
+  @IsString()
   1?: string;
 
   @IsOptional()

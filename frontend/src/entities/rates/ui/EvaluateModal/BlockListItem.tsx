@@ -35,9 +35,13 @@ export default function BlockListItem({
     disabled = true;
     linkText = 'Оценка не требуется';
   }
+
+  const filteredWithoutSkip = userRatesFiltered.filter(
+    (rate) => rate.rate !== 0,
+  );
   const avg =
-    userRatesFiltered.reduce((acc, rate) => acc + rate.rate, 0) /
-    userRatesFiltered.length;
+    filteredWithoutSkip.reduce((acc, rate) => acc + rate.rate, 0) /
+    filteredWithoutSkip.length;
 
   return (
     <div

@@ -530,6 +530,9 @@ model Indicator {
   archived     Boolean?         @default(false)
   archivedDate DateTime?
 
+  skipHint String?
+  skipValue String?
+
   hint1 String?
   hint2 String?
   hint3 String?

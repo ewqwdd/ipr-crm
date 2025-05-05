@@ -41,6 +41,9 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   value3,
   value4,
   value5,
+  skipHint,
+  skipValue,
+  skillType,
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
 
@@ -59,7 +62,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
         'animate-pulse': loading,
       })}
     >
-      <p className="text-black sm:min-w-[400px] min-w-[120px] max-sm:mr-2 text-nowrap max-sm:text-sm">
+      <p className="text-black sm:min-w-[400px] min-w-[120px] max-sm:mr-2 text-nowrap max-sm:text-sm truncate">
         {name}
       </p>
       <div className="flex items-center space-x-2">
@@ -100,7 +103,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
             className="gap-2 whitespace-nowrap"
             onClick={(e) => {
               e.stopPropagation();
-              openModal('ADD_INDICATOR', { id, name });
+              openModal('ADD_INDICATOR', { id, name, skillType });
             }}
           >
             <PlusCircleIcon className="h-5 w-5" />
@@ -138,8 +141,9 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
                   name,
                   type: listItemType,
                   boundary,
-                  hints: { hint1, hint2, hint3, hint4, hint5 },
-                  values: { value1, value2, value3, value4, value5 },
+                  hints: { hint1, hint2, hint3, hint4, hint5, skipHint },
+                  values: { value1, value2, value3, value4, value5, skipValue },
+                  skillType: skillType,
                 });
               }}
             >

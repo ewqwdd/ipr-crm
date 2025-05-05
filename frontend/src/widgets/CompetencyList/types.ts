@@ -1,4 +1,9 @@
-import { Competency, CompetencyBlock, Indicator } from '@/entities/skill';
+import {
+  Competency,
+  CompetencyBlock,
+  Indicator,
+  SkillType,
+} from '@/entities/skill';
 
 type CombineType = Competency | Indicator | CompetencyBlock;
 
@@ -23,4 +28,7 @@ export type CompetencyListItemProps = CombineType & {
   value3?: string;
   value4?: string;
   value5?: string;
+  skipHint?: string;
+  skipValue?: string;
+  skillType: SkillType;
 };

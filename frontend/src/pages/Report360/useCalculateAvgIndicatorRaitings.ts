@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 type IndicatorId = number;
 
-type RateEveloper = {
+type RateEvaluator = {
   userId: number;
   type: EvaulatorType;
   user: {
@@ -34,8 +34,8 @@ export type FinalRatings = Record<
 >;
 
 // Функция: Создаёт карту userId → type
-const createUserTypeMap = (rateEvelopers: RateEveloper[]) =>
-  rateEvelopers.reduce((acc, { userId, type }) => {
+const createUserTypeMap = (rateEvaluators: RateEvaluator[]) =>
+  rateEvaluators.reduce((acc, { userId, type }) => {
     acc.set(userId, type);
     return acc;
   }, new Map());
@@ -63,7 +63,9 @@ const groupRatingsByIndicator = (
       });
     }
 
-    indicatorRatings.get(indicatorId)[userType].push(rate);
+    if (rate !== 0) {
+      indicatorRatings.get(indicatorId)[userType].push(rate);
+    }
   });
 
   return indicatorRatings;
@@ -98,7 +100,7 @@ const calculateAverageRatings = (
 };
 
 const calculateFinalRatings = (
-  assessors: RateEveloper[],
+  assessors: RateEvaluator[],
   userRates: UserRate[],
   currentUserId: number,
 ): FinalRatings => {
@@ -112,7 +114,7 @@ const calculateFinalRatings = (
 };
 
 export const useCalculateAvgIndicatorRaitings = (
-  assessors?: RateEveloper[],
+  assessors?: RateEvaluator[],
   userRates?: UserRate[],
   currentUserId?: number,
 ): FinalRatings => {

@@ -39,6 +39,7 @@ const CompetencyList_V2: FC<ICompetencyListProps> = ({
                   {...skill}
                   listItemType={CompetencyType.COMPETENCY_BLOCK}
                   openModal={openModal}
+                  skillType={skill.type}
                 />
               </>
             }
@@ -55,6 +56,7 @@ const CompetencyList_V2: FC<ICompetencyListProps> = ({
                         {...competency}
                         listItemType={CompetencyType.COMPETENCY}
                         openModal={openModal}
+                        skillType={skill.type}
                       />
                     }
                   >
@@ -64,6 +66,7 @@ const CompetencyList_V2: FC<ICompetencyListProps> = ({
                         {...indicator}
                         listItemType={CompetencyType.INDICATOR}
                         openModal={openModal}
+                        skillType={skill.type}
                       />
                     ))}
                   </Accordion>
