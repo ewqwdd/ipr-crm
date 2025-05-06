@@ -52,6 +52,16 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
+    removeCompetencyBlockFromSpec: build.mutation<
+      void,
+      { id: number; specId: number }
+    >({
+      query: ({ id, specId }) => ({
+        url: `/competency-block/${id}/remove-from-spec/${specId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Skills'],
+    }),
     deleteCompetency: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
         url: `/competency/${id}`,

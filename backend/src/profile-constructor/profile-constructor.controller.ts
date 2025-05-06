@@ -62,6 +62,18 @@ export class ProfileConstructorController {
     return this.profileConstructorService.deleteCompetencyBlock(id);
   }
 
+  @Post('/competency-block/:id/remove-from-spec/:specId')
+  @UseGuards(AdminGuard)
+  async removeCompetencyBlockFromSpec(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @Param('specId', { transform: (v) => parseInt(v) }) specId: number,
+  ) {
+    return this.profileConstructorService.removeCompetencyBlockFromSpec(
+      id,
+      specId,
+    );
+  }
+
   @Delete('/competency/:id')
   @UseGuards(AdminGuard)
   async deleteCompetency(

@@ -10,6 +10,10 @@ import {
   useSkillsService,
 } from '@/entities/skill';
 import { cva } from '@/shared/lib/cva';
+import { skillsApi } from '@/shared/api/skillsApi';
+import toast from 'react-hot-toast';
+import { universalApi } from '@/shared/api/universalApi';
+import { useAppDispatch } from '@/app';
 
 enum CompetencyType {
   COMPETENCY_BLOCK = 'COMPETENCY_BLOCK',
@@ -37,6 +41,7 @@ type CompetencyListItemProps = CombineType & {
   listItemType: CompetencyType;
   skillType: SkillType;
   openModal: (type: string, data?: unknown) => void;
+  selectedSpec?: number;
 };
 
 const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
@@ -46,16 +51,20 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
   id,
   skillType,
   materials,
+  selectedSpec,
   ...props
 }) => {
-  const { competencyBlock, competency, indicator } = useSkillsService();
+  const { competency, indicator } = useSkillsService();
 
-  const deleteCompetencyBlock = competencyBlock.delete[0];
+  const removeFromSpec = skillsApi.useRemoveCompetencyBlockFromSpecMutation();
+
+  const deleteCompetencyBlock = removeFromSpec[0];
   const deleteCompetency = competency.delete[0];
   const deleteIndicator = indicator.delete[0];
 
+  const dispatch = useAppDispatch();
   const loading =
-    competencyBlock.delete[1].isLoading ||
+    removeFromSpec[1].isLoading ||
     competency.delete[1].isLoading ||
     indicator.delete[1].isLoading;
 
@@ -164,7 +173,12 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
             let onSubmit = null;
             switch (listItemType) {
               case CompetencyType.COMPETENCY_BLOCK:
-                onSubmit = () => deleteCompetencyBlock({ id });
+                onSubmit = async () => {
+                  if (!selectedSpec)
+                    return toast.error('Выберите специализацию');
+                  await deleteCompetencyBlock({ id, specId: selectedSpec });
+                  dispatch(universalApi.util.invalidateTags(['Spec']));
+                };
                 break;
               case CompetencyType.COMPETENCY:
                 onSubmit = () => deleteCompetency({ id });

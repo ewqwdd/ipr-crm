@@ -9,6 +9,7 @@ type ICompetencyListProps = {
   data: CompetencyBlock[] | undefined;
   openModal: (type: string, data?: unknown) => void;
   loading?: boolean;
+  selectedSpec?: number;
 };
 
 export enum CompetencyType {
@@ -21,6 +22,7 @@ const CompetencyList_V2: FC<ICompetencyListProps> = ({
   data,
   openModal,
   loading,
+  selectedSpec,
 }) => {
   return (
     <div className="overflow-x-auto">
@@ -40,6 +42,7 @@ const CompetencyList_V2: FC<ICompetencyListProps> = ({
                   listItemType={CompetencyType.COMPETENCY_BLOCK}
                   openModal={openModal}
                   skillType={skill.type}
+                  selectedSpec={selectedSpec}
                 />
               </>
             }
@@ -57,6 +60,7 @@ const CompetencyList_V2: FC<ICompetencyListProps> = ({
                         listItemType={CompetencyType.COMPETENCY}
                         openModal={openModal}
                         skillType={skill.type}
+                        selectedSpec={selectedSpec}
                       />
                     }
                   >
@@ -67,6 +71,7 @@ const CompetencyList_V2: FC<ICompetencyListProps> = ({
                         listItemType={CompetencyType.INDICATOR}
                         openModal={openModal}
                         skillType={skill.type}
+                        selectedSpec={selectedSpec}
                       />
                     ))}
                   </Accordion>

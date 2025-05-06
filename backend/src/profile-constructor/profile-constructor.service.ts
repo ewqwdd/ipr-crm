@@ -166,6 +166,21 @@ export class ProfileConstructorService {
     });
   }
 
+  async removeCompetencyBlockFromSpec(id: number, specId: number) {
+    return this.prismaService.competencyBlock.update({
+      where: {
+        id,
+      },
+      data: {
+        specs: {
+          disconnect: {
+            id: specId,
+          },
+        },
+      },
+    });
+  }
+
   async deleteCompetency(id: number) {
     return this.prismaService.competency.delete({
       where: {

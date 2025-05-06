@@ -81,6 +81,7 @@ const CompetencyBlock: FC<ICompetencyProps> = ({ selectedSpec }) => {
             data={specSkills}
             openModal={openModal}
             loading={false}
+            selectedSpec={selectedSpec}
           />
         </>
       )}
