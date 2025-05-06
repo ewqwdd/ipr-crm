@@ -3,6 +3,7 @@ import { Rate, rateTypeNames } from '@/entities/rates';
 import { Spec } from '@/entities/user';
 import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
+import { Link } from 'react-router';
 
 interface ConfirmListItemProps {
   rate: Rate;
@@ -42,9 +43,9 @@ export default function ConfirmListItem({
       <span className="text-base font-medium text-gray-800 flex-nowrap">
         {spec?.name}
       </span>
-      <span className="text-base font-medium text-gray-800 flex-nowrap">
+      <Link to={`/users/${rate?.user.id}`} className="text-base font-medium text-gray-800 flex-nowrap">
         {rate?.user.username}
-      </span>
+      </Link>
       <span className="sm:text-base text-sm text-gray-500 flex-nowrap">
         {rateTypeNames[rate.type]}
       </span>
