@@ -12,6 +12,7 @@ const LoadingOverlay: FC<LoadingOverlayProps> = ({
   active,
   className,
 }) => {
+  if (!active) return children;
   return (
     <div
       className={cva('relative grow w-full h-full', className, {
