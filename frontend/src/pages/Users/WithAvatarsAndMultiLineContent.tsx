@@ -7,7 +7,7 @@ import UsersFilters, { applyUsersFilters } from './usersFilters';
 import { User } from '@/entities/user';
 import { Filters, initialFilters } from './usersFilters/constants';
 
-const LIMIT = 10;
+const LIMIT = 8;
 
 export default function WithAvatarsAndMultiLineContent() {
   const [page, setPage] = useState<number>(1);
@@ -63,7 +63,6 @@ export default function WithAvatarsAndMultiLineContent() {
         )}
       >
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full align-middle md:px-6 lg:px-8">
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
@@ -115,7 +114,6 @@ export default function WithAvatarsAndMultiLineContent() {
                     ))}
               </tbody>
             </table>
-          </div>
         </div>
         <Pagination
           count={filteredData?.length}
