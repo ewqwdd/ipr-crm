@@ -43,7 +43,7 @@ export default function ConfirmListItem({
       <span className="text-base font-medium text-gray-800 flex-nowrap">
         {spec?.name}
       </span>
-      <Link to={`/users/${rate?.user.id}`} className="text-base font-medium text-gray-800 flex-nowrap">
+      <Link to={`/users/${rate?.userId}`} className="text-base font-medium text-violet-600 flex-nowrap">
         {rate?.user.username}
       </Link>
       <span className="sm:text-base text-sm text-gray-500 flex-nowrap">
