@@ -71,7 +71,7 @@ export default function Rate360() {
           isLoading={isFetching}
           setSelected={setSelected}
         />
-        {data?.total && data?.total < LIMIT && (
+        {data?.total && data?.total > LIMIT && (
           <Pagination
             limit={LIMIT}
             page={page}
