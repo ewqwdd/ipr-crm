@@ -54,10 +54,10 @@ export default function EvaluatorsTab({
     [selectedSpecs],
   );
 
-  console.log(teamIds);
   useLayoutEffect(() => {
     const updated = selectedSpecs.map((s) => {
       const team = data?.list.find((t) => t.id === s.teamId);
+      const subTeams = data?.list.filter((t) => t.parentTeamId === s.teamId);
       const teamUsers =
         team?.users?.map((u) => ({
           userId: u.user.id,
@@ -85,7 +85,18 @@ export default function EvaluatorsTab({
           rateType === 'Rate360'
             ? teamUsers.filter((c) => c.userId !== spec.userId)
             : [],
-        evaluateSubbordinate: [],
+        evaluateSubbordinate:
+          subTeams
+            ?.flatMap((t) => [
+              ...(t.users?.map((u) => ({
+                userId: u.user.id,
+                username: u.user.username,
+              })) ?? []),
+              t.curator
+                ? { userId: t.curator.id, username: t.curator.username }
+                : undefined,
+            ])
+            .filter((t) => !!t) ?? [],
       }));
       return {
         ...s,

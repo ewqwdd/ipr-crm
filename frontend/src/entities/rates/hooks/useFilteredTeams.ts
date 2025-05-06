@@ -72,9 +72,9 @@ export const useFilteredTeams = ({
 
   const filteredEmpty = useMemo(
     () =>
-      filteredSearch?.filter(
-        (team) => (team.users && team.users?.length > 0) || team.curator,
-      ),
+      filteredSearch?.filter((team) => {
+        return (team.users && team.users.length > 0) || !!team.curator;
+      }),
     [filteredSearch],
   );
   const filteredTeams = useMemo(

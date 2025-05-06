@@ -94,6 +94,7 @@ export default memo(function EvaluatorsForm({
         excluded={excluded}
         selected={selected}
         evaluateTeam={evaluateTeam}
+        type={type}
       />
       {filteredTeams?.map((team) => (
         <EvaluatorTeam
@@ -103,6 +104,7 @@ export default memo(function EvaluatorsForm({
           key={team.id}
           team={team}
           evaluateTeam={evaluateTeam}
+          type={type}
         />
       ))}
     </div>

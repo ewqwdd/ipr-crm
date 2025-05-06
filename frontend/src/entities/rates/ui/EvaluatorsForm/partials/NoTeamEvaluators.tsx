@@ -1,7 +1,7 @@
 import { usersApi } from '@/shared/api/usersApi';
 import EvaluatorTeam from './EvaluatorTeam';
 import { useMemo } from 'react';
-import { EvaluateUser } from '@/entities/rates/types/types';
+import { EvaluateUser, EvaulatorType } from '@/entities/rates/types/types';
 import { Team } from '@/entities/team';
 
 interface EvaluatorTeamProps {
@@ -9,6 +9,7 @@ interface EvaluatorTeamProps {
   selected?: EvaluateUser[];
   setSelected: React.Dispatch<React.SetStateAction<EvaluateUser[]>>;
   evaluateTeam?: Team;
+  type?: EvaulatorType;
 }
 
 export default function NoTeamEvaluators(props: EvaluatorTeamProps) {

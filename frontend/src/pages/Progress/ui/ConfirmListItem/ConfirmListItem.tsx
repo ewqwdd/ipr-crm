@@ -38,12 +38,17 @@ export default function ConfirmListItem({
   }
 
   return (
-    <div className="flex items-center justify-between p-1.5 sm:p-3  rounded-sm border-t border-gray-300 first:border-transparent">
-      <span className="text-base font-medium text-gray-800">{spec?.name}</span>
-      <span className="sm:text-base text-sm text-gray-500">
+    <div className="flex items-center justify-between p-1.5 sm:p-3  rounded-sm border-t border-gray-300 first:border-transparent flex-wrap gap-y-2 max-sm:gap-3">
+      <span className="text-base font-medium text-gray-800 flex-nowrap">
+        {spec?.name}
+      </span>
+      <span className="text-base font-medium text-gray-800 flex-nowrap">
+        {rate?.user.username}
+      </span>
+      <span className="sm:text-base text-sm text-gray-500 flex-nowrap">
         {rateTypeNames[rate.type]}
       </span>
-      <span className="sm:text-base text-sm text-gray-500">
+      <span className="sm:text-base text-sm text-gray-500 flex-nowrap">
         {rate.startDate?.slice(0, 10)}
       </span>
       <SoftButton

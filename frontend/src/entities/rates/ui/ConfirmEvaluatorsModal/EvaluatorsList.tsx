@@ -18,7 +18,7 @@ export default function EvaluatorsList({
 }: EvaluatorsListProps) {
   return (
     <div
-      className={cva('flex gap-2 flex-wrap', {
+      className={cva('flex gap-2 flex-wrap items-start', {
         'pointer-events-none opacity-80': !edittable,
       })}
     >
