@@ -1,5 +1,7 @@
 import { User } from '@/entities/user';
 import { usersApi } from '@/shared/api/usersApi';
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
+import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { DotsDropdown } from '@/shared/ui/DotsDropdown';
 import { useEffect, useState } from 'react';
@@ -16,6 +18,23 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState<boolean>();
   const [deleteUser, deleteState] = usersApi.useRemoveUserMutation();
+  const isAdmin = useIsAdmin();
+  const [loading, setLoading] = useState(false);
+
+  const resendInvite = () => {
+    setLoading(true);
+    $api
+      .post('/users/resend-invite/' + person.id)
+      .then(() => {
+        toast.success('Приглашение повторно отправлено');
+      })
+      .catch(() => {
+        toast.error('Ошибка при повторной отправке приглашения');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     if (deleteState.isSuccess && deleting) {
@@ -33,7 +52,8 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
   return (
     <tr
       className={cva({
-        'animate-pulse pointer-events-none opacity-50': !!deleting,
+        'animate-pulse pointer-events-none opacity-50': !!deleting || !!loading,
+        '[&_span]:opacity-60 [&_a]:opacity-60': !person?.access,
       })}
     >
       <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6'}>
@@ -77,7 +97,7 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
           {person.role?.name}
         </span>
       </td>
-      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 [&_span]:opacity-100">
         {edit && (
           <DotsDropdown
             bodyClassName={cva('z-50', {
@@ -96,6 +116,14 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
                   deleteUser(person.id);
                 },
               },
+              ...(isAdmin && !person.access
+                ? [
+                    {
+                      text: 'Пригласить повторно',
+                      onClick: () => resendInvite(),
+                    },
+                  ]
+                : []),
             ]}
           />
         )}

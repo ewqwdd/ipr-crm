@@ -153,4 +153,13 @@ export class UsersController {
   async remove(@Param('id') id: number) {
     return this.usersService.remove(id);
   }
+
+  @Post('/resend-invite/:id')
+  @UseGuards(AdminGuard)
+  @HttpCode(HttpStatus.OK)
+  async resendInvite(
+    @Param('id', { transform: (id) => Number(id) }) id: number,
+  ) {
+    return this.usersService.resendInvite(id);
+  }
 }

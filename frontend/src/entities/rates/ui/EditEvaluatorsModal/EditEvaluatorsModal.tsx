@@ -116,7 +116,6 @@ export default function EditEvaluatorsModal({
           );
         }}
         onSubmit={({ evaluators, type }) => {
-          console.log(evaluators);
           dispatch(
             ratesActions.setEditEvaluators({
               ...editEvaluators,

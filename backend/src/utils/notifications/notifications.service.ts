@@ -3,6 +3,7 @@ import { PrismaService } from '../db/prisma.service';
 import { MailService } from '../mailer/mailer';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { errorLogger } from '../filters/logger';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class NotificationsService {
@@ -58,8 +59,15 @@ export class NotificationsService {
     });
   }
 
-  async sendRateAssignedNotification(userId: number, rateId: number) {
-    const user = await this.prismaService.user.findUnique({
+  async sendRateAssignedNotification(
+    userId: number,
+    rateId: number,
+    tx?: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >,
+  ) {
+    const user = await (tx ?? this.prismaService).user.findUnique({
       where: {
         id: userId,
       },
@@ -75,7 +83,8 @@ export class NotificationsService {
       await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
     }
 
-    await this.prismaService.notification.create({
+    console.log(rateId);
+    await (tx ?? this.prismaService).notification.create({
       data: {
         title: 'Вам назначена оценка',
         userId: userId,
@@ -114,9 +123,16 @@ export class NotificationsService {
     });
   }
 
-  async sendRateConfirmNotification(userId: number, rateId: number) {
+  async sendRateConfirmNotification(
+    userId: number,
+    rateId: number,
+    tx?: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >,
+  ) {
     try {
-      const user = await this.prismaService.user.findUnique({
+      const user = await (tx ?? this.prismaService).user.findUnique({
         where: {
           id: userId,
         },
@@ -136,7 +152,7 @@ export class NotificationsService {
         );
       }
 
-      await this.prismaService.notification.create({
+      await (tx ?? this.prismaService).notification.create({
         data: {
           title: 'Вам назначено утверждение оценки',
           userId: userId,

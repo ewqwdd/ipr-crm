@@ -44,9 +44,10 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
           ? row.Группа
           : undefined,
         department:
-          row.Департамент.trim() !== '-' ? row.Департамент : undefined,
-        direction: row.Направление.trim() !== '-' ? row.Направление : undefined,
-        product: row.Продукт.trim() !== '-' ? row.Продукт : undefined,
+          row.Департамент?.trim() !== '-' ? row.Департамент : undefined,
+        direction:
+          row.Направление?.trim() !== '-' ? row.Направление : undefined,
+        product: row.Продукт?.trim() !== '-' ? row.Продукт : undefined,
         leader: row.Лидер?.trim().toLowerCase() === 'да',
       })),
     );

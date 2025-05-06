@@ -146,7 +146,7 @@ model Spec {
   rate360          Rate360[]
   growthPlans      IndividualGrowthPlan[]
   usersTeams       SpecsOnUserTeam[]
-  competencyBlocks CompetencyBlock[]
+  competencyBlocks CompetencyBlock[] @relation("SpecBlocks")
   curatorSpecs     CuratorSpecs[]
   archived         Boolean @default(false)
 }
@@ -495,8 +495,7 @@ model CompetencyBlock {
   name         String
   type         SkillType // Soft или Hard
   competencies Competency[] // Связь с компетенциями
-  specId       Int?
-  spec         Spec?        @relation(fields: [specId], references: [id], onDelete: Cascade)
+  specs        Spec[]   @relation("SpecBlocks")
   rates360     Rate360[]
   archived     Boolean?     @default(false)
   archivedDate DateTime?

@@ -180,41 +180,42 @@ export class Rate360Service {
 
   async createRate(data: CreateRateDto, sessionInfo: GetSessionInfoDto) {
     const { rate, skill, confirmCurator, confirmUser } = data;
+    return await this.prismaService.$transaction(async (tx) => {
+      const ratesToCreate = skill.flatMap((skill) =>
+        rate.flatMap((team) => {
+          return team.specs.map((spec) => ({
+            teamId: team.teamId,
+            type: skill,
+            ...spec,
+          }));
+        }),
+      );
 
-    const ratesToCreate = skill.flatMap((skill) =>
-      rate.flatMap((team) => {
-        return team.specs.map((spec) => ({
-          teamId: team.teamId,
-          type: skill,
-          ...spec,
-        }));
-      }),
-    );
-
-    if (sessionInfo.role !== 'admin') {
-      const curatorTeams = await this.prismaService.team.findMany({
-        where: {
-          curatorId: sessionInfo.id,
-        },
-        select: {
-          id: true,
-          name: true,
-          subTeams: {
-            select: {
-              id: true,
-              name: true,
-              subTeams: {
-                select: {
-                  id: true,
-                  name: true,
-                  subTeams: {
-                    select: {
-                      id: true,
-                      name: true,
-                      subTeams: {
-                        select: {
-                          id: true,
-                          name: true,
+      if (sessionInfo.role !== 'admin') {
+        const curatorTeams = await tx.team.findMany({
+          where: {
+            curatorId: sessionInfo.id,
+          },
+          select: {
+            id: true,
+            name: true,
+            subTeams: {
+              select: {
+                id: true,
+                name: true,
+                subTeams: {
+                  select: {
+                    id: true,
+                    name: true,
+                    subTeams: {
+                      select: {
+                        id: true,
+                        name: true,
+                        subTeams: {
+                          select: {
+                            id: true,
+                            name: true,
+                          },
                         },
                       },
                     },
@@ -223,136 +224,152 @@ export class Rate360Service {
               },
             },
           },
+        });
+
+        const allTeams = this.usersService.findSubTeams(curatorTeams);
+        const allowedTeamIds = allTeams.map((team) => team.id);
+
+        const rateTeamIds = ratesToCreate.map((rate) => rate.teamId);
+        const found = rateTeamIds.some(
+          (teamId) => !allowedTeamIds.includes(teamId),
+        );
+        if (found) {
+          throw new ForbiddenException(
+            'You are not allowed to create this rate',
+          );
+        }
+      }
+
+      const competencyBlocks = await tx.competencyBlock.findMany({
+        where: {
+          specs: {
+            some: {
+              id: { in: ratesToCreate.map((rate) => rate.specId) },
+            },
+          },
+          type: {
+            in: skill,
+          },
+          archived: false,
+        },
+        select: {
+          id: true,
+          specs: {
+            select: { id: true },
+          },
+          type: true,
         },
       });
 
-      const allTeams = this.usersService.findSubTeams(curatorTeams);
-      const allowedTeamIds = allTeams.map((team) => team.id);
+      const createdRates = await tx.rate360.createManyAndReturn({
+        data: ratesToCreate.map((rate) => ({
+          type: rate.type,
+          specId: rate.specId,
+          userId: rate.userId,
+          teamId: rate.teamId,
+          userConfirmed: !confirmUser,
+          curatorConfirmed: !confirmCurator,
+          rateType: data.rateType,
+        })),
+      });
 
-      const rateTeamIds = ratesToCreate.map((rate) => rate.teamId);
-      const found = rateTeamIds.some(
-        (teamId) => !allowedTeamIds.includes(teamId),
-      );
-      if (found) {
-        throw new ForbiddenException('You are not allowed to create this rate');
-      }
-    }
-
-    const competencyBlocks = await this.prismaService.competencyBlock.findMany({
-      where: {
-        specId: {
-          in: ratesToCreate.map((rate) => rate.specId),
-        },
-        type: {
-          in: skill,
-        },
-        archived: false,
-      },
-      select: { id: true, specId: true, type: true },
-    });
-
-    const createdRates = await this.prismaService.rate360.createManyAndReturn({
-      data: ratesToCreate.map((rate) => ({
-        type: rate.type,
-        specId: rate.specId,
-        userId: rate.userId,
-        teamId: rate.teamId,
-        userConfirmed: !confirmUser,
-        curatorConfirmed: !confirmCurator,
-        rateType: data.rateType,
-      })),
-    });
-
-    return await Promise.all(
-      ratesToCreate.map(async (rate, index) => {
-        const team = await this.prismaService.team.findUnique({
-          where: {
-            id: rate.teamId,
-          },
-          select: {
-            curatorId: true,
-            parentTeamId: true,
-            parentTeam: {
-              include: {
-                curator: true,
+      return await Promise.all(
+        ratesToCreate.map(async (rate, index) => {
+          const team = await tx.team.findUnique({
+            where: {
+              id: rate.teamId,
+            },
+            select: {
+              curatorId: true,
+              parentTeamId: true,
+              parentTeam: {
+                include: {
+                  curator: true,
+                },
               },
             },
-          },
-        });
+          });
 
-        let curatorConfirm = data.confirmCurator;
+          let curatorConfirm = data.confirmCurator;
 
-        if (team.curatorId === rate.userId && !team.parentTeamId) {
-          curatorConfirm = false;
-        }
+          if (team.curatorId === rate.userId && !team.parentTeamId) {
+            curatorConfirm = false;
+          }
 
-        if (data.confirmUser) {
-          await this.notificationsService.sendRateConfirmNotification(
-            rate.userId,
-            createdRates[index].id,
-          );
-        } else if (curatorConfirm) {
-          if (team.curatorId === rate.userId) {
+          if (data.confirmUser) {
             await this.notificationsService.sendRateConfirmNotification(
-              team.parentTeam.curator.id,
+              rate.userId,
               createdRates[index].id,
+              tx,
             );
+          } else if (curatorConfirm) {
+            if (team.curatorId === rate.userId) {
+              await this.notificationsService.sendRateConfirmNotification(
+                team.parentTeam.curator.id,
+                createdRates[index].id,
+                tx,
+              );
+            } else {
+              await this.notificationsService.sendRateConfirmNotification(
+                team.curatorId,
+                createdRates[index].id,
+                tx,
+              );
+            }
           } else {
-            await this.notificationsService.sendRateConfirmNotification(
-              team.curatorId,
-              createdRates[index].id,
-            );
-          }
-        } else {
-          await this.notificationsService.sendRateAssignedNotification(
-            rate.userId,
-            createdRates[index].id,
-          );
-          for (const evaluator of [
-            ...rate.evaluateCurators,
-            ...rate.evaluateSubbordinate,
-            ...rate.evaluateTeam,
-          ]) {
             await this.notificationsService.sendRateAssignedNotification(
-              evaluator.userId,
+              rate.userId,
               createdRates[index].id,
+              tx,
             );
+            for (const evaluator of [
+              ...rate.evaluateCurators,
+              ...rate.evaluateSubbordinate,
+              ...rate.evaluateTeam,
+            ]) {
+              await this.notificationsService.sendRateAssignedNotification(
+                evaluator.userId,
+                createdRates[index].id,
+                tx,
+              );
+            }
           }
-        }
-        return await this.prismaService.rate360.update({
-          where: { id: createdRates[index].id },
-          data: {
-            curatorConfirmed: !curatorConfirm,
-            evaluators: {
-              createMany: {
-                data: [
-                  ...rate.evaluateCurators.map((evaluator) => ({
-                    userId: evaluator.userId,
-                    type: EvaluatorType.CURATOR,
-                  })),
-                  ...rate.evaluateTeam.map((evaluator) => ({
-                    userId: evaluator.userId,
-                    type: EvaluatorType.TEAM_MEMBER,
-                  })),
-                  ...rate.evaluateSubbordinate.map((evaluator) => ({
-                    userId: evaluator.userId,
-                    type: EvaluatorType.SUBORDINATE,
-                  })),
-                ],
+          return await tx.rate360.update({
+            where: { id: createdRates[index].id },
+            data: {
+              curatorConfirmed: !curatorConfirm,
+              evaluators: {
+                createMany: {
+                  data: [
+                    ...rate.evaluateCurators.map((evaluator) => ({
+                      userId: evaluator.userId,
+                      type: EvaluatorType.CURATOR,
+                    })),
+                    ...rate.evaluateTeam.map((evaluator) => ({
+                      userId: evaluator.userId,
+                      type: EvaluatorType.TEAM_MEMBER,
+                    })),
+                    ...rate.evaluateSubbordinate.map((evaluator) => ({
+                      userId: evaluator.userId,
+                      type: EvaluatorType.SUBORDINATE,
+                    })),
+                  ],
+                },
+              },
+              competencyBlocks: {
+                connect: competencyBlocks
+                  .filter(
+                    (block) =>
+                      block.specs.find((s) => s.id === rate.specId) &&
+                      rate.type === block.type,
+                  )
+                  .map(({ id }) => ({ id })),
               },
             },
-            competencyBlocks: {
-              connect: competencyBlocks
-                .filter(
-                  (block) =>
-                    block.specId === rate.specId && rate.type === block.type,
-                )
-                .map(({ id }) => ({ id })),
-            },
-          },
-        });
-      }),
-    );
+          });
+        }),
+      );
+    });
   }
 
   async findAssignedRates(userId: number) {

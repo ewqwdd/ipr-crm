@@ -33,7 +33,7 @@ const CompetencyBlock: FC<ICompetencyProps> = ({ selectedSpec }) => {
           spec?.competencyBlocks.find((block) => block.id === item.id) &&
           item.type === skillsFilter,
       ),
-    [data, selectedSpec, skillsFilter],
+    [data, skillsFilter, spec?.competencyBlocks],
   );
 
   return (

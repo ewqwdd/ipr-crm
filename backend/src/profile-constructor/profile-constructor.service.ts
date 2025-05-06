@@ -325,13 +325,17 @@ export class ProfileConstructorService {
             competencies: {
               include: { indicators: true },
             },
+            specs: {
+              select: {
+                id: true,
+              },
+            },
           },
         });
 
         // Подготовка данных для массовой вставки
         const newBlocksData = blocksToClone.map((block) => ({
           name: block.name,
-          specId: block.specId,
           type: block.type,
           archived: false,
         }));
@@ -354,6 +358,23 @@ export class ProfileConstructorService {
             createdBlocks[index]?.id,
           ]),
         );
+
+        // Обновляем связи с новыми блоками в спецификациях
+        for (const block of blocksToClone) {
+          const newBlockId = blockIdMap.get(block.id);
+          if (newBlockId) {
+            await tx.competencyBlock.update({
+              where: { id: newBlockId },
+              data: {
+                specs: {
+                  connect: block.specs.map((spec) => ({
+                    id: spec.id,
+                  })),
+                },
+              },
+            });
+          }
+        }
 
         // Подготовка данных для новых компетенций
         const newCompetenciesData = blocksToClone.flatMap((block) =>

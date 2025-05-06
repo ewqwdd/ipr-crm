@@ -37,6 +37,7 @@ export interface User {
   mentorId?: number;
   teamCurator?: { id: number; name: string }[];
   notifications: Notification[];
+  access?: boolean;
 }
 
 export interface UserStoreSchema {

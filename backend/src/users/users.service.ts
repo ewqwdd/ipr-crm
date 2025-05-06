@@ -15,12 +15,6 @@ import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
 
-type SubTeam = {
-  id: number;
-  subTeams?: SubTeam[];
-  curatorId?: number;
-};
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -118,13 +112,20 @@ export class UsersService {
           select: { id: true, name: true },
         },
       },
-      omit: { authCode: true, passwordHash: true, roleId: true, specId: true },
+      omit: { authCode: true, roleId: true, specId: true },
       orderBy: { createdAt: 'desc' },
       take: limit,
       skip: page ? (page - 1) * limit : undefined,
     });
     const count = await this.prisma.user.count();
-    return { users, count };
+    return {
+      users: users.map((u) => ({
+        ...u,
+        passwordHash: undefined,
+        access: !!u.passwordHash,
+      })),
+      count,
+    };
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -180,7 +181,7 @@ export class UsersService {
     }
 
     if (updates.password) {
-      const passwordHash = await this.passwordService.getHash(updates.password);
+      const passwordHash = this.passwordService.getHash(updates.password);
       updates.passwordHash = passwordHash;
       delete updates.password;
     }
@@ -213,7 +214,7 @@ export class UsersService {
     }
 
     const authCode = Math.random().toString(36).substring(2, 15);
-    const hashed = await this.passwordService.getHash(authCode);
+    const hashed = this.passwordService.getHash(authCode);
 
     const created = await this.prisma.user.create({
       data: {
@@ -230,6 +231,29 @@ export class UsersService {
     return;
   }
 
+  async resendInvite(id: number) {
+    const user = await this.prisma.user.findFirst({
+      where: { id },
+    });
+
+    if (user.authCode) {
+      return await this.mailService.sendInviteEmail(user.email, user);
+    }
+
+    const authCode = Math.random().toString(36).substring(2, 15);
+    const hashed = this.passwordService.getHash(authCode);
+
+    await this.prisma.user.update({
+      where: { id },
+      data: { authCode: hashed },
+    });
+
+    return await this.mailService.sendInviteEmail(user.email, {
+      ...user,
+      authCode: hashed,
+    });
+  }
+
   async passwordReset(authCode: string, password: string) {
     const user = await this.prisma.user.findFirst({
       where: { authCode },
@@ -239,7 +263,7 @@ export class UsersService {
       throw new NotFoundException('Пользователь не найден.');
     }
 
-    const passwordHash = await this.passwordService.getHash(password);
+    const passwordHash = this.passwordService.getHash(password);
 
     await this.prisma.user.update({
       where: { id: user.id },
@@ -290,6 +314,7 @@ export class UsersService {
         const direction = rowObj['Направление']?.trim();
         const department = rowObj['Департамент']?.trim();
         const group = rowObj['Группа']?.trim();
+        console.log(rowObj);
 
         if (
           product &&
@@ -338,10 +363,10 @@ export class UsersService {
 
     return {
       data: rows,
-      products: newProducts,
-      departments: newDepartments,
-      directions: newDirections,
-      groups: newGroups,
+      products: newProducts.filter((v) => !!v && v !== '-'),
+      departments: newDepartments.filter((v) => !!v && v !== '-'),
+      directions: newDirections.filter((v) => !!v && v !== '-'),
+      groups: newGroups.filter((v) => !!v && v !== '-'),
     };
   }
 
@@ -570,6 +595,9 @@ export class UsersService {
             email: u.email,
             username: u.username,
             roleId: 2,
+            authCode: this.passwordService.getHash(
+              Math.random().toString(36).substring(2, 15),
+            ),
           };
         }),
       });
@@ -639,6 +667,12 @@ export class UsersService {
           });
         }
       }
+
+      await Promise.all(
+        createdUsers.map((user) =>
+          this.mailService.sendInviteEmail(user.email, user),
+        ),
+      );
 
       return createdUsers;
     });

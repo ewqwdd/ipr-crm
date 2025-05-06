@@ -1,3 +1,5 @@
+import { useAppDispatch } from '@/app';
+import { usersApi } from '@/shared/api/usersApi';
 import { $api } from '@/shared/lib/$api';
 import { emailRegex } from '@/shared/lib/regex';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
@@ -23,6 +25,7 @@ export default function InviteModal({ isOpen, closeModal }: InviteModalProps) {
   const nameRef = useRef<HTMLInputElement>(null);
   const surnameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
+  const dispatch = useAppDispatch();
 
   const [errors, setErrors] = useState<ErrorState>({});
 
@@ -49,6 +52,7 @@ export default function InviteModal({ isOpen, closeModal }: InviteModalProps) {
     try {
       setIsLoading(true);
       await $api.post('/users/invite', { name, surname, email });
+      dispatch(usersApi.util.invalidateTags(['User']));
       toast.success('Приглашение отправлено');
     } catch (err) {
       if (err instanceof AxiosError) {

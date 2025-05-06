@@ -3,7 +3,7 @@ import { pbkdf2Sync } from 'crypto';
 
 @Injectable()
 export class PasswordService {
-  async getHash(password: string) {
+  getHash(password: string) {
     const hash = pbkdf2Sync(
       password,
       process.env.SECRET_SALT,

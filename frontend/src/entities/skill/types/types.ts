@@ -53,7 +53,6 @@ export interface CompetencyBlock {
   id: number;
   name: string;
   type: SkillType;
-  specId: number;
   materials?: { material: Material }[];
   competencies: Competency[];
 }

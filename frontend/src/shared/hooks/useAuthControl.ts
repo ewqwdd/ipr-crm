@@ -27,16 +27,18 @@ export const useAuthControl = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (
-      isMounted &&
-      !user &&
-      !guestRoutes.find((e) => window.location.pathname.includes(e))
-    ) {
+    const isGuestRoute = guestRoutes.find((e) =>
+      window.location.pathname.includes(e),
+    );
+    if (isMounted && !user && !isGuestRoute) {
       navigate('/login');
       dispatch(rate360Api.util.resetApiState());
       dispatch(testsApi.util.resetApiState());
       dispatch(surveyApi.util.resetApiState());
       dispatch(iprApi.util.resetApiState());
+    }
+    if (isGuestRoute && user) {
+      navigate('/');
     }
   }, [isMounted, user, navigate, dispatch]);
 
