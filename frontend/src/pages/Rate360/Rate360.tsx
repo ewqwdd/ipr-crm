@@ -57,7 +57,7 @@ export default function Rate360() {
             Добавить
           </PrimaryButton>
         </div>
-        <div className="flex gap-1 justify-between items-start mt-6">
+        <div className="flex-col gap-1 mt-6 relative mb-2">
           <RatesFiltersWrapper filters={filters} setFilters={setFilters} />
           <SelectAll
             data={data?.data ?? []}

@@ -4,6 +4,8 @@ import Evaluator from './Evaluator';
 import { EvaluateUser, EvaulatorType } from '@/entities/rates/types/types';
 import toast from 'react-hot-toast';
 import { teamsApi } from '@/shared/api/teamsApi';
+import { SoftButton } from '@/shared/ui/SoftButton';
+import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 
 interface EvaluatorTeamProps {
   team: Team;
@@ -71,6 +73,44 @@ export default function EvaluatorTeam({
     (e) => e.userId === team.curator?.id,
   );
 
+  const deselectAll = () => {
+    setSelected((prev) =>
+      prev.filter(
+        (e) =>
+          e.userId !== team.curator?.id &&
+          !filtered?.find((user) => user.user.id === e.userId),
+      ),
+    );
+  };
+
+  const selectAll = () => {
+    const selectUsers =
+      filtered?.map<EvaluateUser>((user) => ({
+        userId: user.user.id,
+        username: user.user.username,
+      })) ?? [];
+    const usersWithCurator = [
+      ...selectUsers,
+      !!team.curator && {
+        userId: team.curator.id,
+        username: team.curator.username,
+      },
+    ].filter(Boolean) as EvaluateUser[];
+
+    const newUsers = usersWithCurator.filter(filterFn);
+    const avaliable = OTHER_TEAM_LIMIT - otherTeamCount;
+
+    if (avaliable < newUsers?.length) {
+      toast.error(
+        `Вы можете выбрать только ${OTHER_TEAM_LIMIT} человека из другой команды`,
+      );
+    }
+
+    setSelected((prev) => {
+      return [...prev, ...usersWithCurator.slice(0, avaliable)];
+    });
+  };
+
   if (filtered?.length === 0 && (!team.curator || isCuratorExcluded)) {
     return null;
   }
@@ -79,13 +119,12 @@ export default function EvaluatorTeam({
     <div className="flex flex-col gap-4">
       <div className="flex gap-3 items-center px-2">
         <span className="text-gray-800 font-medium">{team.name}</span>
-        {/* TODO */}
-        {/* <SoftButton size="xs" className="py-0.5">
+        <SoftButton size="xs" className="py-0.5" onClick={selectAll}>
           Выбрать всех
         </SoftButton>
-        <SecondaryButton size="xs" className="py-0.5">
+        <SecondaryButton size="xs" className="py-0.5" onClick={deselectAll}>
           Снять выбор
-        </SecondaryButton> */}
+        </SecondaryButton>
       </div>
       <div className="flex flex-col p-2 bg-violet-50">
         {team.curator && !isCuratorExcluded && (

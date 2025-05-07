@@ -33,7 +33,6 @@ export default function Question({
   const hintsTitle = skillType === 'HARD' ? hintsTitleHard : hintsTitleSoft;
 
   const moreThan1024 = useMinMediaQuery(1024);
-  const moreThan640 = useMinMediaQuery(640);
   const moreThan520 = useMinMediaQuery(520);
 
   const descriptions = {
@@ -56,15 +55,21 @@ export default function Question({
     ...(skillType === 'SOFT' ? { 5: indicator.value5 ?? hintsTitle[5] } : {}),
   };
 
+  const skipAlign = () => {
+    if (moreThan1024) return 'right';
+    if (moreThan520 && skillType === 'SOFT') return 'right';
+    if (moreThan520) return 'left';
+    return 'center';
+  };
+
   const skip = (
     <Tooltip
-      align={moreThan640 ? 'right' : 'left'}
-      className="max-sm:mt-4 max-sm:self-start"
+      align={skipAlign()}
       content={indicator.skipHint ?? rateDescriptions[0]}
     >
       <SecondaryButton
         onClick={() => onChange(0, comment)}
-        className={cva({
+        className={cva('size-full', {
           'bg-green-100 hover:bg-green-100': rate === 0,
         })}
       >
@@ -78,7 +83,7 @@ export default function Question({
       const keys = Object.keys(descriptions);
       const index = keys.indexOf(value.toString());
       if (index === 0) return 'left';
-      if (index === keys.length - 1) return 'right';
+      // if (index === keys.length - 1) return 'right';
       return 'center';
     }
     if (moreThan520) {
@@ -94,12 +99,16 @@ export default function Question({
         <p className="text-gray-800 font-medium flex-1">
           {index + 1}. {indicator.name}
         </p>
-        {moreThan640 && skip}
       </div>
 
-      <div className={cva("lg:grid-cols-5 grid grid-cols-2 max-[520px]:grid-cols-1 gap-2", {
-        'lg:grid-cols-4': skillType === 'HARD',
-      })}>
+      <div
+        className={cva(
+          'lg:grid-cols-6 grid grid-cols-2 max-[520px]:grid-cols-1 gap-2',
+          {
+            'lg:grid-cols-5': skillType === 'HARD',
+          },
+        )}
+      >
         {Object.entries(descriptions).map(([value, description]) => (
           <Tooltip
             content={description}
@@ -117,8 +126,8 @@ export default function Question({
             </SecondaryButton>
           </Tooltip>
         ))}
+        {skip}
       </div>
-      {!moreThan640 && skip}
     </div>
   );
 }

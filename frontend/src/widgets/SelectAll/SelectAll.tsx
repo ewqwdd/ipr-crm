@@ -21,7 +21,7 @@ export default memo(function SelectAll({
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 absolute right-0 top-0">
       <SoftButton
         onClick={handleSelectAll}
         disabled={selected.length === data.length}

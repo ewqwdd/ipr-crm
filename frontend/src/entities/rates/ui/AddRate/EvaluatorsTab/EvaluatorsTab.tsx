@@ -71,6 +71,8 @@ export default function EvaluatorsTab({
       const parentTeam = data?.list.find((t) => t.id === team?.parentTeamId);
 
       const updatedSpecs = s.specs.map((spec) => {
+        const isCurator = team?.curator?.id === spec.userId;
+
         const evaluateCurators = [
           teamCurator?.userId === spec.userId
             ? parentTeam?.curator &&
@@ -95,15 +97,11 @@ export default function EvaluatorsTab({
 
         const evaluateSubbordinate =
           (subTeams
-            ?.flatMap((t) => [
-              ...(t.users?.map((u) => ({
-                userId: u.user.id,
-                username: u.user.username,
-              })) ?? []),
+            ?.map((t) =>
               t.curator
                 ? { userId: t.curator.id, username: t.curator.username }
                 : undefined,
-            ])
+            )
             .filter(
               (t) =>
                 !!t &&
@@ -119,8 +117,8 @@ export default function EvaluatorsTab({
         return {
           ...spec,
           evaluateCurators,
-          evaluateTeam,
-          evaluateSubbordinate,
+          evaluateTeam: evaluateTeam,
+          evaluateSubbordinate: isCurator ? evaluateSubbordinate : [],
         };
       });
       return {
