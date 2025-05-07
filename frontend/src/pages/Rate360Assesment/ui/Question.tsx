@@ -97,7 +97,9 @@ export default function Question({
         {moreThan640 && skip}
       </div>
 
-      <div className="lg:grid-cols-5 grid grid-cols-2 max-[520px]:grid-cols-1 gap-2">
+      <div className={cva("lg:grid-cols-5 grid grid-cols-2 max-[520px]:grid-cols-1 gap-2", {
+        'lg:grid-cols-4': skillType === 'HARD',
+      })}>
         {Object.entries(descriptions).map(([value, description]) => (
           <Tooltip
             content={description}

@@ -111,7 +111,7 @@ export default function Rate360Assesment() {
   return (
     <LoadingOverlay active={isFetching}>
       <div
-        className={cva('flex flex-col h-full max-h-full pb-6', {
+        className={cva('flex flex-col h-full max-h-full pb-4', {
           'animate-pulse pointer-events-none':
             approvalSelfState.isLoading || approvalState.isLoading,
         })}
@@ -132,7 +132,7 @@ export default function Rate360Assesment() {
             skillType={data.type}
           />
         )}
-        <div className="flex justify-end px-6">
+        <div className="flex justify-end px-6 pt-2">
           {/* <Link to={'/progress'}>
             <SecondaryButton>Назад</SecondaryButton>
           </Link> */}

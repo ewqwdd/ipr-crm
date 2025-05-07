@@ -49,7 +49,9 @@ export class UsersService {
       },
       omit: { roleId: true, specId: true, authCode: true },
     });
-    return user;
+    const teamAccess = await this.usersAccessService.findAllowedTeams(user.id);
+
+    return { ...user, teamAccess };
   }
 
   async findOne(id: number) {
