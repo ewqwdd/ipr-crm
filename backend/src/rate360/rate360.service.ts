@@ -1076,8 +1076,11 @@ export class Rate360Service {
       },
     });
 
+    // Для куратора оценки челнов его команды или куратора дочерней команды
+
     const filtered = rates.filter((rate) => {
-      if (rate.team.curatorId !== rate.userId) return true;
+      if (rate.team.curatorId !== rate.userId && rate.team.curatorId === userId)
+        return true;
       if (rate.team.parentTeam && rate.team.parentTeam.curatorId === userId)
         return true;
       return false;
@@ -1495,6 +1498,9 @@ export class Rate360Service {
     });
     if (!rate) {
       throw new NotFoundException('Оценка не найдена');
+    }
+    if (rate.userId === userId) {
+      throw new ForbiddenException('Вы не можете покинуть свою оценку');
     }
     await this.prismaService.rate360Evaluator.deleteMany({
       where: {

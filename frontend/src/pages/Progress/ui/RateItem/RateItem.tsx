@@ -1,3 +1,4 @@
+import { useAppSelector } from '@/app';
 import { useModal } from '@/app/hooks/useModal';
 import { Rate, rateTypeNames } from '@/entities/rates';
 import { Spec } from '@/entities/user';
@@ -16,6 +17,7 @@ export default function RateItem({ rate, specs }: RateItemProps) {
   const { openModal } = useModal();
   const spec = specs.find((spec) => spec.id === rate.specId);
   const [leaveAssigned, { error }] = rate360Api.useLeaveAssignedMutation();
+  const userId = useAppSelector((state) => state.user.user!.id);
 
   const cancelAssesment = () => {
     openModal('CONFIRM', {
@@ -35,7 +37,7 @@ export default function RateItem({ rate, specs }: RateItemProps) {
   }, [error]);
 
   return (
-    <div className="flex items-center justify-between p-1.5 sm:p-3 rounded-sm border-t border-gray-300 first:border-transparent">
+    <div className="flex sm:items-center justify-between p-1.5 sm:p-3 rounded-sm border-t border-gray-300 first:border-transparent max-sm:flex-col gap-y-3">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 sm:gap-4 text-gray-800 text-sm">
           <Badge color="pink" size="sm" className="self-start">
@@ -50,10 +52,12 @@ export default function RateItem({ rate, specs }: RateItemProps) {
           <span className="text-xs">{rate.startDate?.slice(0, 10)}</span>
         </div>
       </div>
-      <div className="flex gap-3">
-        <SoftButton danger size="xs" onClick={cancelAssesment}>
-          Не могу оценить
-        </SoftButton>
+      <div className="grid grid-cols-2 sm:flex gap-3">
+        {userId !== rate.userId && (
+          <SoftButton danger size="xs" onClick={cancelAssesment}>
+            Не могу оценить
+          </SoftButton>
+        )}
         <SoftButton size="xs" onClick={() => openModal('EVALUATE', { rate })}>
           Пройти тест
         </SoftButton>

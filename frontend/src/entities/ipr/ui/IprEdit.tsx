@@ -14,6 +14,8 @@ interface IprEditProps {
 export default function IprEdit({ ipr }: IprEditProps) {
   const dispatch = useAppDispatch();
 
+  console.log('IPR EDIT', ipr);
+
   useEffect(() => {
     return () => {
       if (ipr) {

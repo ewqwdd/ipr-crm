@@ -39,17 +39,20 @@ export default function ConfirmListItem({
   }
 
   return (
-    <div className="flex items-center justify-between p-1.5 sm:p-3  rounded-sm border-t border-gray-300 first:border-transparent flex-wrap gap-y-2 max-sm:gap-3">
-      <span className="text-base font-medium text-gray-800 flex-nowrap">
+    <div className="flex items-center justify-between p-1.5 sm:p-3  rounded-sm border-t border-gray-300 first:border-transparent flex-wrap gap-y-3 gap-[1%]">
+      <span className="text-base font-medium text-gray-800 flex-nowrap sm:basis-[19%] basis-[32%]">
         {spec?.name}
       </span>
-      <Link to={`/users/${rate?.userId}`} className="text-base font-medium text-violet-600 flex-nowrap">
+      <Link
+        to={`/users/${rate?.userId}`}
+        className="text-base font-medium text-violet-600 flex-nowrap sm:basis-[19%] basis-[32%] max-sm:text-center"
+      >
         {rate?.user.username}
       </Link>
-      <span className="sm:text-base text-sm text-gray-500 flex-nowrap">
+      <span className="sm:text-base text-sm text-gray-500 flex-nowrap sm:basis-[19%] basis-[32%] max-sm:text-right">
         {rateTypeNames[rate.type]}
       </span>
-      <span className="sm:text-base text-sm text-gray-500 flex-nowrap">
+      <span className="sm:text-base text-sm text-gray-500 flex-nowrap sm:basis-[19%] basis-[40%]">
         {rate.startDate?.slice(0, 10)}
       </span>
       <SoftButton
@@ -57,6 +60,7 @@ export default function ConfirmListItem({
         onClick={() =>
           openModal('CONFIRM_EVALUATORS', { rate, curatorBlocked })
         }
+        className="sm:basis-[19%]"
       >
         Утвердить список
       </SoftButton>

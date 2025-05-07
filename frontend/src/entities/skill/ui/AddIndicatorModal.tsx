@@ -100,7 +100,11 @@ export default function AddIndicatorModal({
           <p className="text-red-500 text-sm mt-2">{valueError}</p>
         )}
         <div className="mt-4 flex flex-col gap-2">
-          <EditBoundary boundary={boundary} setBoundary={setBoundary} />
+          <EditBoundary
+            skillType={skillType}
+            boundary={boundary}
+            setBoundary={setBoundary}
+          />
           <EditHints
             hitnsData={hints}
             setHintsData={setHints}

@@ -29,7 +29,7 @@ export default function Assesment({
   skillType,
 }: AssesmentProps) {
   return (
-    <div className="flex flex-col gap-6 px-6 flex-1 overflow-y-auto overflow-x-clip pt-2">
+    <div className="flex flex-col gap-6 px-6 flex-1 overflow-y-auto overflow-x-clip pt-6">
       {block.competencies
         .filter((c) => c.indicators.length > 0)
         .map((competency) => (

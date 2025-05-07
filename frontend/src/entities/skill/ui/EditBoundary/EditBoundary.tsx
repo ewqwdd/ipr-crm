@@ -1,11 +1,15 @@
+import { SkillType } from '../../types/types';
+
 interface EditBoundaryProps {
   boundary: number;
   setBoundary: React.Dispatch<React.SetStateAction<number>>;
+  skillType?: SkillType;
 }
 
 export default function EditBoundary({
   boundary,
   setBoundary,
+  skillType,
 }: EditBoundaryProps) {
   return (
     <>
@@ -18,7 +22,7 @@ export default function EditBoundary({
         className="w-full"
         type="range"
         min="1"
-        max="5"
+        max={skillType === 'SOFT' ? '4' : '5'}
         value={boundary}
         step={1}
         onChange={(e) => setBoundary(parseInt(e.target.value))}

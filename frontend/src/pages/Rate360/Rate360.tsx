@@ -15,7 +15,7 @@ import { Filters } from './ui/RatesFilters/types';
 import { initialFilters } from './ui/RatesFilters/constatnts';
 import { SelectAll } from '@/widgets/SelectAll';
 
-const LIMIT = 12;
+const LIMIT = 10;
 
 export default function Rate360() {
   const [selected, setSelected] = useState<number[]>([]);
@@ -50,7 +50,7 @@ export default function Rate360() {
 
   return (
     <LoadingOverlay active={isLoading}>
-      <div className="sm:px-8 sm:py-10 py-6 flex flex-col h-full realtive">
+      <div className="sm:px-8 sm:pt-10 py-6 flex flex-col h-full realtive">
         <div className="flex justify-between items-center max-sm:pr-14 max-sm:px-4">
           <Heading title="Командные отчёты" description="Список 360 оценок" />
           <PrimaryButton onClick={() => setOpen(true)} className="self-start">

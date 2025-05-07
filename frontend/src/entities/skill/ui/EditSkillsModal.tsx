@@ -173,7 +173,11 @@ export default function EditSkillsModal({
         {(CompetencyType.INDICATOR === type ||
           (CompetencyType.COMPETENCY === type && editCompetencyHints)) && (
           <>
-            <EditBoundary boundary={boundary} setBoundary={setBoundary} />
+            <EditBoundary
+              skillType={skillType}
+              boundary={boundary}
+              setBoundary={setBoundary}
+            />
             <EditHints
               hitnsData={hints}
               setHintsData={setHints}

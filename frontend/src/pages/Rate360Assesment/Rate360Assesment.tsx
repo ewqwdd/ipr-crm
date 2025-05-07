@@ -14,8 +14,9 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
 import { tranformAssesment } from '@/shared/lib/transformAssesment';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
-import { useAppSelector } from '@/app';
+import { useAppDispatch, useAppSelector } from '@/app';
 import Tooltip from '@/shared/ui/Tooltip';
+import { UserRateHeader } from '@/widgets/UserRateHeader';
 
 export default function Rate360Assesment() {
   const { id } = useParams();
@@ -25,6 +26,7 @@ export default function Rate360Assesment() {
     parseInt(id ?? ''),
   );
   const userId = useAppSelector((state) => state.user.user!.id);
+  const dispatch = useAppDispatch();
 
   const { state } = useLocation();
 
@@ -98,16 +100,25 @@ export default function Rate360Assesment() {
     }
   }, [approvalSelfState.isError, approvalState.isError]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(rate360Api.util.invalidateTags(['Rate360', 'Assigned', 'Self']));
+    };
+  }, [id]);
+
   if (!id) return null;
 
   return (
     <LoadingOverlay active={isFetching}>
       <div
-        className={cva('flex flex-col gap-4 h-full max-h-full pb-6', {
+        className={cva('flex flex-col h-full max-h-full pb-6', {
           'animate-pulse pointer-events-none':
             approvalSelfState.isLoading || approvalState.isLoading,
         })}
       >
+        <div className="pl-4 py-2">
+          <UserRateHeader rate={data} />
+        </div>
         <TabsHeader blocks={blocks} />
         {currentBlock && data && (
           <Assesment

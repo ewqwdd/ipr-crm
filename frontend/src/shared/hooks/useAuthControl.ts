@@ -30,13 +30,18 @@ export const useAuthControl = () => {
     const isGuestRoute = guestRoutes.find((e) =>
       window.location.pathname.includes(e),
     );
-    if (isMounted && !user && !isGuestRoute) {
-      navigate('/login');
+    if (isMounted && !user) {
       dispatch(rate360Api.util.resetApiState());
       dispatch(testsApi.util.resetApiState());
       dispatch(surveyApi.util.resetApiState());
       dispatch(iprApi.util.resetApiState());
+      dispatch(testsApi.util.resetApiState());
+      dispatch(surveyApi.util.resetApiState());
+      if (!isGuestRoute) {
+        navigate('/login');
+      }
     }
+
     if (isGuestRoute && user) {
       navigate('/');
     }

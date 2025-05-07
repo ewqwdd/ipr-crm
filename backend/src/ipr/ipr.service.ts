@@ -71,6 +71,12 @@ export class IprService {
                 name: true,
               },
             },
+            team: {
+              select: {
+                name: true,
+                id: true,
+              },
+            },
           },
         },
         mentor: true,
