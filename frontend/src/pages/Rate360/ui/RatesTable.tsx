@@ -18,7 +18,7 @@ export default function RatesTable({
   selected,
 }: RatesTableProps) {
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading} fullScereen>
       <div className="overflow-x-auto">
         {data?.length !== 0 ? (
           <table className="min-w-full divide-y divide-gray-300 mt-1">

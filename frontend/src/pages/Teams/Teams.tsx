@@ -24,7 +24,7 @@ export default function Teams() {
   }, [data, isAdmin, user]);
 
   return (
-    <LoadingOverlay active={isFetching}>
+    <LoadingOverlay active={isFetching} fullScereen>
       <div className="px-4 py-6 sm:px-8 sm:py-10 flex flex-col">
         <div className="flex justify-between items-center max-sm:flex-col gap-2 max-sm:items-start">
           <Heading

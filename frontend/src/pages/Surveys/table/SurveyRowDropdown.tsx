@@ -78,10 +78,10 @@ const SurveyRowDropdown: FC<SurveyRowDropdownProps> = ({
     hidden
       ? { id: 'show', label: 'Сделать доступным' }
       : { id: 'hide', label: 'Скрыть доступ' },
-    {
-      id: 'results',
-      label: 'Выгрузить результаты',
-    },
+    // {
+    //   id: 'results',
+    //   label: 'Выгрузить результаты',
+    // },
     { id: 'assign', label: 'Назначить участников' },
     { id: 'notify', label: 'Напомнить' },
     isAdmin && { id: 'delete', label: 'Удалить' },

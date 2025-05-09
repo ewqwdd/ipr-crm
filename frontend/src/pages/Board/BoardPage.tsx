@@ -18,7 +18,7 @@ export default function BoardPage() {
   useReadNotifsOnClose(notifTypes);
 
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading} fullScereen>
       <div
         className={cva('sm:px-8 py-10 flex flex-col h-full gap-4', 'boardPage')}
       >

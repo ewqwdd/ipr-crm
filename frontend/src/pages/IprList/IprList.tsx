@@ -29,7 +29,7 @@ export default function IprList() {
   });
 
   return (
-    <LoadingOverlay active={isFetching}>
+    <LoadingOverlay active={isFetching} fullScereen>
       <div className="sm:px-8 py-6 sm:py-10 flex flex-col">
         <Heading
           title="Планы развития"

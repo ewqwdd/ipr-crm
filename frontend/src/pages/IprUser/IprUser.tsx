@@ -20,7 +20,7 @@ export default function IprUser() {
   );
 
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading} fullScereen>
       <div className="sm:px-8 px-4 py-6 sm:py-10 flex flex-col gap-4">
         <div className="flex justify-between">
           <Heading

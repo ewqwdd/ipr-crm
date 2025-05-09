@@ -109,7 +109,7 @@ export default function Rate360Assesment() {
   if (!id) return null;
 
   return (
-    <LoadingOverlay active={isFetching}>
+    <LoadingOverlay active={isFetching} fullScereen>
       <div
         className={cva('flex flex-col h-full max-h-full pb-4', {
           'animate-pulse pointer-events-none':

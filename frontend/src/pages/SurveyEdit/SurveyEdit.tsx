@@ -43,7 +43,7 @@ export default function SurveyEdit() {
   }, [dispatch]);
 
   return (
-    <LoadingOverlay active={isLoading || state.isLoading}>
+    <LoadingOverlay active={isLoading || state.isLoading} fullScereen>
       {isMounted && (
         <div
           className={cva('px-8 py-10 flex flex-col h-full relative', {

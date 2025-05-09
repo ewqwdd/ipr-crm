@@ -31,7 +31,7 @@ export default function TestCreate() {
   }, []);
 
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading} fullScereen>
       <div className="px-8 py-10 flex flex-col h-full relative">
         <div className="flex justify-between items-center">
           <Heading title="Создание теста" />

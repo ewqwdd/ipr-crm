@@ -89,7 +89,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
   const onClickExport = () => exportReportPDF(ref.current!, loaderRef.current!);
 
   return (
-    <LoadingOverlay active={isLoading || teamsFetching}>
+    <LoadingOverlay active={isLoading || teamsFetching} fullScereen>
       <div className="h-full">
         <div className="pt-16 mb-5 flex items-center justify-between px-5">
           <h1 className="text-sm font-bold tracking-tight text-gray-900">

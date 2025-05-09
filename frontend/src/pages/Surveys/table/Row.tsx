@@ -1,5 +1,6 @@
 import { SoftButton } from '@/shared/ui/SoftButton';
 import {
+  ChartBarIcon,
   DocumentReportIcon,
   EyeIcon,
   EyeOffIcon,
@@ -63,17 +64,27 @@ const Row = ({
         {formatDate(endDate)}
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-        <div className="flex gap-6 ">
-          <SoftButton
-            className="rounded-full p-1"
-            onClick={() => {
-              openModal('RATE_SURVEYS', {
-                surveyId: id,
-              });
-            }}
-          >
-            <DocumentReportIcon className="h-5 w-5" />
-          </SoftButton>
+        <div className="flex gap-4 items-center justify-end">
+          <Tooltip content="Статистика" position="top">
+            <SoftButton
+              className="rounded-full p-1"
+              onClick={() => {
+                openModal('RATE_SURVEYS', {
+                  surveyId: id,
+                });
+              }}
+            >
+              <DocumentReportIcon className="h-5 w-5" />
+            </SoftButton>
+          </Tooltip>
+          <Tooltip content="Результаты" position="top">
+            <SoftButton
+              className="rounded-full p-1 mr-2"
+              to={'/surveys/results/' + id}
+            >
+              <ChartBarIcon className="h-5 w-5" />
+            </SoftButton>
+          </Tooltip>
           <SurveyRowDropdown hidden={hidden} surveyId={id} />
         </div>
       </td>

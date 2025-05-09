@@ -26,7 +26,7 @@ export default function Rate360MeList() {
   });
 
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading} fullScereen>
       <div className="min-[1440px]:px-8 py-6 sm:py-10 flex flex-col">
         <Heading
           title="Командные отчёты"

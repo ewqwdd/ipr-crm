@@ -50,7 +50,7 @@ export default function UserEdit() {
   }, [mutateError]);
 
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading} fullScereen>
       <UserForm
         loading={isFetching || mutateLoading}
         initData={data}

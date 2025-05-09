@@ -30,7 +30,7 @@ export default function AdminBoard() {
   const plan = useAppSelector((state) => state.board.plan);
 
   return (
-    <LoadingOverlay active={isLoading}>
+    <LoadingOverlay active={isLoading} fullScereen>
       <div
         className={cva(
           'sm:px-8 py-6 sm:py-10 flex flex-col h-full gap-4',

@@ -42,7 +42,7 @@ export default function TestEdit() {
   }, [dispatch]);
 
   return (
-    <LoadingOverlay active={isLoading || state.isLoading}>
+    <LoadingOverlay active={isLoading || state.isLoading} fullScereen>
       {isMounted && (
         <div
           className={cva(

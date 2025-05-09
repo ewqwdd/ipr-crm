@@ -5,17 +5,23 @@ import { cva } from '@/shared/lib/cva';
 type LoadingOverlayProps = PropsWithChildren<{
   active: boolean;
   className?: string;
+  fullScereen?: boolean;
 }>;
 
 const LoadingOverlay: FC<LoadingOverlayProps> = ({
   children,
   active,
   className,
+  fullScereen = false,
 }) => {
   // ✅ мемоизируем детей, чтобы React не триггерил ререндер без причины
   const memoizedChildren = useMemo(() => children, [children]);
 
   if (!active) return <>{memoizedChildren}</>;
+
+  const width = fullScereen
+    ? document.getElementById('desktop-sidebar')?.offsetWidth
+    : 0;
 
   return (
     <div
@@ -23,7 +29,17 @@ const LoadingOverlay: FC<LoadingOverlayProps> = ({
         'pointer-events-none max-sm:overflow-y-hidden': active,
       })}
     >
-      <div className="absolute inset-0 flex justify-center items-center bg-white rounded-md h-full z-10">
+      <div
+        className={cva(
+          'absolute flex justify-center items-center bg-white rounded-md z-10 w-full h-full',
+          {
+            'fixed right-0 top-0': fullScereen,
+          },
+        )}
+        style={{
+          width: `calc(100% - ${width ?? 0}px)`,
+        }}
+      >
         <Loading />
       </div>
       <div className="opacity-30">{memoizedChildren}</div>

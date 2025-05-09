@@ -7,7 +7,7 @@ const surveyApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Survey', 'Assigned', 'Finished'],
+  tagTypes: ['Survey', 'Assigned', 'Finished', 'Result'],
   endpoints: (build) => ({
     getSurveys: build.query<Survey[], void>({
       query: () => '/survey',
@@ -110,6 +110,10 @@ const surveyApi = createApi({
     getFinishedTestsForUser: build.query<AssignedSurvey[], void>({
       query: () => '/survey/finished',
       providesTags: ['Finished'],
+    }),
+    getResultById: build.query<AssignedSurvey, number>({
+      query: (id) => `/survey/results/${id}`,
+      providesTags: (_, __, id) => [{ type: 'Result', id }],
     }),
   }),
 });
