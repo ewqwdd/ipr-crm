@@ -22,6 +22,9 @@ const TeamSelector: FC<TeamSelectorProps> = ({ options, value, onChange }) => {
         options={options}
         value={value}
         classNamePrefix="select"
+        classNames={{
+          menu: () => '!z-20',
+        }}
       />
     </div>
   );

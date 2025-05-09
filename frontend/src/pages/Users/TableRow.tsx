@@ -3,6 +3,7 @@ import { usersApi } from '@/shared/api/usersApi';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
+import { Badge } from '@/shared/ui/Badge';
 import { DotsDropdown } from '@/shared/ui/DotsDropdown';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -84,7 +85,7 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
         <div className="text-gray-900">{person.Spec?.name}</div>
         <div className="text-gray-500">{person.username}</div>
       </td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex gap-2 flex-wrap">
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         {person.teams?.map((e, index) => (
           <span key={e.teamId}>
             {e?.team?.name}
@@ -93,9 +94,13 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
         ))}
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        <span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
-          {person.role?.name}
-        </span>
+        <div className="flex flex-wrap gap-2 max-w-52">
+          {person.specsOnTeams?.map((spec) => (
+            <Badge color="green" key={spec.spec.id}>
+              {spec.spec.name}
+            </Badge>
+          ))}
+        </div>
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 [&_span]:opacity-100">
         {edit && (

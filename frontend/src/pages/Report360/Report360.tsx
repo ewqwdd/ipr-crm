@@ -31,20 +31,25 @@ const commonHeaders = [
 const RateCell = ({
   rate,
   boundary = 3,
+  className,
 }: {
   rate?: number;
   boundary?: number;
+  className?: string;
 }) => {
-  if (!rate) return <td className="px-3 py-4 text-sm">N/D</td>;
+  if (!rate)
+    return <td className={cva('px-3 py-4 text-sm', className)}>N/D</td>;
 
   const color =
     rate > boundary
       ? 'text-green-500'
       : rate === boundary
-        ? 'text-black'
+        ? ''
         : 'text-red-500';
   return (
-    <td className={`whitespace-nowrap px-3 py-4 text-sm ${color}`}>
+    <td
+      className={cva('whitespace-nowrap px-3 py-4 text-sm', className, color)}
+    >
       {rate.toFixed(2)}
     </td>
   );
@@ -155,11 +160,12 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                                 </thead>
                                 <tbody>
                                   <tr>
-                                    <td className="w-full px-3 py-4 text-sm font-semibold text-gray-900">
+                                    <td className="w-full px-3 py-4 text-sm text-indigo-700 font-semibold">
                                       {competency?.name}
                                     </td>
                                     {evaluatorTypes.map((evaluatorType) => (
                                       <RateCell
+                                        className="text-indigo-700 font-semibold"
                                         key={evaluatorType}
                                         rate={
                                           competenciesRaiting?.[
@@ -226,46 +232,48 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                           </div>
                         );
                       })}
-                      <div
-                        className={cva(
-                          'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mt-6',
-                        )}
-                      >
-                        <table className="min-w-full divide-y divide-gray-300">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              {['Блок компетенции', ...commonHeaders].map(
-                                (header) => (
-                                  <th
-                                    key={header}
-                                    scope="col"
-                                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                  >
-                                    {header}
-                                  </th>
-                                ),
-                              )}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                {blocksCompetencies?.name}
-                              </td>
-                              {evaluatorTypes.map((evaluatorType) => (
-                                <RateCell
-                                  key={evaluatorType}
-                                  rate={
-                                    blocksRaiting?.[blocksCompetencies?.id]?.[
-                                      evaluatorType as keyof (typeof blocksRaiting)[typeof blocksCompetencies.id]
-                                    ]
-                                  }
-                                />
-                              ))}
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+                      {rate?.competencyBlocks.length > 1 && (
+                        <div
+                          className={cva(
+                            'overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg mt-6',
+                          )}
+                        >
+                          <table className="min-w-full divide-y divide-gray-300">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                {['Блок компетенции', ...commonHeaders].map(
+                                  (header) => (
+                                    <th
+                                      key={header}
+                                      scope="col"
+                                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    >
+                                      {header}
+                                    </th>
+                                  ),
+                                )}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                  {blocksCompetencies?.name}
+                                </td>
+                                {evaluatorTypes.map((evaluatorType) => (
+                                  <RateCell
+                                    key={evaluatorType}
+                                    rate={
+                                      blocksRaiting?.[blocksCompetencies?.id]?.[
+                                        evaluatorType as keyof (typeof blocksRaiting)[typeof blocksCompetencies.id]
+                                      ]
+                                    }
+                                  />
+                                ))}
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

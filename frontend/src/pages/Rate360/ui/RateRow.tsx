@@ -7,7 +7,6 @@ import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { DocumentReportIcon, DocumentTextIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router';
-import { useNavigate } from 'react-router';
 import IprButton from './IprButton';
 import { SetStateAction } from 'react';
 import { Checkbox } from '@/shared/ui/Checkbox';
@@ -49,7 +48,6 @@ export default function RateRow({
   const isLoading =
     usersFetching || teamsFetching || specsFetching || isFetching;
   const { openModal } = useModal();
-  const navigate = useNavigate();
 
   let percent =
     ratesCount / Math.max((evaluatorsCount + 1) * (indicators?.length ?? 1), 1);
@@ -128,14 +126,11 @@ export default function RateRow({
         </SoftButton>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
-        <SoftButton
-          className="rounded-full p-1"
-          onClick={() =>
-            navigate(`/360rate/report/${rate.id}`, { state: { rate } })
-          }
-        >
-          <DocumentReportIcon className="h-5 w-5" />
-        </SoftButton>
+        <Link to={`/360rate/report/${rate.id}`}>
+          <SoftButton className="rounded-full p-1">
+            <DocumentReportIcon className="h-5 w-5" />
+          </SoftButton>
+        </Link>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
         {rate.startDate?.slice(0, 10)}

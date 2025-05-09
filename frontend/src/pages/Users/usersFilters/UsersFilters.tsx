@@ -5,9 +5,9 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, memo, useCallback, useMemo, useState } from 'react';
 import { MultiValue } from 'react-select';
 import { getAllFilterOptions } from './helpers';
-import StaticSelectFilter from '@/shared/ui/StaticSelectFilter/StaticSelectFilter';
 import SpecSelector from './SpecSelector';
 import { Filters, initialFilters } from './constants';
+import { UsersSelect } from '@/shared/ui/UsersSelect';
 
 interface UsersFiltersProps {
   data?: User[];
@@ -22,8 +22,8 @@ const UsersFilters: FC<UsersFiltersProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { teamsOptions, specsOptions, usersOptions } = useMemo(() => {
-    if (!data) return { teamsOptions: [], specsOptions: [], usersOptions: [] };
+  const { teamsOptions, specsOptions } = useMemo(() => {
+    if (!data) return { teamsOptions: [], specsOptions: [] };
     return getAllFilterOptions(data);
   }, [data]);
 
@@ -33,8 +33,8 @@ const UsersFilters: FC<UsersFiltersProps> = ({
   );
 
   const onChangeUser = useCallback(
-    (value: string | number) => {
-      updateFilters('userId', value as number);
+    (value?: number) => {
+      updateFilters('userId', value ?? 'ALL');
     },
     [updateFilters],
   );
@@ -82,12 +82,16 @@ const UsersFilters: FC<UsersFiltersProps> = ({
             value={filters.teams}
             onChange={onChangeTeams}
           />
-          <StaticSelectFilter
-            label="ФИО"
-            options={usersOptions}
-            onChange={onChangeUser}
-            value={filters.userId}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              ФИО
+            </label>
+            <UsersSelect
+              setValue={onChangeUser}
+              users={data ?? []}
+              value={filters.userId === 'ALL' ? undefined : filters.userId}
+            />
+          </div>
           <SpecSelector
             options={specsOptions}
             value={filters.specs}

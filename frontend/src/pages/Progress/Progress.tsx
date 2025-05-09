@@ -74,8 +74,6 @@ export default memo(function Progress() {
     setSearchParams(`?tab=${tab}`);
   };
 
-  console.log(activeTab);
-
   return (
     <div className="flex flex-col gap-4">
       <Tabs

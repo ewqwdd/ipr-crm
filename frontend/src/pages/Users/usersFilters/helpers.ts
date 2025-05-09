@@ -22,27 +22,21 @@ export const getSpecOptions = (users: User[]): Option[] => {
   const seen = new Set<number>();
   const options: Option[] = [];
 
-  users.forEach(({ Spec }) => {
-    if (Spec && !seen.has(Spec.id)) {
-      seen.add(Spec.id);
-      options.push({ value: Spec.id, label: Spec.name });
-    }
-  });
+  users.forEach((user) =>
+    user.specsOnTeams?.forEach((spec) => {
+      if (!seen.has(spec.spec.id)) {
+        seen.add(spec.spec.id);
+        options.push({ value: spec.spec.id, label: spec.spec.name });
+      }
+    }),
+  );
 
   return options;
-};
-
-export const getUserOptions = (users: User[]): Option[] => {
-  return users.map((user) => ({
-    value: user.id,
-    label: `${user.firstName} ${user.lastName}`,
-  }));
 };
 
 export const getAllFilterOptions = (users: User[]) => ({
   teamsOptions: getTeamOptions(users),
   specsOptions: getSpecOptions(users),
-  usersOptions: getUserOptions(users),
 });
 
 export const filterByTeam = (user: User, teams: Filters['teams']) => {
@@ -59,7 +53,9 @@ export const filterByUserId = (user: User, userId: Filters['userId']) => {
 
 export const filterBySpec = (user: User, specs: Filters['specs']) => {
   if (specs.length === 0) return true;
-  return specs.some((spec) => user.Spec && user.Spec.id === spec.value);
+  return specs.some((spec) =>
+    user.specsOnTeams?.find((s) => s.spec.id === spec.value),
+  );
 };
 
 export const applyUsersFilters = (user: User, filters: Filters): boolean => {

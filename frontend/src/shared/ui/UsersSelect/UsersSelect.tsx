@@ -6,7 +6,7 @@ interface UserMultiSelectProps {
   value?: number;
   loading?: boolean;
   disabledUsers?: number[];
-  setValue: (value: number) => void;
+  setValue: (value?: number) => void;
 }
 
 export default function UsersSelect({
@@ -23,9 +23,15 @@ export default function UsersSelect({
   return (
     <SearchSelect
       loading={loading}
-      value={value}
-      options={options}
-      onChange={({ id }) => setValue(id)}
+      value={value ?? -1}
+      options={[{ id: -1, name: 'Все' }, ...options]}
+      onChange={({ id }) => {
+        if (id === -1) {
+          setValue(undefined);
+          return;
+        }
+        setValue(id);
+      }}
     />
   );
 }

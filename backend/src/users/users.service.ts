@@ -113,6 +113,16 @@ export class UsersService {
         teamCurator: {
           select: { id: true, name: true },
         },
+        specsOnTeams: {
+          select: {
+            spec: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        }
       },
       omit: { authCode: true, roleId: true, specId: true },
       orderBy: { createdAt: 'desc' },

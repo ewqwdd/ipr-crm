@@ -14,27 +14,29 @@ import { DateObject } from 'react-multi-date-picker';
 import { PingCircle } from '@/shared/ui/PingCircle';
 import { Filters } from './types';
 import { StaticSelectFilter } from '@/shared/ui/StaticSelectFilter';
+import { UsersSelect } from '@/shared/ui/UsersSelect';
+import { User } from '@/entities/user';
 
 type OnChange = (value: string | number) => void;
 
 interface RatesFiltersProps {
   teamsOptions: Option[];
   specsOptions: Option[];
-  usersOptions: Option[];
+  users: User[];
   filters: Filters;
   resetFilters: () => void;
   onChangeSkillType: OnChange;
   onChangeProgress: OnChange;
   onChangeTeams: (teams: MultiValue<Option>) => void;
   onChangeSpec: OnChange;
-  onChangeUser: OnChange;
+  onChangeUser: (value?: number) => void;
   onChangePeriod: (value?: DateObject | DateObject[]) => void;
 }
 
 const RatesFilters: FC<RatesFiltersProps> = ({
   teamsOptions,
   specsOptions,
-  usersOptions,
+  users,
   filters,
   resetFilters,
   onChangeSkillType,
@@ -75,12 +77,16 @@ const RatesFilters: FC<RatesFiltersProps> = ({
             value={filters.teams}
             onChange={onChangeTeams}
           />
-          <StaticSelectFilter
-            label="ФИО"
-            options={usersOptions}
-            onChange={onChangeUser}
-            value={filters.userId}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              ФИО
+            </label>
+            <UsersSelect
+              users={users}
+              value={filters.userId === 'ALL' ? undefined : filters.userId}
+              setValue={onChangeUser}
+            />
+          </div>
           <StaticSelectFilter
             label="Специализации"
             options={specsOptions}

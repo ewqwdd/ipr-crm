@@ -38,6 +38,7 @@ export interface User {
   teamCurator?: { id: number; name: string }[];
   notifications: Notification[];
   access?: boolean;
+  specsOnTeams?: { spec: { id: number; name: string } }[];
 }
 
 export interface UserStoreSchema {

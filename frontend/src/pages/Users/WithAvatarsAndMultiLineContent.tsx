@@ -89,7 +89,7 @@ export default function WithAvatarsAndMultiLineContent() {
                     scope="col"
                     className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                   >
-                    Роль
+                    Специализации
                   </th>
                   <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                     <span className="sr-only">Редактировать</span>

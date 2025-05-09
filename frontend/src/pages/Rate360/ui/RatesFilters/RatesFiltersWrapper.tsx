@@ -59,7 +59,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
   );
 
   const onChangeUser = useCallback(
-    (value: string | number) => handleFilterChange('userId', value as number),
+    (value?: number) => handleFilterChange('userId', value ?? 'ALL'),
     [handleFilterChange],
   );
 
@@ -74,7 +74,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
     [handleFilterChange],
   );
 
-  const { teamsOptions, specsOptions, usersOptions } = useMemo(
+  const { teamsOptions, specsOptions } = useMemo(
     () => ({
       teamsOptions: (isAdmin
         ? teams?.list
@@ -87,12 +87,8 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
         value: spec.id,
         label: spec.name,
       })) as Option[],
-      usersOptions: (users?.users ?? []).map((user) => ({
-        value: user.id,
-        label: user.username,
-      })) as Option[],
     }),
-    [users, teams, teamAccess, isAdmin, specs],
+    [teams, teamAccess, isAdmin, specs],
   );
 
   return (
@@ -100,7 +96,6 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
       <RatesFilters
         teamsOptions={teamsOptions}
         specsOptions={specsOptions}
-        usersOptions={usersOptions}
         filters={filters}
         resetFilters={resetFilters}
         onChangeSkillType={onChangeSkillType}
@@ -109,6 +104,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
         onChangeSpec={onChangeSpec}
         onChangeUser={onChangeUser}
         onChangePeriod={onChangePeriod}
+        users={users?.users ?? []}
       />
     </div>
   );
