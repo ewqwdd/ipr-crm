@@ -606,8 +606,8 @@ export class SurveyService {
       }
       const uploaded = await this.s3Service.uploadImageBufferToS3(
         file.buffer,
-        Date.now() + '_' + file.originalname,
-        'SURVEY_ANSWER',
+        file.originalname,
+        'SURVEY_ANSWER/' + answer.questionId,
       );
       dataToSet.fileAnswer = uploaded;
     } else if (question.type === 'SINGLE' || question.type === 'MULTIPLE') {
@@ -822,4 +822,90 @@ export class SurveyService {
       });
     return finishedSurveys;
   }
+
+  async getResultSurvey(id: number, sessionInfo: GetSessionInfoDto) {
+    await this.checkAccess(sessionInfo);
+
+    const survey = await this.prismaService.survey.findFirst({
+      where: {
+        id,
+        archived: false,
+      },
+      include: {
+        usersAssigned: {
+          select: {
+            finished: true,
+            endDate: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+              }
+            }
+          }
+        },
+        surveyQuestions: {
+          where: {
+            archived: false,
+          },
+          orderBy: {
+            order: 'asc',
+          },
+          include: {
+            options: {
+              where: {
+                archived: false,
+              },
+            },
+            answeredQuestions: {
+              include: {
+                user: {
+                  select: {
+                    username: true,
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                  }
+                },
+                options: {
+                  select: {
+                    optionId: true,
+                  }
+                }
+              }
+            }
+          },
+        },
+      },
+    });
+
+    if (!survey) throw new NotFoundException('Опрос не найден');
+    if (survey.anonymous) {
+      survey.surveyQuestions.forEach((question) => {
+        question.answeredQuestions.forEach((answer) => {
+          answer.user = {
+            id: undefined,
+            username: undefined,
+            firstName: undefined,
+            lastName: undefined,
+          };
+        });
+      });
+      survey.usersAssigned.forEach((user) => {
+        user.user = {
+          id: undefined,
+          username: undefined,
+          firstName: undefined,
+          lastName: undefined,
+        };
+      }
+    );
+    }
+
+    return survey;
+
+  }
+
 }

@@ -207,4 +207,14 @@ export class SurveyController {
   async getFinishedTests(@SessionInfo() sessionInfo: GetSessionInfoDto) {
     return this.surveyService.getFinishedSurveys(sessionInfo);
   }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get('/:id/result')
+  async getSurveyResults(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.surveyService.getResultSurvey(Number(id), sessionInfo);
+  }
 }

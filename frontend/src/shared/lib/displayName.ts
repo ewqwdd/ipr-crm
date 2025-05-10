@@ -15,5 +15,5 @@ export const displayName = (user: UserWithName) => {
   } else if (user.username) {
     return user.username;
   }
-  return user.email;
+  return user.email ?? 'Неизвестно';
 };

@@ -60,6 +60,9 @@ const IprMeList = React.lazy(() => import('@/pages/IprMeList/IprMeList'));
 const Rate360Assesment = React.lazy(
   () => import('@/pages/Rate360Assesment/Rate360Assesment'),
 );
+const SurvyeResult = React.lazy(
+  () => import('@/pages/SurveyResult/SurveyResult'),
+);
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -162,6 +165,7 @@ export const routerItems: RouterItemType[] = [
     element: <IprMeList />,
   },
   { path: '/360rate/me', element: <Rate360MeList /> },
+  { path: '/surveys/results/:id', element: <SurvyeResult /> },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];

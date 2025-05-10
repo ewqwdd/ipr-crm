@@ -6,9 +6,9 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/outline';
 import { FC, memo, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Calendar } from 'react-multi-date-picker';
-import { formatDate } from '../helpers';
 import { iprApi } from '@/shared/api/iprApi';
 import { useAppDispatch } from '@/app';
+import { formatDate } from '@/shared/lib/formatDate';
 
 type Status = Task['status'];
 
@@ -111,7 +111,9 @@ const Deadline: FC<{
 
   if (status === 'COMPLETED') {
     return (
-      <div className="text-sm text-gray-500">{formatDate(initialDeadline)}</div>
+      <div className="text-sm text-gray-500">
+        {initialDeadline && formatDate(initialDeadline)}
+      </div>
     );
   }
 

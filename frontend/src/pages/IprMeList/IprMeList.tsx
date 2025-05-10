@@ -1,5 +1,5 @@
-import { formatDate } from '@/entities/ipr/ui/partials/tasks/helpers';
 import { iprApi } from '@/shared/api/iprApi';
+import { formatDate } from '@/shared/lib/formatDate';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';

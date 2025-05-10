@@ -1,5 +1,5 @@
-import { formatDate } from '@/entities/ipr/ui/partials/tasks/helpers';
 import { rate360Api } from '@/shared/api/rate360Api';
+import { formatDate } from '@/shared/lib/formatDate';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
@@ -106,7 +106,11 @@ export default function Rate360MeList() {
                     className: 'text-center flex items-center gap-2',
                   },
                   {
-                    render: (item) => <span>{formatDate(item.startDate)}</span>,
+                    render: (item) => (
+                      <span>
+                        {item.startDate && formatDate(item.startDate)}
+                      </span>
+                    ),
                   },
                   {
                     render: (item) =>

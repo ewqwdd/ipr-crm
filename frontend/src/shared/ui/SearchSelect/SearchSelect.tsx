@@ -15,6 +15,7 @@ interface SearchSelectProps {
   options: SelectValue[];
   loading?: boolean;
   label?: string;
+  className?: string;
 }
 
 export default function SearchSelect({
@@ -23,6 +24,7 @@ export default function SearchSelect({
   options,
   loading,
   label,
+  className,
 }: SearchSelectProps) {
   const [query, setQuery] = useState('');
 
@@ -42,7 +44,7 @@ export default function SearchSelect({
       as="div"
       value={current}
       onChange={onChange}
-      className={cva({ 'animate-pulse': !!loading })}
+      className={cva(className, { 'animate-pulse': !!loading })}
     >
       <Combobox.Label className="block text-sm font-medium text-gray-700">
         {label}

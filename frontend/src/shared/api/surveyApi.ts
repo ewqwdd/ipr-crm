@@ -111,8 +111,8 @@ const surveyApi = createApi({
       query: () => '/survey/finished',
       providesTags: ['Finished'],
     }),
-    getResultById: build.query<AssignedSurvey, number>({
-      query: (id) => `/survey/results/${id}`,
+    getResultById: build.query<Survey, number>({
+      query: (id) => `/survey/${id}/result`,
       providesTags: (_, __, id) => [{ type: 'Result', id }],
     }),
   }),
