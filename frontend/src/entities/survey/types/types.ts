@@ -53,7 +53,7 @@ interface CreateSurveyOption extends Omit<SurveyOption, 'id'> {
 }
 
 export interface CreateSurveyQuestion
-  extends Omit<SurveyQuestion, 'id' | 'options'> {
+  extends Omit<SurveyQuestion, 'id' | 'options' | 'answeredQuestions'> {
   id?: number;
   error?: string;
   options?: CreateSurveyOption[];
@@ -137,7 +137,7 @@ export interface AssignedSurvey {
   endDate: string | null; // или `Date | null`
   finished: boolean;
   survey: Survey;
-  answeredQUestions: AssignedAnsweredQuestion[];
+  answeredQUestions?: AssignedAnsweredQuestion[];
   user: {
     username: string;
     id: number;

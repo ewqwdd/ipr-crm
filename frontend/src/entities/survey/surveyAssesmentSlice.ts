@@ -30,7 +30,7 @@ const surveyAssesmentSlice = createSlice({
     },
     initAnswers(state, action: PayloadAction<AssignedSurvey>) {
       const { survey, answeredQUestions } = action.payload;
-      state.answers = answeredQUestions.reduce(
+      state.answers = answeredQUestions?.reduce(
         (acc, question) => {
           const questionIndex = survey.surveyQuestions.findIndex(
             (q) => q.id === question.surveyQuestionId,
@@ -51,7 +51,7 @@ const surveyAssesmentSlice = createSlice({
           return acc;
         },
         {} as Record<number, StoreAnswer>,
-      );
+      ) ?? {};
     },
     setError(state, action: PayloadAction<{ index: number; error?: string }>) {
       if (action.payload.error === undefined) {
