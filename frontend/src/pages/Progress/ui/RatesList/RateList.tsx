@@ -4,18 +4,26 @@ import { universalApi } from '@/shared/api/universalApi';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import RateItem from '../RateItem/RateItem';
+import { useAppSelector } from '@/app';
 
 interface RateListProps {
   data?: Rate[];
   isLoading: boolean;
   heading?: string;
+  includeSelfTeam?: boolean;
 }
 
-export default function RateList({ isLoading, data, heading }: RateListProps) {
+export default function RateList({
+  isLoading,
+  data,
+  heading,
+  includeSelfTeam,
+}: RateListProps) {
   const { data: teamData, isLoading: teamsLoading } =
     teamsApi.useGetTeamsQuery();
   const { data: specsData, isLoading: specsLoading } =
     universalApi.useGetSpecsQuery();
+  const user = useAppSelector((state) => state.user.user);
 
   const filtered =
     data?.filter(
@@ -25,9 +33,22 @@ export default function RateList({ isLoading, data, heading }: RateListProps) {
         ).length > 0,
     ) ?? [];
   const teamIds = Array.from(new Set(filtered?.map((rate) => rate.teamId)));
-  const teams = teamData?.list.filter((team) => teamIds.includes(team.id));
+  let teams = teamData?.list.filter((team) => teamIds.includes(team.id));
 
   const noTeam = filtered?.filter((rate) => !rate.teamId);
+
+  const selfTeam = data?.filter(
+    (rate) =>
+      user?.teams?.find((team) => team.teamId === rate.teamId) ||
+      user?.teamCurator?.find((t) => rate.teamId === t.id),
+  );
+  if (includeSelfTeam) {
+    teams = teams?.filter(
+      (team) =>
+        !user?.teams?.find((t) => team.id === t.teamId) &&
+        !user?.teamCurator?.find((t) => team.id === t.id),
+    );
+  }
 
   return (
     <div
@@ -36,6 +57,21 @@ export default function RateList({ isLoading, data, heading }: RateListProps) {
       })}
     >
       <Heading title={heading} />
+      {includeSelfTeam && (
+        <>
+          <span className="text-gray-700 font-semibold text-lg mt-4">
+            Моя команда
+          </span>
+          <div className="flex flex-col bg-gray-50 py-2">
+            {selfTeam?.map((rate) => (
+              <RateItem specs={specsData ?? []} key={rate.id} rate={rate} />
+            ))}
+          </div>
+          <span className="text-gray-700 font-semibold text-lg mt-8">
+            По другим пользователям
+          </span>
+        </>
+      )}
       {teams?.map((team) => (
         <div key={team.id} className="flex flex-col gap-2">
           <span className="text-violet-600 font-semibold text-lg">

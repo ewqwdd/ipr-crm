@@ -5,12 +5,14 @@ import { DarkSidebar } from '@/widgets/DarkSidebar';
 import Loading from '@/shared/ui/Loading';
 import { useCheckNotifications } from '@/shared/hooks/useCheckNotifications';
 import { lazy, Suspense } from 'react';
+import { useLoadRates } from '@/shared/hooks/usLoadRates';
 
 const ModalWrapper = lazy(() => import('@/entities/modals/index'));
 
 function App() {
   const { isMounted } = useAuthControl();
   useCheckNotifications();
+  useLoadRates();
 
   if (!isMounted) {
     return (

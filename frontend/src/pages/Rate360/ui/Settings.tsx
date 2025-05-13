@@ -6,6 +6,7 @@ import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import {
+  ArchiveIcon,
   BellIcon,
   DocumentAddIcon,
   DocumentRemoveIcon,
@@ -26,6 +27,9 @@ export default memo(function Settings({
 }: SettingsProps) {
   const { openModal } = useModal();
   const [removeRates, removeRatesProps] = rate360Api.useDeleteRatesMutation();
+  const [archiveRates, archiveRatesProps] =
+    rate360Api.useArchiveRatesMutation();
+
   const [toggleReportVisibility, toggleReportVisibilityState] =
     rate360Api.useToggleReportVisibilityMutation();
   const role = useAppSelector((state) => state.user.user?.role.name);
@@ -46,6 +50,17 @@ export default memo(function Settings({
     });
   };
 
+  const onArchive = () => {
+    openModal('CONFIRM', {
+      submitText: 'Архивировать',
+      title: 'Архивировать выбранные Оценки?',
+      onSubmit: async () => {
+        setSelected([]);
+        return await archiveRates({ ids: selected });
+      },
+    });
+  };
+
   const onReportVisibilityChange = (visible: boolean) => {
     const word = visible ? 'Показать' : 'Скрыть';
     openModal('CONFIRM', {
@@ -61,7 +76,7 @@ export default memo(function Settings({
   const notifyRates = () => {
     openModal('CONFIRM', {
       submitText: 'Напомнить',
-      title: `Напомнить о завершении оценки ${selected?.length} оценкам?`,
+      title: 'Напомнить о прохождении  оценки',
       onSubmit: async () => {
         setSelected([]);
         return await $api.post('/rate360/notify', { ids: selected });
@@ -69,19 +84,25 @@ export default memo(function Settings({
     });
   };
 
+  const isAllFinished = selected?.every(
+    (rate) => data?.find((r) => r.id === rate)?.finished,
+  );
+
   return (
     <div
       className={cva(
         'flex gap-3 p-3 pb-5 fixed bottom-0 right-0 w-full bg-white shadow-2xl items-center',
         {
           'animate-pulse pointer-events-none':
-            removeRatesProps.isLoading || toggleReportVisibilityState.isLoading,
+            removeRatesProps.isLoading ||
+            toggleReportVisibilityState.isLoading ||
+            archiveRatesProps.isLoading,
         },
       )}
     >
-      <span className="font-medium text-gray-800 max-sm:text-sm text-nowrap">
-        Выбрано {selected.length}
-      </span>
+      <p className="font-medium text-gray-800 max-sm:text-sm text-nowrap">
+        <span className="max-sm:hidden">Выбрано</span> {selected.length}
+      </p>
 
       <button
         className="text-indigo-500 hover:text-indigo-700 max-sm:text-sm"
@@ -90,8 +111,17 @@ export default memo(function Settings({
         Сбросить
       </button>
 
+      {isAllFinished && (
+        <SoftButton className="ml-auto max-sm:p-2" onClick={onArchive}>
+          <ArchiveIcon className="h-5 w-5" />
+          <span className="max-sm:hidden">Архивировать</span>
+        </SoftButton>
+      )}
+
       <SoftButton
-        className="ml-auto max-sm:p-2"
+        className={cva('max-sm:p-2', {
+          'ml-auto': !isAllFinished,
+        })}
         success
         onClick={() => onReportVisibilityChange(true)}
       >

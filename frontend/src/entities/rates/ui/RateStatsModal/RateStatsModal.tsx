@@ -67,7 +67,6 @@ export default function RateStatsModal({
               <span className="text-gray-800">{spec?.name}</span>
             </p>
           </div>
-          {/* CHANGE TO VALID STATS LATER */}
           <span className="text-xl text-gray-800">
             {Math.round(percent * 100)}%
           </span>

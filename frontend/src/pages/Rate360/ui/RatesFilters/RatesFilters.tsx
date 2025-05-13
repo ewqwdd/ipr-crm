@@ -16,6 +16,7 @@ import { Filters } from './types';
 import { StaticSelectFilter } from '@/shared/ui/StaticSelectFilter';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
 import { User } from '@/entities/user';
+import { Checkbox } from '@/shared/ui/Checkbox';
 
 type OnChange = (value: string | number) => void;
 
@@ -31,6 +32,7 @@ interface RatesFiltersProps {
   onChangeSpec: OnChange;
   onChangeUser: (value?: number) => void;
   onChangePeriod: (value?: DateObject | DateObject[]) => void;
+  onChangeHidden: (value: boolean) => void;
 }
 
 const RatesFilters: FC<RatesFiltersProps> = ({
@@ -45,6 +47,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
   onChangeSpec,
   onChangeUser,
   onChangePeriod,
+  onChangeHidden,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -106,6 +109,13 @@ const RatesFilters: FC<RatesFiltersProps> = ({
             value={filters.status}
           />
           <PeriodSelector value={filters.period} onChange={onChangePeriod} />
+          <div className="flex flex-col">
+            <Checkbox
+              title={'Архивные'}
+              checked={!!filters.hidden}
+              onChange={() => onChangeHidden(!filters.hidden)}
+            />
+          </div>
         </div>
       )}
     </div>

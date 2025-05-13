@@ -175,7 +175,7 @@ export default function ConfirmEvaluatorsModal({
             <span className="text-gray-800 font-medium">{rate.team?.name}</span>
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-4  sm:gap-x-7">
           <ConfirmTitle
             blocked={curatorBlocked}
             title="Руководители"

@@ -63,6 +63,7 @@ model Rate360 {
   userComment      String?
   curatorComment   String?
   finished         Boolean     @default(false)
+  hidden           Boolean     @default(false)
   rateType         Rate360Type @default(Rate360)
   showReportToUser Boolean     @default(false)
 

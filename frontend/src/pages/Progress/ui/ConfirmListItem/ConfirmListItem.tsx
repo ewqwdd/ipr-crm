@@ -4,6 +4,7 @@ import { Spec } from '@/entities/user';
 import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { Link } from 'react-router';
+import LastRate from '../LastRate/LastRate';
 
 interface ConfirmListItemProps {
   rate: Rate;
@@ -38,17 +39,22 @@ export default function ConfirmListItem({
     );
   }
 
+  const lastRate = rate.user?.rates360?.[0];
+
   return (
     <div className="flex items-center justify-between p-1.5 sm:p-3  rounded-sm border-t border-gray-300 first:border-transparent flex-wrap gap-y-3 gap-[1%]">
       <span className="text-base font-medium text-gray-800 flex-nowrap sm:basis-[19%] basis-[32%]">
         {spec?.name}
       </span>
-      <Link
-        to={`/users/${rate?.userId}`}
-        className="text-base font-medium text-violet-600 flex-nowrap sm:basis-[19%] basis-[32%] max-sm:text-center"
-      >
-        {rate?.user.username}
-      </Link>
+      <div className="sm:basis-[19%] basis-[32%] max-sm:justify-center flex gap-2 items-center">
+        <Link
+          to={`/users/${rate?.userId}`}
+          className="text-base font-medium text-violet-600 flex-nowrap max-sm:text-sm"
+        >
+          {rate?.user.username}
+        </Link>
+        {lastRate && <LastRate lastRate={lastRate} />}
+      </div>
       <span className="sm:text-base text-sm text-gray-500 flex-nowrap sm:basis-[19%] basis-[32%] max-sm:text-right">
         {rateTypeNames[rate.type]}
       </span>

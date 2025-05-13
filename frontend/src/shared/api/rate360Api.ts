@@ -20,6 +20,7 @@ interface RateFiltersDto {
   teams?: number[];
   startDate?: string;
   endDate?: string;
+  hidden?: boolean;
 }
 
 const rate360Api = createApi({
@@ -199,6 +200,14 @@ const rate360Api = createApi({
         method: 'POST',
       }),
       invalidatesTags: ['Rate360', 'Assigned', 'Self', 'UserRates', 'Report'],
+    }),
+    archiveRates: build.mutation<void, { ids: number[] }>({
+      query: ({ ids }) => ({
+        url: '/rate360/archive-rates',
+        method: 'POST',
+        body: { ids },
+      }),
+      invalidatesTags: ['Rate360'],
     }),
   }),
 });

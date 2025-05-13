@@ -10,6 +10,7 @@ import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { cva } from '@/shared/lib/cva';
 import Tooltip from '@/shared/ui/Tooltip';
 import { useMinMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { ExclamationCircleIcon } from '@heroicons/react/outline';
 
 interface QuestionProps {
   indicator: Indicator;
@@ -17,6 +18,7 @@ interface QuestionProps {
   onChange: (rate?: number, comment?: string) => void;
   current: { comment?: string; rate?: number };
   skillType: SkillType;
+  error?: boolean;
 }
 
 export default function Question({
@@ -25,6 +27,7 @@ export default function Question({
   onChange,
   current,
   skillType,
+  error,
 }: QuestionProps) {
   const { rate, comment } = current;
 
@@ -95,10 +98,15 @@ export default function Question({
 
   return (
     <div className="flex gap-2 flex-col">
-      <div className="flex gap-2 sm:items-center max-sm:flex-col">
-        <p className="text-gray-800 font-medium flex-1">
+      <div
+        className={cva(
+          'flex gap-2 sm:items-center max-sm:flex-col text-gray-800',
+        )}
+      >
+        <p className="font-medium flex-1">
           {index + 1}. {indicator.name}
         </p>
+        {error && <ExclamationCircleIcon className="size-6 text-red-500" />}
       </div>
 
       <div

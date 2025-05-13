@@ -119,10 +119,10 @@ export class UsersService {
               select: {
                 id: true,
                 name: true,
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
       omit: { authCode: true, roleId: true, specId: true },
       orderBy: { createdAt: 'desc' },

@@ -201,7 +201,6 @@ export class Rate360Controller {
     @Body() data: ConfirmRateDto,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    console.log(data);
     return await this.rate360Service.confirmByUser(data, sessionInfo.id);
   }
 
@@ -254,5 +253,14 @@ export class Rate360Controller {
     @Body() data: AddEvaluatorsDto,
   ) {
     return await this.rate360Service.setEvaluators(id, data);
+  }
+
+  @Post('/archive-rates')
+  @UseGuards(AuthGuard)
+  async archiveRate(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Body() data: DeleteRatesDto,
+  ) {
+    return await this.rate360Service.archiveRate(data.ids, sessionInfo);
   }
 }

@@ -84,7 +84,7 @@ export default function Rate360MeList() {
                             to="/progress?tab=confirm-list"
                             className="text-violet-500 font-medium"
                           >
-                            Уствердить список
+                            Утвердить список
                           </Link>
                         )}
                       </div>

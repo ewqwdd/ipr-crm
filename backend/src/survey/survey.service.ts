@@ -842,9 +842,9 @@ export class SurveyService {
                 username: true,
                 firstName: true,
                 lastName: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         surveyQuestions: {
           where: {
@@ -867,15 +867,15 @@ export class SurveyService {
                     id: true,
                     firstName: true,
                     lastName: true,
-                  }
+                  },
                 },
                 options: {
                   select: {
                     optionId: true,
-                  }
-                }
-              }
-            }
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -900,12 +900,9 @@ export class SurveyService {
           firstName: undefined,
           lastName: undefined,
         };
-      }
-    );
+      });
     }
 
     return survey;
-
   }
-
 }

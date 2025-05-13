@@ -4,7 +4,9 @@ import { memo } from 'react';
 
 interface SelectAllProps {
   selected: number[];
-  setSelected: React.Dispatch<React.SetStateAction<number[]>>;
+  setSelected:
+    | React.Dispatch<React.SetStateAction<number[]>>
+    | ((ids: number[]) => void);
   data: { id: number }[];
 }
 

@@ -50,7 +50,7 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
       loading={loading}
     >
       <div className="flex flex-col">
-        <div className="text-sm text-gray-500 mb-4">Тест: {testName}</div>
+        <div className="text-sm text-gray-500 mb-4">Опрос: {testName}</div>
         <div className="flex flex-col divide-y divide-gray-200">
           {users
             ?.slice((page - 1) * LIMIT, LIMIT * page)
@@ -81,7 +81,7 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
         )}
         {users?.length === 0 && (
           <div className="text-gray-500 text-sm text-center py-4">
-            Нет завершенных тестов
+            Нет завершенных опросов
           </div>
         )}
       </div>

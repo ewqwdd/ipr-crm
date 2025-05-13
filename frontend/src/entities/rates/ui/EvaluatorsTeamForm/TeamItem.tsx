@@ -84,7 +84,7 @@ export default function TeamItem({
           <span className="text-sm text-gray-800">{spec?.name}</span>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-4 lg:gap-6">
           <EvaluatorsItem
             {...evaluatorItemProps}
             type="CURATOR"

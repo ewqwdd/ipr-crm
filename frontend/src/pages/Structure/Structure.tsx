@@ -46,7 +46,7 @@ export default function Structure() {
           <div className="flex justify-between items-center">
             <Heading
               title="Организационная структура"
-              description="Струкрутра подразделений компании"
+              description="Структура подразделений компании"
             />
             <PrimaryButton className="self-start" onClick={openCreateModal}>
               Добавить

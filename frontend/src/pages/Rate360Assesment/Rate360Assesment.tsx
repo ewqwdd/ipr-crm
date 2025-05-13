@@ -1,5 +1,5 @@
 import { rate360Api } from '@/shared/api/rate360Api';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   useLocation,
@@ -21,12 +21,14 @@ import { UserRateHeader } from '@/widgets/UserRateHeader';
 export default function Rate360Assesment() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(0);
+  const [loading, setLoading] = useState<number>();
   const { data, isFetching, isError } = rate360Api.useFindForUserQuery(
     parseInt(id ?? ''),
   );
   const userId = useAppSelector((state) => state.user.user!.id);
   const dispatch = useAppDispatch();
+
+  const loadingRef = useRef<number>();
 
   const { state } = useLocation();
 
@@ -39,6 +41,7 @@ export default function Rate360Assesment() {
   const [comments, setComments] = useState<Record<string, string | undefined>>(
     {},
   );
+  const [notAnswered, setNotAnswered] = useState<number[]>([]);
 
   const [urlSearchParams] = useSearchParams();
 
@@ -78,7 +81,15 @@ export default function Rate360Assesment() {
 
     const isCompleted = (userRates?.length ?? 0) >= indicators.length;
 
-    if (!isCompleted) return toast.error('Ответьте на все вопросы');
+    if (!isCompleted) {
+      // находим все вопросы, которые не были оценены
+      const notAnswered = Object.values(assessment)
+        .flatMap((a) => Object.values(a).flatMap((b) => Object.entries(b)))
+        .filter(([, v]) => v.rate === undefined)
+        .map(([k]) => +k);
+      setNotAnswered(notAnswered);
+      return toast.error('Ответьте на все вопросы');
+    }
     if (!data) return;
     if (data?.userId === userId) {
       mutateApproveSelf({ rateId: data.id });
@@ -106,6 +117,10 @@ export default function Rate360Assesment() {
     };
   }, [id]);
 
+  useEffect(() => {
+    loadingRef.current = loading;
+  }, [loading]);
+
   if (!id) return null;
 
   return (
@@ -130,13 +145,16 @@ export default function Rate360Assesment() {
             block={currentBlock}
             setLoading={setLoading}
             skillType={data.type}
+            notAnswered={notAnswered}
+            setNotAnswered={setNotAnswered}
+            loading={loadingRef}
           />
         )}
         <div className="flex justify-end px-6 pt-2">
           {/* <Link to={'/progress'}>
             <SecondaryButton>Назад</SecondaryButton>
           </Link> */}
-          {loading > 0 ? (
+          {(loading ?? 0) > 0 ? (
             <Tooltip content="Подождите...">
               <PrimaryButton disabled={true}>Сохранить</PrimaryButton>
             </Tooltip>

@@ -37,6 +37,7 @@ export default function Rate360() {
         : undefined,
     startDate: filters.period?.[0]?.toDate()?.toISOString(),
     endDate: filters.period?.[1]?.toDate()?.toISOString(),
+    hidden: !!filters.hidden,
   });
 
   const handleClose = () => {
@@ -71,7 +72,7 @@ export default function Rate360() {
           isLoading={isFetching}
           setSelected={setSelected}
         />
-        {data?.total && data?.total > LIMIT && (
+        {!!data?.total && data?.total > LIMIT && (
           <Pagination
             limit={LIMIT}
             page={page}
@@ -79,7 +80,11 @@ export default function Rate360() {
             setPage={setPage}
           />
         )}
-        <Settings selected={selected} setSelected={setSelected} />
+        <Settings
+          selected={selected}
+          setSelected={setSelected}
+          data={data?.data}
+        />
       </div>
       <Modal
         open={open}

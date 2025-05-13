@@ -14,11 +14,11 @@ export default function ConfirmTitle({
   blocked,
 }: ConfirmTitleProps) {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between border-b border-gray-300 pb-3">
       <h3 className="text-gray-700 font-semibold">{title}</h3>
       {!blocked && (
         <button
-          className="text-violet-600 font-medium text-sm"
+          className="text-violet-600 font-medium text-sm mr-1"
           onClick={() => setAddType(type)}
         >
           Добавить

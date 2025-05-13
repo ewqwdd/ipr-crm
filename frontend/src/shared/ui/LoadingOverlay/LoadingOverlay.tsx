@@ -14,7 +14,6 @@ const LoadingOverlay: FC<LoadingOverlayProps> = ({
   className,
   fullScereen = false,
 }) => {
-  // ✅ мемоизируем детей, чтобы React не триггерил ререндер без причины
   const memoizedChildren = useMemo(() => children, [children]);
 
   if (!active) return <>{memoizedChildren}</>;

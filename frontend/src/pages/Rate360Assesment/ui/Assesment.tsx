@@ -14,8 +14,11 @@ interface AssesmentProps {
     React.SetStateAction<Record<number, string | undefined>>
   >;
   rateId: number;
-  setLoading?: React.Dispatch<React.SetStateAction<number>>;
+  setLoading?: React.Dispatch<React.SetStateAction<number | undefined>>;
   skillType: SkillType;
+  notAnswered?: number[];
+  setNotAnswered?: React.Dispatch<React.SetStateAction<number[]>>;
+  loading?: React.RefObject<number | undefined>;
 }
 
 export default function Assesment({
@@ -27,6 +30,9 @@ export default function Assesment({
   rateId,
   setLoading,
   skillType,
+  notAnswered = [],
+  setNotAnswered = () => {},
+  loading,
 }: AssesmentProps) {
   return (
     <div className="flex flex-col gap-6 px-6 flex-1 overflow-y-auto overflow-x-clip pt-6">
@@ -42,10 +48,14 @@ export default function Assesment({
                   index={index}
                   key={indicator.id}
                   skillType={skillType}
+                  error={notAnswered.includes(indicator.id)}
                   current={
                     assesment[block.id]?.[competency.id]?.[indicator.id] ?? {}
                   }
-                  onChange={(rate, comment) =>
+                  onChange={(rate, comment) => {
+                    setNotAnswered((prev) =>
+                      prev.filter((id) => id !== indicator.id),
+                    );
                     setAssesment((prev) => {
                       const newAssesment = { ...prev };
                       if (!newAssesment[block.id]) {
@@ -63,7 +73,7 @@ export default function Assesment({
                       )
                         return prev;
 
-                      setLoading?.((prev) => prev + 1);
+                      setLoading?.((loading?.current ?? 0) + 1);
                       $api
                         .post('/rate360/assesment/indicator', {
                           rate,
@@ -86,7 +96,13 @@ export default function Assesment({
                           });
                         })
                         .finally(() => {
-                          setLoading?.((prev) => prev - 1);
+                          setTimeout(
+                            () =>
+                              setLoading?.(
+                                Math.max(0, (loading?.current ?? 0) - 1),
+                              ),
+                            50,
+                          );
                         });
 
                       newAssesment[block.id][competency.id][indicator.id] = {
@@ -94,8 +110,8 @@ export default function Assesment({
                         comment,
                       };
                       return newAssesment;
-                    })
-                  }
+                    });
+                  }}
                 />
               ))}
 
@@ -109,7 +125,8 @@ export default function Assesment({
                   })
                 }
                 onBlur={() => {
-                  setLoading?.((prev) => prev + 1);
+                  if (!comments[competency.id]) return;
+                  setLoading?.((loading?.current ?? 0) + 1);
                   $api
                     .post('/rate360/assesment/comment', {
                       rateId,
@@ -117,7 +134,7 @@ export default function Assesment({
                       comment: comments[competency.id],
                     })
                     .finally(() => {
-                      setLoading?.((prev) => prev - 1);
+                      setLoading?.((loading?.current ?? 0) - 1);
                     });
                 }}
               />

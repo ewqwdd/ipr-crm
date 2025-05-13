@@ -12,4 +12,5 @@ export type Filters = {
   status: 'COMPLETED' | 'NOT_COMPLETED' | 'ALL';
   skillType: FiltersSkillType;
   period?: DateObject[];
+  hidden?: boolean;
 };

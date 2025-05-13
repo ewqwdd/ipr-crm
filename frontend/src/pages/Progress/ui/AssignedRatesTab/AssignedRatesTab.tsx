@@ -6,8 +6,9 @@ export default function AssignedRatesTab() {
   const { data, isLoading, isFetching } = rate360Api.useAssignedRatesQuery();
 
   return (
-    <LoadingOverlay active={isLoading} fullScereen>
+    <LoadingOverlay active={isLoading}>
       <RateList
+        includeSelfTeam
         data={data}
         isLoading={isFetching}
         heading="По другим пользователям"

@@ -74,6 +74,11 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
     [handleFilterChange],
   );
 
+  const onChangeHidden = useCallback(
+    (value: boolean) => handleFilterChange('hidden', value),
+    [handleFilterChange],
+  );
+
   const { teamsOptions, specsOptions } = useMemo(
     () => ({
       teamsOptions: (isAdmin
@@ -104,6 +109,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
         onChangeSpec={onChangeSpec}
         onChangeUser={onChangeUser}
         onChangePeriod={onChangePeriod}
+        onChangeHidden={onChangeHidden}
         users={users?.users ?? []}
       />
     </div>
