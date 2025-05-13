@@ -57,7 +57,7 @@ export default function RateList({
       })}
     >
       <Heading title={heading} />
-      {includeSelfTeam && (
+      {includeSelfTeam && selfTeam && selfTeam?.length > 0 && (
         <>
           <span className="text-gray-700 font-semibold text-lg mt-4">
             Моя команда
