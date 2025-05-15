@@ -8,7 +8,6 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { TextArea } from '@/shared/ui/TextArea';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import SelectMaterialWrapper from './SelectMaterialWrapper';
-import { skillsApi } from '@/shared/api/skillsApi';
 import { Competency, Indicator } from '@/entities/skill';
 import DatePickerLight from '@/shared/ui/DatePickerLight';
 import { AddTaskDto, iprApi } from '@/shared/api/iprApi';
@@ -58,7 +57,10 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
   const [errors, setErrors] = useState<ErorrsType>({});
 
   const { data: skills, isLoading: isLoadingSkills } =
-    skillsApi.useGetSkillsQuery();
+    iprApi.useFindCompetencyBlocksByIprIdQuery(planId, {
+      skip: !planId,
+      refetchOnMountOrArgChange: 180,
+    });
 
   const { competencies, indicators } = useMemo(() => {
     const competencies: Competency[] = [];
@@ -144,6 +146,10 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
     }
   }, [isError]);
 
+  const isArchived = materialWrapperData.find(
+    (item) => item.id === materialWrapperId,
+  )?.archived;
+
   return (
     <Modal
       open={isOpen}
@@ -192,7 +198,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({
           priority={priority}
           onChange={selectPriority}
         />
-        {materialWrapperId !== -1 && (
+        {!isArchived && materialWrapperId !== -1 && (
           <Checkbox
             title="Добавить в конструктор профилей"
             checked={addToConstructor}

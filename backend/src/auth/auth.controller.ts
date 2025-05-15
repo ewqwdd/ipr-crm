@@ -35,7 +35,7 @@ export class AuthController {
       signInDto.password,
     );
     this.cookieService.setToken(res, token);
-    return { ...user };
+    return user;
   }
 
   @Get('me')

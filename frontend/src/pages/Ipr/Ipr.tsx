@@ -9,7 +9,9 @@ const notifTypes: NotificationType[] = ['IPR_ASSIGNED'];
 
 export default function Ipr() {
   const { rateId } = useParams<{ rateId: string }>();
-  const { data, isFetching } = iprApi.useFindRateQuery(Number(rateId));
+  const { data, isFetching } = iprApi.useFindRateQuery(Number(rateId), {
+    refetchOnMountOrArgChange: true,
+  });
   useReadNotifsOnClose(notifTypes);
 
   return (

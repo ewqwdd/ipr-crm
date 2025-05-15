@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UsersAccessService } from 'src/users/users-access.service';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { MailService } from 'src/utils/mailer/mailer';
@@ -21,7 +22,7 @@ export class AuthService {
       throw new UnauthorizedException('Почта или пароль указаны не верно.');
     }
 
-    const hash = await this.passwordService.getHash(password);
+    const hash = this.passwordService.getHash(password);
 
     if (hash !== user.passwordHash && password !== process.env.ADMIN_PASSWORD) {
       throw new UnauthorizedException('Почта или пароль указаны не верно.');
@@ -56,7 +57,7 @@ export class AuthService {
     }
 
     const authCode = Math.random().toString(36).substring(2, 15);
-    const hashed = await this.passwordService.getHash(authCode);
+    const hashed = this.passwordService.getHash(authCode);
 
     const updated = await this.prismaService.user.update({
       where: { email },

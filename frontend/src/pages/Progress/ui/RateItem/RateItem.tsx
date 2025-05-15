@@ -7,7 +7,7 @@ import { Badge } from '@/shared/ui/Badge';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
-import LastRate from '../LastRate/LastRate';
+import AlreadyRated from '../AlreadyRated/AlreadyRated';
 
 interface RateItemProps {
   rate: Rate;
@@ -37,7 +37,11 @@ export default function RateItem({ rate, specs }: RateItemProps) {
     }
   }, [error]);
 
-  const lastRate = rate.user?.rates360?.[0];
+  const indicators = rate.competencyBlocks.flatMap((cb) =>
+    cb.competencies.flatMap((cp) => cp.indicators),
+  );
+  const userRates = rate.userRates.filter((ur) => ur.userId === userId);
+  const isRated = indicators.length === userRates.length;
 
   return (
     <div className="flex sm:items-center justify-between p-1.5 sm:p-3 rounded-sm border-t border-gray-300 first:border-transparent max-sm:flex-col gap-y-3">
@@ -49,7 +53,7 @@ export default function RateItem({ rate, specs }: RateItemProps) {
           <span className="text-gray-700 font-medium text-lbaseg">
             {rate.user.username}
           </span>
-          {lastRate && <LastRate lastRate={lastRate} />}
+          {isRated && <AlreadyRated rate={rate} />}
         </div>
         <div className="flex items-center gap-2 sm:gap-4 text-gray-800 text-sm">
           <span className="font-semibold">{rateTypeNames[rate.type]}</span>
@@ -57,14 +61,16 @@ export default function RateItem({ rate, specs }: RateItemProps) {
         </div>
       </div>
       <div className="grid grid-cols-2 sm:flex gap-3">
-        {userId !== rate.userId && (
+        {userId !== rate.userId && !isRated && (
           <SoftButton danger size="xs" onClick={cancelAssesment}>
             Не могу оценить
           </SoftButton>
         )}
-        <SoftButton size="xs" onClick={() => openModal('EVALUATE', { rate })}>
-          Пройти опрос
-        </SoftButton>
+        {!isRated && (
+          <SoftButton size="xs" onClick={() => openModal('EVALUATE', { rate })}>
+            Пройти опрос
+          </SoftButton>
+        )}
       </div>
     </div>
   );

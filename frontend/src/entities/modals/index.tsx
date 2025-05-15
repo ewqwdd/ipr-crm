@@ -27,6 +27,7 @@ import { DeleteTaskModal, TaskPreviewModal } from '../ipr';
 import RateTestsModal from '../test/ui/RateTestsModal';
 import { AssessmentAssignUsersModal } from '@/widgets/AssessmentAssignUsersModal';
 import { ImportUsers } from '../user/ui/ImportUsers';
+import { RateSurveyModal } from '../survey';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -96,6 +97,8 @@ const ModalWrapper: FC = () => {
       return <ImportUsers {...updatedModalProps} />;
     case 'EDIT_EVALUATORS':
       return <EditEvaluatorsModal {...updatedModalProps} />;
+    case 'RATE_SURVEYS':
+      return <RateSurveyModal {...updatedModalProps} />;
     default:
       break;
   }

@@ -383,7 +383,8 @@ export class Rate360Service {
   async findAssignedRates(userId: number) {
     const rate360 = await this.prismaService.rate360.findMany({
       where: {
-        finished: false,
+        // finished: false,
+        hidden: false,
         evaluators: {
           some: {
             userId,
@@ -409,21 +410,6 @@ export class Rate360Service {
           select: {
             username: true,
             id: true,
-            rates360: {
-              take: 1,
-              where: {
-                finished: true,
-                hidden: false,
-              },
-              select: {
-                id: true,
-                endDate: true,
-                startDate: true,
-              },
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
           },
         },
         competencyBlocks: {
@@ -438,18 +424,18 @@ export class Rate360Service {
       },
     });
 
-    const filtered = rate360.filter((rate) => {
-      const indicators = rate.competencyBlocks
-        .filter((c) => c.type === rate.type)
-        .flatMap((block) =>
-          block.competencies.flatMap((competency) => competency.indicators),
-        );
-      const userRates = rate.userRates.filter(
-        (rate) => rate.userId === userId && rate.approved,
-      );
-      return userRates.length < indicators.length;
-    });
-    return filtered;
+    // const filtered = rate360.filter((rate) => {
+    //   const indicators = rate.competencyBlocks
+    //     .filter((c) => c.type === rate.type)
+    //     .flatMap((block) =>
+    //       block.competencies.flatMap((competency) => competency.indicators),
+    //     );
+    //   const userRates = rate.userRates.filter(
+    //     (rate) => rate.userId === userId && rate.approved,
+    //   );
+    //   return userRates.length < indicators.length;
+    // });
+    return rate360;
   }
 
   async findSelfRates(userId: number) {
@@ -472,21 +458,6 @@ export class Rate360Service {
           select: {
             username: true,
             id: true,
-            rates360: {
-              take: 1,
-              where: {
-                finished: true,
-                hidden: false,
-              },
-              select: {
-                id: true,
-                endDate: true,
-                startDate: true,
-              },
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
           },
         },
         competencyBlocks: {
@@ -1023,21 +994,8 @@ export class Rate360Service {
         user: {
           select: {
             username: true,
-            rates360: {
-              take: 1,
-              where: {
-                finished: true,
-                hidden: false,
-              },
-              select: {
-                id: true,
-                endDate: true,
-                startDate: true,
-              },
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
+            firstName: true,
+            lastName: true,
           },
         },
         evaluators: {
@@ -1093,21 +1051,8 @@ export class Rate360Service {
         user: {
           select: {
             username: true,
-            rates360: {
-              take: 1,
-              where: {
-                finished: true,
-                hidden: false,
-              },
-              select: {
-                id: true,
-                endDate: true,
-                startDate: true,
-              },
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
+            firstName: true,
+            lastName: true,
           },
         },
         competencyBlocks: {

@@ -1,4 +1,5 @@
 import { Ipr, TaskPriority, TaskType } from '@/entities/ipr';
+import { CompetencyBlock } from '@/entities/skill';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export interface AddTaskDto {
@@ -32,7 +33,7 @@ const iprApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['ipr', 'board', 'user-ipr'],
+  tagTypes: ['ipr', 'board', 'user-ipr', 'competency-blocks'],
   endpoints: (build) => ({
     createIpr: build.mutation<void, number>({
       query: (id) => ({
@@ -175,6 +176,13 @@ const iprApi = createApi({
         params: { limit, page },
       }),
       providesTags: (_, __, params) => [{ type: 'user-ipr', params }],
+    }),
+    findCompetencyBlocksByIprId: build.query<CompetencyBlock[], number>({
+      query: (id) => ({
+        url: `/ipr/${id}/competency-blocks`,
+        method: 'GET',
+      }),
+      providesTags: (_, __, id) => [{ type: 'competency-blocks', id }],
     }),
   }),
 });

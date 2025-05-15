@@ -109,7 +109,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
             value={filters.status}
           />
           <PeriodSelector value={filters.period} onChange={onChangePeriod} />
-          <div className="flex flex-col">
+          <div className="flex xl:mt-5 max-xl:my-3 lg:col-span-3 xl:col-span-2 sm:col-span-2">
             <Checkbox
               title={'Архивные'}
               checked={!!filters.hidden}

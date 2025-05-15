@@ -25,9 +25,7 @@ export interface Rate {
   showReportToUser?: boolean;
   type: 'HARD' | 'SOFT';
   evaluators: RateEvaluator[];
-  user: Pick<User, 'id' | 'username' | 'avatar' | 'firstName' | 'lastName'> & {
-    rates360: Pick<Rate, 'startDate' | 'endDate' | 'id'>[] | null;
-  };
+  user: Pick<User, 'id' | 'username' | 'avatar' | 'firstName' | 'lastName'>;
   spec: { id: number; name: string };
   team?: {
     id: number;

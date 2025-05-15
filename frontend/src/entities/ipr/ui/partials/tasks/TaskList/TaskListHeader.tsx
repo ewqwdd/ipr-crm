@@ -3,7 +3,6 @@ import { useModal } from '@/app/hooks/useModal';
 import { Ipr, Task } from '@/entities/ipr/model/types';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { ArchiveIcon } from '@heroicons/react/outline';
 
 interface TaskListHeaderProps {
   type: 'COMPETENCY' | 'INDICATOR';
@@ -64,17 +63,12 @@ export const TaskListHeader: FC<TaskListHeaderProps> = ({
     indicator: { name: string; archived: boolean };
   };
   const competencyName = firstTask?.competency?.name;
-  const competencyArchived = firstTask?.competency?.archived;
   const indicatorName = firstTask?.indicator?.name;
-  const indicatorArchived = firstTask?.indicator?.archived;
 
   return (
     <div className="flex  justify-between items-center mb-3 mt-5">
       <div className="flex items-center gap-4 max-sm:flex-col-reverse max-sm:gap-2 max-sm:items-start">
         <div className="flex space-x-2 items-center">
-          {(competencyArchived || indicatorArchived) && (
-            <ArchiveIcon className="w-5 h-5 text-gray-500 max-sm:hidden" />
-          )}
           <h4 className="font-medium">
             {(competencyName || indicatorName) ?? 'Без названия'}
           </h4>
@@ -87,9 +81,7 @@ export const TaskListHeader: FC<TaskListHeaderProps> = ({
           checked={isSelectedAll}
         />
       </div>
-      {!(competencyArchived || indicatorArchived) && (
-        <SoftButton onClick={createTask}>Добавить задачу</SoftButton>
-      )}
+      <SoftButton onClick={createTask}>Добавить задачу</SoftButton>
     </div>
   );
 };

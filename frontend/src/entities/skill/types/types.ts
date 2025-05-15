@@ -26,6 +26,7 @@ export interface Competency {
   blockId: number;
   indicators: Indicator[];
   materials: { material: Material }[];
+  archived?: boolean;
 }
 
 export interface Indicator {
@@ -47,6 +48,7 @@ export interface Indicator {
   value5?: string;
   skipHint?: string;
   skipValue?: string;
+  archived?: boolean;
 }
 
 export interface CompetencyBlock {
@@ -55,6 +57,7 @@ export interface CompetencyBlock {
   type: SkillType;
   materials?: { material: Material }[];
   competencies: Competency[];
+  archived?: boolean;
 }
 
 export interface AddCompetencyBlockDto {

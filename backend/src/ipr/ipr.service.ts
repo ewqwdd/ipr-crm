@@ -797,4 +797,25 @@ export class IprService {
 
     return { data, total };
   }
+
+  async findCompetencyBlocksByIpr(id: number) {
+    return await this.prismaService.competencyBlock.findMany({
+      where: {
+        rates360: {
+          some: {
+            plan: {
+              id: id,
+            },
+          },
+        },
+      },
+      include: {
+        competencies: {
+          include: {
+            indicators: true,
+          },
+        },
+      },
+    });
+  }
 }

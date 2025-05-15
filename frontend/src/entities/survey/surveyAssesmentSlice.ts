@@ -30,28 +30,29 @@ const surveyAssesmentSlice = createSlice({
     },
     initAnswers(state, action: PayloadAction<AssignedSurvey>) {
       const { survey, answeredQUestions } = action.payload;
-      state.answers = answeredQUestions?.reduce(
-        (acc, question) => {
-          const questionIndex = survey.surveyQuestions.findIndex(
-            (q) => q.id === question.surveyQuestionId,
-          );
+      state.answers =
+        answeredQUestions?.reduce(
+          (acc, question) => {
+            const questionIndex = survey.surveyQuestions.findIndex(
+              (q) => q.id === question.surveyQuestionId,
+            );
 
-          if (questionIndex !== -1) {
-            acc[questionIndex] = {
-              numberAnswer: question.numberAnswer?.toString(),
-              textAnswer: question.textAnswer,
-              optionAnswer: question.options.map((option) => option.optionId),
-              dateAnswer: question.dateAnswer?.toString(),
-              fileAnswer: question.fileAnswer ? true : undefined,
-              phoneAnswer: question.phoneAnswer?.toString(),
-              timeAnswer: question.timeAnswer?.toString(),
-              scaleAnswer: question.scaleAnswer,
-            };
-          }
-          return acc;
-        },
-        {} as Record<number, StoreAnswer>,
-      ) ?? {};
+            if (questionIndex !== -1) {
+              acc[questionIndex] = {
+                numberAnswer: question.numberAnswer?.toString(),
+                textAnswer: question.textAnswer,
+                optionAnswer: question.options.map((option) => option.optionId),
+                dateAnswer: question.dateAnswer?.toString(),
+                fileAnswer: question.fileAnswer ? true : undefined,
+                phoneAnswer: question.phoneAnswer?.toString(),
+                timeAnswer: question.timeAnswer?.toString(),
+                scaleAnswer: question.scaleAnswer,
+              };
+            }
+            return acc;
+          },
+          {} as Record<number, StoreAnswer>,
+        ) ?? {};
     },
     setError(state, action: PayloadAction<{ index: number; error?: string }>) {
       if (action.payload.error === undefined) {

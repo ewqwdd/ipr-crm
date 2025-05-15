@@ -13,6 +13,7 @@ import SurveySubmit from './ui/SurveySubmit';
 import SurveyCreateAccess from './ui/edit/ui/SurveyCreateAccess';
 import SurveySettings from './ui/edit/ui/SurveySettings';
 import SurveyQuestions from './ui/edit/ui/SurveyQuestions';
+import RateSurveyModal from './ui/RateSurveyModal';
 
 export {
   surveyCreateTabs,
@@ -23,6 +24,7 @@ export {
   SurveyCreateAccess,
   SurveySettings,
   SurveyQuestions,
+  RateSurveyModal,
 };
 
 export type {

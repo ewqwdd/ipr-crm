@@ -7,6 +7,7 @@ import { PasswordService } from 'src/utils/password/password';
 import { UsersModule } from 'src/users/users.module';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { MailService } from 'src/utils/mailer/mailer';
+import { UsersAccessService } from 'src/users/users-access.service';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MailService } from 'src/utils/mailer/mailer';
     PasswordService,
     PrismaService,
     MailService,
+    UsersAccessService,
   ],
 })
 export class AuthModule {}

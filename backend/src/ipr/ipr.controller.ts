@@ -191,4 +191,12 @@ export class IprController {
   ) {
     return this.iprService.finduserIprMany(sessionInfo, params);
   }
+
+  @Get('/:id/competency-blocks')
+  @UseGuards(AuthGuard)
+  async findCompetencyBlocks(
+    @Param('id', { transform: (v: string) => parseInt(v) }) id: number,
+  ) {
+    return this.iprService.findCompetencyBlocksByIpr(id);
+  }
 }
