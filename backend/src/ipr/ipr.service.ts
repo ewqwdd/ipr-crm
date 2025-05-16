@@ -18,6 +18,7 @@ import { AddTaskDto } from './dto/add-task.dto';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { IprFiltersDto } from './dto/ipr-filters.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
+import { findAllIprInclude } from './constants';
 
 @Injectable()
 export class IprService {
@@ -506,22 +507,12 @@ export class IprService {
     return material;
   }
 
-  async findAll(
-    sessionInfo: GetSessionInfoDto,
-    {
-      limit,
-      page,
-      endDate,
-      skill,
-      specId,
-      startDate,
-      teams,
-      user,
-    }: IprFiltersDto,
-  ) {
-    const teamFilters = teams?.split(',').map((t) => Number(t)) || [];
-
-    const where: Prisma.IndividualGrowthPlanWhereInput = {
+  findAllFilters({
+    startDate,
+    endDate,
+    user,
+  }: IprFiltersDto): Prisma.IndividualGrowthPlanWhereInput {
+    return {
       ...(startDate
         ? {
             startDate: {
@@ -538,6 +529,52 @@ export class IprService {
         : {}),
       ...(user ? { userId: user } : {}),
     };
+  }
+
+  async findAllSubbordinates(
+    sessionInfo: GetSessionInfoDto,
+    params: IprFiltersDto,
+  ) {
+    const { limit, page, skill, specId } = params;
+
+    const where = this.findAllFilters(params);
+
+    const allowedSubbordinates =
+      await this.usersAccessService.findAllowedSubbordinates(sessionInfo.id);
+
+    where.rate360 = {
+      ...(specId ? { specId } : {}),
+      ...(skill ? { type: skill } : {}),
+      OR: allowedSubbordinates.map(({ teamId, userId }) => ({
+        userId,
+        teamId,
+      })),
+    };
+
+    const [data, total] = await Promise.all([
+      this.prismaService.individualGrowthPlan.findMany({
+        where,
+        include: findAllIprInclude,
+        orderBy: {
+          id: 'desc',
+        },
+        ...(Number.isInteger(page) ? { skip: (page - 1) * limit } : {}),
+        ...(limit ? { take: limit } : {}),
+      }),
+      this.prismaService.individualGrowthPlan.count({ where }),
+    ]);
+
+    return {
+      data,
+      total,
+    };
+  }
+
+  async findAll(sessionInfo: GetSessionInfoDto, params: IprFiltersDto) {
+    const { limit, page, skill, specId, teams } = params;
+    const teamFilters = teams?.split(',').map((t) => Number(t)) || [];
+
+    const where = this.findAllFilters(params);
 
     if (teamFilters.length > 0 || specId || skill) {
       where.rate360 = {
@@ -557,21 +594,7 @@ export class IprService {
       const [data, total] = await Promise.all([
         this.prismaService.individualGrowthPlan.findMany({
           where,
-          include: {
-            user: true,
-            mentor: true,
-            rate360: {
-              select: {
-                team: {
-                  select: {
-                    name: true,
-                  },
-                },
-              },
-            },
-            tasks: true,
-            spec: true,
-          },
+          include: findAllIprInclude,
           orderBy: {
             id: 'desc',
           },
@@ -619,20 +642,7 @@ export class IprService {
     const [data, total] = await Promise.all([
       this.prismaService.individualGrowthPlan.findMany({
         where,
-        include: {
-          user: true,
-          mentor: true,
-          rate360: {
-            select: {
-              team: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          },
-          tasks: true,
-        },
+        include: findAllIprInclude,
         orderBy: {
           id: 'desc',
         },

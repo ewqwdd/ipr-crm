@@ -18,6 +18,7 @@ import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
 import { AddEvaluatorsDto } from './dto/add-evalators.dto';
 import { RateFiltersDto } from './dto/rate-filters.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
+import { findAllRateInclude } from './constants';
 
 @Injectable()
 export class Rate360Service {
@@ -52,39 +53,17 @@ export class Rate360Service {
     };
   }
 
-  async findAll(
-    {
-      limit,
-      page,
-      endDate,
-      skill,
-      specId,
-      startDate,
-      status,
-      teams: teams_,
-      user,
-      hidden,
-    }: RateFiltersDto,
-    curatorId?: number,
-  ) {
-    const teams = teams_ ? teams_.split(',').map(Number) : [];
-    let teamsFilter: number[] = teams ?? [];
-
-    if (curatorId) {
-      teamsFilter = await this.usersService.findAllowedTeams(curatorId);
-      if (teams) {
-        teamsFilter =
-          teams.length > 0
-            ? teams.filter((team) => teamsFilter.includes(team))
-            : teamsFilter;
-      }
-    }
-
-    const where = {
+  findAllFilters({
+    endDate,
+    skill,
+    specId,
+    startDate,
+    status,
+    user,
+    hidden,
+  }: RateFiltersDto): Prisma.Rate360FindManyArgs['where'] {
+    return {
       archived: false,
-      ...(curatorId || teams.length > 0
-        ? { team: { id: { in: teamsFilter } } }
-        : {}),
       ...(user ? { userId: user } : {}),
       ...(specId ? { specId } : {}),
       ...(skill ? { type: skill } : {}),
@@ -97,67 +76,68 @@ export class Rate360Service {
       ...(endDate ? { endDate: { lte: new Date(endDate) } } : {}),
       hidden: !!hidden,
     };
+  }
 
-    const [total, rates] = await this.prismaService.$transaction([
+  async findAll(data: RateFiltersDto, curatorId?: number) {
+    const teams = data.teams ? data.teams.split(',').map(Number) : [];
+    let teamsFilter: number[] = teams ?? [];
+    const { page, limit } = data;
+
+    const where = this.findAllFilters(data);
+
+    if (curatorId) {
+      teamsFilter = await this.usersService.findAllowedTeams(curatorId);
+      if (teams) {
+        teamsFilter =
+          teams.length > 0
+            ? teams.filter((team) => teamsFilter.includes(team))
+            : teamsFilter;
+      }
+    }
+
+    if (curatorId || teams.length > 0) {
+      where.team = { id: { in: teamsFilter } };
+    }
+
+    let [total, rates] = await this.prismaService.$transaction([
       this.prismaService.rate360.count({ where }),
       this.prismaService.rate360.findMany({
         where,
-        include: {
-          evaluators: {
-            select: {
-              userId: true,
-              type: true,
-              user: {
-                select: {
-                  username: true,
-                },
-              },
-            },
-          },
-          user: {
-            select: {
-              id: true,
-              username: true,
-            },
-          },
-          spec: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          team: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          comments: {
-            select: {
-              comment: true,
-              competencyId: true,
-              userId: true,
-            },
-          },
-          userRates: {
-            include: {
-              indicator: true,
-            },
-            where: {
-              approved: true,
-            },
-          },
-          competencyBlocks: {
-            include: {
-              competencies: {
-                include: {
-                  indicators: true,
-                },
-              },
-            },
-          },
-          plan: true,
+        include: findAllRateInclude,
+        ...(Number.isInteger(page) ? { skip: (page - 1) * limit } : {}),
+        ...(limit ? { take: limit } : {}),
+        orderBy: {
+          createdAt: 'desc',
         },
+      }),
+    ]);
+
+    return {
+      total,
+      page,
+      limit,
+      data: rates,
+    };
+  }
+
+  async findAllSubbordinates(data: RateFiltersDto, curatorId: number) {
+    const { page, limit } = data;
+
+    const where = this.findAllFilters(data);
+
+    const allowedTeamUsers =
+      await this.usersService.findAllowedSubbordinates(curatorId);
+
+    where.OR = allowedTeamUsers.map(({ teamId, userId }) => ({
+      teamId,
+      userId,
+    }));
+
+    let [total, rates] = await this.prismaService.$transaction([
+      this.prismaService.rate360.count({ where }),
+      this.prismaService.rate360.findMany({
+        where,
+        include: findAllRateInclude,
         ...(Number.isInteger(page) ? { skip: (page - 1) * limit } : {}),
         ...(limit ? { take: limit } : {}),
         orderBy: {

@@ -12,7 +12,9 @@ const AddUser = React.lazy(() => import('@/pages/AddUser/AddUser'));
 const Structure = React.lazy(() => import('@/pages/Structure/Structure'));
 const Teams = React.lazy(() => import('@/pages/Teams/Teams'));
 const TeamPage = React.lazy(() => import('@/pages/TeamPage/TeamPage'));
-const Rate360 = React.lazy(() => import('@/pages/Rate360/Rate360'));
+const Rates360Table = React.lazy(
+  () => import('@/entities/rates/ui/Rates360Table/Rates360Table'),
+);
 const Rate360MeList = React.lazy(
   () => import('@/pages/Rate360MeList/Rate360MeList'),
 );
@@ -20,7 +22,9 @@ const Report360 = React.lazy(() => import('@/pages/Report360/index'));
 const Skills = React.lazy(() => import('@/pages/Skills/ui/Skills'));
 const Progress = React.lazy(() => import('@/pages/Progress/Progress'));
 const Ipr = React.lazy(() => import('@/pages/Ipr/Ipr'));
-const IprList = React.lazy(() => import('@/pages/IprList/IprList'));
+const IprListPage = React.lazy(
+  () => import('@/entities/ipr/ui/IprListPage/IprListPage'),
+);
 const Board = React.lazy(() => import('@/pages/Board/BoardPage'));
 const AdminBoard = React.lazy(() => import('@/pages/AdminBoard/AdminBoard'));
 const SkillsHistory = React.lazy(
@@ -80,7 +84,18 @@ export const routerItems: RouterItemType[] = [
   { path: '/structure', element: <Structure />, onlyAdmin: true },
   { path: '/teams', element: <Teams />, onlyAdmin: true, curator: true },
   { path: '/teams/:id', element: <TeamPage />, onlyAdmin: true, curator: true },
-  { path: '/360rate', element: <Rate360 />, onlyAdmin: true, curator: true },
+  {
+    path: '/360rate',
+    element: <Rates360Table type="ALL" />,
+    onlyAdmin: true,
+    curator: true,
+  },
+  {
+    path: '/360rate-team',
+    element: <Rates360Table type="TEAM" />,
+    onlyAdmin: true,
+    curator: true,
+  },
   { path: '/360rate/me', element: <Rate360MeList /> },
   {
     path: '/360rate/report/:id',
@@ -94,7 +109,18 @@ export const routerItems: RouterItemType[] = [
   { path: '/ipr/360/:rateId', element: <Ipr /> },
   { path: '/board', element: <Board /> },
   { path: '/board/:userId', element: <AdminBoard /> },
-  { path: '/ipr', element: <IprList />, onlyAdmin: true, curator: true },
+  {
+    path: '/ipr',
+    element: <IprListPage type="ALL" />,
+    onlyAdmin: true,
+    curator: true,
+  },
+  {
+    path: '/ipr-team',
+    element: <IprListPage type="TEAM" />,
+    onlyAdmin: true,
+    curator: true,
+  },
   { path: '/skills/history', element: <SkillsHistory />, onlyAdmin: true },
   {
     path: '/skills/history/:id',

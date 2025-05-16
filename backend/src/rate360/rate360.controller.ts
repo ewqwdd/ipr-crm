@@ -37,7 +37,12 @@ export class Rate360Controller {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
     @Query() params: RateFiltersDto,
   ) {
-    console.log(params);
+    if (params.subbordinatesOnly) {
+      return await this.rate360Service.findAllSubbordinates(
+        params,
+        sessionInfo.id,
+      );
+    }
     if (sessionInfo.role === 'admin') {
       return await this.rate360Service.findAll(params);
     } else {

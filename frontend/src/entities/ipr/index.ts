@@ -8,6 +8,7 @@ import IprHeadingCurator from './ui/partials/IprHeadingCurator';
 import { taskStatuses, taskTypes } from './model/types';
 import UserIprTasks from './ui/partials/user-tasks/UserIprTasks';
 import IprProgress from './ui/partials/IprProgress';
+import IprListPage from './ui/IprListPage/IprListPage';
 
 export type {
   Ipr,
@@ -31,4 +32,5 @@ export {
   UserIprTasks,
   taskTypes,
   IprProgress,
+  IprListPage,
 };

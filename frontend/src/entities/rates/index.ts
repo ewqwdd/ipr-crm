@@ -7,6 +7,7 @@ import EvaluateModal from './ui/EvaluateModal/EvaluateModal';
 import { rateDescriptions } from './model/rateDescriptions';
 import ConfirmEvaluatorsModal from './ui/ConfirmEvaluatorsModal/ConfirmEvaluatorsModal';
 import { EditEvaluatorsModal } from './ui/EditEvaluatorsModal';
+import Rates360Table from './ui/Rates360Table/Rates360Table';
 
 export type { Rate, AddRateDto };
 
@@ -20,4 +21,5 @@ export {
   rateDescriptions,
   ConfirmEvaluatorsModal,
   EditEvaluatorsModal,
+  Rates360Table,
 };

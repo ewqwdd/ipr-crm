@@ -10,15 +10,18 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { useAppSelector } from '@/app';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { universalApi } from '@/shared/api/universalApi';
+import { Rates360TableType } from '../../types';
 
 interface RatesFiltersWrapperProps {
   filters: Filters;
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
+  type: Rates360TableType;
 }
 
 const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
   filters,
   setFilters,
+  type,
 }) => {
   const updateFilters = useCallback((newFilters: Partial<Filters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
@@ -111,6 +114,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
         onChangePeriod={onChangePeriod}
         onChangeHidden={onChangeHidden}
         users={users?.users ?? []}
+        type={type}
       />
     </div>
   );

@@ -1,6 +1,5 @@
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useState } from 'react';
-import PeriodSelector from '../../../../shared/ui/PeriodSelector/PeriodSelector';
 import TeamSelector from './TeamSelector';
 import {
   initialFilters,
@@ -17,6 +16,8 @@ import { StaticSelectFilter } from '@/shared/ui/StaticSelectFilter';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
 import { User } from '@/entities/user';
 import { Checkbox } from '@/shared/ui/Checkbox';
+import { Rates360TableType } from '../../types';
+import { PeriodSelector } from '@/shared/ui/PeriodSelector';
 
 type OnChange = (value: string | number) => void;
 
@@ -33,6 +34,7 @@ interface RatesFiltersProps {
   onChangeUser: (value?: number) => void;
   onChangePeriod: (value?: DateObject | DateObject[]) => void;
   onChangeHidden: (value: boolean) => void;
+  type: Rates360TableType;
 }
 
 const RatesFilters: FC<RatesFiltersProps> = ({
@@ -48,6 +50,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
   onChangeUser,
   onChangePeriod,
   onChangeHidden,
+  type,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -75,11 +78,13 @@ const RatesFilters: FC<RatesFiltersProps> = ({
       </div>
       {isOpen && (
         <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          <TeamSelector
-            options={teamsOptions}
-            value={filters.teams}
-            onChange={onChangeTeams}
-          />
+          {type !== 'TEAM' && (
+            <TeamSelector
+              options={teamsOptions}
+              value={filters.teams}
+              onChange={onChangeTeams}
+            />
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               ФИО
@@ -109,7 +114,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
             value={filters.status}
           />
           <PeriodSelector value={filters.period} onChange={onChangePeriod} />
-          <div className="flex xl:mt-5 max-xl:my-3 lg:col-span-3 xl:col-span-2 sm:col-span-2">
+          <div className="flex 2xl:mt-5 max-xl:my-3 lg:col-span-3 xl:col-span-2 sm:col-span-2">
             <Checkbox
               title={'Архивные'}
               checked={!!filters.hidden}

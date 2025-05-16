@@ -10,6 +10,7 @@ import { $api } from '@/shared/lib/$api';
 import { userActions } from '@/entities/user';
 import { NotificationBell } from '@/entities/notifications';
 import { Badge } from '@/shared/ui/Badge';
+import { checkActiveLink } from '@/shared/lib/checkActiveLink';
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
@@ -127,7 +128,7 @@ export default function Content() {
                           as={NavLink}
                           to={subItem.href!}
                           className={classNames(
-                            pathname.includes(subItem.href!)
+                            checkActiveLink(subItem.href!, pathname)
                               ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
                               : 'text-gray-400/90 hover:bg-gray-700 hover:text-gray-100',
                             'group flex items-center px-2 py-2 text-sm font-medium rounded-md h-10',

@@ -25,6 +25,7 @@ interface IprFiltersDto {
   teams?: number[];
   startDate?: string;
   endDate?: string;
+  subbordinatesOnly?: boolean;
 }
 
 const iprApi = createApi({
@@ -146,6 +147,7 @@ const iprApi = createApi({
         startDate,
         teams,
         user,
+        subbordinatesOnly,
       }) => ({
         url: '/ipr',
         method: 'GET',
@@ -158,6 +160,7 @@ const iprApi = createApi({
           startDate,
           teams: teams?.join(','),
           user,
+          subbordinatesOnly,
         },
       }),
       providesTags: (_, __, params) => [{ type: 'ipr', params }],

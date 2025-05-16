@@ -171,6 +171,9 @@ export class IprController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
     @Query() params: IprFiltersDto,
   ) {
+    if (params.subbordinatesOnly) {
+      return await this.iprService.findAllSubbordinates(sessionInfo, params);
+    }
     return this.iprService.findAll(sessionInfo, params);
   }
 

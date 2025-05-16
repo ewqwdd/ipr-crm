@@ -1,5 +1,4 @@
 import { User } from '@/entities/user';
-import TeamSelector from '@/pages/Rate360/ui/RatesFilters/TeamSelector';
 import { Option } from '@/shared/types/Option';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, memo, useCallback, useMemo, useState } from 'react';
@@ -8,6 +7,7 @@ import { getAllFilterOptions } from './helpers';
 import SpecSelector from './SpecSelector';
 import { Filters, initialFilters } from './constants';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
+import TeamSelector from '@/entities/rates/ui/Rates360Table/ui/RatesFilters/TeamSelector';
 
 interface UsersFiltersProps {
   data?: User[];

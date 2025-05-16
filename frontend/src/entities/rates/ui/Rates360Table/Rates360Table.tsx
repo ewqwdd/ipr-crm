@@ -1,29 +1,34 @@
-import { useAppDispatch } from '@/app';
-import { ratesActions } from '@/entities/rates';
-import AddRate from '@/entities/rates/ui/AddRate/AddRate';
-import { rate360Api } from '@/shared/api/rate360Api';
 import { Heading } from '@/shared/ui/Heading';
-import { Modal } from '@/shared/ui/Modal';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { useEffect, useState } from 'react';
-import RatesTable from './ui/RatesTable';
-import Settings from './ui/Settings';
 import RatesFiltersWrapper from './ui/RatesFilters';
-import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { SelectAll } from '@/widgets/SelectAll';
+import RatesTable from './ui/RatesTable';
 import { Pagination } from '@/shared/ui/Pagination';
+import Settings from './ui/Settings';
+import AddRate from '../AddRate/AddRate';
+import { Modal } from '@/shared/ui/Modal';
+import { useEffect, useState } from 'react';
 import { Filters } from './ui/RatesFilters/types';
 import { initialFilters } from './ui/RatesFilters/constatnts';
-import { SelectAll } from '@/widgets/SelectAll';
+import { useAppDispatch } from '@/app';
+import { rate360Api } from '@/shared/api/rate360Api';
+import { ratesActions } from '../../model/rateSlice';
+import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { Rates360TableType } from './types';
 
 const LIMIT = 10;
 
-export default function Rate360() {
+interface Rates360TableProps {
+  type: Rates360TableType;
+}
+
+export default function Rates360Table({ type }: Rates360TableProps) {
   const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<Filters>(initialFilters);
-
   const dispatch = useAppDispatch();
+
   const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery({
     page,
     limit: LIMIT,
@@ -38,28 +43,45 @@ export default function Rate360() {
     startDate: filters.period?.[0]?.toDate()?.toISOString(),
     endDate: filters.period?.[1]?.toDate()?.toISOString(),
     hidden: !!filters.hidden,
+    subbordinatesOnly: type === 'TEAM' ? true : undefined,
   });
+
+  useEffect(() => {
+    setPage(1);
+    setFilters(initialFilters);
+  }, [type]);
+
+  useEffect(() => {
+    setSelected([]);
+  }, [data]);
 
   const handleClose = () => {
     setOpen(false);
     dispatch(ratesActions.clear());
   };
 
-  useEffect(() => {
-    setSelected([]);
-  }, [data]);
-
   return (
     <LoadingOverlay active={isLoading}>
       <div className="sm:px-8 sm:pt-10 py-6 flex flex-col h-full realtive">
         <div className="flex justify-between items-center max-sm:pr-14 max-sm:px-4">
-          <Heading title="Командные отчёты" description="Список 360 оценок" />
+          <Heading
+            title="Командные отчёты"
+            description={
+              type === 'TEAM'
+                ? 'Список 360 оценок подчиненных'
+                : 'Список 360 оценок'
+            }
+          />
           <PrimaryButton onClick={() => setOpen(true)} className="self-start">
             Добавить
           </PrimaryButton>
         </div>
         <div className="flex-col gap-1 mt-6 relative mb-2">
-          <RatesFiltersWrapper filters={filters} setFilters={setFilters} />
+          <RatesFiltersWrapper
+            type={type}
+            filters={filters}
+            setFilters={setFilters}
+          />
           <SelectAll
             data={data?.data ?? []}
             selected={selected}

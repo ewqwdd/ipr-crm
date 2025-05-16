@@ -74,10 +74,31 @@ export const userNavigation: (user: User | null) => NavType[] = (
         {
           name: 'Планы развития',
           icon: ChartBarIcon,
-          current: false,
-          href: '/ipr',
+          children: [
+            {
+              name: 'Все планы',
+              href: '/ipr',
+            },
+            {
+              name: 'Планы команды',
+              href: '/ipr-team',
+            },
+          ],
         },
-        { name: 'Оценка 360', href: '/360rate', icon: InboxIcon },
+        {
+          name: 'Оценка 360',
+          icon: InboxIcon,
+          children: [
+            {
+              name: 'Все оценки',
+              href: '/360rate',
+            },
+            {
+              name: 'Оценки команды',
+              href: '/360rate-team',
+            },
+          ],
+        },
 
         {
           name: 'Тесты',

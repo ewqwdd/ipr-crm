@@ -60,4 +60,42 @@ export class UsersAccessService {
     const allowedTeamIds = allTeams.map((team) => team.id);
     return allowedTeamIds;
   }
+
+  async findAllowedSubbordinates(
+    userId: number,
+  ): Promise<{ teamId: number; userId: number }[]> {
+    const teams = await this.prisma.team.findMany({
+      where: {
+        curatorId: userId,
+      },
+      include: {
+        users: {
+          select: {
+            userId: true,
+          },
+        },
+        subTeams: {
+          select: {
+            curatorId: true,
+            id: true,
+          },
+        },
+      },
+    });
+
+    return teams.flatMap((team) => {
+      const users = team.users.map((user) => ({
+        userId: user.userId,
+        teamId: team.id,
+      }));
+
+      return [
+        ...users,
+        ...teams.flatMap((subTeam) => ({
+          userId: subTeam.curatorId,
+          teamId: subTeam.id,
+        })),
+      ];
+    });
+  }
 }

@@ -3,16 +3,21 @@ import { iprApi } from '@/shared/api/iprApi';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Pagination } from '@/shared/ui/Pagination';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   initialIprFilters,
   IprFilters as IprFiltersType,
 } from './IprFilters/config';
 import IprFilters from './IprFilters/IprFilters';
+import { IprListPageType } from './config';
 
 const LIMIT = 10;
 
-export default function IprList() {
+interface IprListPageProps {
+  type?: IprListPageType;
+}
+
+export default function IprListPage({ type }: IprListPageProps) {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<IprFiltersType>(initialIprFilters);
   const { data, isFetching } = iprApi.useFindAllIprQuery({
@@ -26,7 +31,13 @@ export default function IprList() {
         : undefined,
     startDate: filters.period?.[0]?.toDate()?.toISOString(),
     endDate: filters.period?.[1]?.toDate()?.toISOString(),
+    subbordinatesOnly: type === 'TEAM' ? true : undefined,
   });
+
+  useEffect(() => {
+    setPage(1);
+    setFilters(initialIprFilters);
+  }, [type]);
 
   return (
     <LoadingOverlay active={isFetching} fullScereen>
@@ -36,7 +47,7 @@ export default function IprList() {
           description="Список планов развития"
           className="max-sm:px-4"
         />
-        <IprFilters filters={filters} setFilters={setFilters} />
+        <IprFilters type={type} filters={filters} setFilters={setFilters} />
         {data && <IprTable ipr={data.data} isLoading={isFetching} />}
         <div className="flex justify-between flex-col mt-4">
           {data && data.total > 0 && (

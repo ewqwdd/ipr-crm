@@ -79,11 +79,33 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
   },
 
   { name: 'Команды', icon: UsersIcon, href: '/teams' },
-  { name: 'Оценка 360', href: '/360rate', icon: InboxIcon },
+  {
+    name: 'Оценка 360',
+    icon: InboxIcon,
+    children: [
+      {
+        name: 'Все оценки',
+        href: '/360rate',
+      },
+      {
+        name: 'Оценки команды',
+        href: '/360rate-team',
+      },
+    ],
+  },
   {
     name: 'Планы развития',
     icon: ChartBarIcon,
-    href: '/ipr',
+    children: [
+      {
+        name: 'Все планы',
+        href: '/ipr',
+      },
+      {
+        name: 'Планы команды',
+        href: '/ipr-team',
+      },
+    ],
   },
   {
     name: 'Конструктор профилей',

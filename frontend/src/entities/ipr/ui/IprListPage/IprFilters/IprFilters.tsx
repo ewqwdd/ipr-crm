@@ -15,15 +15,18 @@ import { DateObject } from 'react-multi-date-picker';
 import { PeriodSelector } from '@/shared/ui/PeriodSelector';
 import { StaticSelectFilter } from '@/shared/ui/StaticSelectFilter';
 import { universalApi } from '@/shared/api/universalApi';
+import { IprListPageType } from '../config';
 
 interface IprFiltersProps {
   filters: IprFiltersType;
   setFilters: React.Dispatch<React.SetStateAction<IprFiltersType>>;
+  type?: IprListPageType;
 }
 
 export default memo(function IprFilters({
   filters,
   setFilters,
+  type,
 }: IprFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { data: users } = usersApi.useGetUsersQuery({});
@@ -130,18 +133,20 @@ export default memo(function IprFilters({
               setFilters((prev) => ({ ...prev, userId: value.id }))
             }
           />
-          <div>
-            <span className="block text-sm font-medium text-gray-700 mb-1">
-              Команды
-            </span>
-            <TeamsMultiSelect
-              value={filters.teams}
-              onChange={(newValue) =>
-                setFilters((prev) => ({ ...prev, teams: newValue }))
-              }
-              disabledTeams={disabledTeams}
-            />
-          </div>
+          {type !== 'TEAM' && (
+            <div>
+              <span className="block text-sm font-medium text-gray-700 mb-1">
+                Команды
+              </span>
+              <TeamsMultiSelect
+                value={filters.teams}
+                onChange={(newValue) =>
+                  setFilters((prev) => ({ ...prev, teams: newValue }))
+                }
+                disabledTeams={disabledTeams}
+              />
+            </div>
+          )}
           <PeriodSelector value={filters.period} onChange={onChangePeriod} />
 
           <StaticSelectFilter
