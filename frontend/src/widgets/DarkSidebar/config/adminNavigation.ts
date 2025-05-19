@@ -1,18 +1,15 @@
 import {
   ChartBarIcon,
   ClipboardListIcon,
-  DocumentIcon,
-  FolderIcon,
   HomeIcon,
   InboxIcon,
   InboxInIcon,
   MapIcon,
   QuestionMarkCircleIcon,
-  UserIcon,
-  UsersIcon,
 } from '@heroicons/react/outline';
 import { NavType, types360, typesTasks } from './types';
 import { User } from '@/entities/user';
+import { administrationNavigation } from './administrationNavigation';
 
 export const adminNavigation: (user: User | null) => NavType[] = (user) => [
   { name: 'Дашборд', icon: HomeIcon, href: '/' },
@@ -64,67 +61,9 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
     ],
   },
   {
-    name: 'Администрирование',
-  },
-  {
-    name: 'Сотрудники',
-    icon: UserIcon,
-    children: [
-      { name: 'Сотрудники', href: '/users' },
-      {
-        name: 'Организационная структура',
-        href: '/structure',
-      },
-    ],
-  },
-
-  { name: 'Команды', icon: UsersIcon, href: '/teams' },
-  {
-    name: 'Оценка 360',
-    icon: InboxIcon,
-    children: [
-      {
-        name: 'Все оценки',
-        href: '/360rate',
-      },
-      {
-        name: 'Оценки команды',
-        href: '/360rate-team',
-      },
-    ],
-  },
-  {
-    name: 'Планы развития',
-    icon: ChartBarIcon,
-    children: [
-      {
-        name: 'Все планы',
-        href: '/ipr',
-      },
-      {
-        name: 'Планы команды',
-        href: '/ipr-team',
-      },
-    ],
-  },
-  {
-    name: 'Конструктор профилей',
-    icon: DocumentIcon,
-    href: '/skills',
-  },
-  {
-    name: 'История версий',
-    icon: FolderIcon,
-    href: '/skills/history',
-  },
-  {
-    name: 'Тесты',
+    name: 'Поддержка',
     icon: QuestionMarkCircleIcon,
-    href: '/tests',
+    href: '/support',
   },
-  {
-    name: 'Опросы',
-    icon: ClipboardListIcon,
-    href: '/surveys',
-  },
+  ...administrationNavigation,
 ];

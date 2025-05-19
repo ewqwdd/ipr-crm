@@ -67,6 +67,13 @@ const Rate360Assesment = React.lazy(
 const SurvyeResult = React.lazy(
   () => import('@/pages/SurveyResult/SurveyResult'),
 );
+const Support = React.lazy(() => import('@/pages/Support/Support'));
+const SupportAdmin = React.lazy(
+  () => import('@/pages/SupportAdmin/SupportAdmin'),
+);
+const SupportOverview = React.lazy(
+  () => import('@/pages/SupportOverview/SupportOverview'),
+);
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -192,6 +199,9 @@ export const routerItems: RouterItemType[] = [
   },
   { path: '/360rate/me', element: <Rate360MeList /> },
   { path: '/surveys/results/:id', element: <SurvyeResult /> },
+  { path: '/support', element: <Support /> },
+  { path: '/support-admin', element: <SupportAdmin />, onlyAdmin: true },
+  { path: '/support/:id', element: <SupportOverview /> },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];

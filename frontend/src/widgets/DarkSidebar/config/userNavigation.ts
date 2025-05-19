@@ -6,10 +6,10 @@ import {
   InboxInIcon,
   MapIcon,
   QuestionMarkCircleIcon,
-  UsersIcon,
 } from '@heroicons/react/outline';
 import { NavType, types360, typesTasks } from './types';
 import { User } from '@/entities/user';
+import { administrationNavigation } from './administrationNavigation';
 
 export const userNavigation: (user: User | null) => NavType[] = (
   user: User | null,
@@ -64,52 +64,11 @@ export const userNavigation: (user: User | null) => NavType[] = (
     icon: InboxInIcon,
     href: '/360rate/me',
   },
+  {
+    name: 'Поддержка',
+    icon: QuestionMarkCircleIcon,
+    href: '/support',
+  },
 
-  ...((user?.teamCurator?.length ?? 0) > 0
-    ? [
-        {
-          name: 'Администрирование',
-        },
-        { name: 'Команды', icon: UsersIcon, href: '/teams' },
-        {
-          name: 'Планы развития',
-          icon: ChartBarIcon,
-          children: [
-            {
-              name: 'Все планы',
-              href: '/ipr',
-            },
-            {
-              name: 'Планы команды',
-              href: '/ipr-team',
-            },
-          ],
-        },
-        {
-          name: 'Оценка 360',
-          icon: InboxIcon,
-          children: [
-            {
-              name: 'Все оценки',
-              href: '/360rate',
-            },
-            {
-              name: 'Оценки команды',
-              href: '/360rate-team',
-            },
-          ],
-        },
-
-        {
-          name: 'Тесты',
-          icon: QuestionMarkCircleIcon,
-          href: '/tests',
-        },
-        {
-          name: 'Опросы',
-          icon: ClipboardListIcon,
-          href: '/surveys',
-        },
-      ]
-    : []),
+  ...((user?.teamCurator?.length ?? 0) > 0 ? administrationNavigation : []),
 ];

@@ -28,6 +28,7 @@ import RateTestsModal from '../test/ui/RateTestsModal';
 import { AssessmentAssignUsersModal } from '@/widgets/AssessmentAssignUsersModal';
 import { ImportUsers } from '../user/ui/ImportUsers';
 import { RateSurveyModal } from '../survey';
+import { CreateSupportTicketModal } from '../support';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -99,6 +100,8 @@ const ModalWrapper: FC = () => {
       return <EditEvaluatorsModal {...updatedModalProps} />;
     case 'RATE_SURVEYS':
       return <RateSurveyModal {...updatedModalProps} />;
+    case 'CREATE_SUPPORT_TICKET':
+      return <CreateSupportTicketModal {...updatedModalProps} />;
     default:
       break;
   }

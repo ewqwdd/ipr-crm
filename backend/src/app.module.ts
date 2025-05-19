@@ -19,6 +19,7 @@ import { NotificationModule } from './notification/notification.module';
 import { TestModule } from './test/test.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SurveyModule } from './survey/survey.module';
+import { SupportModule } from './support/support.module';
 
 console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
 
@@ -39,8 +40,8 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
     TestModule,
     ScheduleModule.forRoot(),
     SurveyModule,
+    SupportModule,
   ],
-  controllers: [],
   providers: [
     PrismaService,
     CookieService,

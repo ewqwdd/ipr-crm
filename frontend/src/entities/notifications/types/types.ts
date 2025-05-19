@@ -6,6 +6,7 @@ export const NotificationTypes = [
   'RATE_ASSIGNED',
   'TEST_ASSIGNED',
   'SURVEY_ASSIGNED',
+  'SUPPORT_TICKET_CREATED',
 ] as const;
 export type NotificationType = (typeof NotificationTypes)[number];
 

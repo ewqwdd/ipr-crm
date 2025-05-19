@@ -330,6 +330,34 @@ export class NotificationsService {
     });
   }
 
+  async sendSupportTicketCreatedNotification(
+    ticketId: number,
+    user: { id: number; firstName: string; lastName: string; email: string },
+  ) {
+    if (process.env.MAIL_ENABLED === 'true') {
+      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+      const message = 'Новое обращение в поддержку';
+      const link = `${process.env.FRONTEND_URL}/support/admin`;
+
+      const html = this.generateText(heading, message, link);
+
+      await this.mailService.sendMail(
+        user.email,
+        'Новое обращение в поддержку',
+        html,
+      );
+    }
+
+    await this.prismaService.notification.create({
+      data: {
+        title: 'Новое обращение в поддержку',
+        userId: user.id,
+        type: 'SUPPORT_TICKET_CREATED',
+        url: '/support/admin',
+      },
+    });
+  }
+
   @Cron(CronExpression.EVERY_5_MINUTES, { name: 'sendTestAssignedCron' })
   async sendSurveyAssignedCron() {
     console.log('sendSurveyAssignedCron started');

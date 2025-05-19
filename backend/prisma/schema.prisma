@@ -45,6 +45,9 @@ model User {
   mentorId    Int?
   teamCurator Team[]
 
+  supportTickets SupportTicket[] @relation("UserSupportTicket")
+  curatorTickets SupportTicket[] @relation("CuratorSupportTicket")
+
   createdAt DateTime @default(now())
 }
 
@@ -587,6 +590,19 @@ model ProfileVersion {
   date DateTime
 }
 
+model SupportTicket {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String
+  description String
+  status      SupportTicketStatus @default(OPEN)
+  createdAt   DateTime @default(now())
+  curatorId   Int?
+
+  user User @relation("UserSupportTicket", fields: [userId], references: [id], onDelete: Cascade)
+  curator User? @relation("CuratorSupportTicket", fields: [curatorId], references: [id], onDelete: SetNull)
+}
+
 enum SkillType {
   SOFT
   HARD
@@ -656,6 +672,7 @@ enum NotificationType {
   TEST_ASSIGNED
   TEST_TIME_OVER
   SURVEY_ASSIGNED
+  SUPPORT_TICKET_CREATED
 }
 
 enum TestAccess {
@@ -681,4 +698,10 @@ enum SurveyType {
   FILE
   PHONE
   TIME
+}
+
+enum SupportTicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
 }
