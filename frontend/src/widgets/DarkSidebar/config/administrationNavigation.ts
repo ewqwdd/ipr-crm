@@ -4,13 +4,29 @@ import {
   ClipboardListIcon,
   InboxIcon,
   QuestionMarkCircleIcon,
+  UserIcon,
   UsersIcon,
 } from '@heroicons/react/outline';
 
-export const administrationNavigation = [
+export const administrationNavigation = (type: 'admin' | 'curator') => [
   {
     name: 'Администрирование',
   },
+  ...(type === 'admin'
+    ? [
+        {
+          name: 'Сотрудники',
+          icon: UserIcon,
+          children: [
+            { name: 'Сотрудники', href: '/users' },
+            {
+              name: 'Организационная структура',
+              href: '/structure',
+            },
+          ],
+        },
+      ]
+    : []),
   { name: 'Команды', icon: UsersIcon, href: '/teams' },
   {
     name: 'Планы развития',

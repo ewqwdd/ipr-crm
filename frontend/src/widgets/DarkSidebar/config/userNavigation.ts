@@ -70,5 +70,7 @@ export const userNavigation: (user: User | null) => NavType[] = (
     href: '/support',
   },
 
-  ...((user?.teamCurator?.length ?? 0) > 0 ? administrationNavigation : []),
+  ...((user?.teamCurator?.length ?? 0) > 0
+    ? administrationNavigation('curator')
+    : []),
 ];

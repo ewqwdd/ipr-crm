@@ -65,5 +65,5 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
     icon: QuestionMarkCircleIcon,
     href: '/support',
   },
-  ...administrationNavigation,
+  ...administrationNavigation('admin'),
 ];
