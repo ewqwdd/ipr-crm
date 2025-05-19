@@ -1,5 +1,7 @@
 export type {
-  CreateSupportTicketDto, SupportTicketStatus, SupportTicketType,
+  CreateSupportTicketDto,
+  SupportTicketStatus,
+  SupportTicketType,
 } from './config/types';
 import SupportTicketSelf from './ui/SupportTicketSelf';
 import CreateSupportTicketModal from './ui/CreateSupportTicketModal';

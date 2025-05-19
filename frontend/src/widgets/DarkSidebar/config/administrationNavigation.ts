@@ -67,9 +67,13 @@ export const administrationNavigation = (type: 'admin' | 'curator') => [
     icon: ClipboardListIcon,
     href: '/surveys',
   },
-  {
-    name: 'Обращения в поддержку',
-    icon: ChatAltIcon,
-    href: '/support-admin',
-  },
+  ...(type === 'admin'
+    ? [
+        {
+          name: 'Обращения в поддержку',
+          icon: ChatAltIcon,
+          href: '/support-admin',
+        },
+      ]
+    : []),
 ];

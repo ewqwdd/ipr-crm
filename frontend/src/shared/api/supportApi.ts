@@ -1,5 +1,8 @@
-
-import { CreateSupportTicketDto, SupportTicketStatus, SupportTicketType } from '@/entities/support';
+import {
+  CreateSupportTicketDto,
+  SupportTicketStatus,
+  SupportTicketType,
+} from '@/entities/support';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const supportApi = createApi({
