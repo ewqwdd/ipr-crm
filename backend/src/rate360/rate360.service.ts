@@ -421,11 +421,12 @@ export class Rate360Service {
   async findSelfRates(userId: number) {
     const rate360 = await this.prismaService.rate360.findMany({
       where: {
-        finished: false,
+        // finished: false,
         userId,
         userConfirmed: true,
         curatorConfirmed: true,
         archived: false,
+        hidden: false,
       },
       include: {
         spec: true,
