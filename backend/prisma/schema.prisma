@@ -376,7 +376,7 @@ model GrowthPlanTask {
   material   Material              @relation(fields: [materialId], references: [id], onDelete: Cascade)
   competency Competency?           @relation(fields: [competencyId], references: [id])
   indicator  Indicator?            @relation(fields: [indicatorId], references: [id])
-  plan       IndividualGrowthPlan? @relation(fields: [planId], references: [id])
+  plan       IndividualGrowthPlan? @relation(fields: [planId], references: [id], onDelete: Cascade)
 }
 
 // ИПР

@@ -14,6 +14,10 @@ export default {
       colors: {
         cyan: colors.cyan,
       },
+      width: {
+        sidebar: 'var(--sidebar-width)',
+        'no-sidebar': 'calc(100dvw - var(--sidebar-width))',
+      },
     },
   },
   plugins: [require('@tailwindcss/forms')],

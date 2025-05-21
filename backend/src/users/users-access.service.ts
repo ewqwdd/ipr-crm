@@ -91,7 +91,8 @@ export class UsersAccessService {
       return [
         ...users,
         ...(team.curatorId
-          ? [{ userId: team.curatorId, teamId: team.id }] : []),
+          ? [{ userId: team.curatorId, teamId: team.id }]
+          : []),
         ...team.subTeams.map((subTeam) => ({
           userId: subTeam.curatorId,
           teamId: subTeam.id,

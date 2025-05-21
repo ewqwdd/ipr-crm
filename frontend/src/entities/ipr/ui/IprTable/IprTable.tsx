@@ -6,9 +6,16 @@ import RateRow from './RateRow';
 interface IprTableProps {
   ipr: Ipr[];
   isLoading: boolean;
+  selected?: number[];
+  setSelected?: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
-export default function IprTable({ ipr, isLoading }: IprTableProps) {
+export default function IprTable({
+  ipr,
+  isLoading,
+  selected,
+  setSelected,
+}: IprTableProps) {
   return (
     <div className="max-sm:max-w-full max-sm:overflow-x-auto">
       <table className="sm:min-w-full divide-y divide-gray-300 mt-2">
@@ -18,7 +25,14 @@ export default function IprTable({ ipr, isLoading }: IprTableProps) {
             'animate-pulse pointer-events-none': isLoading,
           })}
         >
-          {ipr?.map((plan, index) => <RateRow index={index} task={plan} />)}
+          {ipr?.map((plan, index) => (
+            <RateRow
+              setSelected={setSelected}
+              selected={selected}
+              index={index}
+              task={plan}
+            />
+          ))}
         </tbody>
       </table>
     </div>

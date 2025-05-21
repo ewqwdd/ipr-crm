@@ -3,17 +3,28 @@ import { Ipr } from '../../model/types';
 import { Link } from 'react-router';
 import { Progress } from '@/shared/ui/Progress';
 import { ArrowRightIcon, PencilAltIcon } from '@heroicons/react/outline';
+import { Checkbox } from '@/shared/ui/Checkbox';
+import { useCallback } from 'react';
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 
 interface RateRowProps {
   task: Ipr;
   index: number;
+  selected?: number[];
+  setSelected?: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
-export default function RateRow({ index, task }: RateRowProps) {
+export default function RateRow({
+  index,
+  task,
+  selected,
+  setSelected,
+}: RateRowProps) {
   const toDoTasks = task.tasks.filter((task) => task.status === 'TO_DO');
   const inProgressTasks = task.tasks.filter(
     (task) => task.status === 'IN_PROGRESS',
   );
+  const isAdmin = useIsAdmin();
 
   // const requiredTasks = task.tasks.filter(
   //   (task) => ['OBVIOUS', 'GENERAL'].includes(task.type) && task.onBoard,
@@ -29,12 +40,33 @@ export default function RateRow({ index, task }: RateRowProps) {
 
   const percent = tasksCompleted.length / task.tasks.length || 0;
 
+  const onSelectToggle = useCallback(
+    () =>
+      setSelected?.((prev) => {
+        if (prev?.includes(task.id)) {
+          return prev.filter((item) => item !== task.id);
+        } else {
+          return [...(prev || []), task.id];
+        }
+      }),
+    [setSelected, task.id],
+  );
+
   return (
     <tr
       className={cva({
         'bg-gray-50': index % 2 === 0,
       })}
     >
+      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+        {isAdmin && (
+          <Checkbox
+            checked={selected?.includes(task.id)}
+            onChange={onSelectToggle}
+          />
+        )}
+      </td>
+
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
         <Link
           className="font-medium text-gray-900  hover:text-violet-900 transition-all"

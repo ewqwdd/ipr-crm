@@ -187,6 +187,19 @@ const iprApi = createApi({
       }),
       providesTags: (_, __, id) => [{ type: 'competency-blocks', id }],
     }),
+    deleteIprs: build.mutation<void, { ids: number[] }>({
+      query: (data) => ({
+        url: '/ipr',
+        method: 'DELETE',
+        body: { ids: data.ids },
+      }),
+      // @ts-ignore
+      invalidatesTags: (_, __, { ids }) => [
+        'ipr',
+        'user-ipr',
+        ...ids.map((id) => ({ type: 'board', id })),
+      ],
+    }),
   }),
 });
 

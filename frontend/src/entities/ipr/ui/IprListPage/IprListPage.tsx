@@ -10,6 +10,7 @@ import {
 } from './IprFilters/config';
 import IprFilters from './IprFilters/IprFilters';
 import { IprListPageType } from './config';
+import IprListSettings from './IprListSettings';
 
 const LIMIT = 10;
 
@@ -33,6 +34,7 @@ export default function IprListPage({ type }: IprListPageProps) {
     endDate: filters.period?.[1]?.toDate()?.toISOString(),
     subbordinatesOnly: type === 'TEAM' ? true : undefined,
   });
+  const [selected, setSelected] = useState<number[]>([]);
 
   useEffect(() => {
     setPage(1);
@@ -48,7 +50,14 @@ export default function IprListPage({ type }: IprListPageProps) {
           className="max-sm:px-4"
         />
         <IprFilters type={type} filters={filters} setFilters={setFilters} />
-        {data && <IprTable ipr={data.data} isLoading={isFetching} />}
+        {data && (
+          <IprTable
+            ipr={data.data}
+            isLoading={isFetching}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        )}
         <div className="flex justify-between flex-col mt-4">
           {data && data.total > 0 && (
             <Pagination
@@ -60,6 +69,13 @@ export default function IprListPage({ type }: IprListPageProps) {
           )}
         </div>
       </div>
+      {selected.length > 0 && (
+        <IprListSettings
+          selected={selected}
+          setSelected={setSelected}
+          isLoading={isFetching}
+        />
+      )}
     </LoadingOverlay>
   );
 }

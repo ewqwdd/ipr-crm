@@ -22,10 +22,7 @@ export default function DarkSidebar() {
   }
 
   return (
-    <div
-      className="w-1/3 flex flex-col min-h-0 bg-gray-800 max-w-96"
-      id="desktop-sidebar"
-    >
+    <div className="flex flex-col min-h-0 bg-gray-800 max-w-96 w-sidebar">
       <Content />
     </div>
   );

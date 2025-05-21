@@ -19,6 +19,7 @@ import { NotificationsService } from 'src/utils/notifications/notifications.serv
 import { IprFiltersDto } from './dto/ipr-filters.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
 import { findAllIprInclude } from './constants';
+import { DeleteIprsDto } from './dto/delete-iprs.dto';
 
 @Injectable()
 export class IprService {
@@ -824,6 +825,16 @@ export class IprService {
           include: {
             indicators: true,
           },
+        },
+      },
+    });
+  }
+
+  async deleteIprs(data: DeleteIprsDto) {
+    return await this.prismaService.individualGrowthPlan.deleteMany({
+      where: {
+        id: {
+          in: data.ids,
         },
       },
     });

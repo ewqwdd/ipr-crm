@@ -5,6 +5,10 @@
   height: 100dvh;
 }
 
+:root {
+  --sidebar-width: 384px;
+}
+
 body {
   overflow: hidden;
   max-height: 100dvh;
@@ -31,4 +35,10 @@ body {
 
 .boardPage .react-kanban-board {
   padding: 0 12px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 0px;
+  }
 }

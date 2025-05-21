@@ -22,6 +22,7 @@ import { AddTaskDto } from './dto/add-task.dto';
 import { SetDeadlineDto } from './dto/set-deadline.dto';
 import { RemoveFromBoardDto } from './dto/remove-from-board.dto';
 import { IprFiltersDto } from './dto/ipr-filters.dto';
+import { DeleteIprsDto } from './dto/delete-iprs.dto';
 
 @Controller('ipr')
 export class IprController {
@@ -34,6 +35,12 @@ export class IprController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     return this.iprService.findOneby360Id(id, sessionInfo);
+  }
+
+  @Delete('/')
+  @UseGuards(AdminGuard)
+  async deleteIpr(@Body() data: DeleteIprsDto) {
+    return this.iprService.deleteIprs(data);
   }
 
   @Post('/360/:rateId')

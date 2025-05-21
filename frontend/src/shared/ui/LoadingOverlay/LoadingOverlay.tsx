@@ -18,10 +18,6 @@ const LoadingOverlay: FC<LoadingOverlayProps> = ({
 
   if (!active) return <>{memoizedChildren}</>;
 
-  const width = fullScereen
-    ? document.getElementById('desktop-sidebar')?.offsetWidth
-    : 0;
-
   return (
     <div
       className={cva('relative grow w-full h-full', className, {
@@ -32,12 +28,9 @@ const LoadingOverlay: FC<LoadingOverlayProps> = ({
         className={cva(
           'absolute flex justify-center items-center bg-white rounded-md z-10 w-full h-full',
           {
-            'fixed right-0 top-0': fullScereen,
+            'fixed right-0 top-0 w-no-sidebar': fullScereen,
           },
         )}
-        style={{
-          width: `calc(100% - ${width ?? 0}px)`,
-        }}
       >
         <Loading />
       </div>
