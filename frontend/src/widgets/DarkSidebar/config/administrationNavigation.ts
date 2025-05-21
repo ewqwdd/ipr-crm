@@ -2,6 +2,8 @@ import {
   ChartBarIcon,
   ChatAltIcon,
   ClipboardListIcon,
+  DocumentIcon,
+  FolderIcon,
   InboxIcon,
   QuestionMarkCircleIcon,
   UserIcon,
@@ -29,20 +31,6 @@ export const administrationNavigation = (type: 'admin' | 'curator') => [
     : []),
   { name: 'Команды', icon: UsersIcon, href: '/teams' },
   {
-    name: 'Планы развития',
-    icon: ChartBarIcon,
-    children: [
-      {
-        name: 'Все планы',
-        href: '/ipr',
-      },
-      {
-        name: 'Планы команды',
-        href: '/ipr-team',
-      },
-    ],
-  },
-  {
     name: 'Оценка 360',
     icon: InboxIcon,
     children: [
@@ -56,7 +44,34 @@ export const administrationNavigation = (type: 'admin' | 'curator') => [
       },
     ],
   },
-
+  {
+    name: 'Планы развития',
+    icon: ChartBarIcon,
+    children: [
+      {
+        name: 'Все планы',
+        href: '/ipr',
+      },
+      {
+        name: 'Планы команды',
+        href: '/ipr-team',
+      },
+    ],
+  },
+  ...(type === 'admin'
+    ? [
+        {
+          name: 'Конструктор профилей',
+          icon: DocumentIcon,
+          href: '/skills',
+        },
+        {
+          name: 'История версий',
+          icon: FolderIcon,
+          href: '/skills/history',
+        },
+      ]
+    : []),
   {
     name: 'Тесты',
     icon: QuestionMarkCircleIcon,

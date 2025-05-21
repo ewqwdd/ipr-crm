@@ -40,10 +40,16 @@ export default function ConfirmListItem({
 
   return (
     <div className="flex items-center justify-between p-1.5 sm:p-3  rounded-sm border-t border-gray-300 first:border-transparent flex-wrap gap-y-3 gap-[1%]">
-      <span className="text-base font-medium text-gray-800 flex-nowrap sm:basis-[19%] basis-[32%]">
+      <Link
+        to={`/teams/${rate.teamId}`}
+        className="text-base font-medium text-violet-600 flex-nowrap sm:basis-[15%] basis-[32%]"
+      >
+        {rate?.team?.name}
+      </Link>
+      <span className="text-base font-medium text-gray-800 flex-nowrap sm:basis-[15%] basis-[32%]">
         {spec?.name}
       </span>
-      <div className="sm:basis-[19%] basis-[32%] max-sm:justify-center flex gap-2 items-center">
+      <div className="sm:basis-[15%] basis-[32%] max-sm:justify-center flex gap-2 items-center">
         <Link
           to={`/users/${rate?.userId}`}
           className="text-base font-medium text-violet-600 flex-nowrap max-sm:text-sm"
@@ -51,10 +57,10 @@ export default function ConfirmListItem({
           {rate?.user.username}
         </Link>
       </div>
-      <span className="sm:text-base text-sm text-gray-500 flex-nowrap sm:basis-[19%] basis-[32%] max-sm:text-right">
+      <span className="sm:text-base text-sm text-gray-500 flex-nowrap sm:basis-[15%] basis-[24%] max-sm:text-right text-nowrap max-[420px]:text-xs">
         {rateTypeNames[rate.type]}
       </span>
-      <span className="sm:text-base text-sm text-gray-500 flex-nowrap sm:basis-[19%] basis-[40%]">
+      <span className="sm:text-base text-sm text-gray-500 flex-nowrap sm:basis-[15%] basis-[24%] text-nowrap max-[420px]:text-xs">
         {rate.startDate?.slice(0, 10)}
       </span>
       <SoftButton
@@ -62,7 +68,7 @@ export default function ConfirmListItem({
         onClick={() =>
           openModal('CONFIRM_EVALUATORS', { rate, curatorBlocked })
         }
-        className="sm:basis-[19%]"
+        className="sm:basis-[15%]"
       >
         Утвердить список
       </SoftButton>

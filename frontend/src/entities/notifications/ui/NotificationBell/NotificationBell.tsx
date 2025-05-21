@@ -52,11 +52,11 @@ export default function NotificationBell() {
             to={notification.url!}
             onClick={() => readNotification(notification.id)}
           >
-            <h4 className="text-sm font-semibold text-gray-800">
+            <h4 className="text-sm font-semibold text-gray-800 truncate">
               {notification.title}
             </h4>
             {notification.description && (
-              <span className="text-xs text-gray-600">
+              <span className="text-xs text-gray-600 truncate">
                 {notification.description}
               </span>
             )}

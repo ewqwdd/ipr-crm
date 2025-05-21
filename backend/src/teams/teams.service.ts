@@ -66,6 +66,7 @@ export class TeamsService {
                   select: {
                     specId: true,
                     spec: { select: { name: true, active: true } },
+                    teamId: true,
                   },
                 },
               },
@@ -75,6 +76,15 @@ export class TeamsService {
         curator: { select: { avatar: true, id: true, username: true } },
       },
     });
+
+    for (const team of teams) {
+      for (const userTeam of team.users) {
+        userTeam.user.specsOnTeams = userTeam.user.specsOnTeams.filter(
+          (spec) => spec.teamId === team.id,
+        );
+      }
+    }
+
     return teams;
   }
 
@@ -335,7 +345,7 @@ export class TeamsService {
       });
     }
 
-    return;
+    return { success: true };
   }
 
   async remove(id: number) {

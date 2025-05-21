@@ -275,7 +275,10 @@ export class Rate360Service {
 
             let curatorConfirm = data.confirmCurator;
 
-            if (team.curatorId === rate.userId && !team.parentTeamId) {
+            if (
+              team.curatorId === rate.userId &&
+              (!team.parentTeamId || team.parentTeam.curatorId === rate.userId)
+            ) {
               curatorConfirm = false;
             }
 
@@ -1075,7 +1078,11 @@ export class Rate360Service {
     const filtered = rates.filter((rate) => {
       if (rate.team.curatorId !== rate.userId && rate.team.curatorId === userId)
         return true;
-      if (rate.team.parentTeam && rate.team.parentTeam.curatorId === userId)
+      if (
+        rate.team.parentTeam &&
+        rate.team.parentTeam.curatorId === userId &&
+        rate.team.parentTeam.curatorId !== rate.userId
+      )
         return true;
       return false;
     });

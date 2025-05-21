@@ -26,10 +26,10 @@ export default function CuratorModal({
 
   const [mutate, { isSuccess, isLoading: mutateLoading }] =
     teamsApi.useAddCuratorMutation();
-
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!value) return;
-    mutate({ curatorId: value, id: teamId });
+    await mutate({ curatorId: value, id: teamId }).unwrap();
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function CuratorModal({
       setOpen(false);
       refetch();
     }
-  }, [isSuccess]);
+  }, [isSuccess, setOpen, refetch]);
 
   return (
     <Modal

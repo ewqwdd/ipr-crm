@@ -53,7 +53,6 @@ export default function EvaluatorsTab({
       ),
     [selectedSpecs],
   );
-
   useLayoutEffect(() => {
     const updated = selectedSpecs.map((s) => {
       const team = data?.list.find((t) => t.id === s.teamId);
@@ -72,9 +71,8 @@ export default function EvaluatorsTab({
 
       const updatedSpecs = s.specs.map((spec) => {
         const isCurator = team?.curator?.id === spec.userId;
-
         const evaluateCurators = [
-          teamCurator?.userId === spec.userId
+          !teamCurator || teamCurator?.userId === spec.userId
             ? parentTeam?.curator &&
               parentTeam?.curator.id !== spec.userId && {
                 userId: parentTeam?.curator.id,
@@ -96,29 +94,33 @@ export default function EvaluatorsTab({
             : [];
 
         const evaluateSubbordinate =
-          (subTeams
-            ?.map((t) =>
-              t.curator
-                ? { userId: t.curator.id, username: t.curator.username }
-                : undefined,
-            )
-            .filter(
-              (t) =>
-                !!t &&
-                !evaluateCurators.find(
-                  (curator) => curator.userId === t.userId,
-                ) &&
-                !evaluateTeam.find(
-                  (teamMember) => teamMember.userId === t.userId,
-                ) &&
-                t.userId !== spec.userId,
-            ) as EvaluateUser[]) ?? [];
+          rateType === 'Rate360' && subTeams
+            ? (subTeams
+                .map((t) =>
+                  t.curator
+                    ? { userId: t.curator.id, username: t.curator.username }
+                    : undefined,
+                )
+                .filter(
+                  (t) =>
+                    !!t &&
+                    !evaluateCurators.find(
+                      (curator) => curator.userId === t.userId,
+                    ) &&
+                    !evaluateTeam.find(
+                      (teamMember) => teamMember.userId === t.userId,
+                    ) &&
+                    t.userId !== spec.userId,
+                ) as EvaluateUser[])
+            : [];
 
         return {
           ...spec,
           evaluateCurators,
-          evaluateTeam: evaluateTeam,
-          evaluateSubbordinate: isCurator ? evaluateSubbordinate : [],
+          evaluateTeam: isCurator ? [] : evaluateTeam,
+          evaluateSubbordinate: isCurator
+            ? [...evaluateSubbordinate, ...evaluateTeam]
+            : [],
         };
       });
       return {
