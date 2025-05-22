@@ -1075,16 +1075,17 @@ export class Rate360Service {
 
     // Для куратора оценки челнов его команды или куратора дочерней команды
 
-    const filtered = rates.filter((rate) => {
-      if (rate.team.curatorId !== rate.userId && rate.team.curatorId === userId)
-        return true;
-      if (
-        rate.team.parentTeam &&
-        rate.team.parentTeam.curatorId === userId &&
-        rate.team.parentTeam.curatorId !== rate.userId
-      )
-        return true;
-      return false;
+    const filtered = rates.filter(({ team, userId: rateUserId }) => {
+      const isCurator = team.curatorId === userId;
+      const isSelfCurator = team.curatorId === rateUserId;
+
+      const isParentCurator =
+        (!team.curatorId || isSelfCurator) &&
+        team.parentTeam &&
+        team.parentTeam?.curatorId === userId &&
+        team.parentTeam?.curatorId !== rateUserId;
+
+      return (isCurator && !isSelfCurator) || isParentCurator;
     });
     return filtered;
   }
