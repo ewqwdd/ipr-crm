@@ -1251,7 +1251,16 @@ export class Rate360Service {
         id: rateId,
       },
       include: {
-        team: true,
+        team: {
+          select: {
+            curatorId: true,
+            parentTeam: {
+              select: {
+                curatorId: true,
+              },
+            },
+          },
+        },
         user: true,
         evaluators: {
           select: {
@@ -1264,14 +1273,24 @@ export class Rate360Service {
       throw new NotFoundException('Rate not found');
     }
 
+    const isCurator =
+      rate.team.curatorId && rate.team.curatorId !== rate.userId;
+    const isParentCurator =
+      rate.team.parentTeam?.curatorId &&
+      rate.team.parentTeam?.curatorId !== rate.userId;
+
     if (!rate.userConfirmed) {
       await this.notificationsService.sendRateSelfAssignedNotification(
         rate.userId,
         rateId,
       );
-    } else if (!rate.curatorConfirmed) {
+    } else if (!rate.curatorConfirmed && (isCurator || isParentCurator)) {
+      let curatorId = rate.team?.curatorId;
+      if (!isCurator) {
+        curatorId = rate.team.parentTeam?.curatorId;
+      }
       await this.notificationsService.sendRateConfirmNotification(
-        rate.team.curatorId,
+        curatorId,
         rateId,
       );
     } else {
