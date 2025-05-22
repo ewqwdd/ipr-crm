@@ -14,6 +14,7 @@ import { cva } from '@/shared/lib/cva';
 import { rate360Api } from '@/shared/api/rate360Api';
 import toast from 'react-hot-toast';
 import { TeamItem } from '../../EvaluatorsTeamForm';
+import { getInitialEvaluators } from '@/entities/rates/model/getInitialEvaluators';
 
 interface EvaluatorsTabProps {
   setTab: (tab: TabType) => void;
@@ -29,6 +30,22 @@ export interface TeamItemIds {
   evaluateCurators: EvaluateUser[];
   evaluateTeam: EvaluateUser[];
   evaluateSubbordinate: EvaluateUser[];
+}
+
+interface OnDeleteArgs {
+  evaluatorId: number;
+  teamId: number;
+  specId: number;
+  userId: number;
+  type: EvaulatorType;
+}
+
+interface OnSubmitArgs {
+  evaluators: EvaluateUser[];
+  teamId: number;
+  specId: number;
+  userId: number;
+  type: EvaulatorType;
 }
 
 export default function EvaluatorsTab({
@@ -54,80 +71,7 @@ export default function EvaluatorsTab({
     [selectedSpecs],
   );
   useLayoutEffect(() => {
-    const updated = selectedSpecs.map((s) => {
-      const team = data?.list.find((t) => t.id === s.teamId);
-      const subTeams = data?.list.filter((t) => t.parentTeamId === s.teamId);
-      const teamUsers =
-        team?.users?.map((u) => ({
-          userId: u.user.id,
-          username: u.user.username,
-        })) ?? [];
-      const teamCurator = team?.curator && {
-        userId: team.curator.id,
-        username: team.curator.username,
-      };
-
-      const parentTeam = data?.list.find((t) => t.id === team?.parentTeamId);
-
-      const updatedSpecs = s.specs.map((spec) => {
-        const isCurator = team?.curator?.id === spec.userId;
-        const evaluateCurators = [
-          !teamCurator || teamCurator?.userId === spec.userId
-            ? parentTeam?.curator &&
-              parentTeam?.curator.id !== spec.userId && {
-                userId: parentTeam?.curator.id,
-                username: parentTeam?.curator.username,
-              }
-            : teamCurator,
-        ].filter((c) => !!c && c.userId !== spec.userId) as EvaluateUser[];
-
-        const evaluateTeam =
-          rateType === 'Rate360'
-            ? (teamUsers.filter(
-                (c) =>
-                  c.userId !== spec.userId &&
-                  !evaluateCurators.find(
-                    (curator) => curator.userId === c.userId,
-                  ) &&
-                  c.userId !== spec.userId,
-              ) as EvaluateUser[])
-            : [];
-
-        const evaluateSubbordinate =
-          rateType === 'Rate360' && subTeams
-            ? (subTeams
-                .map((t) =>
-                  t.curator
-                    ? { userId: t.curator.id, username: t.curator.username }
-                    : undefined,
-                )
-                .filter(
-                  (t) =>
-                    !!t &&
-                    !evaluateCurators.find(
-                      (curator) => curator.userId === t.userId,
-                    ) &&
-                    !evaluateTeam.find(
-                      (teamMember) => teamMember.userId === t.userId,
-                    ) &&
-                    t.userId !== spec.userId,
-                ) as EvaluateUser[])
-            : [];
-
-        return {
-          ...spec,
-          evaluateCurators,
-          evaluateTeam: isCurator ? [] : evaluateTeam,
-          evaluateSubbordinate: isCurator
-            ? [...evaluateSubbordinate, ...evaluateTeam]
-            : [],
-        };
-      });
-      return {
-        ...s,
-        specs: updatedSpecs,
-      };
-    });
+    const updated = getInitialEvaluators(selectedSpecs, rateType, data?.list);
     dispatch(ratesActions.setSpecs(updated));
   }, []);
 
@@ -144,59 +88,13 @@ export default function EvaluatorsTab({
     }
   }, [isError]);
 
-  const onDelete = useCallback(
-    ({
-      evaluatorId,
-      specId,
-      teamId,
-      type,
-      userId,
-    }: {
-      evaluatorId: number;
-      teamId: number;
-      specId: number;
-      userId: number;
-      type: EvaulatorType;
-    }) => {
-      dispatch(
-        ratesActions.removeEvaluator({
-          teamId,
-          specId,
-          userId,
-          evaluatorId,
-          type,
-        }),
-      );
-    },
-    [],
-  );
+  const onDelete = useCallback((data: OnDeleteArgs) => {
+    dispatch(ratesActions.removeEvaluator(data));
+  }, []);
 
-  const onSubmit = useCallback(
-    ({
-      evaluators,
-      specId,
-      teamId,
-      type,
-      userId,
-    }: {
-      evaluators: EvaluateUser[];
-      teamId: number;
-      specId: number;
-      userId: number;
-      type: EvaulatorType;
-    }) => {
-      dispatch(
-        ratesActions.setSpecsForUser({
-          teamId,
-          specId,
-          userId,
-          type,
-          evaluators,
-        }),
-      );
-    },
-    [],
-  );
+  const onSubmit = useCallback((data: OnSubmitArgs) => {
+    dispatch(ratesActions.setSpecsForUser(data));
+  }, []);
 
   return (
     <>
