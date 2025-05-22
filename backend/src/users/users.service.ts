@@ -49,6 +49,7 @@ export class UsersService {
       },
       omit: { roleId: true, specId: true, authCode: true },
     });
+    if (!user) throw new NotFoundException('Пользователь не найден.');
     const teamAccess = await this.usersAccessService.findAllowedTeams(user.id);
 
     return { ...user, teamAccess };

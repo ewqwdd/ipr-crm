@@ -49,7 +49,7 @@ export default function BlockListItem({
       key={block.id}
     >
       <div className="flex-1 whitespace-nowrap text-ellipsis max-w-64 w-full overflow-clip pr-2">
-        {block.name}
+        {block.type === 'HARD' ? block.name : '-'}
       </div>
       <div className="min-w-28 font-medium text-gray-500 pl-4">
         Оценка:{' '}
