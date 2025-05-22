@@ -15,7 +15,7 @@ export const surveyQuestionTypes = [
 export type SurveyQuestionType = (typeof surveyQuestionTypes)[number];
 
 export const surveyQuestionTypeLabels: Record<SurveyQuestionType, string> = {
-  SINGLE: 'Единичний вибор',
+  SINGLE: 'Единичний выбор',
   MULTIPLE: 'Мультивыбор',
   NUMBER: 'Число',
   TEXT: 'Короткий текст',

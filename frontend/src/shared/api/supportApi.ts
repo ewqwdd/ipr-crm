@@ -48,20 +48,14 @@ const supportApi = createApi({
         method: 'POST',
         body: { status },
       }),
-      invalidatesTags: (_, __, { id }) => [
-        { type: 'Support', id },
-        { type: 'Admin', id },
-      ],
+      invalidatesTags: ['Support', 'Admin'],
     }),
     assignSelfToTicket: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
         url: `/admin/${id}/assign-self`,
         method: 'POST',
       }),
-      invalidatesTags: (_, __, { id }) => [
-        { type: 'Support', id },
-        { type: 'Admin', id },
-      ],
+      invalidatesTags: ['Support', 'Admin'],
     }),
   }),
 });

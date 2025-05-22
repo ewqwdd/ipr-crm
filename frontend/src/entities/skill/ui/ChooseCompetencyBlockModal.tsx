@@ -1,8 +1,9 @@
 import { skillsApi } from '@/shared/api/skillsApi';
 import { universalApi } from '@/shared/api/universalApi';
 import { Checkbox } from '@/shared/ui/Checkbox';
+import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { Modal } from '@/shared/ui/Modal';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 
 interface ChooseCompetencyBlockModalData {
   specId: number;
@@ -26,9 +27,17 @@ const ChooseCompetencyBlockModal: FC<ChooseCompetencyBlockModalProps> = ({
   const [mutate, { isLoading, isSuccess }] =
     skillsApi.useAddBlockToSpecMutation();
   const { refetch } = universalApi.useGetSpecsQuery();
+  const [search, setSearch] = useState<string>('');
 
-  const hardSkills = data?.filter((skill) => skill.type === 'HARD');
-  const softSkills = data?.filter((skill) => skill.type === 'SOFT');
+  const filteredBySearch = useMemo(() => {
+    if (!data) return [];
+    return data.filter((item) =>
+      item.name.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [search, data]);
+
+  const hardSkills = filteredBySearch.filter((skill) => skill.type === 'HARD');
+  const softSkills = filteredBySearch.filter((skill) => skill.type === 'SOFT');
 
   const generateOnChange = (id: number) => () => {
     if (selected.includes(id)) {
@@ -59,6 +68,12 @@ const ChooseCompetencyBlockModal: FC<ChooseCompetencyBlockModalProps> = ({
       loading={isFetching || isLoading}
       className="sm:max-w-2xl"
     >
+      <InputWithLabelLight
+        placeholder="Поиск..."
+        className="mt-3"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
       <div className="grid grid-cols-2 gap-3 mt-4">
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-medium text-gray-800">Hard skills</h3>

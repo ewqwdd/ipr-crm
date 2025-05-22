@@ -2,18 +2,20 @@ import { useModal } from '@/app/hooks/useModal';
 import { Spec } from '@/entities/user';
 import { universalApi } from '@/shared/api/universalApi';
 import { cva } from '@/shared/lib/cva';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import SpecializationTableSkeleton from './SpecializationTableSkeleton';
 import SpecializationTableItem from './SpecializationTableItem';
 
 interface ISpecializationsTableProps {
   selectedSpec: number | null;
   setSelectedSpec: React.Dispatch<React.SetStateAction<number | null>>;
+  search?: string;
 }
 
 const SpecializationsTable: FC<ISpecializationsTableProps> = ({
   selectedSpec,
   setSelectedSpec,
+  search,
 }) => {
   const { openModal } = useModal();
   const { data, isFetching } = universalApi.useGetSpecsQuery();
@@ -22,6 +24,13 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
   const selectSpecialization = (data: Spec) => {
     setSelectedSpec(data.id);
   };
+
+  const filtered = useMemo(() => {
+    if (!data) return [];
+    return data.filter((item) =>
+      item.name.toLowerCase().includes(search?.toLowerCase() || ''),
+    );
+  }, [search, data]);
 
   return (
     <div
@@ -52,7 +61,7 @@ const SpecializationsTable: FC<ISpecializationsTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {data?.map((row) => (
+            {filtered?.map((row) => (
               <SpecializationTableItem
                 key={row.id}
                 row={row}

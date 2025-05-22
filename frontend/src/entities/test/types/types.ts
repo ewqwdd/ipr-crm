@@ -3,7 +3,7 @@ export const questionTypes = ['SINGLE', 'MULTIPLE', 'NUMBER', 'TEXT'] as const;
 export const testAccessTypes = ['PUBLIC', 'PRIVATE', 'LINK_ONLY'];
 
 export const questionTypeLabels: Record<QuestionType, string> = {
-  SINGLE: 'Единичний вибор',
+  SINGLE: 'Единичний выбор',
   MULTIPLE: 'Мультивыбор',
   NUMBER: 'Число',
   TEXT: 'Короткий текст',

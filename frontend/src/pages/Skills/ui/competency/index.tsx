@@ -23,30 +23,35 @@ const Competency: FC = () => {
   };
 
   const filtereedData = useMemo((): CompetencyBlock[] | undefined => {
-    const filteredData = data
-      ?.map(({ type, competencies, ...rest }) => {
-        const filteredCompetencies = competencies
-          .map(({ indicators, ...compRest }) => {
-            const filteredIndicators = indicators.filter(({ name }) =>
-              name.toLowerCase().includes(search.toLowerCase()),
+    if (!data) return;
+    return data
+      .map((item) => {
+        const filteredCompetencies = item.competencies
+          .map((comp) => {
+            const filteredIndicators = comp.indicators.filter((indicator) =>
+              indicator.name.toLowerCase().includes(search.toLowerCase()),
             );
-
-            return { ...compRest, indicators: filteredIndicators };
+            return {
+              ...comp,
+              indicators: filteredIndicators,
+            };
           })
-          .filter(Boolean);
-
-        return (!search.length || filteredCompetencies.length > 0) &&
-          type === skillsFilter
-          ? {
-              ...rest,
-              type,
-              competencies: filteredCompetencies,
-            }
-          : null;
+          .filter(
+            (comp) =>
+              comp.indicators.length > 0 ||
+              comp.name.toLowerCase().includes(search.toLowerCase()),
+          );
+        return {
+          ...item,
+          competencies: filteredCompetencies,
+        };
       })
-      .filter(Boolean);
-    return filteredData as CompetencyBlock[] | undefined;
-  }, [data, skillsFilter, search]);
+      .filter(
+        (item) =>
+          item.competencies.length > 0 ||
+          item.name.toLowerCase().includes(search.toLowerCase()),
+      );
+  }, [search, data, skillsFilter]);
 
   // TODO: update active state
   return (
