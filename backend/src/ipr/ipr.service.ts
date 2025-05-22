@@ -200,7 +200,9 @@ export class IprService {
         startDate: new Date(),
         status: 'ACTIVE',
         userId: rate360.userId,
-        mentorId: rate360.team?.curator?.id ?? rate360.evaluators?.find(u => u.type === 'CURATOR')?.userId,
+        mentorId:
+          rate360.team?.curator?.id ??
+          rate360.evaluators?.find((u) => u.type === 'CURATOR')?.userId,
         tasks: {
           create: [...competencyTasks, ...indicatorTasks],
         },

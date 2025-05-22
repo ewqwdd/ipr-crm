@@ -1,4 +1,4 @@
-import { AddRateDto } from '@/entities/rates/types/types';
+import { AddRateDto, ChangeSpecsType } from '@/entities/rates/types/types';
 import { TeamUser } from '@/entities/team';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Checkbox } from '@/shared/ui/Checkbox';
@@ -10,7 +10,7 @@ import { StarIcon } from '@heroicons/react/solid';
 interface UserItemProps {
   user: TeamUser;
   selected?: AddRateDto['specs'];
-  onChange?: (teamId: number, specId: number, userId: number) => void;
+  onChange?: (data: ChangeSpecsType | ChangeSpecsType[]) => void;
   teamId: number;
   setOpen?: (v: ModalStateType) => void;
   curatorSpecs?: TeamUser['specsOnTeams'];
@@ -53,7 +53,9 @@ export default function UserItem({
                     (s) => s.specId === spec.specId && s.userId === user.id,
                   )
                 }
-                onChange={() => onChange?.(teamId, spec.specId, user.id)}
+                onChange={() =>
+                  onChange?.({ teamId, specId: spec.specId, userId: user.id })
+                }
               />
             ))}
         </div>

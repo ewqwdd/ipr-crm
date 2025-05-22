@@ -5,7 +5,7 @@ import SkillsFilter from './partials/SkillsFilter';
 import { useMemo } from 'react';
 import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
-import { AddRateDto, Rate } from '../../types/types';
+import { AddRateDto, ChangeSpecsType, Rate } from '../../types/types';
 import ConfirmCheckbox from '../AddRate/ConfirmCheckbox/ConfirmCheckbox';
 import RateTypeRadio from './partials/RateTypeRadio';
 
@@ -28,8 +28,8 @@ interface SelectSpecsFormProps {
 
   onChangeConfirmCurator?: (v: boolean) => void;
   onChageConfirmUser?: (v: boolean) => void;
-  onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
-  onDeselectAll: () => void;
+  onChangeSpecs: (data: ChangeSpecsType | ChangeSpecsType[]) => void;
+  onDeselect: (data: ChangeSpecsType[]) => void;
 }
 
 export default function SelectSpecsForm({
@@ -50,7 +50,7 @@ export default function SelectSpecsForm({
   onChangeConfirmCurator,
   rateType,
   setRateType,
-  onDeselectAll,
+  onDeselect,
 }: SelectSpecsFormProps) {
   const selectedCount = useMemo(
     () => selectedSpecs.reduce((acc, s) => acc + s.specs.length, 0),
@@ -121,7 +121,7 @@ export default function SelectSpecsForm({
       <div className="flex flex-col gap-2 max-sm:text-left">
         <TeamList
           onChangeSpecs={onChangeSpecs}
-          onDeselectAll={onDeselectAll}
+          onDeselect={onDeselect}
           selectedSpecs={selectedSpecs}
           search={search}
           specs={specs}

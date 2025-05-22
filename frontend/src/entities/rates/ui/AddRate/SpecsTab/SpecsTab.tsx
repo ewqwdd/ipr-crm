@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/app';
 import { TabType } from '../AddRate';
 import { ratesActions } from '@/entities/rates/model/rateSlice';
 import SelectSpecsForm from '../../SelectSpecsForm/SelectSpecsForm';
-import { Rate } from '@/entities/rates/types/types';
+import { ChangeSpecsType, Rate } from '@/entities/rates/types/types';
 
 interface SpecsTabbProps {
   setTab: (tab: TabType) => void;
@@ -30,8 +30,14 @@ export default function SpecsTab({
   const confirmUser = useAppSelector((state) => state.rates.confirmUser);
   const dispatch = useAppDispatch();
 
-  const onChangeSpecs = (teamId: number, specId: number, userId: number) => {
-    dispatch(ratesActions.selectSpec({ teamId, specId, userId }));
+  const onChangeSpecs = (data: ChangeSpecsType | ChangeSpecsType[]) => {
+    if (Array.isArray(data)) {
+      dispatch(ratesActions.selectSpecs(data));
+      return;
+    } else {
+      const { teamId, specId, userId } = data;
+      dispatch(ratesActions.selectSpec({ teamId, specId, userId }));
+    }
   };
 
   const onChangeConfirmCurator = (v: boolean) => {
@@ -42,8 +48,8 @@ export default function SpecsTab({
     dispatch(ratesActions.setConfirmUser(v));
   };
 
-  const onDeselectAll = () => {
-    dispatch(ratesActions.setSpecs([]));
+  const onDeselect = (data: ChangeSpecsType[]) => {
+    dispatch(ratesActions.selectSpecs(data));
   };
 
   return (
@@ -65,7 +71,7 @@ export default function SpecsTab({
       onChageConfirmUser={onChangeConfirmUser}
       rateType={rateType}
       setRateType={setRateType}
-      onDeselectAll={onDeselectAll}
+      onDeselect={onDeselect}
     />
   );
 }

@@ -1,4 +1,4 @@
-import { AddRateDto } from '@/entities/rates/types/types';
+import { AddRateDto, ChangeSpecsType } from '@/entities/rates/types/types';
 import { Team } from '@/entities/team';
 import { Accordion } from '@/shared/ui/Accordion';
 import { UsersIcon } from '@heroicons/react/outline';
@@ -9,7 +9,7 @@ import { cva } from '@/shared/lib/cva';
 interface TeamListItemProps {
   team: Team;
   selectedSpecs: AddRateDto[];
-  onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
+  onChangeSpecs: (data: ChangeSpecsType | ChangeSpecsType[]) => void;
   setOpen?: (v: ModalStateType) => void;
   nesting?: number;
 }

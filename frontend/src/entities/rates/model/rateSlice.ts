@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   AddRateDto,
+  ChangeSpecsType,
   EvaluateUser,
   EvaulatorType,
   Rate,
@@ -18,10 +19,7 @@ const rateSlice = createSlice({
   name: 'rates',
   initialState,
   reducers: {
-    selectSpec: (
-      state,
-      action: PayloadAction<{ teamId: number; specId: number; userId: number }>,
-    ) => {
+    selectSpec: (state, action: PayloadAction<ChangeSpecsType>) => {
       const prev = state.selectedSpecs;
       const { teamId, specId, userId } = action.payload;
 
@@ -81,6 +79,87 @@ const rateSlice = createSlice({
         ];
         return;
       }
+    },
+    selectSpecs: (state, action: PayloadAction<ChangeSpecsType[]>) => {
+      const newSelections = action.payload;
+
+      newSelections.forEach(({ teamId, specId, userId }) => {
+        const teamIndex = state.selectedSpecs.findIndex(
+          (t) => t.teamId === teamId,
+        );
+
+        if (teamIndex === -1) {
+          state.selectedSpecs.push({
+            teamId,
+            specs: [
+              {
+                specId,
+                userId,
+                evaluateCurators: [],
+                evaluateSubbordinate: [],
+                evaluateTeam: [],
+              },
+            ],
+          });
+        } else {
+          const team = state.selectedSpecs[teamIndex];
+          const existingIndex = team.specs.findIndex(
+            (s) => s.specId === specId && s.userId === userId,
+          );
+
+          if (existingIndex === -1) {
+            team.specs.push({
+              specId,
+              userId,
+              evaluateCurators: [],
+              evaluateSubbordinate: [],
+              evaluateTeam: [],
+            });
+          } else {
+            team.specs.splice(existingIndex, 1);
+
+            // Если после удаления список пуст — удалить всю команду
+            if (team.specs.length === 0) {
+              state.selectedSpecs.splice(teamIndex, 1);
+            }
+          }
+        }
+      });
+    },
+    deselectSpecs: (state, action: PayloadAction<ChangeSpecsType[]>) => {
+      const toRemove = action.payload;
+
+      toRemove.forEach(({ teamId, specId, userId }) => {
+        const teamIndex = state.selectedSpecs.findIndex(
+          (t) => t.teamId === teamId,
+        );
+
+        if (teamIndex === -1) {
+          return;
+        } else {
+          const team = state.selectedSpecs[teamIndex];
+          const existingIndex = team.specs.findIndex(
+            (s) => s.specId === specId && s.userId === userId,
+          );
+
+          if (existingIndex === -1) {
+            team.specs.push({
+              specId,
+              userId,
+              evaluateCurators: [],
+              evaluateSubbordinate: [],
+              evaluateTeam: [],
+            });
+          } else {
+            team.specs.splice(existingIndex, 1);
+
+            // Если после удаления список пуст — удалить всю команду
+            if (team.specs.length === 0) {
+              state.selectedSpecs.splice(teamIndex, 1);
+            }
+          }
+        }
+      });
     },
     setSpecs: (
       state,

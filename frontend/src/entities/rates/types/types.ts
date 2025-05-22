@@ -76,3 +76,9 @@ export interface RateStoreSchema {
   confirmCurator: boolean;
   editEvaluators?: TeamItemIds;
 }
+
+export type ChangeSpecsType = {
+  teamId: number;
+  specId: number;
+  userId: number;
+};

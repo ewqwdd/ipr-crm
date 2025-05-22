@@ -1,4 +1,4 @@
-import { AddRateDto } from '@/entities/rates/types/types';
+import { AddRateDto, ChangeSpecsType } from '@/entities/rates/types/types';
 import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
 import TeamListItem from './TeamListItem';
@@ -18,8 +18,8 @@ interface TeamListProps {
   specs: MultiValue<Option>;
   search: string;
   selectedSpecs: AddRateDto[];
-  onChangeSpecs: (teamId: number, specId: number, userId: number) => void;
-  onDeselectAll: () => void;
+  onChangeSpecs: (data: ChangeSpecsType | ChangeSpecsType[]) => void;
+  onDeselect: (data: ChangeSpecsType[]) => void;
 }
 
 type SpecElement =
@@ -33,7 +33,7 @@ type SpecElement =
   | {
       teamId: number;
       specsOnTeams: SpecOnUser[];
-      id?: number | undefined;
+      id: number;
       username?: string | undefined;
       avatar?: string;
     };
@@ -44,13 +44,19 @@ export interface ModalStateType {
   curator?: boolean;
 }
 
+const areSpecsEqual = (a: ChangeSpecsType, b: ChangeSpecsType): boolean => {
+  return (
+    a.teamId === b.teamId && a.specId === b.specId && a.userId === b.userId
+  );
+};
+
 export default function TeamList({
   selectedSpecs,
   specs,
   search,
   teams,
   onChangeSpecs,
-  onDeselectAll,
+  onDeselect,
 }: TeamListProps) {
   const { data } = teamsApi.useGetTeamsQuery();
   const filteredTeams = useFilteredStructure(data?.structure, data?.list, {
@@ -94,7 +100,7 @@ export default function TeamList({
         ?.flatMap((subTeam) => getSpecs([subTeam]))
         .filter((s) => s.specsOnTeams && s.specsOnTeams?.length > 0) ?? []),
     ]);
-    return specs;
+    return specs.filter((s) => !!s.id) as SpecElement[];
   };
 
   const allSpecs = getSpecs(teamsToShow)
@@ -106,23 +112,33 @@ export default function TeamList({
       })),
     )
     .filter((s) => !!s);
-  const allSelected =
-    selectedSpecs.flatMap((s) => s.specs).length === allSpecs.length;
+
+  const filteredSelected = selectedSpecs
+    .flatMap((s) => s.specs.map((spec) => ({ ...spec, teamId: s.teamId })))
+    .filter((selected) =>
+      allSpecs.find(
+        (spec) =>
+          selected.teamId &&
+          areSpecsEqual(selected as ChangeSpecsType, spec as ChangeSpecsType),
+      ),
+    );
+  const allSelected = filteredSelected.length >= allSpecs.length;
 
   const onSelectAll = () => {
     if (allSelected) {
-      onDeselectAll();
+      onDeselect(filteredSelected as ChangeSpecsType[]);
       return;
     }
-    allSpecs.forEach((spec) => {
+    const changeSpecs = allSpecs.filter((spec) => {
       const findSelected = selectedSpecs
         .find((s) => s.teamId === spec.teamId)
         ?.specs.find(
           (s) => s.specId === spec.specId && s.userId === spec.userId,
         );
-      if (!spec.userId || findSelected) return;
-      onChangeSpecs(spec.teamId, spec.specId, spec.userId);
-    });
+      if (!spec.userId || findSelected) return false;
+      return true;
+    }) as ChangeSpecsType[];
+    onChangeSpecs(changeSpecs);
   };
 
   return (
