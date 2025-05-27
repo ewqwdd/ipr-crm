@@ -8,8 +8,13 @@ import { useModal } from '@/app/hooks/useModal';
 import ArchiveButton from '../ArchiveButton';
 import { CompetencyList } from '@/widgets/CompetencyList';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { cva } from '@/shared/lib/cva';
 
-const Competency: FC = () => {
+interface CompetencyProps {
+    archiveMutation: ReturnType<typeof skillsApi.useArchiveAllMutation>;
+}
+
+const Competency: FC<CompetencyProps> = ({archiveMutation}) => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');
   const [search, setSearch] = useState('');
 
@@ -51,7 +56,7 @@ const Competency: FC = () => {
           item.competencies.length > 0 ||
           item.name.toLowerCase().includes(search.toLowerCase()),
       );
-  }, [search, data, skillsFilter]);
+  }, [search, data]);
 
   // TODO: update active state
   return (
@@ -62,9 +67,11 @@ const Competency: FC = () => {
           value={search}
           onChange={searchFn}
         />
-        <ArchiveButton />
+        <ArchiveButton archiveMutation={archiveMutation} />
       </div>
-      <div className="sm:flex gap-4 my-4 grid grid-cols-2">
+      <div className={cva("sm:flex gap-4 my-4 grid grid-cols-2", {
+        'pointer-events-none animate-pulse': archiveMutation[1].isLoading,
+      })}>
         <SkillsSwitcher value={skillsFilter} setValue={setSkillsFilter} />
         <SoftButton
           size="xs"
@@ -80,7 +87,7 @@ const Competency: FC = () => {
       <CompetencyList
         data={filtereedData}
         openModal={openModal}
-        loading={isFetching}
+        loading={isFetching || archiveMutation[1].isLoading}
       />
     </LoadingOverlay>
   );

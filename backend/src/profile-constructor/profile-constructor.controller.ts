@@ -192,4 +192,12 @@ export class ProfileConstructorController {
   ) {
     return this.profileConstructorService.editMultipleBoundaries(id, data);
   }
+
+  @Post('/restore-archive/:id')
+  @UseGuards(AdminGuard)
+  async restoreArchive(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+  ) {
+    return this.profileConstructorService.restoreArchivedVersion(id);
+  }
 }

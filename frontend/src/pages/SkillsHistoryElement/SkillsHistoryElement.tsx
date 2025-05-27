@@ -1,19 +1,54 @@
+import { useAppDispatch } from '@/app';
 import { useModal } from '@/app/hooks/useModal';
 import { skillsApi } from '@/shared/api/skillsApi';
+import { universalApi } from '@/shared/api/universalApi';
+import { formatDateTime } from '@/shared/lib/formatDateTime';
+import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { CompetencyList } from '@/widgets/CompetencyList';
-import { useParams } from 'react-router';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate, useParams } from 'react-router';
 
 export default function SkillsHistoryElement() {
   const { id } = useParams<{ id: string }>();
   const { data, isFetching } = skillsApi.useGetVersionByIdQuery(Number(id));
+  const [mutate, {isError, isSuccess}] = skillsApi.useRestoreArchiveMutation();
+  const dispatch = useAppDispatch();
   const { openModal } = useModal();
+  const navigate = useNavigate();
 
-  // TODO: replace loading
+  const onRestoreVersion = () => {
+    openModal('CONFIRM', {
+            submitText: 'Подтвердить',
+      title: 'Востановить версию?',
+      onSubmit: async () => {
+        return await mutate({ id: Number(id) });
+      },
+    })
+  }
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Ошибка при востановлении версии профиля');
+    }
+    if (isSuccess) {
+      toast.success('Версия профиля востановлена');
+      dispatch(universalApi.util.invalidateTags(['Spec']));
+      navigate('/skills/history');
+    }
+  }, [isError, isSuccess, dispatch, navigate]);
 
   return (
     <LoadingOverlay active={isFetching}>
       <div className={'px-8 py-10 flex flex-col'}>
+        <div className='flex justify-between items-start mb-6'>
+          <Heading title='Версия профиля' description={formatDateTime(data?.date)} />
+          <PrimaryButton onClick={onRestoreVersion}>
+            Востановить версию
+          </PrimaryButton>
+          </div>
         <CompetencyList
           disabled
           data={data?.blocks}

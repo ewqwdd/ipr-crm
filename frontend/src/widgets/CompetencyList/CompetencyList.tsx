@@ -20,7 +20,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
   return (
     <div
       className={cva('grow flex flex-col mt-4', {
-        'animate-pulse': !!loading,
+        'animate-pulse pointer-events-none': !!loading,
       })}
     >
       {data?.map((skill) => (

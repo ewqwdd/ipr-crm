@@ -315,6 +315,33 @@ export class ProfileConstructorService {
           },
         });
 
+        // Получаем данные для копирования
+        const blocksToClone = await tx.competencyBlock.findMany({
+          where: { archived: false },
+          include: {
+            competencies: {
+              include: {
+                indicators: {
+                  orderBy: {
+                    id: 'asc',
+                  },
+                },
+              },
+              orderBy: {
+                id: 'asc',
+              },
+            },
+            specs: {
+              select: {
+                id: true,
+              },
+            },
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        });
+
         // Архивируем все блоки компетенций
         await tx.competencyBlock.updateMany({
           where: { archived: false },
@@ -333,45 +360,36 @@ export class ProfileConstructorService {
           data: { archived: true, archivedDate: date },
         });
 
-        // Получаем данные для копирования
-        const blocksToClone = await tx.competencyBlock.findMany({
-          where: { archived: true, archivedDate: date },
-          include: {
-            competencies: {
-              include: { indicators: true },
-            },
-            specs: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        });
-
         // Подготовка данных для массовой вставки
-        const newBlocksData = blocksToClone.map((block) => ({
+        const newBlocksData = blocksToClone.map((block, index) => ({
           name: block.name,
           type: block.type,
           archived: false,
+          order: index,
         }));
 
         // Создаём новые блоки компетенций
-        const newBlocks = await tx.competencyBlock.createMany({
+        await tx.competencyBlock.createMany({
           data: newBlocksData,
-          skipDuplicates: true, // Предотвращаем дубли
         });
 
         // Получаем созданные блоки (Prisma не возвращает id при `createMany`)
         const createdBlocks = await tx.competencyBlock.findMany({
           where: { archived: false },
+          orderBy: {
+            order: 'asc',
+          },
         });
 
         // Словарь соответствий старых и новых блоков
         const blockIdMap = new Map(
-          blocksToClone.map((oldBlock, index) => [
-            oldBlock.id,
-            createdBlocks[index]?.id,
-          ]),
+          blocksToClone.map((oldBlock, index) => {
+            if (oldBlock.name !== createdBlocks[index]?.name)
+              throw new Error(
+                `Block names do not match: ${oldBlock.name} !== ${createdBlocks[index]?.name}`,
+              );
+            return [oldBlock.id, createdBlocks[index]?.id];
+          }),
         );
 
         // Обновляем связи с новыми блоками в спецификациях
@@ -391,33 +409,42 @@ export class ProfileConstructorService {
           }
         }
 
+        let competencyOrder = 0;
         // Подготовка данных для новых компетенций
-        const newCompetenciesData = blocksToClone.flatMap((block) =>
-          block.competencies.map((comp) => ({
-            name: comp.name,
-            blockId: blockIdMap.get(comp.blockId) || undefined,
-            archived: false,
-            id: comp.id,
-          })),
-        );
+        const newCompetenciesData = blocksToClone
+          .flatMap((block) =>
+            block.competencies.map((comp) => ({
+              name: comp.name,
+              blockId: blockIdMap.get(comp.blockId) || undefined,
+              archived: false,
+              id: comp.id,
+              order: competencyOrder++,
+            })),
+          )
+          .sort((a, b) => a.order - b.order);
 
         // Создаём новые компетенции
-        const newCompetencies = await tx.competency.createMany({
+        await tx.competency.createMany({
           data: newCompetenciesData.map(({ id, ...rest }) => rest),
-          skipDuplicates: true,
         });
 
         // Получаем созданные компетенции
         const createdCompetencies = await tx.competency.findMany({
           where: { archived: false },
+          orderBy: {
+            order: 'asc',
+          },
         });
 
         // Словарь соответствий старых и новых компетенций
         const competencyIdMap = new Map(
-          newCompetenciesData.map((oldComp, index) => [
-            oldComp.id,
-            createdCompetencies[index]?.id,
-          ]),
+          newCompetenciesData.map((oldComp, index) => {
+            if (oldComp.name !== createdCompetencies[index]?.name)
+              throw new Error(
+                `Competency names do not match: ${oldComp.name} !== ${createdCompetencies[index]?.name}`,
+              );
+            return [oldComp.id, createdCompetencies[index]?.id];
+          }),
         );
         const competencyMaterials = await tx.competencyMaterial.findMany({
           where: {
@@ -435,46 +462,55 @@ export class ProfileConstructorService {
           })),
         });
 
+        let indicatorOrder = 0;
         // Подготовка данных для индикаторов
-        const newIndicatorsData = blocksToClone.flatMap((block) =>
-          block.competencies.flatMap((comp) =>
-            comp.indicators.map((indicator) => ({
-              name: indicator.name,
-              description: indicator.description,
-              competencyId: competencyIdMap.get(comp.id) || undefined,
-              boundary: indicator.boundary,
-              archived: false,
-              id: indicator.id,
-              skipHint: indicator.skipHint,
-              skipValue: indicator.skipValue,
-              hint1: indicator.hint1,
-              hint2: indicator.hint2,
-              hint3: indicator.hint3,
-              hint4: indicator.hint4,
-              hint5: indicator.hint5,
-            })),
-          ),
-        );
+        const newIndicatorsData = blocksToClone
+          .flatMap((block) =>
+            block.competencies.flatMap((comp) =>
+              comp.indicators.map((indicator) => ({
+                name: indicator.name,
+                description: indicator.description,
+                competencyId: competencyIdMap.get(comp.id) || undefined,
+                boundary: indicator.boundary,
+                archived: false,
+                id: indicator.id,
+                skipHint: indicator.skipHint,
+                skipValue: indicator.skipValue,
+                hint1: indicator.hint1,
+                hint2: indicator.hint2,
+                hint3: indicator.hint3,
+                hint4: indicator.hint4,
+                hint5: indicator.hint5,
+                order: indicatorOrder++,
+              })),
+            ),
+          )
+          .sort((a, b) => a.order - b.order);
 
         // Создаём индикаторы
         if (newIndicatorsData.length > 0) {
           await tx.indicator.createMany({
             data: newIndicatorsData.map(({ id, ...rest }) => rest),
-            skipDuplicates: true,
           });
         }
 
         // Получаем созданные индикаторы
         const createdIndicators = await tx.indicator.findMany({
           where: { archived: false },
+          orderBy: {
+            order: 'asc',
+          },
         });
 
         // Словарь соответствий старых и новых индикаторов
         const indicatorIdMap = new Map(
-          newIndicatorsData.map((oldInd, index) => [
-            oldInd.id,
-            createdIndicators[index]?.id,
-          ]),
+          newIndicatorsData.map((oldInd, index) => {
+            if (oldInd.name !== createdIndicators[index]?.name)
+              throw new Error(
+                `Indicator names do not match: ${oldInd.name} !== ${createdIndicators[index]?.name}`,
+              );
+            return [oldInd.id, createdIndicators[index]?.id];
+          }),
         );
 
         const indicatorMaterials = await tx.indicatorMaterial.findMany({
@@ -494,8 +530,9 @@ export class ProfileConstructorService {
         });
       },
       {
-        timeout: 60000,
-        maxWait: 60000,
+        timeout: 180000,
+        maxWait: 180000, // 3 minutes
+        isolationLevel: 'Serializable',
       },
     );
   }
@@ -578,5 +615,100 @@ export class ProfileConstructorService {
     });
 
     return updated; // Возвращаем результат обновления
+  }
+
+  async restoreArchivedVersion(id: number) {
+    const version = await this.prismaService.profileVersion.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!version) {
+      throw new NotFoundException('Version not found');
+    }
+
+    return await this.prismaService.$transaction(
+      async (tx) => {
+        const newDate = new Date();
+        const newVersion = await tx.profileVersion.create({
+          data: {
+            date: newDate,
+          },
+        });
+
+        await tx.competencyBlock.updateMany({
+          where: {
+            archived: false,
+          },
+          data: {
+            archived: true,
+            archivedDate: newDate,
+          },
+        });
+
+        await tx.competency.updateMany({
+          where: {
+            archived: false,
+          },
+          data: {
+            archived: true,
+            archivedDate: newDate,
+          },
+        });
+
+        await tx.indicator.updateMany({
+          where: {
+            archived: false,
+          },
+          data: {
+            archived: true,
+            archivedDate: newDate,
+          },
+        });
+
+        await tx.competencyBlock.updateMany({
+          where: {
+            archived: true,
+            archivedDate: version.date,
+          },
+          data: {
+            archived: false,
+            archivedDate: null,
+          },
+        });
+        await tx.competency.updateMany({
+          where: {
+            archived: true,
+            archivedDate: version.date,
+          },
+          data: {
+            archived: false,
+            archivedDate: null,
+          },
+        });
+        await tx.indicator.updateMany({
+          where: {
+            archived: true,
+            archivedDate: version.date,
+          },
+          data: {
+            archived: false,
+            archivedDate: null,
+          },
+        });
+
+        await tx.profileVersion.delete({
+          where: {
+            id: version.id,
+          },
+        });
+
+        return newVersion;
+      },
+      {
+        isolationLevel: 'RepeatableRead',
+      },
+    );
   }
 }

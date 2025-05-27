@@ -1,30 +1,21 @@
-import { useAppDispatch } from '@/app';
-import { rate360Api } from '@/shared/api/rate360Api';
 import { skillsApi } from '@/shared/api/skillsApi';
-import { universalApi } from '@/shared/api/universalApi';
 import { cva } from '@/shared/lib/cva';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-export default function ArchiveButton() {
-  const [mutate, { isSuccess, isError, isLoading }] =
-    skillsApi.useArchiveAllMutation();
-  const versionApi = skillsApi.useGetVersionQuery();
-  const dispatch = useAppDispatch();
+interface ArchiveButtonProps {
+  archiveMutation: ReturnType<typeof skillsApi.useArchiveAllMutation>;
+}
 
+export default function ArchiveButton({archiveMutation}: ArchiveButtonProps) {
+  const [mutate, { isError, isLoading }] =
+    archiveMutation;
+  const versionApi = skillsApi.useGetVersionQuery();
   const onClick = () => {
     mutate();
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success('Версия зафиксирована');
-      console.log('Версия зафиксирована');
-      dispatch(rate360Api.util.invalidateTags(['Rate360']));
-      dispatch(universalApi.util.invalidateTags(['Spec']));
-    }
-  }, [isSuccess, dispatch]);
 
   useEffect(() => {
     if (isError) {

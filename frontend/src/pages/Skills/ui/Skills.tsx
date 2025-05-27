@@ -1,8 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Heading } from '@/shared/ui/Heading';
 import Specializations from './specializations';
 import Competency from './competency';
 import { Tabs } from '@/shared/ui/Tabs';
+import { skillsApi } from '@/shared/api/skillsApi';
+import toast from 'react-hot-toast';
+import { rate360Api } from '@/shared/api/rate360Api';
+import { universalApi } from '@/shared/api/universalApi';
+import { useAppDispatch } from '@/app';
 
 const tabs = [
   { name: 'Компетенции', key: 'COMPETENCY' },
@@ -11,10 +16,22 @@ const tabs = [
 
 export default function Skills() {
   const [tab, setTab] = useState(tabs[0]);
+  const dispatch = useAppDispatch();
 
   const setTabWrapper = (tab: string) => {
     setTab((s) => tabs.find((t) => t.key === tab) || s);
   };
+  const archiveMutation  =
+        skillsApi.useArchiveAllMutation();
+
+          useEffect(() => {
+            if (archiveMutation[1].isSuccess) {
+              toast.success('Версия зафиксирована');
+              console.log('Версия зафиксирована');
+              dispatch(rate360Api.util.invalidateTags(['Rate360']));
+              dispatch(universalApi.util.invalidateTags(['Spec']));
+            }
+          }, [archiveMutation[1].isSuccess, dispatch]);
 
   return (
     <>
@@ -29,8 +46,8 @@ export default function Skills() {
             />
           </div>
         </div>
-        {tab.key === 'COMPETENCY' && <Competency />}
-        {tab.key === 'SPECIALIZATIONS' && <Specializations />}
+        {tab.key === 'COMPETENCY' && <Competency archiveMutation={archiveMutation} />}
+        {tab.key === 'SPECIALIZATIONS' && <Specializations archiveMutation={archiveMutation} />}
       </div>
     </>
   );

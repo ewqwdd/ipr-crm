@@ -501,6 +501,8 @@ model CompetencyBlock {
   competencies Competency[] // Связь с компетенциями
   specs        Spec[]   @relation("SpecBlocks")
   rates360     Rate360[]
+  profileStrcuctureFoldersSpec ProfileConstructorFolderSpec[]
+  order        Int @default(0)
   archived     Boolean?     @default(false)
   archivedDate DateTime?
 }
@@ -515,6 +517,7 @@ model Competency {
   comments     UserComments[]
   task         GrowthPlanTask[]
   planCurators GrowthPlanCurator[]
+  order        Int @default(0)
   archived     Boolean?             @default(false)
   archivedDate DateTime?
 }
@@ -527,6 +530,7 @@ model Indicator {
   boundary     Int                 @default(3)
   competency   Competency          @relation(fields: [competencyId], references: [id], onDelete: Cascade)
   materials    IndicatorMaterial[]
+  order        Int @default(0)
 
   userRates    UserRates[]
   task         GrowthPlanTask[]
@@ -601,6 +605,34 @@ model SupportTicket {
 
   user User @relation("UserSupportTicket", fields: [userId], references: [id], onDelete: Cascade)
   curator User? @relation("CuratorSupportTicket", fields: [curatorId], references: [id], onDelete: SetNull)
+}
+
+// ProfileConstructorFolderProduct[] -> ProfileConstructorFolderTeam[] -> ProfileConstructorFolderSpec[] -> CompetencyBlock[] -> Competency[] -> Indicator[]
+model ProfileConstructorFolderProduct {
+  id          Int      @id @default(autoincrement())
+  name        String
+  createdAt   DateTime  @default(now())
+  teams       ProfileConstructorFolderTeam[]
+}
+
+model ProfileConstructorFolderTeam {
+  id          Int      @id @default(autoincrement())
+  name        String
+  productId   Int
+  createdAt   DateTime @default(now())
+
+  product ProfileConstructorFolderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  specs   ProfileConstructorFolderSpec[] 
+}
+
+model ProfileConstructorFolderSpec {
+  id          Int      @id @default(autoincrement())
+  name        String
+  teamId      Int
+  createdAt   DateTime @default(now())
+
+  team ProfileConstructorFolderTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  competencyBlocks CompetencyBlock[]
 }
 
 enum SkillType {

@@ -20,6 +20,9 @@ import { TestModule } from './test/test.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SurveyModule } from './survey/survey.module';
 import { SupportModule } from './support/support.module';
+import { ProfileStructureFolderModule } from './profile-structure-folder/profile-constructor-folder.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AdminLoggerInterceptor } from './utils/interceptors/admin-interceptor';
 
 console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
 
@@ -41,6 +44,7 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
     ScheduleModule.forRoot(),
     SurveyModule,
     SupportModule,
+    ProfileStructureFolderModule,
   ],
   providers: [
     PrismaService,
@@ -49,6 +53,10 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
     JwtService,
     PasswordService,
     S3Service,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AdminLoggerInterceptor,
+    },
   ],
 })
 export class AppModule {}
