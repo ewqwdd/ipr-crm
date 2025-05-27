@@ -11,6 +11,9 @@ import { HintsDto } from './dto/hints.dto';
 import { EditMultipleBoundariesDto } from './dto/edit-multiple-boudaries.dto';
 import { EditCompetencyDto } from './dto/edit-competency.dto';
 import { ValuesDto } from './dto/values.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class ProfileConstructorService {
@@ -720,5 +723,50 @@ export class ProfileConstructorService {
         isolationLevel: 'RepeatableRead',
       },
     );
+  }
+
+  // Каждый день в 00:00
+  @Cron('0 0 * * *', {
+    waitForCompletion: true,
+  })
+  async handleCron() {
+    const data = await this.prismaService.competencyBlock.findMany({
+      where: {
+        archived: false,
+      },
+      include: {
+        competencies: {
+          include: {
+            indicators: {
+              include: {
+                materials: true,
+              },
+              orderBy: {
+                id: 'asc',
+              },
+            },
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
+        profileStrcuctureFoldersSpec: true,
+      },
+      orderBy: {
+        id: 'asc',
+      },
+    });
+
+    const base = path.resolve(__dirname, '..', '..', 'backups');
+
+    // Создаём директорию, если она не существует
+    if (!fs.existsSync(base)) {
+      fs.mkdirSync(base, { recursive: true });
+    }
+
+    const fileName = `collection-backup-${new Date().toISOString().replace(/:/g, '-')}.json`;
+    const filePath = path.join(base, fileName);
+
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
   }
 }
