@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateSpecFolderDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+  @IsArray()
+  @IsString({ each: true })
+  specs: string[];
 
   @IsNumber()
   @IsNotEmpty()

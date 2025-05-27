@@ -16,6 +16,7 @@ import { surveyApi } from '@/shared/api/surveyApi';
 import { surveyCreateReducer } from '@/entities/survey';
 import { surveyAssesmentReducer } from '@/entities/survey/surveyAssesmentSlice';
 import { supportApi } from '@/shared/api/supportApi';
+import { foldersApi } from '@/shared/api/foldersApi';
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   [testsApi.reducerPath]: testsApi.reducer,
   [surveyApi.reducerPath]: surveyApi.reducer,
   [supportApi.reducerPath]: supportApi.reducer,
+  [foldersApi.reducerPath]: foldersApi.reducer,
 });
 
 export const store = configureStore({
@@ -51,7 +53,8 @@ export const store = configureStore({
       .concat(iprApi.middleware)
       .concat(testsApi.middleware)
       .concat(surveyApi.middleware)
-      .concat(supportApi.middleware),
+      .concat(supportApi.middleware)
+      .concat(foldersApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

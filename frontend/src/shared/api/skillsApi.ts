@@ -209,7 +209,7 @@ const skillsApi = createApi({
       }),
       invalidatesTags: ['Skills'],
     }),
-    restoreArchive: build.mutation<void, { id:number }>({
+    restoreArchive: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
         url: `/restore-archive/${id}`,
         method: 'POST',

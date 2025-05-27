@@ -336,6 +336,11 @@ export class ProfileConstructorService {
                 id: true,
               },
             },
+            profileStrcuctureFoldersSpec: {
+              select: {
+                id: true,
+              },
+            },
           },
           orderBy: {
             id: 'asc',
@@ -402,6 +407,11 @@ export class ProfileConstructorService {
                 specs: {
                   connect: block.specs.map((spec) => ({
                     id: spec.id,
+                  })),
+                },
+                profileStrcuctureFoldersSpec: {
+                  connect: block.profileStrcuctureFoldersSpec.map((folder) => ({
+                    id: folder.id,
                   })),
                 },
               },

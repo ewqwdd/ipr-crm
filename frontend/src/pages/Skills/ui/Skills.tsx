@@ -8,10 +8,13 @@ import toast from 'react-hot-toast';
 import { rate360Api } from '@/shared/api/rate360Api';
 import { universalApi } from '@/shared/api/universalApi';
 import { useAppDispatch } from '@/app';
+import FoldersWrapper from './folders/FoldersWrapper';
+import { foldersApi } from '@/shared/api/foldersApi';
 
 const tabs = [
   { name: 'Компетенции', key: 'COMPETENCY' },
   { name: 'Специализации', key: 'SPECIALIZATIONS' },
+  { name: 'Папки', key: 'FOLDERS' },
 ];
 
 export default function Skills() {
@@ -21,17 +24,23 @@ export default function Skills() {
   const setTabWrapper = (tab: string) => {
     setTab((s) => tabs.find((t) => t.key === tab) || s);
   };
-  const archiveMutation  =
-        skillsApi.useArchiveAllMutation();
+  const archiveMutation = skillsApi.useArchiveAllMutation();
 
-          useEffect(() => {
-            if (archiveMutation[1].isSuccess) {
-              toast.success('Версия зафиксирована');
-              console.log('Версия зафиксирована');
-              dispatch(rate360Api.util.invalidateTags(['Rate360']));
-              dispatch(universalApi.util.invalidateTags(['Spec']));
-            }
-          }, [archiveMutation[1].isSuccess, dispatch]);
+  useEffect(() => {
+    if (archiveMutation[1].isSuccess) {
+      toast.success('Версия зафиксирована');
+      console.log('Версия зафиксирована');
+      dispatch(rate360Api.util.invalidateTags(['Rate360']));
+      dispatch(universalApi.util.invalidateTags(['Spec']));
+      dispatch(
+        foldersApi.util.invalidateTags([
+          'ProductFolders',
+          'TeamFolders',
+          'SpecFolders',
+        ]),
+      );
+    }
+  }, [archiveMutation[1].isSuccess, dispatch]);
 
   return (
     <>
@@ -46,8 +55,13 @@ export default function Skills() {
             />
           </div>
         </div>
-        {tab.key === 'COMPETENCY' && <Competency archiveMutation={archiveMutation} />}
-        {tab.key === 'SPECIALIZATIONS' && <Specializations archiveMutation={archiveMutation} />}
+        {tab.key === 'COMPETENCY' && (
+          <Competency archiveMutation={archiveMutation} />
+        )}
+        {tab.key === 'SPECIALIZATIONS' && (
+          <Specializations archiveMutation={archiveMutation} />
+        )}
+        {tab.key === 'FOLDERS' && <FoldersWrapper />}
       </div>
     </>
   );

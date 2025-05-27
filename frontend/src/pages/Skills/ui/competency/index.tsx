@@ -11,10 +11,10 @@ import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { cva } from '@/shared/lib/cva';
 
 interface CompetencyProps {
-    archiveMutation: ReturnType<typeof skillsApi.useArchiveAllMutation>;
+  archiveMutation: ReturnType<typeof skillsApi.useArchiveAllMutation>;
 }
 
-const Competency: FC<CompetencyProps> = ({archiveMutation}) => {
+const Competency: FC<CompetencyProps> = ({ archiveMutation }) => {
   const [skillsFilter, setSkillsFilter] = useState<'HARD' | 'SOFT'>('HARD');
   const [search, setSearch] = useState('');
 
@@ -53,10 +53,11 @@ const Competency: FC<CompetencyProps> = ({archiveMutation}) => {
       })
       .filter(
         (item) =>
-          item.competencies.length > 0 ||
-          item.name.toLowerCase().includes(search.toLowerCase()),
+          skillsFilter === item.type &&
+          (item.competencies.length > 0 ||
+            item.name.toLowerCase().includes(search.toLowerCase())),
       );
-  }, [search, data]);
+  }, [search, data, skillsFilter]);
 
   // TODO: update active state
   return (
@@ -69,9 +70,11 @@ const Competency: FC<CompetencyProps> = ({archiveMutation}) => {
         />
         <ArchiveButton archiveMutation={archiveMutation} />
       </div>
-      <div className={cva("sm:flex gap-4 my-4 grid grid-cols-2", {
-        'pointer-events-none animate-pulse': archiveMutation[1].isLoading,
-      })}>
+      <div
+        className={cva('sm:flex gap-4 my-4 grid grid-cols-2', {
+          'pointer-events-none animate-pulse': archiveMutation[1].isLoading,
+        })}
+      >
         <SkillsSwitcher value={skillsFilter} setValue={setSkillsFilter} />
         <SoftButton
           size="xs"

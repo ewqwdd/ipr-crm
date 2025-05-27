@@ -5,6 +5,7 @@ import { Rate360Service } from './rate360.service';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { MailService } from 'src/utils/mailer/mailer';
 import { UsersAccessService } from 'src/users/users-access.service';
+import { TeamsHelpersService } from 'src/teams/teams.helpers.service';
 
 @Module({
   controllers: [Rate360Controller],
@@ -14,6 +15,7 @@ import { UsersAccessService } from 'src/users/users-access.service';
     NotificationsService,
     MailService,
     UsersAccessService,
+    TeamsHelpersService,
   ],
 })
 export class Rate360Module {}

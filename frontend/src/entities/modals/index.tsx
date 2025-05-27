@@ -29,6 +29,12 @@ import { AssessmentAssignUsersModal } from '@/widgets/AssessmentAssignUsersModal
 import { ImportUsers } from '../user/ui/ImportUsers';
 import { RateSurveyModal } from '../survey';
 import { CreateSupportTicketModal } from '../support';
+import {
+  AddProductFolderModal,
+  AddTeamFolderModal,
+  EditFolderModal,
+} from '../folders';
+import AddSpecFolderModal from '../folders/ui/AddSpecFolderModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -102,6 +108,14 @@ const ModalWrapper: FC = () => {
       return <RateSurveyModal {...updatedModalProps} />;
     case 'CREATE_SUPPORT_TICKET':
       return <CreateSupportTicketModal {...updatedModalProps} />;
+    case 'ADD_PRODUCT_FOLDER':
+      return <AddProductFolderModal {...updatedModalProps} />;
+    case 'ADD_TEAM_FOLDER':
+      return <AddTeamFolderModal {...updatedModalProps} />;
+    case 'ADD_SPEC_FOLDER':
+      return <AddSpecFolderModal {...updatedModalProps} />;
+    case 'EDIT_FOLDER':
+      return <EditFolderModal {...updatedModalProps} />;
     default:
       break;
   }

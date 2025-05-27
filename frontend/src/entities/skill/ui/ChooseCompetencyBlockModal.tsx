@@ -8,6 +8,7 @@ import { FC, useEffect, useMemo, useState } from 'react';
 interface ChooseCompetencyBlockModalData {
   specId: number;
   initialBlocks: number[];
+  onSubmit: (blocks: number[]) => Promise<void>;
 }
 
 interface ChooseCompetencyBlockModalProps {
@@ -21,13 +22,15 @@ const ChooseCompetencyBlockModal: FC<ChooseCompetencyBlockModalProps> = ({
   modalData,
   closeModal,
 }) => {
-  const { specId, initialBlocks } = modalData as ChooseCompetencyBlockModalData;
+  const { specId, initialBlocks, onSubmit } =
+    modalData as ChooseCompetencyBlockModalData;
   const [selected, setSelected] = useState<number[]>(initialBlocks);
   const { data, isFetching } = skillsApi.useGetSkillsQuery();
   const [mutate, { isLoading, isSuccess }] =
     skillsApi.useAddBlockToSpecMutation();
   const { refetch } = universalApi.useGetSpecsQuery();
   const [search, setSearch] = useState<string>('');
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   const filteredBySearch = useMemo(() => {
     if (!data) return [];
@@ -47,7 +50,15 @@ const ChooseCompetencyBlockModal: FC<ChooseCompetencyBlockModalProps> = ({
     }
   };
 
-  const onSubmit = () => {
+  const handleSubmit = async () => {
+    if (onSubmit) {
+      setSubmitLoading(true);
+      await onSubmit(selected);
+      setSubmitLoading(false);
+      closeModal();
+      return;
+    }
+
     mutate({ specId, blockIds: selected });
   };
 
@@ -63,9 +74,9 @@ const ChooseCompetencyBlockModal: FC<ChooseCompetencyBlockModalProps> = ({
       open={isOpen}
       setOpen={closeModal}
       title="Выбрать компетенции"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       submitText="Добавить"
-      loading={isFetching || isLoading}
+      loading={isFetching || isLoading || submitLoading}
       className="sm:max-w-2xl"
     >
       <InputWithLabelLight

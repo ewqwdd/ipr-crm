@@ -7,7 +7,7 @@ import { PrismaService } from 'src/utils/db/prisma.service';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { SetTeamUserSpecs } from './dto/set-team-user-specs';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, Team } from '@prisma/client';
 import { UsersAccessService } from 'src/users/users-access.service';
 
 @Injectable()

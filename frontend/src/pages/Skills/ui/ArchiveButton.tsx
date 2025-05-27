@@ -8,14 +8,12 @@ interface ArchiveButtonProps {
   archiveMutation: ReturnType<typeof skillsApi.useArchiveAllMutation>;
 }
 
-export default function ArchiveButton({archiveMutation}: ArchiveButtonProps) {
-  const [mutate, { isError, isLoading }] =
-    archiveMutation;
+export default function ArchiveButton({ archiveMutation }: ArchiveButtonProps) {
+  const [mutate, { isError, isLoading }] = archiveMutation;
   const versionApi = skillsApi.useGetVersionQuery();
   const onClick = () => {
     mutate();
   };
-
 
   useEffect(() => {
     if (isError) {

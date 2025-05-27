@@ -15,6 +15,7 @@ import { CreateTeamFolderDto } from './dto/create-team-folder.dto';
 import { UpdateTeamFolderDto } from './dto/update-team-folder.dto';
 import { CreateSpecFolderDto } from './dto/create-spec-folder.dto';
 import { UpdateSpecFolderDto } from './dto/update-spec-folder.dto';
+import { SetCompetencyBlocksForSpecFolderDto } from './dto/set-comeptency-blocks-for-spec-folder.dto';
 
 @Controller('profile-structure-folder')
 export class ProfileStructureFolderController {
@@ -86,5 +87,13 @@ export class ProfileStructureFolderController {
   @Delete('spec/:id')
   deleteSpec(@Param('id', ParseIntPipe) id: number) {
     return this.folderService.deleteSpecFolder(id);
+  }
+
+  @Post('spec/:id/competency-blocks')
+  setCompetencyBlocksForSpecFolder(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: SetCompetencyBlocksForSpecFolderDto,
+  ) {
+    return this.folderService.setCompetencyBlocksForSpecFolder(id, dto);
   }
 }

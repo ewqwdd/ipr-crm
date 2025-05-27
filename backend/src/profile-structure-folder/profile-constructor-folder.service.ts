@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -10,6 +11,7 @@ import { UpdateProductFolderDto } from './dto/update-product-folder.dto';
 import { UpdateTeamFolderDto } from './dto/update-team-folder.dto';
 import { UpdateSpecFolderDto } from './dto/update-spec-folder.dto';
 import { CreateProductFolderDto } from './dto/create-product-folder.dto';
+import { SetCompetencyBlocksForSpecFolderDto } from './dto/set-comeptency-blocks-for-spec-folder.dto';
 
 @Injectable()
 export class ProfileConstructorFolderService {
@@ -51,7 +53,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (existingFolder) {
-      throw new ConflictException('Folder with this name already exists');
+      throw new ConflictException('Папка с таким названием уже существует');
     }
 
     return this.prismaService.profileConstructorFolderProduct.create({
@@ -68,7 +70,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (!folder) {
-      throw new NotFoundException('Folder not found');
+      throw new NotFoundException('Папка не найдена');
     }
 
     return this.prismaService.profileConstructorFolderProduct.delete({
@@ -83,7 +85,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (!folder) {
-      throw new NotFoundException('Folder not found');
+      throw new NotFoundException('Папка не найдена');
     }
 
     const existingFolder =
@@ -99,7 +101,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (existingFolder) {
-      throw new ConflictException('Folder with this name already exists');
+      throw new ConflictException('Папка с таким названием уже существует');
     }
 
     return this.prismaService.profileConstructorFolderProduct.update({
@@ -116,7 +118,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (!product) {
-      throw new NotFoundException('Product folder not found');
+      throw new NotFoundException('Папка продукта не найдена');
     }
 
     const existingFolder =
@@ -131,7 +133,7 @@ export class ProfileConstructorFolderService {
 
     if (existingFolder) {
       throw new ConflictException(
-        'Team folder with this name already exists in this product',
+        'Папка команды с таким названием уже существует в этом продукте',
       );
     }
 
@@ -150,7 +152,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (!folder) {
-      throw new NotFoundException('Team folder not found');
+      throw new NotFoundException('Папка команды не найдена');
     }
 
     return this.prismaService.profileConstructorFolderTeam.delete({
@@ -165,7 +167,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (!folder) {
-      throw new NotFoundException('Team folder not found');
+      throw new NotFoundException('Папка команды не найдена');
     }
 
     const existingFolder =
@@ -183,7 +185,7 @@ export class ProfileConstructorFolderService {
 
     if (existingFolder) {
       throw new ConflictException(
-        'Team folder with this name already exists in this product',
+        'Папка команды с таким названием уже существует в этом продукте',
       );
     }
 
@@ -194,21 +196,21 @@ export class ProfileConstructorFolderService {
   }
 
   // Spec Folder Methods
-  async createSpecFolder({ name, teamId }: CreateSpecFolderDto) {
+  async createSpecFolder({ specs, teamId }: CreateSpecFolderDto) {
     const team =
       await this.prismaService.profileConstructorFolderTeam.findUnique({
         where: { id: teamId },
       });
 
     if (!team) {
-      throw new NotFoundException('Team folder not found');
+      throw new NotFoundException('Папка команды не найдена');
     }
 
     const existingFolder =
       await this.prismaService.profileConstructorFolderSpec.findFirst({
         where: {
           name: {
-            in: [name, name.toLowerCase(), name.toUpperCase()],
+            in: specs,
           },
           teamId,
         },
@@ -216,15 +218,15 @@ export class ProfileConstructorFolderService {
 
     if (existingFolder) {
       throw new ConflictException(
-        'Spec folder with this name already exists in this team',
+        'Папка спеціалізации с таким названием уже существует в этой команде',
       );
     }
 
-    return this.prismaService.profileConstructorFolderSpec.create({
-      data: {
+    return this.prismaService.profileConstructorFolderSpec.createMany({
+      data: specs.map((name) => ({
         name,
         teamId,
-      },
+      })),
     });
   }
 
@@ -235,7 +237,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (!folder) {
-      throw new NotFoundException('Spec folder not found');
+      throw new NotFoundException('Папка спеціалізації не найдена');
     }
 
     return this.prismaService.profileConstructorFolderSpec.delete({
@@ -250,7 +252,7 @@ export class ProfileConstructorFolderService {
       });
 
     if (!folder) {
-      throw new NotFoundException('Spec folder not found');
+      throw new NotFoundException('Папка спеціалізації не найдена');
     }
 
     const existingFolder =
@@ -268,13 +270,60 @@ export class ProfileConstructorFolderService {
 
     if (existingFolder) {
       throw new ConflictException(
-        'Spec folder with this name already exists in this team',
+        'Папка спеціалізации с таким названием уже существует в этой команде',
       );
     }
 
     return this.prismaService.profileConstructorFolderSpec.update({
       where: { id },
       data: { name },
+    });
+  }
+
+  async setCompetencyBlocksForSpecFolder(
+    specFolderId: number,
+    { competencyBlockIds }: SetCompetencyBlocksForSpecFolderDto,
+  ) {
+    // Проверяем существование папки спецификации
+    const specFolder =
+      await this.prismaService.profileConstructorFolderSpec.findUnique({
+        where: { id: specFolderId },
+      });
+
+    if (!specFolder) {
+      throw new NotFoundException('Папка спецификации не найдена');
+    }
+
+    // Проверяем существование всех блоков компетенций
+    const competencyBlocks = await this.prismaService.competencyBlock.findMany({
+      where: {
+        id: {
+          in: competencyBlockIds,
+        },
+        archived: false, // Только неархивированные блоки
+      },
+    });
+
+    if (competencyBlocks.length !== competencyBlockIds.length) {
+      throw new BadRequestException('Некоторые блоки компетенций не найдены');
+    }
+
+    // Обновляем связи между спецификацией и блоками компетенций
+    await this.prismaService.profileConstructorFolderSpec.update({
+      where: { id: specFolderId },
+      data: {
+        competencyBlocks: {
+          set: competencyBlockIds.map((id) => ({ id })),
+        },
+      },
+    });
+
+    // Возвращаем обновленную спецификацию со всеми блоками
+    return this.prismaService.profileConstructorFolderSpec.findUnique({
+      where: { id: specFolderId },
+      include: {
+        competencyBlocks: true,
+      },
     });
   }
 }

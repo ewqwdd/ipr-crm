@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { CreateRateDto } from './dto/create-rate.dto';
-import { EvaluatorType, Prisma } from '@prisma/client';
+import { EvaluatorType, Prisma, SkillType } from '@prisma/client';
 import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
@@ -19,6 +19,8 @@ import { AddEvaluatorsDto } from './dto/add-evalators.dto';
 import { RateFiltersDto } from './dto/rate-filters.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
 import { findAllRateInclude } from './constants';
+import { TeamsHelpersService } from 'src/teams/teams.helpers.service';
+import { findHierarchyElements } from './helpers';
 
 @Injectable()
 export class Rate360Service {
@@ -26,6 +28,7 @@ export class Rate360Service {
     private prismaService: PrismaService,
     private notificationsService: NotificationsService,
     private usersService: UsersAccessService,
+    private teamsHelperService: TeamsHelpersService,
   ) {}
 
   accessCheck(sessionInfo: GetSessionInfoDto) {
@@ -160,9 +163,92 @@ export class Rate360Service {
     });
   }
 
+  async findFolderdsForRates(
+    teamIds: number[],
+    specIds: number[],
+    skill: SkillType[],
+  ) {
+    const [products, teams, specs] = await Promise.all([
+      this.teamsHelperService.findRootTeamsForMultiple(teamIds),
+      this.prismaService.team.findMany({
+        where: {
+          id: { in: teamIds },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      }),
+      this.prismaService.spec.findMany({
+        where: {
+          id: { in: specIds },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      }),
+    ]);
+
+    const folders =
+      await this.prismaService.profileConstructorFolderProduct.findMany({
+        where: {
+          name: {
+            in: Array.from(products.values()).map((product) => product.name),
+          },
+        },
+        include: {
+          teams: {
+            where: {
+              name: {
+                in: teams.map((team) => team.name),
+              },
+            },
+            include: {
+              specs: {
+                where: {
+                  name: {
+                    in: specs.map((spec) => spec.name),
+                  },
+                },
+                include: {
+                  competencyBlocks: {
+                    where: {
+                      archived: false,
+                      type: {
+                        in: skill,
+                      },
+                    },
+                    select: {
+                      id: true,
+                      type: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+    return {
+      folders,
+      products,
+      teams,
+      specs,
+    };
+  }
+
   async createRate(data: CreateRateDto, sessionInfo: GetSessionInfoDto) {
     const { rate, skill, confirmCurator, confirmUser } = data;
-    return await this.prismaService.$transaction(
+
+    const { folders, products, specs } = await this.findFolderdsForRates(
+      rate.map((r) => r.teamId),
+      rate.flatMap((team) => team.specs.map((spec) => spec.specId)),
+      skill,
+    );
+
+    return this.prismaService.$transaction(
       async (tx) => {
         const ratesToCreate = skill.flatMap((skill) =>
           rate.flatMap((team) => {
@@ -223,13 +309,30 @@ export class Rate360Service {
           }
         }
 
+        const folderCompetencyBlocks = folders.flatMap((folder) =>
+          folder.teams.flatMap((team) =>
+            team.specs.flatMap((spec) =>
+              spec.competencyBlocks.map((block) => ({
+                ...block,
+              })),
+            ),
+          ),
+        );
+
         const competencyBlocks = await tx.competencyBlock.findMany({
           where: {
-            specs: {
-              some: {
-                id: { in: ratesToCreate.map((rate) => rate.specId) },
+            OR: [
+              {
+                specs: {
+                  some: {
+                    id: { in: ratesToCreate.map((rate) => rate.specId) },
+                  },
+                },
               },
-            },
+              {
+                id: { in: folderCompetencyBlocks.map((block) => block.id) },
+              },
+            ],
             type: {
               in: skill,
             },
@@ -265,6 +368,7 @@ export class Rate360Service {
               select: {
                 curatorId: true,
                 parentTeamId: true,
+                name: true,
                 parentTeam: {
                   include: {
                     curator: true,
@@ -320,6 +424,21 @@ export class Rate360Service {
                 );
               }
             }
+
+            const userProduct = products.get(rate.teamId);
+            const userSpec = specs.find((spec) => spec.id === rate.specId);
+            const foundFolder = findHierarchyElements(
+              folders,
+              userProduct?.name,
+              team.name,
+              userSpec?.name,
+            );
+
+            const skills =
+              foundFolder?.spec?.competencyBlocks.filter(
+                (block) => block.type === rate.type,
+              ) ?? [];
+
             return await tx.rate360.update({
               where: { id: createdRates[index].id },
               data: {
@@ -343,13 +462,16 @@ export class Rate360Service {
                   },
                 },
                 competencyBlocks: {
-                  connect: competencyBlocks
-                    .filter(
-                      (block) =>
-                        block.specs.find((s) => s.id === rate.specId) &&
-                        rate.type === block.type,
-                    )
-                    .map(({ id }) => ({ id })),
+                  connect:
+                    skills.length > 0
+                      ? skills.map((skill) => ({ id: skill.id }))
+                      : competencyBlocks
+                          .filter(
+                            (block) =>
+                              block.specs.find((s) => s.id === rate.specId) &&
+                              rate.type === block.type,
+                          )
+                          .map(({ id }) => ({ id })),
                 },
               },
             });
@@ -796,7 +918,6 @@ export class Rate360Service {
       .flatMap((block) =>
         block.competencies.flatMap((competency) => competency.indicators),
       );
-    console.log(indicators.length, rate.userRates.length);
     const userRates = rate.userRates;
     if (userRates.length < indicators.length) {
       throw new ForbiddenException('Оценка не завершена');
