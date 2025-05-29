@@ -64,7 +64,6 @@ export default function SkillsHistoryElement() {
         <CompetencyList
           disabled
           data={data?.blocks}
-          openModal={openModal}
           loading={isFetching}
         />
       </div>

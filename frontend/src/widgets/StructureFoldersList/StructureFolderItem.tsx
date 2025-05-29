@@ -1,6 +1,7 @@
 import { FC, memo } from 'react';
 import { cva } from '@/shared/lib/cva';
 import {
+  DocumentIcon,
   FolderIcon,
   PencilIcon,
   PlusCircleIcon,
@@ -52,7 +53,7 @@ const FolderItem: FC<FolderItemProps> = ({
   });
 
   // Определяем цвет иконки в зависимости от типа папки
-  const iconColorClass = cva('h-5 w-5', {
+  const iconColorClass = cva('size-5 min-w-5', {
     'text-blue-500': folderType === FolderType.PRODUCT,
     'text-green-500': folderType === FolderType.TEAM,
     'text-purple-500': folderType === FolderType.SPEC,
@@ -109,12 +110,27 @@ const FolderItem: FC<FolderItemProps> = ({
     >
       <div className={indentClass}>
         <FolderIcon className={iconColorClass} />
-        <span className="font-medium">{name}</span>
+        <span className="font-medium max-sm:text-sm flex-1 truncate">
+          {name}
+        </span>
       </div>
 
-      <SoftButton onClick={onAdd} className="mr-4">
-        <PlusCircleIcon className="h-5 w-5" />
-        <span className="ml-1">Добавить</span>
+      {folderType === FolderType.SPEC && (
+        <SoftButton
+          className="mr-4 max-sm:p-1"
+          success
+          onClick={() =>
+            openModal('EDIT_COMPETENCY_BLOCKS', { blocks: initialBlocks })
+          }
+        >
+          <DocumentIcon className="size-5" />{' '}
+          <span className="max-sm:hidden">Компетенции</span>
+        </SoftButton>
+      )}
+
+      <SoftButton onClick={onAdd} className="mr-4 max-sm:p-1">
+        <PlusCircleIcon className="size-5" />
+        <span className="max-sm:hidden">Добавить</span>
       </SoftButton>
 
       {!disabled && (

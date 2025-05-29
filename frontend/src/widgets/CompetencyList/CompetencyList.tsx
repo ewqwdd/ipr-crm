@@ -3,20 +3,20 @@ import { Accordion } from '@/shared/ui/Accordion';
 import { FC, memo } from 'react';
 import CompetencyListItem from './CompetencyItem';
 import { cva } from '@/shared/lib/cva';
+import { useModal } from '@/app/hooks/useModal';
 
 type ICompetencyListProps = {
   data: CompetencyBlock[] | undefined;
-  openModal: (type: string, data?: unknown) => void;
   loading?: boolean;
   disabled?: boolean;
 };
 
 const CompetencyList: FC<ICompetencyListProps> = ({
   data,
-  openModal,
   loading,
   disabled,
 }) => {
+  const { openModal } = useModal();
   return (
     <div
       className={cva('grow flex flex-col mt-4', {

@@ -89,7 +89,6 @@ const Competency: FC<CompetencyProps> = ({ archiveMutation }) => {
       </div>
       <CompetencyList
         data={filtereedData}
-        openModal={openModal}
         loading={isFetching || archiveMutation[1].isLoading}
       />
     </LoadingOverlay>
