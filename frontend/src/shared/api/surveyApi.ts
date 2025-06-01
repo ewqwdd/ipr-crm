@@ -1,5 +1,6 @@
 import { AssignedSurvey, Survey, SurveyCreate } from '@/entities/survey';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { dateService } from '../lib/dateService';
 
 const surveyApi = createApi({
   reducerPath: 'surveyApi',
@@ -20,14 +21,10 @@ const surveyApi = createApi({
         body: {
           ...body,
           startDate: body.startDate
-            ? new Date(
-                new Date(body.startDate).setHours(0, 0, 0, 0),
-              ).toISOString()
+            ? dateService.normalizeStartDate(body.startDate)
             : undefined,
           endDate: body.endDate
-            ? new Date(
-                new Date(body.endDate).setHours(23, 59, 59, 999),
-              ).toISOString()
+            ? dateService.normalizeEndDate(body.endDate)
             : undefined,
         },
       }),
@@ -43,7 +40,7 @@ const surveyApi = createApi({
         body: {
           userIds,
           startDate: startDate
-            ? new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString()
+            ? dateService.normalizeStartDate(startDate)
             : undefined,
         },
       }),
@@ -75,14 +72,10 @@ const surveyApi = createApi({
         body: {
           ...body,
           startDate: body.startDate
-            ? new Date(
-                new Date(body.startDate).setHours(0, 0, 0, 0),
-              ).toISOString()
+            ? dateService.normalizeStartDate(body.startDate)
             : undefined,
           endDate: body.endDate
-            ? new Date(
-                new Date(body.endDate).setHours(23, 59, 59, 999),
-              ).toISOString()
+            ? dateService.normalizeEndDate(body.endDate)
             : undefined,
         },
       }),

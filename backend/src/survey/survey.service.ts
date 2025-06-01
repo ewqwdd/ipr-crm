@@ -84,7 +84,7 @@ export class SurveyService {
           label: question.label,
           type: question.type,
           required: question.required,
-          order: index,
+          order: question.order ?? index,
           maxLength: question.maxLength,
           maxNumber: question.maxNumber,
           minNumber: question.minNumber,
@@ -358,6 +358,7 @@ export class SurveyService {
             scaleDots: found.scaleDots ?? null,
             scaleStart: found.scaleStart ?? null,
             scaleEnd: found.scaleEnd ?? null,
+            order: found.order ?? question.order,
           },
         });
         const options = await this.prismaService.option.findMany({
@@ -410,12 +411,12 @@ export class SurveyService {
 
     const newQuestions = data.surveyQuestions
       .filter((q) => !q.id)
-      .map((question, index) =>
+      .map((question) =>
         this.prismaService.surveyQuestion.create({
           data: {
             label: question.label,
             type: question.type,
-            order: index,
+            order: question.order,
             description: question.description,
             maxLength: question.maxLength,
             maxNumber: question.maxNumber,
@@ -724,7 +725,7 @@ export class SurveyService {
                 },
               },
               orderBy: {
-                id: 'asc',
+                order: 'asc',
               },
             },
           },

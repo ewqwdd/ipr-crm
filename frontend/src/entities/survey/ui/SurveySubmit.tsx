@@ -103,7 +103,8 @@ export default function SurveySubmit({
     if (!isValid) {
       return;
     }
-    const surveyQuestions = survey.surveyQuestions.map((question) => {
+    const surveyQuestions = survey.surveyQuestions.map((q, index) => {
+      const question = { ...q, order: index };
       if (question.type === 'NUMBER') {
         return {
           ...question,

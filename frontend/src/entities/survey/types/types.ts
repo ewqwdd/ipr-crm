@@ -46,6 +46,7 @@ export interface SurveyQuestion {
   scaleStart?: string;
   scaleEnd?: string;
   answeredQuestions: AssignedAnsweredQuestion[];
+  order?: number;
 }
 
 interface CreateSurveyOption extends Omit<SurveyOption, 'id'> {

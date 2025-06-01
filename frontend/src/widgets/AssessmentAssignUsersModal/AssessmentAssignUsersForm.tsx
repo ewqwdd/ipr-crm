@@ -1,9 +1,11 @@
 import { User } from '@/entities/user';
 import DatePickerLight from '@/shared/ui/DatePickerLight';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DateObject } from 'react-multi-date-picker';
 import UsersList from './UsersList';
 import { useAppSelector } from '@/app';
+import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
+import { displayName } from '@/shared/lib/displayName';
 
 interface TestAssignedFormProps {
   users: User[];
@@ -22,8 +24,10 @@ export default function TestAssignedForm({
   setDate,
   role,
 }: TestAssignedFormProps) {
-  const teamAccess =
-    useAppSelector((state) => state.user.user?.teamAccess) ?? [];
+  const teamAccess = useAppSelector((state) => state.user.user?.teamAccess);
+
+  const [search, setSearch] = useState('');
+
   const groupedUsers = useMemo(() => {
     const teamMap = new Map<
       number,
@@ -32,7 +36,7 @@ export default function TestAssignedForm({
 
     users.forEach((user) => {
       const check = (id: number) =>
-        !teamMap.has(id) && (role === 'admin' || teamAccess.includes(id));
+        !teamMap.has(id) && (role === 'admin' || teamAccess?.includes(id));
       user.teams?.forEach((team) => {
         if (check(team.teamId)) {
           teamMap.set(team.teamId, team);
@@ -56,13 +60,17 @@ export default function TestAssignedForm({
         ),
       ],
     }));
-  }, [users]);
+  }, [users, role, teamAccess]);
 
   const noTeamUsers = useMemo(() => {
     return users.filter(
-      (user) => (!user.teams || user.teams.length === 0) && !user.teamCurator,
+      (user) =>
+        (!user.teams || user.teams.length === 0) &&
+        !user.teamCurator &&
+        (!search ||
+          displayName(user).toLowerCase().includes(search.toLowerCase())),
     );
-  }, [users]);
+  }, [users, search]);
 
   const onDateChange = (date: DateObject | DateObject[] | undefined) => {
     if (!date) return;
@@ -73,6 +81,22 @@ export default function TestAssignedForm({
     }
   };
 
+  const filteredSearch = useMemo(() => {
+    if (!search) return groupedUsers;
+    return groupedUsers
+      .map((team) =>
+        team.team.name.toLowerCase().includes(search.toLowerCase())
+          ? team
+          : {
+              ...team,
+              users: team.users.filter((user) =>
+                displayName(user).toLowerCase().includes(search.toLowerCase()),
+              ),
+            },
+      )
+      .filter((team) => team.users.length > 0);
+  }, [search, groupedUsers]);
+
   const defaultProps = {
     selected,
     setSelected,
@@ -80,12 +104,21 @@ export default function TestAssignedForm({
 
   return (
     <div className="flex flex-col gap-4 min-h-96">
-      <div className="flex items-center gap-2 mt-6 mb-2">
-        <span className="text-sm text-gray-500 max-sm:text-left text-nowrap">
-          Дата начала:
-        </span>
-        <DatePickerLight value={date} onChange={onDateChange} />
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2 mt-6 mb-2">
+          <span className="text-sm text-gray-500 max-sm:text-left text-nowrap">
+            Дата начала:
+          </span>
+          <DatePickerLight value={date} onChange={onDateChange} />
+        </div>
+        <InputWithLabelLight
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-80"
+          placeholder="Поиск..."
+        />
       </div>
+
       {role === 'admin' && noTeamUsers.length > 0 && (
         <UsersList
           {...defaultProps}
@@ -96,7 +129,7 @@ export default function TestAssignedForm({
           }}
         />
       )}
-      {groupedUsers.map((team) => (
+      {filteredSearch.map((team) => (
         <UsersList {...defaultProps} key={team.teamId} team={team} />
       ))}
     </div>

@@ -3,7 +3,7 @@ import { useModal } from '@/app/hooks/useModal';
 import { foldersApi } from '@/shared/api/foldersApi';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { universalApi } from '@/shared/api/universalApi';
-import { formatDateTime } from '@/shared/lib/formatDateTime';
+import { dateService } from '@/shared/lib/dateService';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
@@ -55,17 +55,13 @@ export default function SkillsHistoryElement() {
         <div className="flex justify-between items-start mb-6">
           <Heading
             title="Версия профиля"
-            description={formatDateTime(data?.date)}
+            description={dateService.formatDateTime(data?.date)}
           />
           <PrimaryButton onClick={onRestoreVersion}>
             Востановить версию
           </PrimaryButton>
         </div>
-        <CompetencyList
-          disabled
-          data={data?.blocks}
-          loading={isFetching}
-        />
+        <CompetencyList disabled data={data?.blocks} loading={isFetching} />
       </div>
     </LoadingOverlay>
   );

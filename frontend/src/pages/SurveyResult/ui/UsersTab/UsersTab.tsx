@@ -1,10 +1,10 @@
 import { Survey } from '@/entities/survey';
 import { displayName } from '@/shared/lib/displayName';
-import { formatDate } from '@/shared/lib/formatDate';
 import { Card } from '@/shared/ui/Card';
 import { SearchSelect } from '@/shared/ui/SearchSelect';
 import { useMemo, useState } from 'react';
 import SurveyResultQuestion from '../SurveyResultQuestion/SurveyResultQuestion';
+import { dateService } from '@/shared/lib/dateService';
 
 interface UsersTabProps {
   survey?: Survey;
@@ -58,7 +58,7 @@ export default function UsersTab({ survey }: UsersTabProps) {
           <h3 className="font-medium text-sm">Дата прохождения</h3>
           <p className="text-gray-500 text-sm flex items-center gap-2 mb-2">
             {userAssigned?.endDate
-              ? formatDate(userAssigned?.endDate)
+              ? dateService.formatDate(userAssigned?.endDate)
               : 'Не завершено'}
           </p>
         </div>

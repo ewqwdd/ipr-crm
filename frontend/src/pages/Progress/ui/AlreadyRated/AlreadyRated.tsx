@@ -1,5 +1,5 @@
 import { Rate } from '@/entities/rates';
-import { formatDate } from '@/shared/lib/formatDate';
+import { dateService } from '@/shared/lib/dateService';
 import { Badge } from '@/shared/ui/Badge';
 import Tooltip from '@/shared/ui/Tooltip';
 
@@ -11,8 +11,8 @@ export default function AlreadyRated({ rate }: AlreadyRatedProps) {
   return (
     <Tooltip
       content={[
-        !!rate.startDate && formatDate(rate.startDate),
-        rate.endDate && formatDate(rate.endDate),
+        !!rate.startDate && dateService.formatDate(rate.startDate),
+        rate.endDate && dateService.formatDate(rate.endDate),
       ]
         .filter(Boolean)
         .join(' - ')}

@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { Calendar } from 'react-multi-date-picker';
 import { iprApi } from '@/shared/api/iprApi';
 import { useAppDispatch } from '@/app';
-import { formatDate } from '@/shared/lib/formatDate';
+import { dateService } from '@/shared/lib/dateService';
 
 type Status = Task['status'];
 
@@ -112,7 +112,7 @@ const Deadline: FC<{
   if (status === 'COMPLETED') {
     return (
       <div className="text-sm text-gray-500">
-        {initialDeadline && formatDate(initialDeadline)}
+        {initialDeadline && dateService.formatDate(initialDeadline)}
       </div>
     );
   }
@@ -136,7 +136,7 @@ const Deadline: FC<{
 
   return initialDeadline ? (
     <div className={cva('flex gap-2 items-center max-sm:text-sm', className)}>
-      <div>{formatDate(initialDeadline)}</div>
+      <div>{dateService.formatDate(initialDeadline)}</div>
       <SoftButton
         className="rounded-full sm:p-2 p-1"
         size="xs"

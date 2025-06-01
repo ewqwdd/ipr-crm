@@ -1,5 +1,5 @@
 import { rate360Api } from '@/shared/api/rate360Api';
-import { formatDate } from '@/shared/lib/formatDate';
+import { dateService } from '@/shared/lib/dateService';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
@@ -108,7 +108,8 @@ export default function Rate360MeList() {
                   {
                     render: (item) => (
                       <span>
-                        {item.startDate && formatDate(item.startDate)}
+                        {item.startDate &&
+                          dateService.formatDate(item.startDate)}
                       </span>
                     ),
                   },

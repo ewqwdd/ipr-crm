@@ -1269,7 +1269,7 @@ export class TestService {
 
     const newQuestions = data.questions
       .filter((q) => !q.id)
-      .map((question, index) =>
+      .map((question) =>
         this.prismaService.question.create({
           data: {
             label: question.label,

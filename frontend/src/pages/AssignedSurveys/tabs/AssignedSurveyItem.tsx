@@ -1,6 +1,6 @@
 import { AssignedSurvey } from '@/entities/survey';
 import { cva } from '@/shared/lib/cva';
-import { formatDateTime } from '@/shared/lib/formatDateTime';
+import { dateService } from '@/shared/lib/dateService';
 import { Card } from '@/shared/ui/Card';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { ArrowRightIcon } from '@heroicons/react/outline';
@@ -35,12 +35,12 @@ export default function AssignedSurveyItem({
           <p className="text-gray-500 ml-auto text-sm truncate max-w-32">
             <span className="max-sm:hidden">Начато:</span>
             <span className="sm:hidden">н:</span>{' '}
-            {formatDateTime(survey.startDate)}
+            {dateService.formatDateTime(survey.startDate)}
           </p>
         )}
         {survey.survey.endDate && (
           <p className="text-gray-500 truncate max-sm:max-w-32">
-            До: {formatDateTime(survey.survey.endDate)}
+            До: {dateService.formatDateTime(survey.survey.endDate)}
           </p>
         )}
       </div>

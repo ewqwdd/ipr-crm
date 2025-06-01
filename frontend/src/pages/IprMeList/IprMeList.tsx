@@ -1,5 +1,5 @@
 import { iprApi } from '@/shared/api/iprApi';
-import { formatDate } from '@/shared/lib/formatDate';
+import { dateService } from '@/shared/lib/dateService';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
@@ -71,7 +71,7 @@ export default function IprUserList() {
                   {
                     render: (item) => (
                       <span className="font-medium">
-                        {formatDate(item.startDate)}
+                        {dateService.formatDate(item.startDate)}
                       </span>
                     ),
                   },

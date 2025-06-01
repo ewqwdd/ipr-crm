@@ -1,4 +1,4 @@
-import { formatDateTime } from '@/shared/lib/formatDateTime';
+import { dateService } from '@/shared/lib/dateService';
 import { SupportTicketType } from '../config/types';
 import SupportTicketStatusIcon from './SupportTicketStatusIcon';
 import { Link } from 'react-router';
@@ -23,7 +23,7 @@ export default function SupportTicket({ ticket }: SupportTicketProps) {
         {description}
       </span>
       <span className="text-gray-700 col-span-2">
-        {formatDateTime(createdAt)}
+        {dateService.formatDateTime(createdAt)}
       </span>
       <div className="flex gap-2 font-medium">
         <Link

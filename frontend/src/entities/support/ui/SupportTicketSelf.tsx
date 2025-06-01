@@ -1,4 +1,4 @@
-import { formatDateTime } from '@/shared/lib/formatDateTime';
+import { dateService } from '@/shared/lib/dateService';
 import { SupportTicketType } from '../config/types';
 import SupportTicketStatusIcon from './SupportTicketStatusIcon';
 
@@ -22,7 +22,7 @@ export default function SupportTicketSelf({ ticket }: SpportTicketSelfProps) {
         {description}
       </span>
       <span className="text-gray-700 col-span-2">
-        {formatDateTime(createdAt)}
+        {dateService.formatDateTime(createdAt)}
       </span>
     </div>
   );

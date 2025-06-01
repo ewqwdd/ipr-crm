@@ -10,7 +10,7 @@ import TestRowDropdown from './TestRowDropdown';
 import WithAdminAccess from '@/shared/ui/WithAdminAccess';
 import Tooltip from '@/shared/ui/Tooltip';
 import { useModal } from '@/app/hooks/useModal';
-import { formatDate } from '@/shared/lib/formatDate';
+import { dateService } from '@/shared/lib/dateService';
 
 const Row = ({
   id,
@@ -67,7 +67,7 @@ const Row = ({
         {name}
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        {endDate && formatDate(endDate)}
+        {endDate && dateService.formatDate(endDate)}
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <div className="flex gap-6 ">

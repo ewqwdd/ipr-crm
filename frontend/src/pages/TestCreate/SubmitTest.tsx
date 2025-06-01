@@ -99,11 +99,11 @@ export default function SubmitTest({
     if (!isValid) {
       return;
     }
-    const questions = test.questions.map((question, index) => {
+    const questions = test.questions.map((q, index) => {
+      const question = { ...q, order: index };
       if (question.type === 'NUMBER') {
         return {
           ...question,
-          order: index,
           maxNumber: question.maxNumber
             ? Number(question.maxNumber)
             : undefined,
@@ -120,7 +120,6 @@ export default function SubmitTest({
       } else if (question.type === 'TEXT') {
         return {
           ...question,
-          order: index,
           maxLength:
             question.maxLength && question.maxMinToggle
               ? Number(question.maxLength)
@@ -137,7 +136,6 @@ export default function SubmitTest({
       } else {
         return {
           ...question,
-          order: index,
           numberCorrectValue: undefined,
           maxNumber: undefined,
           minNumber: undefined,

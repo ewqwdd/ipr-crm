@@ -358,7 +358,7 @@ export class NotificationsService {
     });
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES, { name: 'sendTestAssignedCron' })
+  @Cron(CronExpression.EVERY_5_MINUTES, { name: 'sendSurveyAssignedCron' })
   async sendSurveyAssignedCron() {
     console.log('sendSurveyAssignedCron started');
     const tests = await this.prismaService.user_Assigned_Survey.findMany({

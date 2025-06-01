@@ -218,6 +218,23 @@ const testCreateSlice = createSlice({
         })),
       }));
     },
+    changeQuestionOrder: (
+      state: TestCreateStoreSchema,
+      action: PayloadAction<{ sourceIndex: number; destinationIndex: number }>,
+    ) => {
+      const { sourceIndex, destinationIndex } = action.payload;
+      if (
+        sourceIndex < 0 ||
+        destinationIndex < 0 ||
+        sourceIndex >= state.questions.length ||
+        destinationIndex >= state.questions.length ||
+        sourceIndex === destinationIndex
+      ) {
+        return;
+      }
+      const [movedQuestion] = state.questions.splice(sourceIndex, 1);
+      state.questions.splice(destinationIndex, 0, movedQuestion);
+    },
   },
 });
 

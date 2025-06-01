@@ -5,10 +5,10 @@ import { MapIcon } from '@heroicons/react/outline';
 import TaskItem from '../tasks/TaskItem';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import { taskStatusOptions } from '../tasks/constants';
-import { formatDateTime } from '@/shared/lib/formatDateTime';
 import { cva } from '@/shared/lib/cva';
 import { iprApi } from '@/shared/api/iprApi';
 import { useAppDispatch } from '@/app';
+import { dateService } from '@/shared/lib/dateService';
 
 interface UserIprTaskProps {
   task: Task;
@@ -70,7 +70,7 @@ export default function UserIprMaterial({ task, iprId }: UserIprTaskProps) {
               'text-red-500': new Date(task.deadline) < new Date(),
             })}
           >
-            {formatDateTime(task.deadline)}
+            {dateService.formatDateTime(task.deadline)}
           </span>
         )}
       </td>

@@ -8,6 +8,7 @@ import {
   ValidateNested,
   IsEnum,
   IsInt,
+  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { SurveyType, TestAccess } from '@prisma/client';
@@ -72,6 +73,10 @@ class QuestionDTO {
   @IsOptional()
   @IsString()
   scaleEnd?: string;
+
+  @IsOptional()
+  @IsInt()
+  order?: number;
 
   @IsOptional()
   @IsArray()

@@ -3,10 +3,10 @@ import OptionsResult from './OptionsResult';
 import { cva } from '@/shared/lib/cva';
 import { SurveyQuestionType } from '@/entities/survey/types/types';
 import TextValueResult from './TextValueResult';
-import { formatDate } from '@/shared/lib/formatDate';
 import { universalSort } from '@/shared/lib/universalSort';
 import FileResult from './FileResult';
 import ScaleResult from './ScaleResult';
+import { dateService } from '@/shared/lib/dateService';
 
 type Question = Survey['surveyQuestions'][number];
 
@@ -24,7 +24,9 @@ const typeToFieldMap: Partial<
   NUMBER: (question) => question.numberAnswer?.toString(),
   TEXT: (question) => question.textAnswer,
   DATE: (question) =>
-    question.dateAnswer ? formatDate(question.dateAnswer) : undefined,
+    question.dateAnswer
+      ? dateService.formatDate(question.dateAnswer)
+      : undefined,
   TIME: (question) => question.timeAnswer,
   PHONE: (question) => question.phoneAnswer,
 };

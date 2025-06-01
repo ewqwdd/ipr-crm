@@ -1,5 +1,5 @@
 import { AssignedTest } from '@/entities/test';
-import { formatDateTime } from '@/shared/lib/formatDateTime';
+import { dateService } from '@/shared/lib/dateService';
 import { Card } from '@/shared/ui/Card';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { ArrowRightIcon } from '@heroicons/react/outline';
@@ -32,12 +32,12 @@ export default function AssignedTestItem({ test }: AssignedTestItemProps) {
           <p className="text-gray-500 ml-auto text-sm truncate max-w-32">
             <span className="max-sm:hidden">Начато:</span>
             <span className="sm:hidden">н:</span>{' '}
-            {formatDateTime(test.startDate)}
+            {dateService.formatDateTime(test.startDate)}
           </p>
         )}
         {test.test.endDate && (
           <p className="text-gray-500 truncate max-sm:max-w-32">
-            До: {formatDateTime(test.test.endDate)}
+            До: {dateService.formatDateTime(test.test.endDate)}
           </p>
         )}
       </div>

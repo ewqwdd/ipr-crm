@@ -103,35 +103,42 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
         </div>
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 [&_span]:opacity-100">
-        {edit && (
-          <DotsDropdown
-            bodyClassName={cva('z-50', {
-              'origin-bottom-right bottom-full': !!last,
-            })}
-            buttons={[
-              {
-                text: 'Редактировать',
-                onClick: () => navigate('/userEdit/' + person.id),
-              },
-              {
-                text: 'Удалить',
-                onClick: () => {
-                  if (!person.id) return;
-                  setDeleting(true);
-                  deleteUser(person.id);
+        <div className="flex justify-end items-center gap-2">
+          {person.access ? (
+            <Badge color="green">Активен</Badge>
+          ) : (
+            <Badge color="red">Приглашен</Badge>
+          )}
+          {edit && (
+            <DotsDropdown
+              bodyClassName={cva('z-50', {
+                'origin-bottom-right bottom-full': !!last,
+              })}
+              buttons={[
+                {
+                  text: 'Редактировать',
+                  onClick: () => navigate('/userEdit/' + person.id),
                 },
-              },
-              ...(isAdmin && !person.access
-                ? [
-                    {
-                      text: 'Пригласить повторно',
-                      onClick: () => resendInvite(),
-                    },
-                  ]
-                : []),
-            ]}
-          />
-        )}
+                {
+                  text: 'Удалить',
+                  onClick: () => {
+                    if (!person.id) return;
+                    setDeleting(true);
+                    deleteUser(person.id);
+                  },
+                },
+                ...(isAdmin && !person.access
+                  ? [
+                      {
+                        text: 'Пригласить повторно',
+                        onClick: () => resendInvite(),
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+          )}
+        </div>
       </td>
     </tr>
   );

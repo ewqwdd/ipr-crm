@@ -237,6 +237,18 @@ export default function TestQuestionsCreate() {
     [dispatch],
   );
 
+  const changeQuestionOrder = useCallback(
+    (sourceIndex: number, destinationIndex: number) => {
+      dispatch(
+        testCreateActions.changeQuestionOrder({
+          sourceIndex,
+          destinationIndex,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   const props = {
     clearCorrectOptions: onClear,
     questions: questions,
@@ -258,6 +270,7 @@ export default function TestQuestionsCreate() {
     setMaxMinToggle: setMaxMinToggle,
     setOptionScore: setOptionScore,
     setQuestionScore: setQuestionScore,
+    changeQuestionOrder: changeQuestionOrder,
   };
 
   return <TestQuestions {...props} />;

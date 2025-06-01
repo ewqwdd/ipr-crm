@@ -148,6 +148,23 @@ const surveyCreateSlice = createSlice({
         })),
       }));
     },
+    changeQuestionOrder: (
+      state,
+      action: PayloadAction<{ sourceIndex: number; destinationIndex: number }>,
+    ) => {
+      const { sourceIndex, destinationIndex } = action.payload;
+      if (
+        sourceIndex < 0 ||
+        destinationIndex < 0 ||
+        sourceIndex >= state.surveyQuestions.length ||
+        destinationIndex >= state.surveyQuestions.length ||
+        sourceIndex === destinationIndex
+      ) {
+        return;
+      }
+      const [movedQuestion] = state.surveyQuestions.splice(sourceIndex, 1);
+      state.surveyQuestions.splice(destinationIndex, 0, movedQuestion);
+    },
   },
 });
 

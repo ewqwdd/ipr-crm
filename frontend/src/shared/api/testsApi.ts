@@ -1,5 +1,6 @@
 import { AssignedTest, Test, TestCreate } from '@/entities/test';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { dateService } from '../lib/dateService';
 
 export const testsApi = createApi({
   reducerPath: 'testsApi',
@@ -20,14 +21,10 @@ export const testsApi = createApi({
         body: {
           ...body,
           startDate: body.startDate
-            ? new Date(
-                new Date(body.startDate).setHours(0, 0, 0, 0),
-              ).toISOString()
+            ? dateService.normalizeStartDate(body.startDate)
             : undefined,
           endDate: body.endDate
-            ? new Date(
-                new Date(body.endDate).setHours(23, 59, 59, 999),
-              ).toISOString()
+            ? dateService.normalizeStartDate(body.endDate)
             : undefined,
         },
       }),
@@ -40,14 +37,10 @@ export const testsApi = createApi({
         body: {
           ...body,
           startDate: body.startDate
-            ? new Date(
-                new Date(body.startDate).setHours(0, 0, 0, 0),
-              ).toISOString()
+            ? dateService.normalizeStartDate(body.startDate)
             : undefined,
           endDate: body.endDate
-            ? new Date(
-                new Date(body.endDate).setHours(23, 59, 59, 999),
-              ).toISOString()
+            ? dateService.normalizeStartDate(body.endDate)
             : undefined,
         },
       }),
@@ -79,7 +72,7 @@ export const testsApi = createApi({
         body: {
           userIds,
           startDate: startDate
-            ? new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString()
+            ? dateService.normalizeStartDate(startDate)
             : undefined,
         },
       }),
