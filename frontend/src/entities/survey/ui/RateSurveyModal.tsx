@@ -1,8 +1,8 @@
 import { Modal } from '@/shared/ui/Modal';
 import { FC, useState } from 'react';
-import { displayName } from '@/shared/lib/displayName';
 import { Pagination } from '@/shared/ui/Pagination';
 import { surveyApi } from '@/shared/api/surveyApi';
+import { usersService } from '@/shared/lib/usersService';
 
 type RateSurveyModalProps = {
   isOpen: boolean;
@@ -48,7 +48,7 @@ const RateSurveyModal: FC<RateSurveyModalProps> = ({
                 className="flex items-center justify-between py-3 gap-4"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-900">{displayName(user)}</span>
+                  <span className="text-gray-900">{usersService.displayName(user)}</span>
                   <span className="text-gray-500 text-sm">
                     {finished ? 'Завершено' : 'Не завершено'}
                   </span>

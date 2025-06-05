@@ -8,6 +8,7 @@ import {
 import { CompetencyListItemProps } from './types';
 import { CompetencyType, useSkillsService } from '@/entities/skill';
 import { cva } from '@/shared/lib/cva';
+import { foldersApi } from '@/shared/api/foldersApi';
 
 const getCompetencyListItemStyles = (listItemType: CompetencyType) => {
   switch (listItemType) {
@@ -44,8 +45,13 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   skipHint,
   skipValue,
   skillType,
+  pageType = 'profile', // Default to 'profile' if not provided
+  folderId,
+  setList
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
+
+  const [removeBlockFromFolder, {isLoading: removeBlockLoading}] = foldersApi.useRemoveCompetencyBlocksFromSpecFolderMutation();
 
   const deleteCompetencyBlock = competencyBlock.delete[0];
   const deleteCompetency = competency.delete[0];
@@ -54,7 +60,8 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   const loading =
     competencyBlock.delete[1].isLoading ||
     competency.delete[1].isLoading ||
-    indicator.delete[1].isLoading;
+    indicator.delete[1].isLoading ||
+    removeBlockLoading;
 
   return (
     <div
@@ -150,7 +157,24 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
               <PencilIcon className="h-5 w-5" />
             </SoftButton>
 
-            <SoftButton
+            {pageType === 'folder' && listItemType === CompetencyType.COMPETENCY_BLOCK && (
+              <SoftButton
+              size="xs"
+              className="rounded-full p-2"
+            danger
+            onClick={() => {
+              if (!folderId) return;
+              removeBlockFromFolder({
+                blockId: id,
+                specFolderId: folderId,
+              })
+              setList?.((prev) => prev.filter((item) => item.id !== id));
+            }}
+            >
+              <MinusCircleIcon className="h-5 w-5" />
+            </SoftButton>)}
+
+            {pageType === 'profile' && <SoftButton
               size="xs"
               className="rounded-full text-red p-2"
               onClick={(e) => {
@@ -173,7 +197,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
               }}
             >
               <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
-            </SoftButton>
+            </SoftButton>}
           </>
         )}
       </div>

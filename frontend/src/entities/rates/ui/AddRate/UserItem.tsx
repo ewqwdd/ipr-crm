@@ -3,6 +3,7 @@ import { universalApi } from '@/shared/api/universalApi';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { AddRateDto } from '../../types/types';
+import { generalService } from '@/shared/lib/generalService';
 
 interface UserItemProps {
   user: TeamUser;
@@ -22,7 +23,7 @@ export default function UserItem({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <Avatar src={user.avatar} />
+        <Avatar src={generalService.transformFileUrl(user.avatar)} />
         <span>{user.username}</span>
       </div>
       {user.specsOnTeams && user.specsOnTeams?.length > 0 ? (

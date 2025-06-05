@@ -1,6 +1,7 @@
 import { Avatar } from '@/shared/ui/Avatar';
 import { Badge } from '@/shared/ui/Badge';
 import { User } from '../types/types';
+import { generalService } from '@/shared/lib/generalService';
 
 interface UserFormItemProps {
   user?: User;
@@ -32,7 +33,7 @@ export default function UserFormItem({
           }
         }}
       />
-      <Avatar src={user?.avatar} className="sm:size-8 size-4" />
+      <Avatar src={generalService.transformFileUrl(user?.avatar)} className="sm:size-8 size-4" />
       <span className="text-nowrap">{nameToShow}</span>
       {user?.Spec && (
         <Badge size="sm" color="blue" className="truncate">

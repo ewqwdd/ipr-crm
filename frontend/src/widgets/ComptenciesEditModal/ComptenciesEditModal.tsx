@@ -11,6 +11,8 @@ interface DeleteTaskModalProps {
 
 interface ModalData {
   blocks: number[];
+  folderId?: number;
+  type?: 'folder' | 'profile';
 }
 
 export default function ComptenciesEditModal({
@@ -19,7 +21,7 @@ export default function ComptenciesEditModal({
   closeModal,
 }: DeleteTaskModalProps) {
   const { data, isFetching } = skillsApi.useGetSkillsQuery();
-  const { blocks } = modalData as ModalData;
+  const { blocks, folderId, type } = modalData as ModalData;
 
   const filterdBlocks = useMemo(() => {
     if (!data) return [];
@@ -37,7 +39,7 @@ export default function ComptenciesEditModal({
     >
       <div className="flex flex-col gap-4 mt-4 overflow-auto max-w-full overflow-x-auto">
         {filterdBlocks.length > 0 ? (
-          <CompetencyList data={filterdBlocks} />
+          <CompetencyList folderId={folderId} type={type} data={filterdBlocks} />
         ) : (
           <div className="text-center text-gray-500">
             Нет доступных блоков компетенций

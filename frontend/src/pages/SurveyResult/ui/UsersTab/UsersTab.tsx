@@ -1,10 +1,10 @@
 import { Survey } from '@/entities/survey';
-import { displayName } from '@/shared/lib/displayName';
 import { Card } from '@/shared/ui/Card';
 import { SearchSelect } from '@/shared/ui/SearchSelect';
 import { useMemo, useState } from 'react';
 import SurveyResultQuestion from '../SurveyResultQuestion/SurveyResultQuestion';
 import { dateService } from '@/shared/lib/dateService';
+import { usersService } from '@/shared/lib/usersService';
 
 interface UsersTabProps {
   survey?: Survey;
@@ -15,14 +15,21 @@ type SelectValue = { id: number; name: string };
 export default function UsersTab({ survey }: UsersTabProps) {
   const [userId, setUserId] = useState<number | undefined>();
 
-  const options = useMemo<SelectValue[]>(() => {
-    return (
-      survey?.usersAssigned?.map((user) => ({
-        id: user.user.id,
-        name: user.user.username ?? displayName(user.user),
-      })) ?? []
-    );
-  }, [survey]);
+const options = useMemo<SelectValue[]>(() => {
+  const rawOptions =
+    survey?.usersAssigned?.map((user) => ({
+      id: user.user.id,
+      name: user.user.username ?? usersService.displayName(user.user),
+    })) ?? [];
+
+  const uniqueOptionsMap = new Map<number, SelectValue>();
+  rawOptions.forEach((option) => {
+    uniqueOptionsMap.set(option.id, option);
+  });
+
+  return Array.from(uniqueOptionsMap.values());
+}, [survey]);
+
 
   const handleUserChange = (value: SelectValue) => {
     setUserId(value.id);

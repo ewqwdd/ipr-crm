@@ -12,11 +12,11 @@ import Assesment from './ui/Assesment';
 import { Assesment as AssesmentType } from './types/types';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
-import { tranformAssesment } from '@/shared/lib/transformAssesment';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useAppDispatch, useAppSelector } from '@/app';
 import Tooltip from '@/shared/ui/Tooltip';
 import { UserRateHeader } from '@/widgets/UserRateHeader';
+import { generalService } from '@/shared/lib/generalService';
 
 export default function Rate360Assesment() {
   const { id } = useParams();
@@ -58,7 +58,7 @@ export default function Rate360Assesment() {
 
   useEffect(() => {
     if (Object.keys(assessment).length === 0 && data) {
-      const assesmentData = tranformAssesment(blocks, data);
+      const assesmentData = generalService.tranformAssesment(blocks, data);
       setAssessment(assesmentData);
       const comments: Record<number, string> = {};
       data.comments.forEach((comment) => {

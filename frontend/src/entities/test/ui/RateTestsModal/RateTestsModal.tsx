@@ -2,9 +2,9 @@ import { Modal } from '@/shared/ui/Modal';
 import { FC, useState } from 'react';
 import { testsApi } from '@/shared/api/testsApi';
 import { TestResultScore } from '@/shared/ui/TestResultScore';
-import { testScoreCount } from '@/shared/lib/testScoreCount';
-import { displayName } from '@/shared/lib/displayName';
 import { Pagination } from '@/shared/ui/Pagination';
+import { usersService } from '@/shared/lib/usersService';
+import { generalService } from '@/shared/lib/generalService';
 
 type RateTestsModalProps = {
   isOpen: boolean;
@@ -29,10 +29,10 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
 
   const test = finishedTests?.find((test) => test.id === testId);
   const users = test?.usersAssigned?.map((user) => {
-    const { score, maxScore } = testScoreCount(user, test);
+    const { score, maxScore } = generalService.testScoreCount(user, test);
     return {
       id: `${user.userId}_${testId}`,
-      name: displayName(user.user),
+      name: usersService.displayName(user.user),
       finished: user.finished,
       score,
       questionsCount: maxScore,

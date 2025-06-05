@@ -2,9 +2,9 @@ import { Modal } from '@/shared/ui/Modal';
 import { useEffect, useMemo, useState } from 'react';
 import { foldersApi } from '@/shared/api/foldersApi';
 import toast from 'react-hot-toast';
-import { isFetchBaseQueryError } from '@/shared/lib/isFetchBaseQuery';
 import { Autocomplete } from '@/shared/ui/Autocomplete';
 import { teamsApi } from '@/shared/api/teamsApi';
+import { generalService } from '@/shared/lib/generalService';
 
 interface AddTeamFolderModalProps {
   isOpen: boolean;
@@ -51,7 +51,7 @@ export default function AddTeamFolderModal({
   useEffect(() => {
     if (teamProps.isError) {
       let errorMessage = 'Ошибка при добавлении папки команды';
-      if (isFetchBaseQueryError(teamProps.error)) {
+      if (generalService.isFetchBaseQueryError(teamProps.error)) {
         errorMessage = teamProps.error.data?.message || errorMessage;
       }
       toast.error(errorMessage);

@@ -3,6 +3,7 @@ import { usersApi } from '@/shared/api/usersApi';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
+import { generalService } from '@/shared/lib/generalService';
 import { Badge } from '@/shared/ui/Badge';
 import { DotsDropdown } from '@/shared/ui/DotsDropdown';
 import { useEffect, useState } from 'react';
@@ -63,7 +64,7 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
             {person.avatar ? (
               <img
                 className="h-10 w-10 rounded-full object-cover"
-                src={person.avatar}
+                src={generalService.transformFileUrl(person.avatar)}
                 alt="avatar"
               />
             ) : (

@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import UserDataItem from './ui/UserDataItem';
 import { User } from '../../types/types';
 import { useAppSelector } from '@/app';
+import { generalService } from '@/shared/lib/generalService';
 
 interface UserProfileProps {
   data: User;
@@ -29,7 +30,7 @@ export default function UserProfile({ data }: UserProfileProps) {
         <div className="flex items-center space-x-5">
           <div className="flex-shrink-0">
             <div className="relative">
-              <Avatar src={data?.avatar} className="size-16" />
+              <Avatar src={generalService.transformFileUrl(data?.avatar)} className="size-16" />
               <span
                 className="absolute inset-0 shadow-inner rounded-full"
                 aria-hidden="true"

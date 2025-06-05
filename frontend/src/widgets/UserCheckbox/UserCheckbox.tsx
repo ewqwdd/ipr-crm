@@ -1,5 +1,5 @@
 import { User } from '@/entities/user';
-import { displayName } from '@/shared/lib/displayName';
+import { usersService } from '@/shared/lib/usersService';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { StarIcon } from '@heroicons/react/outline';
 import { ChangeEvent } from 'react';
@@ -23,7 +23,7 @@ export default function UserCheckbox({
       checked={!!selected}
       title={
         <span className="flex items-center">
-          {displayName(user)}
+          {usersService.displayName(user)}
           {!!user.teamCurator?.find((t) => t.id === teamId) && (
             <StarIcon className="size-5 text-yellow-400 ml-1" />
           )}

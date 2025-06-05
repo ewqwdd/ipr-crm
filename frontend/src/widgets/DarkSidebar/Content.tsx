@@ -10,7 +10,7 @@ import { $api } from '@/shared/lib/$api';
 import { userActions } from '@/entities/user';
 import { NotificationBell } from '@/entities/notifications';
 import { Badge } from '@/shared/ui/Badge';
-import { checkActiveLink } from '@/shared/lib/checkActiveLink';
+import { generalService } from '@/shared/lib/generalService';
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
@@ -128,7 +128,7 @@ export default function Content() {
                           as={NavLink}
                           to={subItem.href!}
                           className={classNames(
-                            checkActiveLink(subItem.href!, pathname)
+                            generalService.checkActiveLink(subItem.href!, pathname)
                               ? 'bg-gray-900 text-white [&_svg]:text-gray-300 [&_p]:bg-gray-800 [&_p]:hover:bg-gray-800'
                               : 'text-gray-400/90 hover:bg-gray-700 hover:text-gray-100',
                             'group flex items-center px-2 py-2 text-sm font-medium rounded-md h-10',
@@ -156,7 +156,7 @@ export default function Content() {
       <div className="flex-shrink-0 flex bg-gray-700 p-4">
         <Link to="/" className="flex-shrink-0 w-full group block">
           <div className="flex items-center">
-            <Avatar className="size-9" src={user?.avatar} />
+            <Avatar className="size-9" src={generalService.transformFileUrl(user?.avatar)} />
             <div className="ml-3 flex-1">
               <p className="text-sm font-medium text-white">{user?.username}</p>
               <p className="text-xs font-medium text-gray-300 group-hover:text-gray-200">

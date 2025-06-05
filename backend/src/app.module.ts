@@ -34,7 +34,8 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
     UniversalModule,
     TeamsModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'frontend', 'dist'), // Путь к папке сборки фронтенда
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     Rate360Module,
     ProfileConstructorModule,

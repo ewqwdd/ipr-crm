@@ -4,6 +4,7 @@ import {
   Indicator,
   SkillType,
 } from '@/entities/skill';
+import React from 'react';
 
 type CombineType = Competency | Indicator | CompetencyBlock;
 
@@ -31,4 +32,7 @@ export type CompetencyListItemProps = CombineType & {
   skipHint?: string;
   skipValue?: string;
   skillType: SkillType;
+  pageType?: 'profile' | 'folder'; 
+  folderId?: number;
+  setList?: React.Dispatch<React.SetStateAction<CompetencyBlock[]>>;
 };

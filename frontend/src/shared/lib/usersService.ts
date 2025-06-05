@@ -4,8 +4,9 @@ type UserWithName = Partial<
   Pick<User, 'firstName' | 'lastName' | 'username' | 'email'>
 >;
 
-// TODO: replace logic with this function where possible
-export const displayName = (user: UserWithName) => {
+export const usersService = {
+
+  displayName: (user: UserWithName) => {
   if (user.firstName && user.lastName) {
     return `${user.firstName} ${user.lastName}`;
   } else if (user.firstName) {
@@ -16,4 +17,8 @@ export const displayName = (user: UserWithName) => {
     return user.username;
   }
   return user.email ?? 'Неизвестно';
-};
+}
+
+
+
+}

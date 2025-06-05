@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -325,5 +326,32 @@ export class ProfileConstructorFolderService {
         competencyBlocks: true,
       },
     });
+  }
+
+  async removeCompetencyBlockFromSpecFolder(
+    specFolderId: number,
+    competencyBlockId: number,
+  ) {
+    // Проверяем существование папки спецификации
+    const specFolder =
+      await this.prismaService.profileConstructorFolderSpec.findUnique({
+        where: { id: specFolderId },
+      });
+
+    if (!specFolder) {
+      throw new NotFoundException('Папка спецификации не найдена');
+    }
+
+    // Удаляем связь между спецификацией и блоком компетенции
+    await this.prismaService.profileConstructorFolderSpec.update({
+      where: { id: specFolderId },
+      data: {
+        competencyBlocks: {
+          disconnect: { id: competencyBlockId },
+        },
+      },
+    });
+
+    return HttpStatus.OK;
   }
 }

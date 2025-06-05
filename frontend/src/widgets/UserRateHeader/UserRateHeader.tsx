@@ -2,7 +2,8 @@ import { useAppSelector } from '@/app';
 import { Rate } from '@/entities/rates';
 import { usersApi } from '@/shared/api/usersApi';
 import { cva } from '@/shared/lib/cva';
-import { displayName } from '@/shared/lib/displayName';
+import { generalService } from '@/shared/lib/generalService';
+import { usersService } from '@/shared/lib/usersService';
 import { Avatar } from '@/shared/ui/Avatar';
 import { memo } from 'react';
 import { Link } from 'react-router';
@@ -27,12 +28,12 @@ export default memo(function UserRateHeader({ rate }: UserHeaderProps) {
       })}
     >
       <Avatar
-        src={foundUser?.avatar}
+        src={generalService.transformFileUrl(foundUser?.avatar)}
         className="sm:size-12 size-10 rounded-md border-black/5 border"
       />
       <div className="flex flex-col">
         <h2 className="sm:text-lg text-base leading-6 font-medium text-gray-900">
-          {(foundUser && displayName(foundUser)) ?? '-'}
+          {(foundUser && usersService.displayName(foundUser)) ?? '-'}
         </h2>
         {isTeamAccessible ? (
           <Link

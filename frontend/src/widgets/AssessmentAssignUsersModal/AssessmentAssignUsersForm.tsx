@@ -5,7 +5,7 @@ import { DateObject } from 'react-multi-date-picker';
 import UsersList from './UsersList';
 import { useAppSelector } from '@/app';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
-import { displayName } from '@/shared/lib/displayName';
+import { usersService } from '@/shared/lib/usersService';
 
 interface TestAssignedFormProps {
   users: User[];
@@ -68,7 +68,7 @@ export default function TestAssignedForm({
         (!user.teams || user.teams.length === 0) &&
         !user.teamCurator &&
         (!search ||
-          displayName(user).toLowerCase().includes(search.toLowerCase())),
+          usersService.displayName(user).toLowerCase().includes(search.toLowerCase())),
     );
   }, [users, search]);
 
@@ -90,7 +90,7 @@ export default function TestAssignedForm({
           : {
               ...team,
               users: team.users.filter((user) =>
-                displayName(user).toLowerCase().includes(search.toLowerCase()),
+                usersService.displayName(user).toLowerCase().includes(search.toLowerCase()),
               ),
             },
       )

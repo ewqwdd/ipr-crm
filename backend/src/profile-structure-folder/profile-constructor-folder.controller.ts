@@ -96,4 +96,15 @@ export class ProfileStructureFolderController {
   ) {
     return this.folderService.setCompetencyBlocksForSpecFolder(id, dto);
   }
+
+  @Delete('spec/:specId/competency-blocks/:blockId')
+  removeCompetencyBlock(
+    @Param('specId', ParseIntPipe) specId: number,
+    @Param('blockId', ParseIntPipe) blockId: number,
+  ) {
+    return this.folderService.removeCompetencyBlockFromSpecFolder(
+      specId,
+      blockId,
+    );
+  }
 }

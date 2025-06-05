@@ -3,6 +3,7 @@ import EvaluatorTeam from './EvaluatorTeam';
 import { useMemo } from 'react';
 import { EvaluateUser, EvaulatorType } from '@/entities/rates/types/types';
 import { Team } from '@/entities/team';
+import { generalService } from '@/shared/lib/generalService';
 
 interface EvaluatorTeamProps {
   excluded?: EvaluateUser[];
@@ -27,7 +28,7 @@ export default function NoTeamEvaluators(props: EvaluatorTeamProps) {
   const renderUsers: Team['users'] =
     users?.map((u) => ({
       user: {
-        avatar: u.avatar,
+        avatar: generalService.transformFileUrl(u.avatar),
         id: u.id,
         specsOnTeams: u.Spec?.id
           ? [{ specId: u.Spec.id, spec: { name: '' } }]

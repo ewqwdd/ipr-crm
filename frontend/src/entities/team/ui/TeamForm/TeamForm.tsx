@@ -6,9 +6,9 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { TextArea } from '@/shared/ui/TextArea';
 import { usersApi } from '@/shared/api/usersApi';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
-import { findDisabledTeams } from '@/shared/lib/findDisabledTeams';
 import { TeamsSelect } from '@/widgets/TeamSelect';
 import { teamsApi } from '@/shared/api/teamsApi';
+import { generalService } from '@/shared/lib/generalService';
 
 type ErrorType = {
   name?: string;
@@ -74,7 +74,7 @@ export default forwardRef(function TeamForm(
       )
       .filter((g) => !!g) ?? [];
 
-  const disabledTeams = initData ? findDisabledTeams(initData) : [];
+  const disabledTeams = initData ? generalService.findDisabledTeams(initData) : [];
   // const disabledUsers = initData ? initData.users?.map(u => u.user.id) : []
 
   return (

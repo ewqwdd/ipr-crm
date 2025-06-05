@@ -6,7 +6,7 @@ import {
 } from '@/entities/support';
 import { supportApi } from '@/shared/api/supportApi';
 import { cva } from '@/shared/lib/cva';
-import { displayName } from '@/shared/lib/displayName';
+import { usersService } from '@/shared/lib/usersService';
 import { Card } from '@/shared/ui/Card';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
@@ -80,7 +80,7 @@ export default function SupportOverview() {
                 to={`/users/${data?.curator.id}`}
                 className="text-indigo-500 hover:text-indigo-700 transition-all"
               >
-                {displayName(data.curator)}
+                {usersService.displayName(data.curator)}
               </Link>
             )}
           </div>
@@ -92,7 +92,7 @@ export default function SupportOverview() {
                 to={`/users/${data?.user.id}`}
                 className="text-indigo-500 hover:text-indigo-700 transition-all"
               >
-                {data && displayName(data?.user)}
+                {data && usersService.displayName(data?.user)}
               </Link>
             </div>
             <h2 className="text-lg font-medium mt-4">{data?.title}</h2>

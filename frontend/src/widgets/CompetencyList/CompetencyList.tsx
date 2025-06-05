@@ -1,6 +1,6 @@
 import { CompetencyBlock, CompetencyType } from '@/entities/skill';
 import { Accordion } from '@/shared/ui/Accordion';
-import { FC, memo } from 'react';
+import { FC, memo, useState } from 'react';
 import CompetencyListItem from './CompetencyItem';
 import { cva } from '@/shared/lib/cva';
 import { useModal } from '@/app/hooks/useModal';
@@ -9,21 +9,28 @@ type ICompetencyListProps = {
   data: CompetencyBlock[] | undefined;
   loading?: boolean;
   disabled?: boolean;
+  type?: 'profile' | 'folder'; 
+  folderId?: number;
 };
 
 const CompetencyList: FC<ICompetencyListProps> = ({
   data,
   loading,
   disabled,
+  type = 'profile',
+  folderId,
 }) => {
   const { openModal } = useModal();
+
+  const [list, setList] = useState<CompetencyBlock[]>(data || []);
+  
   return (
     <div
       className={cva('grow flex flex-col mt-4', {
         'animate-pulse pointer-events-none': !!loading,
       })}
     >
-      {data?.map((skill) => (
+      {list?.map((skill) => (
         <Accordion
           key={skill.id}
           btnClassName="overflow-y-auto"
@@ -35,6 +42,9 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                 openModal={openModal}
                 disabled={disabled}
                 skillType={skill.type}
+                pageType={type}
+                folderId={folderId}
+                setList={setList}
               />
             </>
           }
@@ -53,6 +63,9 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                       openModal={openModal}
                       disabled={disabled}
                       skillType={skill.type}
+                      pageType={type}
+                      folderId={folderId}
+                      setList={setList}
                     />
                   }
                 >
@@ -64,6 +77,9 @@ const CompetencyList: FC<ICompetencyListProps> = ({
                       openModal={openModal}
                       disabled={disabled}
                       skillType={skill.type}
+                      pageType={type}
+                      folderId={folderId}
+                      setList={setList}
                     />
                   ))}
                 </Accordion>

@@ -14,6 +14,7 @@ import { Workbook } from 'exceljs';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
+import { FilesService } from 'src/utils/files/files.service';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +24,7 @@ export class UsersService {
     private mailService: MailService,
     private createProductsService: CreateProductsService,
     private usersAccessService: UsersAccessService,
+    private filesService: FilesService,
   ) {}
 
   async findOneByEmail(email: string) {
@@ -157,6 +159,10 @@ export class UsersService {
     ]);
 
     if (!roleExists) throw new NotFoundException('Role не найден.');
+
+    if (rest.avatar && user.avatar) {
+      await this.filesService.deleteFile(user.avatar);
+    }
 
     if (specId && specExists) {
       updates.Spec = { connect: { id: specId } };

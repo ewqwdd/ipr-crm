@@ -1,5 +1,6 @@
 import { Survey } from '@/entities/survey';
 import { cva } from '@/shared/lib/cva';
+import { generalService } from '@/shared/lib/generalService';
 import { DocumentIcon } from '@heroicons/react/outline';
 import { useState } from 'react';
 
@@ -17,7 +18,9 @@ const FileElement = ({ fileUrl }: FileElementProps) => {
   const handleDownload = async () => {
     setLoading(true);
     try {
-      const response = await fetch(fileUrl);
+      const response = await fetch(fileUrl, {
+        credentials: 'include',
+      });
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -54,7 +57,7 @@ export default function FileResult({ question }: FileResultProps) {
       {question.answeredQuestions
         .filter((q) => !!q.fileAnswer)
         .map((q, index) => (
-          <FileElement key={index} fileUrl={q.fileAnswer!} />
+          <FileElement key={index} fileUrl={generalService.transformFileUrl(q.fileAnswer)!} />
         ))}
     </ul>
   );

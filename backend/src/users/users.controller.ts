@@ -20,18 +20,18 @@ import { AdminGuard } from 'src/utils/guards/admin.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { extname } from 'path';
-import { S3Service } from 'src/utils/s3/s3.service';
 import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { InviteUserDTO } from './dto/invite-user.dto';
 import { InviteAcceptDTO } from './dto/invite-accept.dto';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
+import { FilesService } from 'src/utils/files/files.service';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private usersService: UsersService,
-    private s3Service: S3Service,
+    private filesService: FilesService,
   ) {}
 
   @Post()
@@ -42,11 +42,9 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (file) {
-      createUserDto.avatar = await this.s3Service.uploadImageBufferToS3(
-        file.buffer,
-        createUserDto.username + Date.now() + extname(file.originalname),
-        'users',
-        file.mimetype,
+      createUserDto.avatar = await this.filesService.uploadFile(
+        file,
+        'AVATARS',
       );
     }
     return this.usersService.create(createUserDto);
@@ -82,11 +80,9 @@ export class UsersController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     if (file) {
-      updateUserDto.avatar = await this.s3Service.uploadImageBufferToS3(
-        file.buffer,
-        updateUserDto.username + Date.now() + extname(file.originalname),
-        'users',
-        file.mimetype,
+      updateUserDto.avatar = await this.filesService.uploadFile(
+        file,
+        'AVATARS',
       );
     }
     const id = sessionInfo.id;
@@ -104,11 +100,9 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (file) {
-      updateUserDto.avatar = await this.s3Service.uploadImageBufferToS3(
-        file.buffer,
-        updateUserDto.username + Date.now() + extname(file.originalname),
-        'users',
-        file.mimetype,
+      updateUserDto.avatar = await this.filesService.uploadFile(
+        file,
+        'AVATARS',
       );
     }
     await this.usersService.update(id, updateUserDto);

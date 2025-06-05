@@ -1,6 +1,7 @@
 import { TeamSingle } from '@/entities/team';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { usersApi } from '@/shared/api/usersApi';
+import { generalService } from '@/shared/lib/generalService';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Modal } from '@/shared/ui/Modal';
 import { Radio } from '@/shared/ui/Radio';
@@ -52,7 +53,7 @@ export default function CuratorModal({
           <Radio
             children={
               <div className="flex items-center gap-2">
-                <Avatar src={user?.user?.avatar} />
+                <Avatar src={generalService.transformFileUrl(user?.user?.avatar)} />
                 {user.user?.username}
               </div>
             }

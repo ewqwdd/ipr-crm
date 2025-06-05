@@ -12,6 +12,7 @@ import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { useAppSelector } from '@/app';
+import { generalService } from '@/shared/lib/generalService';
 
 type UserFormErrors = Omit<UserFormData, 'avatar' | 'roleId' | 'specId'> & {
   avatar?: string;
@@ -145,7 +146,7 @@ export default function UserForm({
             label: e.team.name,
           })) ?? [],
       });
-      setPhoto(initData.avatar ?? null);
+      setPhoto(generalService.transformFileUrl(initData.avatar) ?? null);
     }
   }, [initData]);
 

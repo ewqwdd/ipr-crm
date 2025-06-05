@@ -14,6 +14,7 @@ import LeaderDropdown from './LeaderDropdown';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { SpecOnUser } from '@/entities/team/types/types';
 import { useAppDispatch } from '@/app';
+import { generalService } from '@/shared/lib/generalService';
 
 interface UserItemProps {
   userId: number;
@@ -90,7 +91,7 @@ export default memo(function UserItem({
       >
         <div className="flex flex-col gap-2">
           <div className="flex gap-3">
-            <Avatar src={user?.avatar} className="size-8" />
+            <Avatar src={generalService.transformFileUrl(user?.avatar)} className="size-8" />
             <Link
               to={`/users/${user?.id}`}
               className="text-gray-800 font-semibold text-lg"

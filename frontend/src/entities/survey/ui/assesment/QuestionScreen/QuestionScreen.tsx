@@ -110,7 +110,6 @@ export default function QuestionScreen({
   };
 
   const onChangeFile = (index: number) => (file?: File) => {
-    console.log('file', file);
     dispatch(
       surveyAssesmentActions.setAnswer({
         index,

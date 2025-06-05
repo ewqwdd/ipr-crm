@@ -2,8 +2,8 @@ import { Modal } from '@/shared/ui/Modal';
 import { useEffect, useState } from 'react';
 import { foldersApi } from '@/shared/api/foldersApi';
 import toast from 'react-hot-toast';
-import { isFetchBaseQueryError } from '@/shared/lib/isFetchBaseQuery';
 import EditMultipleSpecs from './EditMultipleSpecs';
+import { generalService } from '@/shared/lib/generalService';
 
 interface AddSpecFolderModalProps {
   isOpen: boolean;
@@ -49,7 +49,7 @@ export default function AddSpecFolderModal({
   useEffect(() => {
     if (specProps.isError) {
       let errorMessage = 'Ошибка при добавлении папки спецификации';
-      if (isFetchBaseQueryError(specProps.error)) {
+      if (generalService.isFetchBaseQueryError(specProps.error)) {
         errorMessage = specProps.error.data?.message || errorMessage;
       }
       toast.error(errorMessage);

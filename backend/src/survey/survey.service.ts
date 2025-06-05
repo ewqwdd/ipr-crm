@@ -10,15 +10,15 @@ import { AssignUsersDTO } from './dto/assign-users.dto';
 import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
 import { Prisma } from '@prisma/client';
-import { S3Service } from 'src/utils/s3/s3.service';
 import { UsersAccessService } from 'src/users/users-access.service';
+import { FilesService } from 'src/utils/files/files.service';
 
 @Injectable()
 export class SurveyService {
   constructor(
     private prismaService: PrismaService,
     private notificationsService: NotificationsService,
-    private s3Service: S3Service,
+    private filesService: FilesService,
     private usersAccessService: UsersAccessService,
   ) {}
 
@@ -564,7 +564,7 @@ export class SurveyService {
         answeredQuestions: {
           where: {
             userId: sessionInfo.id,
-            assignedTestId: assignedId,
+            assignedSurveyId: assignedId,
           },
         },
       },
@@ -602,12 +602,11 @@ export class SurveyService {
       if (question.answeredQuestions.length > 0) {
         const findFile = question.answeredQuestions.find((a) => a.fileAnswer);
         if (findFile) {
-          await this.s3Service.deleteImageFromS3(findFile.fileAnswer);
+          await this.filesService.deleteFile(findFile.fileAnswer);
         }
       }
-      const uploaded = await this.s3Service.uploadImageBufferToS3(
-        file.buffer,
-        file.originalname,
+      const uploaded = await this.filesService.uploadFile(
+        file,
         'SURVEY_ANSWER/' + answer.questionId,
       );
       dataToSet.fileAnswer = uploaded;
@@ -625,7 +624,7 @@ export class SurveyService {
       {
         where: {
           surveyQuestionId: answer.questionId,
-          assignedTestId: assignedId,
+          assignedSurveyId: assignedId,
         },
       },
     );

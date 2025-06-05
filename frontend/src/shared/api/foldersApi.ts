@@ -136,6 +136,16 @@ const foldersApi = createApi({
       }),
       invalidatesTags: ['ProductFolders', 'TeamFolders', 'SpecFolders'],
     }),
+    removeCompetencyBlocksFromSpecFolder: build.mutation<
+      void,
+      { specFolderId: number; blockId: number }
+    >({
+      query: ({ specFolderId, blockId }) => ({
+        url: `/spec/${specFolderId}/competency-blocks/${blockId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['ProductFolders', 'TeamFolders', 'SpecFolders'],
+    }),
   }),
 });
 

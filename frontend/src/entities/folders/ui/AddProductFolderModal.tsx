@@ -2,9 +2,9 @@ import { Modal } from '@/shared/ui/Modal';
 import { useEffect, useMemo, useState } from 'react';
 import { foldersApi } from '@/shared/api/foldersApi';
 import toast from 'react-hot-toast';
-import { isFetchBaseQueryError } from '@/shared/lib/isFetchBaseQuery';
 import { Autocomplete } from '@/shared/ui/Autocomplete';
 import { teamsApi } from '@/shared/api/teamsApi';
+import { generalService } from '@/shared/lib/generalService';
 
 interface AddProductFolderModalProps {
   isOpen: boolean;
@@ -41,7 +41,7 @@ export default function AddProductFolderModal({
   useEffect(() => {
     if (blockProps.isError) {
       let errorMessage = 'Ошибка при добавлении папки';
-      if (isFetchBaseQueryError(blockProps.error)) {
+      if (generalService.isFetchBaseQueryError(blockProps.error)) {
         errorMessage = blockProps.error.data?.message || errorMessage;
       }
       toast.error(errorMessage);

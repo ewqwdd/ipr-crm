@@ -7,6 +7,7 @@ import { S3Service } from 'src/utils/s3/s3.service';
 import { MailService } from 'src/utils/mailer/mailer';
 import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
+import { FilesService } from 'src/utils/files/files.service';
 
 @Module({
   controllers: [UsersController],
@@ -18,6 +19,7 @@ import { UsersAccessService } from './users-access.service';
     MailService,
     CreateProductsService,
     UsersAccessService,
+    FilesService,
   ],
   exports: [UsersService],
 })

@@ -6,6 +6,7 @@ import { ModalStateType } from './TeamList/TeamList';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { PencilAltIcon } from '@heroicons/react/outline';
 import { StarIcon } from '@heroicons/react/solid';
+import { generalService } from '@/shared/lib/generalService';
 
 interface UserItemProps {
   user: TeamUser;
@@ -33,7 +34,7 @@ export default function UserItem({
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         {curator && <StarIcon className="text-yellow-500 size-4" />}
-        <Avatar src={user.avatar} />
+        <Avatar src={generalService.transformFileUrl(user.avatar)} />
         <span>{user.username}</span>
         <SoftButton className="p-1" onClick={() => setOpen?.({ teamId, user })}>
           <PencilAltIcon className="size-4" />

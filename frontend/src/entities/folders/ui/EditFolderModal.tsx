@@ -3,8 +3,8 @@ import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';
 import { useEffect, useState } from 'react';
 import { foldersApi } from '@/shared/api/foldersApi';
 import toast from 'react-hot-toast';
-import { isFetchBaseQueryError } from '@/shared/lib/isFetchBaseQuery';
 import { FolderType } from '../types';
+import { generalService } from '@/shared/lib/generalService';
 
 interface EditFolderModalProps {
   isOpen: boolean;
@@ -113,7 +113,7 @@ export default function EditFolderModal({
   useEffect(() => {
     if (isError) {
       let errorMessage = 'Ошибка при обновлении папки';
-      if (isFetchBaseQueryError(error)) {
+      if (generalService.isFetchBaseQueryError(error)) {
         errorMessage = error.data?.message || errorMessage;
       }
       toast.error(errorMessage);

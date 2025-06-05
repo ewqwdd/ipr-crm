@@ -6,6 +6,7 @@ import { TeamUser } from '../../types/types';
 import { Badge } from '@/shared/ui/Badge';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { cva } from '@/shared/lib/cva';
+import { generalService } from '@/shared/lib/generalService';
 
 export default function TeamUserItem({
   user,
@@ -31,7 +32,7 @@ export default function TeamUserItem({
       })}
       key={user.id}
     >
-      <Avatar src={user.avatar} className="size-8" />
+      <Avatar src={generalService.transformFileUrl(user.avatar)} className="size-8" />
       <Link
         to={`/users/${user.id}`}
         className="text-gray-900 text-sm font-medium hover hover:text-gray-600"

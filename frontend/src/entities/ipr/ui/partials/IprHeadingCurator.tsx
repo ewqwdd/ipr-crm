@@ -1,3 +1,4 @@
+import { generalService } from '@/shared/lib/generalService';
 import { Ipr } from '../../model/types';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Link } from 'react-router';
@@ -8,7 +9,7 @@ interface IprHeadingCuratorProps {
 
 export default function IprHeadingCurator({ ipr }: IprHeadingCuratorProps) {
   const user = ipr?.mentor ?? ipr?.rate360?.team?.curator;
-  const avatar = user?.avatar;
+  const avatar = generalService.transformFileUrl(user?.avatar);
   const title = user?.username;
   const subTitle = 'Куратор';
 
