@@ -32,7 +32,10 @@ export default function TeamUserItem({
       })}
       key={user.id}
     >
-      <Avatar src={generalService.transformFileUrl(user.avatar)} className="size-8" />
+      <Avatar
+        src={generalService.transformFileUrl(user.avatar)}
+        className="size-8"
+      />
       <Link
         to={`/users/${user.id}`}
         className="text-gray-900 text-sm font-medium hover hover:text-gray-600"

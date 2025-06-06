@@ -74,7 +74,9 @@ export default forwardRef(function TeamForm(
       )
       .filter((g) => !!g) ?? [];
 
-  const disabledTeams = initData ? generalService.findDisabledTeams(initData) : [];
+  const disabledTeams = initData
+    ? generalService.findDisabledTeams(initData)
+    : [];
   // const disabledUsers = initData ? initData.users?.map(u => u.user.id) : []
 
   return (

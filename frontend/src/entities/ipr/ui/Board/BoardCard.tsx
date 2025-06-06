@@ -27,7 +27,7 @@ export default function BoardCard({ card, deletable, userId }: BoardCardProps) {
   const onOpen = () => openModal('PREVIEW_TASK', { card: card, userId });
 
   return (
-    <div className="mt-4 bg-white p-4 rounded-md shadow-md flex flex-col gap-2 min-h-24 relative cursor-grab">
+    <div className="mt-4 bg-white p-4 rounded-md shadow-md flex flex-col gap-2 min-h-24 relative cursor-grab pt-6">
       <Badge
         color={priorityColors[card.priority]}
         className=" absolute top-2 right-2"
@@ -41,7 +41,7 @@ export default function BoardCard({ card, deletable, userId }: BoardCardProps) {
         </span>
       )}
       <button
-        className="text-left font-medium text-gray-800 cursor-pointer hover:text-indigo-600 transition-all self-start"
+        className="text-left font-medium text-gray-800 cursor-pointer hover:text-indigo-600 transition-all self-start line-clamp-3"
         onClick={onOpen}
       >
         {card.title}
@@ -54,7 +54,9 @@ export default function BoardCard({ card, deletable, userId }: BoardCardProps) {
         <MaterialIcon type={card.materialType} className="w-4 h-4" />
         {materialTypes[card.materialType]}
       </Badge>
-      <p className="text-sm text-gray-500 mt-1">{card.description}</p>
+      <p className="text-sm text-gray-500 mt-1 line-clamp-3">
+        {card.description}
+      </p>
       {deletable && (
         <SoftButton
           danger

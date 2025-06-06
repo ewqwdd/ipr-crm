@@ -15,21 +15,20 @@ type SelectValue = { id: number; name: string };
 export default function UsersTab({ survey }: UsersTabProps) {
   const [userId, setUserId] = useState<number | undefined>();
 
-const options = useMemo<SelectValue[]>(() => {
-  const rawOptions =
-    survey?.usersAssigned?.map((user) => ({
-      id: user.user.id,
-      name: user.user.username ?? usersService.displayName(user.user),
-    })) ?? [];
+  const options = useMemo<SelectValue[]>(() => {
+    const rawOptions =
+      survey?.usersAssigned?.map((user) => ({
+        id: user.user.id,
+        name: user.user.username ?? usersService.displayName(user.user),
+      })) ?? [];
 
-  const uniqueOptionsMap = new Map<number, SelectValue>();
-  rawOptions.forEach((option) => {
-    uniqueOptionsMap.set(option.id, option);
-  });
+    const uniqueOptionsMap = new Map<number, SelectValue>();
+    rawOptions.forEach((option) => {
+      uniqueOptionsMap.set(option.id, option);
+    });
 
-  return Array.from(uniqueOptionsMap.values());
-}, [survey]);
-
+    return Array.from(uniqueOptionsMap.values());
+  }, [survey]);
 
   const handleUserChange = (value: SelectValue) => {
     setUserId(value.id);

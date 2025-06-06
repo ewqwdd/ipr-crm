@@ -39,7 +39,11 @@ export default function ComptenciesEditModal({
     >
       <div className="flex flex-col gap-4 mt-4 overflow-auto max-w-full overflow-x-auto">
         {filterdBlocks.length > 0 ? (
-          <CompetencyList folderId={folderId} type={type} data={filterdBlocks} />
+          <CompetencyList
+            folderId={folderId}
+            type={type}
+            data={filterdBlocks}
+          />
         ) : (
           <div className="text-center text-gray-500">
             Нет доступных блоков компетенций

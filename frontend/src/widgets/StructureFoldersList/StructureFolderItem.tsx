@@ -120,7 +120,11 @@ const FolderItem: FC<FolderItemProps> = ({
           className="mr-4 max-sm:p-1"
           success
           onClick={() =>
-            openModal('EDIT_COMPETENCY_BLOCKS', { blocks: initialBlocks, folderId: id, type: 'folder' })
+            openModal('EDIT_COMPETENCY_BLOCKS', {
+              blocks: initialBlocks,
+              folderId: id,
+              type: 'folder',
+            })
           }
         >
           <DocumentIcon className="size-5" />{' '}

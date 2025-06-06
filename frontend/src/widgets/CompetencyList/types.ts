@@ -32,7 +32,7 @@ export type CompetencyListItemProps = CombineType & {
   skipHint?: string;
   skipValue?: string;
   skillType: SkillType;
-  pageType?: 'profile' | 'folder'; 
+  pageType?: 'profile' | 'folder';
   folderId?: number;
   setList?: React.Dispatch<React.SetStateAction<CompetencyBlock[]>>;
 };

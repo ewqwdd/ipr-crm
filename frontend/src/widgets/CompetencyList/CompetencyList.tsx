@@ -9,7 +9,7 @@ type ICompetencyListProps = {
   data: CompetencyBlock[] | undefined;
   loading?: boolean;
   disabled?: boolean;
-  type?: 'profile' | 'folder'; 
+  type?: 'profile' | 'folder';
   folderId?: number;
 };
 
@@ -23,7 +23,7 @@ const CompetencyList: FC<ICompetencyListProps> = ({
   const { openModal } = useModal();
 
   const [list, setList] = useState<CompetencyBlock[]>(data || []);
-  
+
   return (
     <div
       className={cva('grow flex flex-col mt-4', {

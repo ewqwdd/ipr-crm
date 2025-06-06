@@ -21,7 +21,7 @@ export default function SurvyeResult() {
   return (
     <LoadingOverlay active={isLoading} fullScereen>
       <div className="sm:px-8 sm:py-10 py-3 flex flex-col h-full relative">
-        <div className='flex items-center justify-between'>
+        <div className="flex items-center justify-between">
           <Heading title={data?.name} />
           <SecondaryButton onClick={() => navigate('/surveys')}>
             Назад

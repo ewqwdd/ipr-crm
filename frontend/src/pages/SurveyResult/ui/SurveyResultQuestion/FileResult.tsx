@@ -57,7 +57,10 @@ export default function FileResult({ question }: FileResultProps) {
       {question.answeredQuestions
         .filter((q) => !!q.fileAnswer)
         .map((q, index) => (
-          <FileElement key={index} fileUrl={generalService.transformFileUrl(q.fileAnswer)!} />
+          <FileElement
+            key={index}
+            fileUrl={generalService.transformFileUrl(q.fileAnswer)!}
+          />
         ))}
     </ul>
   );

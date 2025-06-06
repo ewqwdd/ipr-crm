@@ -68,7 +68,10 @@ export default function TestAssignedForm({
         (!user.teams || user.teams.length === 0) &&
         !user.teamCurator &&
         (!search ||
-          usersService.displayName(user).toLowerCase().includes(search.toLowerCase())),
+          usersService
+            .displayName(user)
+            .toLowerCase()
+            .includes(search.toLowerCase())),
     );
   }, [users, search]);
 
@@ -90,7 +93,10 @@ export default function TestAssignedForm({
           : {
               ...team,
               users: team.users.filter((user) =>
-                usersService.displayName(user).toLowerCase().includes(search.toLowerCase()),
+                usersService
+                  .displayName(user)
+                  .toLowerCase()
+                  .includes(search.toLowerCase()),
               ),
             },
       )

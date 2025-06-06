@@ -53,7 +53,9 @@ export default function CuratorModal({
           <Radio
             children={
               <div className="flex items-center gap-2">
-                <Avatar src={generalService.transformFileUrl(user?.user?.avatar)} />
+                <Avatar
+                  src={generalService.transformFileUrl(user?.user?.avatar)}
+                />
                 {user.user?.username}
               </div>
             }

@@ -48,7 +48,9 @@ const RateSurveyModal: FC<RateSurveyModalProps> = ({
                 className="flex items-center justify-between py-3 gap-4"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-900">{usersService.displayName(user)}</span>
+                  <span className="text-gray-900">
+                    {usersService.displayName(user)}
+                  </span>
                   <span className="text-gray-500 text-sm">
                     {finished ? 'Завершено' : 'Не завершено'}
                   </span>

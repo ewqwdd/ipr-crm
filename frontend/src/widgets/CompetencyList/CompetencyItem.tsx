@@ -47,11 +47,12 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   skillType,
   pageType = 'profile', // Default to 'profile' if not provided
   folderId,
-  setList
+  setList,
 }) => {
   const { competencyBlock, competency, indicator } = useSkillsService();
 
-  const [removeBlockFromFolder, {isLoading: removeBlockLoading}] = foldersApi.useRemoveCompetencyBlocksFromSpecFolderMutation();
+  const [removeBlockFromFolder, { isLoading: removeBlockLoading }] =
+    foldersApi.useRemoveCompetencyBlocksFromSpecFolderMutation();
 
   const deleteCompetencyBlock = competencyBlock.delete[0];
   const deleteCompetency = competency.delete[0];
@@ -157,47 +158,51 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
               <PencilIcon className="h-5 w-5" />
             </SoftButton>
 
-            {pageType === 'folder' && listItemType === CompetencyType.COMPETENCY_BLOCK && (
-              <SoftButton
-              size="xs"
-              className="rounded-full p-2"
-            danger
-            onClick={() => {
-              if (!folderId) return;
-              removeBlockFromFolder({
-                blockId: id,
-                specFolderId: folderId,
-              })
-              setList?.((prev) => prev.filter((item) => item.id !== id));
-            }}
-            >
-              <MinusCircleIcon className="h-5 w-5" />
-            </SoftButton>)}
+            {pageType === 'folder' &&
+              listItemType === CompetencyType.COMPETENCY_BLOCK && (
+                <SoftButton
+                  size="xs"
+                  className="rounded-full p-2"
+                  danger
+                  onClick={() => {
+                    if (!folderId) return;
+                    removeBlockFromFolder({
+                      blockId: id,
+                      specFolderId: folderId,
+                    });
+                    setList?.((prev) => prev.filter((item) => item.id !== id));
+                  }}
+                >
+                  <MinusCircleIcon className="h-5 w-5" />
+                </SoftButton>
+              )}
 
-            {pageType === 'profile' && <SoftButton
-              size="xs"
-              className="rounded-full text-red p-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                let onSubmit = null;
-                switch (listItemType) {
-                  case CompetencyType.COMPETENCY_BLOCK:
-                    onSubmit = () => deleteCompetencyBlock({ id });
-                    break;
-                  case CompetencyType.COMPETENCY:
-                    onSubmit = () => deleteCompetency({ id });
-                    break;
-                  case CompetencyType.INDICATOR:
-                    onSubmit = () => deleteIndicator({ id });
-                    break;
-                  default:
-                    break;
-                }
-                openModal('CONFIRM', { onSubmit });
-              }}
-            >
-              <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
-            </SoftButton>}
+            {pageType === 'profile' && (
+              <SoftButton
+                size="xs"
+                className="rounded-full text-red p-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  let onSubmit = null;
+                  switch (listItemType) {
+                    case CompetencyType.COMPETENCY_BLOCK:
+                      onSubmit = () => deleteCompetencyBlock({ id });
+                      break;
+                    case CompetencyType.COMPETENCY:
+                      onSubmit = () => deleteCompetency({ id });
+                      break;
+                    case CompetencyType.INDICATOR:
+                      onSubmit = () => deleteIndicator({ id });
+                      break;
+                    default:
+                      break;
+                  }
+                  openModal('CONFIRM', { onSubmit });
+                }}
+              >
+                <MinusCircleIcon className="stroke-red-500 h-5 w-5" />
+              </SoftButton>
+            )}
           </>
         )}
       </div>

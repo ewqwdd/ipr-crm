@@ -33,7 +33,10 @@ export default function UserFormItem({
           }
         }}
       />
-      <Avatar src={generalService.transformFileUrl(user?.avatar)} className="sm:size-8 size-4" />
+      <Avatar
+        src={generalService.transformFileUrl(user?.avatar)}
+        className="sm:size-8 size-4"
+      />
       <span className="text-nowrap">{nameToShow}</span>
       {user?.Spec && (
         <Badge size="sm" color="blue" className="truncate">
