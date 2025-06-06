@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { PasswordService } from '../password/password';
+import dotenv from 'dotenv';
 
 const prisma = new PrismaClient();
 const passwordService = new PasswordService();
@@ -13,13 +14,13 @@ const passwordService = new PasswordService();
   }
 
   const admin = await prisma.user.findFirst({
-    where: { email: 'admin@ipr360.space' },
+    where: { email: 'admin@ayagroup.pro' },
   });
   if (!admin) {
-    const hash = await passwordService.getHash('de6acbbe');
+    const hash = await passwordService.getHash(process.env.ADMIN_PASSWORD);
     await prisma.user.create({
       data: {
-        email: 'admin@ipr360.space',
+        email: 'admin@ayagroup.pro',
         passwordHash: hash,
         username: 'admin',
         role: {
