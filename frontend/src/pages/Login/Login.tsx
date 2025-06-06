@@ -87,14 +87,20 @@ export default function Login() {
         })}
         onSubmit={onSubmit}
       >
-        <img
-          className="h-10 w-auto self-center"
-          src="/tailwind.svg"
-          alt="Workflow"
-        />
-        <h1 className="text-2xl font-bold text-white text-center my-3">
-          Войти в аккаунт
-        </h1>
+        <div className="flex flex-col items-center gap-2">
+          <img
+            className="h-10 w-auto self-center"
+            src="/tailwind.svg"
+            alt="Workflow"
+          />
+          <h1 className="text-2xl font-bold text-white text-center my-3">
+            AYA SKILLS
+          </h1>
+          <p className="text-sm text-gray-400 text-center">
+            Войдите в свой аккаунт, чтобы продолжить
+          </p>
+        </div>
+
         <InputWithLabel
           autoComplete="email webauthn"
           ref={emailRef}
