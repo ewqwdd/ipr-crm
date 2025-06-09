@@ -20,6 +20,7 @@ export default function ResetPassword() {
   useEffect(() => {
     const code = searchParams.get('code');
     if (code) {
+      sessionStorage.setItem('authCode', code || '');
       authCodeRef.current = code;
       setSearchParams('');
     }
@@ -29,7 +30,6 @@ export default function ResetPassword() {
     e.preventDefault();
     const password = passwordRef.current?.value;
     const passwordConfirm = passwordConfirmRef.current?.value;
-    console.log(passwordRef);
 
     if (!password || password.length < 6) {
       setError('Пароль должен быть не менее 6 символов');
@@ -40,12 +40,17 @@ export default function ResetPassword() {
       setError('Пароли не совпадают');
       return;
     }
+    const code = authCodeRef.current ?? sessionStorage.getItem('authCode')
+    if (!code) {
+      toast.error('Код не найден');
+      return;
+    }
     setLoading(true);
 
     try {
       await $api.post('/users/invite-accept', {
         password,
-        code: authCodeRef.current,
+        code,
       });
       toast.success('Пароль успешно создан');
       navigate('/login');

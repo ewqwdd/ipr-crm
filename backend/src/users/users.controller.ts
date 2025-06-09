@@ -119,7 +119,8 @@ export class UsersController {
   @Post('/invite-accept')
   @HttpCode(HttpStatus.OK)
   async inviteAccept(@Body() data: InviteAcceptDTO) {
-    return this.usersService.passwordReset(data.code, data.password);
+    console.log('Invite accept data:', data);
+    return this.usersService.passwordReset(data.code.trim(), data.password);
   }
 
   @Post('/password-reset')
