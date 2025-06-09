@@ -74,7 +74,7 @@ model Rate360 {
   userRates        UserRates[]
   evaluators       Rate360Evaluator[]
   comments         UserComments[]
-  spec             Spec                  @relation(fields: [specId], references: [id])
+  spec             Spec                  @relation(fields: [specId], references: [id], onDelete: Cascade)
   team             Team?                  @relation(fields: [teamId], references: [id], onDelete: SetNull)
   plan             IndividualGrowthPlan?
   createdAt        DateTime              @default(now())
@@ -166,8 +166,8 @@ model User_Assigned_Test {
   availableFrom         DateTime? @default(now())
   firstNotificationSent Boolean   @default(false)
 
-  user              User                   @relation(fields: [userId], references: [id])
-  test              Test                   @relation(fields: [testId], references: [id])
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  test              Test                   @relation(fields: [testId], references: [id], onDelete: Cascade)
   answeredQUestions UserAnsweredQuestion[]
   notifications     Notification[]
 }
@@ -183,8 +183,8 @@ model User_Assigned_Survey {
   availableFrom         DateTime? @default(now())
   firstNotificationSent Boolean   @default(false)
 
-  user              User                   @relation(fields: [userId], references: [id])
-  survey            Survey                 @relation(fields: [surveyId], references: [id])
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  survey            Survey                 @relation(fields: [surveyId], references: [id], onDelete: Cascade)
   answeredQUestions UserAnsweredQuestion[]
   notifications     Notification[]
 }
@@ -206,11 +206,11 @@ model UserAnsweredQuestion {
   phoneAnswer  String?
   timeAnswer   String?
 
-  user           User                  @relation(fields: [userId], references: [id])
-  question       Question?             @relation(fields: [questionId], references: [id])
-  surveyQuestion SurveyQuestion?       @relation(fields: [surveyQuestionId], references: [id])
-  test           User_Assigned_Test?   @relation(fields: [assignedTestId], references: [id])
-  survey         User_Assigned_Survey? @relation(fields: [assignedSurveyId], references: [id])
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question       Question?             @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  surveyQuestion SurveyQuestion?       @relation(fields: [surveyQuestionId], references: [id], onDelete: Cascade)
+  test           User_Assigned_Test?   @relation(fields: [assignedTestId], references: [id], onDelete: Cascade)
+  survey         User_Assigned_Survey? @relation(fields: [assignedSurveyId], references: [id], onDelete: Cascade)
 
   options UserAnsweredQuestionOption[]
 }
@@ -221,8 +221,8 @@ model UserAnsweredQuestionOption {
   optionId               Int
   correct                Boolean?
 
-  userAnsweredQuestion UserAnsweredQuestion @relation(fields: [userAnsweredQuestionId], references: [id])
-  option               Option               @relation(fields: [optionId], references: [id])
+  userAnsweredQuestion UserAnsweredQuestion @relation(fields: [userAnsweredQuestionId], references: [id], onDelete: Cascade)
+  option               Option               @relation(fields: [optionId], references: [id], onDelete: Cascade)
 }
 
 // опросы
@@ -265,7 +265,7 @@ model SurveyQuestion {
 
   options Option[]
 
-  Survey            Survey                 @relation(fields: [surveyId], references: [id])
+  Survey            Survey                 @relation(fields: [surveyId], references: [id], onDelete: Cascade)
   answeredQuestions UserAnsweredQuestion[]
 }
 
@@ -312,7 +312,7 @@ model Question {
 
   archived Boolean @default(false)
 
-  Test              Test                   @relation(fields: [testId], references: [id])
+  Test              Test                   @relation(fields: [testId], references: [id], onDelete: Cascade)
   answeredQuestions UserAnsweredQuestion[]
 }
 
@@ -325,8 +325,8 @@ model Option {
   archived         Boolean @default(false)
   score            Int?
 
-  Question       Question?                    @relation(fields: [questionId], references: [id])
-  SurveyQuestion SurveyQuestion?              @relation(fields: [surveyQuestionId], references: [id])
+  Question       Question?                    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  SurveyQuestion SurveyQuestion?              @relation(fields: [surveyQuestionId], references: [id], onDelete: Cascade)
   pickedOptions  UserAnsweredQuestionOption[]
 }
 
@@ -355,9 +355,9 @@ model GrowthPlanCurator {
   planId       Int
   competencyId Int
 
-  competency Competency           @relation(fields: [competencyId], references: [id])
-  user       User                 @relation(fields: [userId], references: [id])
-  plan       IndividualGrowthPlan @relation(fields: [planId], references: [id])
+  competency Competency?           @relation(fields: [competencyId], references: [id])
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan       IndividualGrowthPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
 }
 
 model GrowthPlanTask {
@@ -393,9 +393,9 @@ model IndividualGrowthPlan {
   rate360Id Int?      @unique // Добавляем @unique
 
   spec          Spec?               @relation(fields: [specId], references: [id])
-  user          User                @relation("UserGrowthPlans", fields: [userId], references: [id])
-  mentor        User?               @relation("MentorGrowthPlans", fields: [mentorId], references: [id])
-  rate360       Rate360?            @relation(fields: [rate360Id], references: [id]) // Делаем опциональным
+  user          User                @relation("UserGrowthPlans", fields: [userId], references: [id], onDelete: Cascade)
+  mentor        User?               @relation("MentorGrowthPlans", fields: [mentorId], references: [id], onDelete: SetNull)
+  rate360       Rate360?            @relation(fields: [rate360Id], references: [id], onDelete: SetNull) // Делаем опциональным
   materials     Material[]
   logs          GrowthPlanLog[]
   archived      Boolean             @default(false)
