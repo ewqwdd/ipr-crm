@@ -128,7 +128,7 @@ export class UsersService {
         },
       },
       omit: { authCode: true, roleId: true, specId: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { id: 'desc' },
       take: limit,
       skip: page ? (page - 1) * limit : undefined,
     });

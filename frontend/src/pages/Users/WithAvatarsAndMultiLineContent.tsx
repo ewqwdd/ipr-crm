@@ -108,7 +108,7 @@ export default function WithAvatarsAndMultiLineContent() {
                   new Array(LIMIT)
                     .fill(0)
                     .map((_, index) => (
-                      <TableRow edit={false} key={index} person={{}} />
+                      <TableRow skeleton edit={false} key={index} person={{}} />
                     ))}
               </tbody>
             </table>

@@ -7,7 +7,6 @@ import { emailRegex } from '@/shared/lib/regex';
 import { styles } from '@/shared/lib/styles';
 import { useNavigate } from 'react-router';
 import { cva } from '@/shared/lib/cva';
-import { SpecsSelect } from '@/widgets/SpecsSelect';
 import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
@@ -318,15 +317,6 @@ export default function UserForm({
                   />
                   {errors.roleId && (
                     <p className={styles.errorStyles}>{errors.roleId}</p>
-                  )}
-                </div>
-                <div className="sm:col-span-2">
-                  <SpecsSelect
-                    spec={data.specId}
-                    setSpec={(e) => setDataField('specId', e)}
-                  />
-                  {errors.specId && (
-                    <p className={styles.errorStyles}>{errors.specId}</p>
                   )}
                 </div>
                 <div className="sm:col-span-2">

@@ -1,6 +1,7 @@
 import { UserForm } from '@/entities/user';
 import { UserFormData } from '@/entities/user/types/types';
 import { usersApi } from '@/shared/api/usersApi';
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
@@ -15,6 +16,8 @@ export default function UserEdit() {
     mutate,
     { isSuccess, isLoading: mutateLoading, isError: mutateError },
   ] = usersApi.useUpdateUserMutation();
+  const isAdmin = useIsAdmin();
+
   const navigate = useNavigate();
 
   const onSubmit = async (data: UserFormData) => {
@@ -56,6 +59,7 @@ export default function UserEdit() {
         initData={data}
         onSubmit={onSubmit}
         edit
+        adminEdit={isAdmin}
       />
     </LoadingOverlay>
   );

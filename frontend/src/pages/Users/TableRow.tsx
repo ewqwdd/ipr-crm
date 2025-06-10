@@ -4,6 +4,7 @@ import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { generalService } from '@/shared/lib/generalService';
+import { usersService } from '@/shared/lib/usersService';
 import { Badge } from '@/shared/ui/Badge';
 import { DotsDropdown } from '@/shared/ui/DotsDropdown';
 import { useEffect, useState } from 'react';
@@ -14,9 +15,15 @@ interface TableRowProps {
   person: Partial<User>;
   edit?: boolean;
   last?: boolean;
+  skeleton?: boolean;
 }
 
-export default function TableRow({ person, edit = true, last }: TableRowProps) {
+export default function TableRow({
+  person,
+  edit = true,
+  last,
+  skeleton,
+}: TableRowProps) {
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState<boolean>();
   const [deleteUser, deleteState] = usersApi.useRemoveUserMutation();
@@ -49,8 +56,6 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
     }
   }, [deleteState.isSuccess, deleteState.isError, deleting]);
 
-  const name = (person?.firstName ?? '') + ' ' + (person?.lastName ?? '');
-
   return (
     <tr
       className={cva({
@@ -72,12 +77,16 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
             )}
           </Link>
           <div className="ml-4">
-            <Link
-              to={`/users/${person?.id}`}
-              className="font-medium text-gray-900"
-            >
-              {name === ' ' ? person.username : name}
-            </Link>
+            {skeleton ? (
+              <div className="h-3 w-16 rounded-md bg-gray-200" />
+            ) : (
+              <Link
+                to={`/users/${person?.id}`}
+                className="font-medium text-gray-900"
+              >
+                {usersService.displayName(person)}
+              </Link>
+            )}
             <div className="text-gray-500">{person.email}</div>
           </div>
         </div>
@@ -104,42 +113,44 @@ export default function TableRow({ person, edit = true, last }: TableRowProps) {
         </div>
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 [&_span]:opacity-100">
-        <div className="flex justify-end items-center gap-2">
-          {person.access ? (
-            <Badge color="green">Активен</Badge>
-          ) : (
-            <Badge color="red">Приглашен</Badge>
-          )}
-          {edit && (
-            <DotsDropdown
-              bodyClassName={cva('z-50', {
-                'origin-bottom-right bottom-full': !!last,
-              })}
-              buttons={[
-                {
-                  text: 'Редактировать',
-                  onClick: () => navigate('/userEdit/' + person.id),
-                },
-                {
-                  text: 'Удалить',
-                  onClick: () => {
-                    if (!person.id) return;
-                    setDeleting(true);
-                    deleteUser(person.id);
+        {!skeleton && (
+          <div className="flex justify-end items-center gap-2">
+            {person.access ? (
+              <Badge color="green">Активен</Badge>
+            ) : (
+              <Badge color="red">Приглашен</Badge>
+            )}
+            {edit && (
+              <DotsDropdown
+                bodyClassName={cva('z-50', {
+                  'origin-bottom-right bottom-full': !!last,
+                })}
+                buttons={[
+                  {
+                    text: 'Редактировать',
+                    onClick: () => navigate('/userEdit/' + person.id),
                   },
-                },
-                ...(isAdmin && !person.access
-                  ? [
-                      {
-                        text: 'Пригласить повторно',
-                        onClick: () => resendInvite(),
-                      },
-                    ]
-                  : []),
-              ]}
-            />
-          )}
-        </div>
+                  {
+                    text: 'Удалить',
+                    onClick: () => {
+                      if (!person.id) return;
+                      setDeleting(true);
+                      deleteUser(person.id);
+                    },
+                  },
+                  ...(isAdmin && !person.access
+                    ? [
+                        {
+                          text: 'Пригласить повторно',
+                          onClick: () => resendInvite(),
+                        },
+                      ]
+                    : []),
+                ]}
+              />
+            )}
+          </div>
+        )}
       </td>
     </tr>
   );
