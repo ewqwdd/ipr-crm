@@ -26,7 +26,51 @@ export default function Pagination({
     setPage(page + 1);
   };
 
-  if (pages === 1) return null;
+  if (pages <= 1) return null;
+
+  const getPageNumbers = () => {
+    if (pages <= 7) {
+      return Array.from({ length: pages }, (_, i) => i + 1);
+    }
+
+    const pageNumbers = [];
+    const currentGroup = [page - 1, page, page + 1].filter(
+      (p) => p >= 1 && p <= pages,
+    );
+
+    // Всегда добавляем первую страницу
+    pageNumbers.push(1);
+
+    // Добавляем многоточие если нужно
+    if (currentGroup[0] > 2) {
+      pageNumbers.push('...');
+    }
+
+    // Добавляем группу вокруг текущей страницы (исключая первую и последнюю)
+    currentGroup.forEach((p) => {
+      if (p > 1 && p < pages) {
+        pageNumbers.push(p);
+      }
+    });
+
+    // Добавляем многоточие если нужно
+    if (currentGroup[currentGroup.length - 1] < pages - 1) {
+      pageNumbers.push('...');
+    }
+
+    // Всегда добавляем последнюю страницу
+    if (pages > 1) {
+      pageNumbers.push(pages);
+    }
+
+    // Убираем дубликаты и сортируем
+    return [...new Set(pageNumbers)].sort((a, b) => {
+      if (a === '...' || b === '...') return 0;
+      return (a as number) - (b as number);
+    });
+  };
+
+  const pageNumbers = getPageNumbers();
 
   return (
     <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
@@ -47,33 +91,42 @@ export default function Pagination({
             aria-label="Pagination"
           >
             <button
-              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handlePrevPage}
+              disabled={page === 1}
             >
               <span className="sr-only">Previous</span>
               <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
             </button>
-            {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
-            {new Array(pages).fill(0).map((_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => setPage(index + 1)}
-                aria-current="page"
-                className={cva(
-                  'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium',
-                  {
-                    'z-10 bg-indigo-50 border-indigo-500 text-indigo-600':
-                      index + 1 === page,
-                  },
-                )}
-              >
-                {index + 1}
-              </button>
-            ))}
-
+            {pageNumbers.map((pageNumber, index) =>
+              pageNumber === '...' ? (
+                <span
+                  key={`ellipsis-${index}`}
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500"
+                >
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={pageNumber}
+                  onClick={() => setPage(pageNumber as number)}
+                  aria-current="page"
+                  className={cva(
+                    'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium',
+                    {
+                      'z-10 bg-indigo-50 border-indigo-500 text-indigo-600':
+                        pageNumber === page,
+                    },
+                  )}
+                >
+                  {pageNumber}
+                </button>
+              ),
+            )}
             <button
               onClick={handleNextPage}
-              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={page === pages}
             >
               <span className="sr-only">Next</span>
               <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />

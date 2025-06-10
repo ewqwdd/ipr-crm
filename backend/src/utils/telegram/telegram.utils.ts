@@ -11,7 +11,7 @@ export async function sendToTelegram(...args: string[]) {
       `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
       {
         chat_id: TELEGRAM_CHAT_ID,
-        text: `🚨 Error:\n\`\`\`${args.join(`\n\n`)}\`\`\``,
+        text: `🚨 Error:\n\`\`\`${args.join(`\n\n`).slice(0, 4000)}\`\`\``,
         parse_mode: 'Markdown',
       },
     );

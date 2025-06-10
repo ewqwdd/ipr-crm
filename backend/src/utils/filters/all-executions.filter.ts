@@ -8,6 +8,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { sendToTelegram } from '../telegram/telegram.utils';
+import { errorLogger } from './logger';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -36,6 +37,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const session = JSON.stringify({ session: request['session'] }, null, 2);
       const body = JSON.stringify({ body: request.body }, null, 2);
       this.logger.error(message, stack, session, body);
+      errorLogger.error(exception);
       sendToTelegram(message, stack ?? '', session, body);
     }
 

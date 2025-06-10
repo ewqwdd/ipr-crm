@@ -336,7 +336,6 @@ export class UsersService {
         const direction = rowObj['Направление']?.trim();
         const department = rowObj['Департамент']?.trim();
         const group = rowObj['Группа']?.trim();
-        console.log(rowObj);
 
         if (
           product &&
@@ -399,7 +398,6 @@ export class UsersService {
           ...u,
           email: u.email.toLowerCase(),
           username: u.username.toLowerCase(),
-          team: (u.group ?? u.direction ?? u.department ?? u.product)?.trim(),
         }));
 
         const emails = users.map((u) => u.email);
@@ -627,6 +625,7 @@ export class UsersService {
               ),
             };
           }),
+          skipDuplicates: true,
         });
 
         const createdUserMap = new Map(
@@ -640,15 +639,15 @@ export class UsersService {
             )
             .map((u) => {
               let teamId;
-              if (u.group) {
+              if (u.group && u.direction && u.department && u.product) {
                 teamId = groupsKeyToId.get(
                   `${u.product}:${u.department}:${u.direction}:${u.group}`,
                 );
-              } else if (u.direction) {
+              } else if (u.direction && u.department && u.product) {
                 teamId = directionsKeyToId.get(
                   `${u.product}:${u.department}:${u.direction}`,
                 );
-              } else if (u.department) {
+              } else if (u.department && u.product) {
                 teamId = departmentKeyToId.get(`${u.product}:${u.department}`);
               } else if (u.product) {
                 teamId = productNameToId.get(u.product);
@@ -658,6 +657,7 @@ export class UsersService {
                 teamId: teamId,
               };
             }),
+          skipDuplicates: true,
         });
 
         const leaderUsers = newUsers.filter((u) => u.leader);
@@ -678,6 +678,7 @@ export class UsersService {
           } else if (user.product) {
             teamId = productNameToId.get(user.product);
           }
+          if (!teamId) continue;
           const team = existingTeams.find((t) => t.id === teamId);
           if (team && team.curatorId) {
             await tx.userTeam.createMany({

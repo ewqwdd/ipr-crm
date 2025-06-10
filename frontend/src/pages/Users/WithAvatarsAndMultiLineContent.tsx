@@ -11,7 +11,7 @@ const LIMIT = 8;
 
 export default function WithAvatarsAndMultiLineContent() {
   const [page, setPage] = useState<number>(1);
-  const { data, isFetching, isLoading } = usersApi.useGetUsersQuery({});
+  const { data, isLoading } = usersApi.useGetUsersQuery({});
   const [filteredData, setFilteredData] = useState<User[]>([]);
 
   const [filters, setFilters] = useState<Filters>(initialFilters);
@@ -45,7 +45,7 @@ export default function WithAvatarsAndMultiLineContent() {
     if (paginateddata.length === 0 && page > 1) {
       setPage((prevPage) => prevPage - 1);
     }
-  }, [filteredData, page]);
+  }, [filteredData, page, paginateddata.length]);
 
   return (
     <>
@@ -57,9 +57,6 @@ export default function WithAvatarsAndMultiLineContent() {
       <div
         className={cva(
           'sm:overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg',
-          {
-            'animate-pulse': isFetching || isLoading,
-          },
         )}
       >
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">

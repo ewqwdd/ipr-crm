@@ -100,10 +100,10 @@ export default function UserForm({
       setErrors((prev) => ({ ...prev, lastName: 'Введите фамилию' }));
       valid = false;
     }
-    if (!data.username || data.username.length < 4) {
+    if (!data.username || data.username.length === 0) {
       setErrors((prev) => ({
         ...prev,
-        username: 'Имя пользователя должно быть минимум 4 символа',
+        username: 'Введите Имя пользователя',
       }));
       valid = false;
     }

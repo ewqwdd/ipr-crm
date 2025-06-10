@@ -26,7 +26,6 @@ export class AdminGuard implements CanActivate {
     if (!decodedToken) {
       throw new UnauthorizedException('Почта или пароль указаны неверно');
     }
-    console.log(decodedToken);
     if (decodedToken.role !== 'admin') {
       throw new UnauthorizedException('Недостаточно прав');
     }
