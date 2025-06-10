@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from 'src/mail/mail.service';
 import { UsersAccessService } from 'src/users/users-access.service';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/utils/db/prisma.service';
-import { MailService } from 'src/utils/mailer/mailer';
 import { PasswordService } from 'src/utils/password/password';
 
 @Injectable()
@@ -64,7 +64,8 @@ export class AuthService {
       data: { authCode: { set: hashed } },
     });
 
-    await this.mailService.sendResetPasswordEmail(user.email, updated);
+    const { html, subject } = this.mailService.generateResetPassword(updated);
+    await this.mailService.sendMail(user.email, subject, html);
     return;
   }
 }

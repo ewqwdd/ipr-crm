@@ -15,11 +15,11 @@ import {
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { AddTaskDto } from './dto/add-task.dto';
-import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { IprFiltersDto } from './dto/ipr-filters.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
 import { findAllIprInclude } from './constants';
 import { DeleteIprsDto } from './dto/delete-iprs.dto';
+import { NotificationsService } from 'src/notification/notifications.service';
 
 @Injectable()
 export class IprService {

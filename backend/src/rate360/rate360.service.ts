@@ -9,7 +9,6 @@ import { CreateRateDto } from './dto/create-rate.dto';
 import { EvaluatorType, Prisma, SkillType } from '@prisma/client';
 import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
-import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { ToggleReportVisibilityDto } from './dto/toggle-report-visibility.dto';
 import { SingleRateIdDto } from './dto/single-rate-id.dto';
@@ -21,6 +20,7 @@ import { UsersAccessService } from 'src/users/users-access.service';
 import { findAllRateInclude } from './constants';
 import { TeamsHelpersService } from 'src/teams/teams.helpers.service';
 import { findHierarchyElements } from './helpers';
+import { NotificationsService } from 'src/notification/notifications.service';
 
 @Injectable()
 export class Rate360Service {

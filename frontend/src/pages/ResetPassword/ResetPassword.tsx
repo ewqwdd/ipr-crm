@@ -40,7 +40,7 @@ export default function ResetPassword() {
       setError('Пароли не совпадают');
       return;
     }
-    const code = authCodeRef.current ?? sessionStorage.getItem('authCode')
+    const code = authCodeRef.current ?? sessionStorage.getItem('authCode');
     if (!code) {
       toast.error('Код не найден');
       return;

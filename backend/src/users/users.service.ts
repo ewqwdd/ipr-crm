@@ -8,13 +8,13 @@ import { CreateUserDto } from './dto/create-user.fto';
 import { PasswordService } from 'src/utils/password/password';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InviteUserDTO } from './dto/invite-user.dto';
-import { MailService } from 'src/utils/mailer/mailer';
 import { nanoid } from 'nanoid';
 import { Workbook } from 'exceljs';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
 import { FilesService } from 'src/utils/files/files.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -246,7 +246,8 @@ export class UsersService {
       },
     });
 
-    await this.mailService.sendInviteEmail(data.email, created);
+    const { html, subject } = this.mailService.generateInvite(created);
+    await this.mailService.sendMail(data.email, subject, html);
     return;
   }
 
@@ -256,7 +257,8 @@ export class UsersService {
     });
 
     if (user.authCode) {
-      return await this.mailService.sendInviteEmail(user.email, user);
+      const { html, subject } = this.mailService.generateInvite(user);
+      return await this.mailService.sendMail(user.email, subject, html);
     }
 
     const authCode = Math.random().toString(36).substring(2, 15);
@@ -267,10 +269,11 @@ export class UsersService {
       data: { authCode: hashed },
     });
 
-    return await this.mailService.sendInviteEmail(user.email, {
+    const { html, subject } = this.mailService.generateInvite({
       ...user,
       authCode: hashed,
     });
+    return await this.mailService.sendMail(user.email, subject, html);
   }
 
   async passwordReset(authCode: string, password: string) {
@@ -702,11 +705,12 @@ export class UsersService {
       },
     );
 
-    await Promise.all(
-      createdUsers.map((user) =>
-        this.mailService.sendInviteEmail(user.email, user),
-      ),
-    );
+    const inviteEmails = createdUsers.map((u) => ({
+      to: u.email,
+      ...this.mailService.generateInvite(u),
+    }));
+
+    await this.mailService.sendBulkMail(inviteEmails);
     return createdUsers;
   }
 

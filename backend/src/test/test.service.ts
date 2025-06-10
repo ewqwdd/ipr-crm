@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
-import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { CreateTestDTO } from './dto/create-test.dto';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
@@ -14,6 +13,7 @@ import { ExcelService } from 'src/utils/excel/excel.service';
 import { Response } from 'express';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { UsersAccessService } from 'src/users/users-access.service';
+import { NotificationsService } from 'src/notification/notifications.service';
 
 type AssignedType = Prisma.User_Assigned_TestGetPayload<{
   include: {

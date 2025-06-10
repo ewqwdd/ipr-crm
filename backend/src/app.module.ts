@@ -13,7 +13,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { Rate360Module } from './rate360/rate360.module';
 import { ProfileConstructorModule } from './profile-constructor/profile-constructor.module';
-import { MailService } from './utils/mailer/mailer';
 import { IprModule } from './ipr/ipr.module';
 import { NotificationModule } from './notification/notification.module';
 import { TestModule } from './test/test.module';
@@ -23,11 +22,18 @@ import { SupportModule } from './support/support.module';
 import { ProfileStructureFolderModule } from './profile-structure-folder/profile-constructor-folder.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AdminLoggerInterceptor } from './utils/interceptors/admin-interceptor';
-
-console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
+import { BullModule } from '@nestjs/bull';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT) || 6379,
+        password: process.env.REDIS_PASSWORD || undefined,
+      },
+    }),
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     AuthModule,
     UsersModule,
@@ -46,11 +52,11 @@ console.log(join(__dirname, '..', '..', 'frontend', 'dist'));
     SurveyModule,
     SupportModule,
     ProfileStructureFolderModule,
+    MailModule,
   ],
   providers: [
     PrismaService,
     CookieService,
-    MailService,
     JwtService,
     PasswordService,
     S3Service,

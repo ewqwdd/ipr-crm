@@ -4,19 +4,19 @@ import { UsersService } from './users.service';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { PasswordService } from 'src/utils/password/password';
 import { S3Service } from 'src/utils/s3/s3.service';
-import { MailService } from 'src/utils/mailer/mailer';
 import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
 import { FilesService } from 'src/utils/files/files.service';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   controllers: [UsersController],
+  imports: [MailModule],
   providers: [
     UsersService,
     PrismaService,
     PasswordService,
     S3Service,
-    MailService,
     CreateProductsService,
     UsersAccessService,
     FilesService,

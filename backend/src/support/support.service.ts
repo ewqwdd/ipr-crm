@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
-import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { CreateSupportTicketDto } from './dto/create-support-ticket.dto';
 import { Prisma } from '@prisma/client';
 import { GetSupportTicketsDto } from './dto/get-support-tickets.dto';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
+import { NotificationsService } from 'src/notification/notifications.service';
 
 @Injectable()
 export class SupportService {

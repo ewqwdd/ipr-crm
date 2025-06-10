@@ -7,11 +7,11 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { CreateSurveyDTO } from './dto/create-survey.dto';
 import { AssignUsersDTO } from './dto/assign-users.dto';
-import { NotificationsService } from 'src/utils/notifications/notifications.service';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
 import { Prisma } from '@prisma/client';
 import { UsersAccessService } from 'src/users/users-access.service';
 import { FilesService } from 'src/utils/files/files.service';
+import { NotificationsService } from 'src/notification/notifications.service';
 
 @Injectable()
 export class SurveyService {

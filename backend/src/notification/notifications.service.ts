@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../db/prisma.service';
-import { MailService } from '../mailer/mailer';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { errorLogger } from '../filters/logger';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { MailService } from 'src/mail/mail.service';
+import { PrismaService } from 'src/utils/db/prisma.service';
+import { errorLogger } from 'src/utils/filters/logger';
 
 @Injectable()
 export class NotificationsService {

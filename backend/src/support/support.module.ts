@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { SupportController } from './support.controller';
 import { SupportService } from './support.service';
 import { PrismaService } from 'src/utils/db/prisma.service';
-import { NotificationsService } from 'src/utils/notifications/notifications.service';
-import { MailService } from 'src/utils/mailer/mailer';
+import { MailModule } from 'src/mail/mail.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   controllers: [SupportController],
-  providers: [SupportService, PrismaService, NotificationsService, MailService],
+  imports: [MailModule, NotificationModule],
+  providers: [SupportService, PrismaService],
 })
 export class SupportModule {}
