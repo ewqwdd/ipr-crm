@@ -58,10 +58,18 @@ export const filterBySpec = (user: User, specs: Filters['specs']) => {
   );
 };
 
+export const filterByAccess = (user: User, access: Filters['access']) => {
+  if (access === 'ALL') return true;
+  if (access === 'ACTIVE') return !!user.access;
+  if (access === 'INACTIVE') return !user.access;
+  return true;
+};
+
 export const applyUsersFilters = (user: User, filters: Filters): boolean => {
   return (
     filterByTeam(user, filters.teams) &&
     filterByUserId(user, filters.userId) &&
-    filterBySpec(user, filters.specs)
+    filterBySpec(user, filters.specs) &&
+    filterByAccess(user, filters.access)
   );
 };

@@ -14,7 +14,7 @@ import { MailProcessor } from './mail.processor';
           type: 'fixed',
           delay: 5 * 60 * 1000, // 5 минут между попытками
         },
-        removeOnComplete: 100, // оставляем 10 успешных задач для истории
+        removeOnComplete: 100, // оставляем 100 успешных задач для истории
         removeOnFail: 300, // оставляем 300 неудачных для анализа
       },
     }),

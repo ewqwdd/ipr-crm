@@ -1,13 +1,14 @@
 import { User } from '@/entities/user';
 import { Option } from '@/shared/types/Option';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { FC, memo, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, FC, memo, useCallback, useMemo, useState } from 'react';
 import { MultiValue } from 'react-select';
 import { getAllFilterOptions } from './helpers';
 import SpecSelector from './SpecSelector';
 import { Filters, initialFilters } from './constants';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
 import TeamSelector from '@/entities/rates/ui/Rates360Table/ui/RatesFilters/TeamSelector';
+import AccessSelect from './AccessSelect';
 
 interface UsersFiltersProps {
   data?: User[];
@@ -44,16 +45,26 @@ const UsersFilters: FC<UsersFiltersProps> = ({
     [updateFilters],
   );
 
+  const  onChangeAccess = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      updateFilters('access', e.target.value);
+    }
+    ,
+    [updateFilters],
+  );
+
   const resetFilters = () => {
     updateFilters('teams', initialFilters.teams);
     updateFilters('userId', initialFilters.userId);
     updateFilters('specs', initialFilters.specs);
+    updateFilters('access', initialFilters.access);
   };
 
   const changedFiltersCount = [
     filters.teams.length !== initialFilters.teams.length,
     filters.userId !== initialFilters.userId,
     filters.specs.length !== initialFilters.specs.length,
+    filters.access !== initialFilters.access,
   ].filter(Boolean).length;
 
   return (
@@ -97,6 +108,7 @@ const UsersFilters: FC<UsersFiltersProps> = ({
             value={filters.specs}
             onChange={onChangeSpecs}
           />
+  <AccessSelect access={filters.access} onChangeAccess={onChangeAccess} />
         </div>
       )}
     </div>

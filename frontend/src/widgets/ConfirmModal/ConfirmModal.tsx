@@ -6,6 +6,7 @@ type ConfirmModalData = {
   title?: string;
   submitText?: string;
   children?: React.ReactNode;
+  variant?: 'success' | 'error' | 'warning' | 'info';
 };
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -18,7 +19,7 @@ export default function ConfirmModal({
   modalData,
   closeModal,
 }: ConfirmModalProps) {
-  const { onSubmit, title, submitText, children } =
+  const { onSubmit, title, submitText, children, variant } =
     modalData as ConfirmModalData;
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,6 +39,7 @@ export default function ConfirmModal({
       submitText={submitText}
       loading={isLoading}
       children={children}
+      variant={variant || 'info'}
     />
   );
 }

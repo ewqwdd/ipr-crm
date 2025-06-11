@@ -1,3 +1,4 @@
+import { useModal } from '@/app/hooks/useModal';
 import { User } from '@/entities/user';
 import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
@@ -25,10 +26,10 @@ export default function TableRow({
   skeleton,
 }: TableRowProps) {
   const navigate = useNavigate();
-  const [deleting, setDeleting] = useState<boolean>();
   const [deleteUser, deleteState] = usersApi.useRemoveUserMutation();
   const isAdmin = useIsAdmin();
   const [loading, setLoading] = useState(false);
+  const {openModal} = useModal();
 
   const resendInvite = () => {
     setLoading(true);
@@ -45,21 +46,31 @@ export default function TableRow({
       });
   };
 
+  const onDelete = () => {
+        openModal('CONFIRM', {
+      submitText: 'Удалить',
+      title: 'Удалить пользователя?',
+      variant: 'error',
+      onSubmit: async () => {
+if (!person.id) return;
+                      return await deleteUser(person.id);
+      },
+    });
+  }
+
   useEffect(() => {
-    if (deleteState.isSuccess && deleting) {
+    if (deleteState.isSuccess) {
       toast.success('Пользователь успешно удален');
-      setDeleting(false);
     }
-    if (deleteState.isError && deleting) {
+    if (deleteState.isError) {
       toast.error('Ошибка при удалении пользователя');
-      setDeleting(false);
     }
-  }, [deleteState.isSuccess, deleteState.isError, deleting]);
+  }, [deleteState.isSuccess, deleteState.isError]);
 
   return (
     <tr
       className={cva({
-        'animate-pulse pointer-events-none opacity-50': !!deleting || !!loading,
+        'animate-pulse pointer-events-none opacity-50':  !!loading,
         '[&_span]:opacity-60 [&_a]:opacity-60': !person?.access,
       })}
     >
@@ -132,11 +143,7 @@ export default function TableRow({
                   },
                   {
                     text: 'Удалить',
-                    onClick: () => {
-                      if (!person.id) return;
-                      setDeleting(true);
-                      deleteUser(person.id);
-                    },
+                    onClick: onDelete,
                   },
                   ...(isAdmin && !person.access
                     ? [

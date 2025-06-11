@@ -1,7 +1,7 @@
 import { usersApi } from '@/shared/api/usersApi/usersApi';
 import TableRow from './TableRow';
 import { cva } from '@/shared/lib/cva';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pagination } from '@/shared/ui/Pagination';
 import UsersFilters, { applyUsersFilters } from './usersFilters';
 import { User } from '@/entities/user';
@@ -47,8 +47,18 @@ export default function WithAvatarsAndMultiLineContent() {
     }
   }, [filteredData, page, paginateddata.length]);
 
+    const activeUsers = useMemo(() => {
+    return data?.users.filter((user) => user.access) || [];
+  }, [data]);
+
+
   return (
     <>
+
+    <div className='flex mb-4 text-sm text-gray-700'>
+      Активных пользователей: <span className='ml-2 font-semibold'>{activeUsers.length} / {(data?.count ?? 0) - activeUsers.length}</span>
+    </div>
+
       <UsersFilters
         data={data?.users}
         filters={filters}
