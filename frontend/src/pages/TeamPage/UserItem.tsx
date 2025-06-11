@@ -1,7 +1,7 @@
 import { TeamSingle } from '@/entities/team';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { cva } from '@/shared/lib/cva';
 import { SelectOption } from '@/shared/types/SelectType';
 import { Avatar } from '@/shared/ui/Avatar';

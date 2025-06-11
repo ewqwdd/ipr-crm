@@ -1,6 +1,6 @@
 import { useAppSelector } from '@/app';
 import { Rate } from '@/entities/rates';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { cva } from '@/shared/lib/cva';
 import { generalService } from '@/shared/lib/generalService';
 import { usersService } from '@/shared/lib/usersService';

@@ -1,5 +1,5 @@
 import { useAppDispatch } from '@/app';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { $api } from '@/shared/lib/$api';
 import { emailRegex } from '@/shared/lib/regex';
 import { InputWithLabelLight } from '@/shared/ui/InputWithLabelLight';

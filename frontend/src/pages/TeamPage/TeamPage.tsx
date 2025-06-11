@@ -13,7 +13,7 @@ import AddUserForm from '@/entities/user/ui/AddUserForm';
 import { SpecsFilter } from '@/widgets/SpecsFilter';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useAppDispatch, useAppSelector } from '@/app';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { SoftButton } from '@/shared/ui/SoftButton';
 
 export default function TeamPage() {

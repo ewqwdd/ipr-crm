@@ -1,5 +1,5 @@
 import { User } from '@/entities/user';
-import { usersApi } from '../api/usersApi';
+import { usersApi } from '../api/usersApi/usersApi';
 
 export const useFilterUsersByCurator = (
   teamCurator?: User['teamCurator'],

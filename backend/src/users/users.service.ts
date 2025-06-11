@@ -15,6 +15,7 @@ import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
 import { FilesService } from 'src/utils/files/files.service';
 import { MailService } from 'src/mail/mail.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +27,31 @@ export class UsersService {
     private usersAccessService: UsersAccessService,
     private filesService: FilesService,
   ) {}
+  
+  defaultInclude: Prisma.UserInclude = {
+        role: true,
+        Spec: {
+          where: {
+            archived: false,
+          },
+        },
+        teams: {
+          select: { teamId: true, team: { select: { name: true } } },
+        },
+        teamCurator: {
+          select: { id: true, name: true },
+        },
+        specsOnTeams: {
+          select: {
+            spec: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      }
 
   async findOneByEmail(email: string) {
     const user = await this.prisma.user.findFirst({
@@ -103,30 +129,7 @@ export class UsersService {
 
   async findAll({ page, limit }: { page?: number; limit?: number }) {
     const users = await this.prisma.user.findMany({
-      include: {
-        role: true,
-        Spec: {
-          where: {
-            archived: false,
-          },
-        },
-        teams: {
-          select: { teamId: true, team: { select: { name: true } } },
-        },
-        teamCurator: {
-          select: { id: true, name: true },
-        },
-        specsOnTeams: {
-          select: {
-            spec: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      include: this.defaultInclude,
       omit: { authCode: true, roleId: true, specId: true },
       orderBy: { id: 'desc' },
       take: limit,
@@ -209,6 +212,7 @@ export class UsersService {
     return await this.prisma.user.update({
       where: { id },
       data: updates,
+      include: this.defaultInclude,
     });
   }
 

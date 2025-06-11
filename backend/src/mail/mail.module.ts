@@ -8,13 +8,14 @@ import { MailProcessor } from './mail.processor';
     BullModule.registerQueue({
       name: 'mail',
       defaultJobOptions: {
-        attempts: 0, // бесконечные попытки (или укажите число, например 10)
+        delay: 5000,
+        attempts: 10, // бесконечные попытки (или укажите число, например 10)
         backoff: {
           type: 'fixed',
           delay: 5 * 60 * 1000, // 5 минут между попытками
         },
-        removeOnComplete: 10, // оставляем 10 успешных задач для истории
-        removeOnFail: 50, // оставляем 50 неудачных для анализа
+        removeOnComplete: 100, // оставляем 10 успешных задач для истории
+        removeOnFail: 300, // оставляем 300 неудачных для анализа
       },
     }),
   ],

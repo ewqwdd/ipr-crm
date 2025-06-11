@@ -12,6 +12,7 @@ export class MailService {
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
+    pool: true,
     auth: {
       user: process.env.GOOGLE_EMAIL,
       pass: process.env.GOOGLE_EMAIL_PASSWORD,
@@ -39,7 +40,7 @@ export class MailService {
       data: { ...email, from: process.env.GOOGLE_EMAIL },
       opts: {
         priority: 0,
-        delay: index * 1000, // задержка между письмами (1 сек)
+        delay: index * 5000, // задержка между письмами (1 сек)
       },
     }));
 

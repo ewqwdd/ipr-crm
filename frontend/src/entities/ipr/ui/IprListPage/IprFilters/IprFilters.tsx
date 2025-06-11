@@ -7,7 +7,7 @@ import {
   skillTypeOptions,
 } from './config';
 import { SearchSelect } from '@/shared/ui/SearchSelect';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { TeamsMultiSelect } from '@/widgets/TeamsMultiSelect';
 import { useAppSelector } from '@/app';
 import { teamsApi } from '@/shared/api/teamsApi';

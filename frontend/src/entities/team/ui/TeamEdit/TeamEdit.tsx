@@ -1,7 +1,7 @@
 import { teamsApi } from '@/shared/api/teamsApi';
 import { CreateTeamDto, Team } from '../../types/types';
 import TeamForm from '../TeamForm/TeamForm';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 

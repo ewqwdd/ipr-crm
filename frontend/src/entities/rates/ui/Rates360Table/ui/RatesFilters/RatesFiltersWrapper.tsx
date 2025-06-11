@@ -5,7 +5,7 @@ import { Option } from '@/shared/types/Option';
 import { MultiValue } from 'react-select';
 import { DateObject } from 'react-multi-date-picker';
 import { Filters, FiltersSkillType } from './types';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { useAppSelector } from '@/app';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';

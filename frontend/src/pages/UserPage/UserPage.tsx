@@ -1,4 +1,4 @@
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { UserProfile } from '@/entities/user';

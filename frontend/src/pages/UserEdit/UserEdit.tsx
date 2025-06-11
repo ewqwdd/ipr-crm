@@ -1,6 +1,6 @@
 import { UserForm } from '@/entities/user';
 import { UserFormData } from '@/entities/user/types/types';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useEffect } from 'react';

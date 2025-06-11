@@ -1,6 +1,6 @@
 import { Modal } from '@/shared/ui/Modal';
 import { Rate } from '../../types/types';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { rateTypeNames } from '../../model/rateTypeNames';
 import { universalApi } from '@/shared/api/universalApi';

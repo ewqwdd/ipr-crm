@@ -1,6 +1,6 @@
 import { TeamSingle } from '@/entities/team';
 import { teamsApi } from '@/shared/api/teamsApi';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { generalService } from '@/shared/lib/generalService';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Modal } from '@/shared/ui/Modal';

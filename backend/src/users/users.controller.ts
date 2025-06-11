@@ -105,8 +105,8 @@ export class UsersController {
         'AVATARS',
       );
     }
-    await this.usersService.update(id, updateUserDto);
-    return { message: 'Пользователь обновлен.' };
+    const user = await this.usersService.update(id, updateUserDto);
+    return user;
   }
 
   @Post('/invite')

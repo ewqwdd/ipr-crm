@@ -5,7 +5,7 @@ import AssessmentAssignUsersForm from './AssessmentAssignUsersForm';
 import { testsApi } from '@/shared/api/testsApi';
 import toast from 'react-hot-toast';
 import { surveyApi } from '@/shared/api/surveyApi';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 
 interface AssessmentAssignUsersModalProps {
   isOpen: boolean;

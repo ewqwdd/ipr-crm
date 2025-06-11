@@ -1,4 +1,4 @@
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import TableRow from './TableRow';
 import { cva } from '@/shared/lib/cva';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
@@ -11,7 +11,7 @@ const LIMIT = 8;
 
 export default function WithAvatarsAndMultiLineContent() {
   const [page, setPage] = useState<number>(1);
-  const { data, isLoading } = usersApi.useGetUsersQuery({});
+  const { data, isLoading } = usersApi.useGetUsersQuery();
   const [filteredData, setFilteredData] = useState<User[]>([]);
 
   const [filters, setFilters] = useState<Filters>(initialFilters);

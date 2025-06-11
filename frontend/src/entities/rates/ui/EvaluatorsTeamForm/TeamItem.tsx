@@ -4,7 +4,7 @@ import { UsersIcon } from '@heroicons/react/outline';
 import { useMemo } from 'react';
 import { universalApi } from '@/shared/api/universalApi';
 import EvaluatorsItem from './EvaluatorsItem';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { TeamItemIds } from '../AddRate/EvaluatorsTab/EvaluatorsTab';
 import { EvaluateUser, EvaulatorType } from '../../types/types';
 

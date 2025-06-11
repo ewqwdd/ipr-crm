@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@/app';
 import { userActions, UserForm } from '@/entities/user';
 import { UserFormData } from '@/entities/user/types/types';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';

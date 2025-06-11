@@ -1,6 +1,6 @@
 import { UserForm } from '@/entities/user';
 import { UserFormData } from '@/entities/user/types/types';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 

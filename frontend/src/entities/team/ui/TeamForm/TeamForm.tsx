@@ -4,7 +4,7 @@ import { CreateTeamDto, Team } from '../../types/types';
 import { cva } from '@/shared/lib/cva';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { TextArea } from '@/shared/ui/TextArea';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
 import { TeamsSelect } from '@/widgets/TeamSelect';
 import { teamsApi } from '@/shared/api/teamsApi';

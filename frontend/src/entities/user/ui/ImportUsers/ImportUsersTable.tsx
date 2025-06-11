@@ -1,7 +1,7 @@
 import { TableHeading } from '@/widgets/TableHeading';
 import { ImportUsersRowType, ImportUsersStateType } from './types';
 import { TableBody } from '@/widgets/TableBody';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { cva } from '@/shared/lib/cva';
 import Tooltip from '@/shared/ui/Tooltip';
 import { Dispatch, SetStateAction } from 'react';

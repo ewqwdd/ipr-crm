@@ -2,7 +2,7 @@ import { useModal } from '@/app/hooks/useModal';
 import { Rate } from '@/entities/rates';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { cva } from '@/shared/lib/cva';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { DocumentReportIcon, DocumentTextIcon } from '@heroicons/react/outline';

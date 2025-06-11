@@ -3,7 +3,7 @@ import { rate360Api } from '@/shared/api/rate360Api';
 import { skillsApi } from '@/shared/api/skillsApi';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { modalReducer } from './modalSlice';
 import { ratesReducer } from '@/entities/rates';

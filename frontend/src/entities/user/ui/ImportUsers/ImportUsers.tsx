@@ -5,7 +5,7 @@ import { UploadFile } from '@/shared/ui/UploadFile';
 import { useEffect, useState } from 'react';
 import { ImportUsersStateType } from './types';
 import ImportUsersTable from './ImportUsersTable';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import toast from 'react-hot-toast';
 import { useAppDispatch } from '@/app';
 import { teamsApi } from '@/shared/api/teamsApi';

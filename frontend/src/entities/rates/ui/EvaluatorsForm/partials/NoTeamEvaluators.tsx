@@ -1,4 +1,4 @@
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import EvaluatorTeam from './EvaluatorTeam';
 import { useMemo } from 'react';
 import { EvaluateUser, EvaulatorType } from '@/entities/rates/types/types';

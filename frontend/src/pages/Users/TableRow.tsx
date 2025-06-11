@@ -1,5 +1,5 @@
 import { User } from '@/entities/user';
-import { usersApi } from '@/shared/api/usersApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';

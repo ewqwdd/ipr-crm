@@ -1,8 +1,12 @@
 import { User } from '@/entities/user';
 import type { ImportMultipleUser } from '@/entities/user';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-type Pagination = { limit?: number; page?: number };
+import {
+  handleCreateUserQuery,
+  handleEditSelfQuery,
+  handleRemoveUserQuery,
+  handleUpdateUserQuery,
+} from './usersApi.service';
 
 const usersApi = createApi({
   reducerPath: 'usersApi',
@@ -12,12 +16,9 @@ const usersApi = createApi({
   }),
   tagTypes: ['User'],
   endpoints: (build) => ({
-    getUsers: build.query<{ users: User[]; count: number }, Pagination>({
-      query: ({ limit, page } = {}) => {
-        const queryParams = new URLSearchParams();
-        if (page !== undefined) queryParams.append('page', page.toString());
-        if (limit !== undefined) queryParams.append('limit', limit.toString());
-        return `/users?${queryParams.toString()}`;
+    getUsers: build.query<{ users: User[]; count: number }, void>({
+      query: () => {
+        return '/users';
       },
       providesTags: ['User'],
     }),
@@ -25,13 +26,14 @@ const usersApi = createApi({
       query: (id) => `/users/${id}`,
       providesTags: (_, __, id) => [{ type: 'User', id }],
     }),
-    updateUser: build.mutation<void, { id: number; formData: FormData }>({
+    updateUser: build.mutation<User, { id: number; formData: FormData }>({
       query: ({ id, formData }) => ({
         url: `/users/${id}`,
         method: 'PUT',
         body: formData,
       }),
-      invalidatesTags: (_, __, { id }) => [{ type: 'User', id }, 'User'],
+      onQueryStarted: handleUpdateUserQuery,
+      invalidatesTags: (_, __, { id }) => [{ type: 'User', id }],
     }),
     createUser: build.mutation<User, FormData>({
       query: (formData) => ({
@@ -39,6 +41,7 @@ const usersApi = createApi({
         method: 'POST',
         body: formData,
       }),
+      onQueryStarted: handleCreateUserQuery,
       invalidatesTags: ['User'],
     }),
     editSelf: build.mutation<User, FormData>({
@@ -47,7 +50,7 @@ const usersApi = createApi({
         method: 'PUT',
         body: formData,
       }),
-      invalidatesTags: ['User'],
+      onQueryStarted: handleEditSelfQuery,
     }),
     addMultipleUsers: build.mutation<void, ImportMultipleUser[]>({
       query: (users) => ({
@@ -62,7 +65,8 @@ const usersApi = createApi({
         url: `/users/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_, __, id) => [{ type: 'User', id }, 'User'],
+      onQueryStarted: handleRemoveUserQuery,
+      invalidatesTags: (_, __, id) => [{ type: 'User', id }],
     }),
   }),
 });
