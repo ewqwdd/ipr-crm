@@ -153,7 +153,7 @@ export class UsersController {
   @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.OK)
   async resendAllInvites() {
-    // return this.usersService.resendInvitesAll();
+    return this.usersService.resendInvitesAll();
   }
 
   @Post('/resend-invite/:id')
