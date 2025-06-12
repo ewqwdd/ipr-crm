@@ -13,10 +13,11 @@ import { Assesment as AssesmentType } from './types/types';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
-import { useAppDispatch, useAppSelector } from '@/app';
+import { useAppSelector } from '@/app';
 import Tooltip from '@/shared/ui/Tooltip';
 import { UserRateHeader } from '@/widgets/UserRateHeader';
 import { generalService } from '@/shared/lib/generalService';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 export default function Rate360Assesment() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ export default function Rate360Assesment() {
     parseInt(id ?? ''),
   );
   const userId = useAppSelector((state) => state.user.user!.id);
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const loadingRef = useRef<number>();
 
@@ -113,7 +114,7 @@ export default function Rate360Assesment() {
 
   useEffect(() => {
     return () => {
-      dispatch(rate360Api.util.invalidateTags(['Rate360', 'Assigned', 'Self']));
+      invalidateTags(['Rate360', 'AssignedRate', 'SelfRate']);
     };
   }, [id]);
 

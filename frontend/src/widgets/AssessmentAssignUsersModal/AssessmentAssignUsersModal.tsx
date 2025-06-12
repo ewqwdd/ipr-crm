@@ -27,7 +27,7 @@ export default function AssessmentAssignUsersModal({
   const [mutateTest, testState] = testsApi.useAssignUsersMutation();
   const [mutateSurvey, surveyState] = surveyApi.useAssignUsersMutation();
 
-  const { data, isFetching } = usersApi.useGetUsersQuery({});
+  const { data, isFetching } = usersApi.useGetUsersQuery();
   const [selected, setSelected] = useState<number[]>([]);
   const [date, setDate] = useState<Date>(new Date());
 

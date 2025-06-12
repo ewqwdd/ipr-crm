@@ -11,7 +11,7 @@ const supportApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL + '/support',
     credentials: 'include',
   }),
-  tagTypes: ['Support', 'Admin'],
+  tagTypes: ['Support', 'SupportAdmin'],
   endpoints: (build) => ({
     getTickets: build.query<SupportTicketType[], void>({
       query: () => '',
@@ -25,7 +25,7 @@ const supportApi = createApi({
         url: '/admin',
         params,
       }),
-      providesTags: (_, __, params) => [{ type: 'Admin', ...params }],
+      providesTags: (_, __, params) => [{ type: 'SupportAdmin', ...params }],
     }),
     getTicket: build.query<SupportTicketType, number>({
       query: (id) => `/${id}`,
@@ -37,7 +37,7 @@ const supportApi = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Support', 'Admin'],
+      invalidatesTags: ['Support', 'SupportAdmin'],
     }),
     updateTicketStatus: build.mutation<
       void,
@@ -48,14 +48,14 @@ const supportApi = createApi({
         method: 'POST',
         body: { status },
       }),
-      invalidatesTags: ['Support', 'Admin'],
+      invalidatesTags: ['Support', 'SupportAdmin'],
     }),
     assignSelfToTicket: build.mutation<void, { id: number }>({
       query: ({ id }) => ({
         url: `/admin/${id}/assign-self`,
         method: 'POST',
       }),
-      invalidatesTags: ['Support', 'Admin'],
+      invalidatesTags: ['Support', 'SupportAdmin'],
     }),
   }),
 });

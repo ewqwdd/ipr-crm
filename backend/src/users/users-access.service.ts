@@ -96,7 +96,9 @@ export class UsersAccessService {
         ...team.subTeams.map((subTeam) => ({
           userId: subTeam.curatorId,
           teamId: subTeam.id,
-        })),
+        })).filter(
+          (subTeam) => subTeam.userId !== null,
+        )
       ];
     });
   }

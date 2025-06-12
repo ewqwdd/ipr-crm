@@ -29,7 +29,7 @@ export default memo(function IprFilters({
   type,
 }: IprFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: users } = usersApi.useGetUsersQuery({});
+  const { data: users } = usersApi.useGetUsersQuery();
   const { data: teams } = teamsApi.useGetTeamsQuery();
   const { data: specs } = universalApi.useGetSpecsQuery();
   const user = useAppSelector((state) => state.user.user);

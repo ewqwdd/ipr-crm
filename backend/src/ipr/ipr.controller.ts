@@ -69,7 +69,7 @@ export class IprController {
     @Body() data: SetPriorityStatusDto,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    return this.iprService.update(id, { priority: data.priority }, sessionInfo);
+    return this.iprService.updateTask(id, { priority: data.priority }, sessionInfo);
   }
 
   @Post('/task/status')
@@ -78,7 +78,7 @@ export class IprController {
     @Body() data: SetStatusDto,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    return this.iprService.update(
+    return this.iprService.updateTask(
       data.id,
       { status: data.status },
       sessionInfo,
@@ -91,7 +91,7 @@ export class IprController {
     @Body() data: SetDeadlineDto,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    return this.iprService.update(
+    return this.iprService.updateTask(
       data.id,
       { deadline: data.deadline ? new Date(data.deadline) : null },
       sessionInfo,

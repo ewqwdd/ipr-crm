@@ -16,7 +16,7 @@ import { Checkbox } from '@/shared/ui/Checkbox';
 interface TeamListProps {
   teams: MultiValue<Option>;
   specs: MultiValue<Option>;
-  search: string;
+  search?: string;
   selectedSpecs: AddRateDto[];
   onChangeSpecs: (data: ChangeSpecsType | ChangeSpecsType[]) => void;
   onDeselect: (data: ChangeSpecsType[]) => void;
@@ -53,7 +53,7 @@ const areSpecsEqual = (a: ChangeSpecsType, b: ChangeSpecsType): boolean => {
 export default function TeamList({
   selectedSpecs,
   specs,
-  search,
+  search = '',
   teams,
   onChangeSpecs,
   onDeselect,

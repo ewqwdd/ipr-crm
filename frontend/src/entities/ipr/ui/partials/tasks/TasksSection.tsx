@@ -1,6 +1,5 @@
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Ipr, Task } from '@/entities/ipr/model/types';
-import ActionBar from './ActionBar';
 import {
   getSelectedMaterials,
   groupTasksByType,
@@ -10,6 +9,7 @@ import TaskFilter from './TaskFilter';
 import { useModal } from '@/app/hooks/useModal';
 import TaskList from './TaskList/TaskList';
 import { taskTypeMap } from './constants';
+import IprEditSettings from '../../../../../features/team/IprEditSettings/IprEditSettings';
 
 type TasksSectionProps = {
   tasks?: Task[];
@@ -218,7 +218,7 @@ const TasksSection: FC<TasksSectionProps> = ({
       </TaskFilter>
 
       {planId && userId && (
-        <ActionBar
+        <IprEditSettings
           selectedMaterials={selectedMaterials}
           resetSelection={resetSelection}
           planId={planId}

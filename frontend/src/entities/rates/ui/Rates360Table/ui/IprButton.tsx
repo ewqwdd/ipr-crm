@@ -1,7 +1,6 @@
-import { useAppDispatch } from '@/app';
 import { Rate } from '@/entities/rates';
 import { iprApi } from '@/shared/api/iprApi';
-import { rate360Api } from '@/shared/api/rate360Api';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 import { cva } from '@/shared/lib/cva';
 import { Link } from 'react-router';
 
@@ -11,11 +10,11 @@ interface IprButtonProps {
 
 export default function IprButton({ rate }: IprButtonProps) {
   const [mutate, { isLoading }] = iprApi.useCreateIprMutation();
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const handleClick = async () => {
     await mutate(rate.id);
-    dispatch(rate360Api.util.invalidateTags(['Rate360', 'UserRates']));
+    invalidateTags(['Rate360', 'UserRates']);
   };
 
   if (!rate.plan) {

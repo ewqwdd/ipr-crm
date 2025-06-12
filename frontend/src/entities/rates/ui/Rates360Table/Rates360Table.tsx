@@ -38,7 +38,7 @@ export default function Rates360Table({ type }: Rates360TableProps) {
     user: filters.userId === 'ALL' ? undefined : filters.userId,
     teams:
       filters.teams.length > 0
-        ? filters.teams.map((team) => team.value)
+        ? filters.teams.map((team) => Number(team.value))
         : undefined,
     startDate: filters.period?.[0]?.toDate()?.toISOString(),
     endDate: filters.period?.[1]?.toDate()?.toISOString(),

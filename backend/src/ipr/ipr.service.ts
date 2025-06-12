@@ -264,7 +264,7 @@ export class IprService {
     });
   }
 
-  async update(
+  async updateTask(
     id: number,
     data: Partial<GrowthPlanTask>,
     session: GetSessionInfoDto,

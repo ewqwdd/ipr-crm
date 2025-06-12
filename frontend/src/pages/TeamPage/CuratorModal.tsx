@@ -23,7 +23,7 @@ export default function CuratorModal({
   teamId,
 }: CuratorModalProps) {
   const [value, setValue] = useState<number>();
-  const { refetch } = usersApi.useGetUsersQuery({});
+  const { refetch } = usersApi.useGetUsersQuery();
 
   const [mutate, { isSuccess, isLoading: mutateLoading }] =
     teamsApi.useAddCuratorMutation();

@@ -17,6 +17,36 @@ export class TeamsService {
     private usersAccessService: UsersAccessService,
   ) {}
 
+  teamListInclude = {
+        curatorSpecs: {
+          where: { spec: { archived: false } },
+          select: {
+            specId: true,
+            spec: { select: { name: true, active: true } },
+          },
+        },
+        users: {
+          select: {
+            user: {
+              select: {
+                avatar: true,
+                id: true,
+                username: true,
+                specsOnTeams: {
+                  where: { spec: { archived: false } },
+                  select: {
+                    specId: true,
+                    spec: { select: { name: true, active: true } },
+                    teamId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        curator: { select: { avatar: true, id: true, username: true } },
+      }
+
   async create(
     name: string,
     description?: string,
@@ -46,35 +76,7 @@ export class TeamsService {
   async findAll() {
     const teams = await this.prisma.team.findMany({
       orderBy: { createdAt: 'desc' },
-      include: {
-        curatorSpecs: {
-          where: { spec: { archived: false } },
-          select: {
-            specId: true,
-            spec: { select: { name: true, active: true } },
-          },
-        },
-        users: {
-          select: {
-            user: {
-              select: {
-                avatar: true,
-                id: true,
-                username: true,
-                specsOnTeams: {
-                  where: { spec: { archived: false } },
-                  select: {
-                    specId: true,
-                    spec: { select: { name: true, active: true } },
-                    teamId: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        curator: { select: { avatar: true, id: true, username: true } },
-      },
+      include: this.teamListInclude,
     });
 
     for (const team of teams) {
@@ -356,6 +358,7 @@ export class TeamsService {
     await this.prisma.team.delete({ where: { id } });
     return;
   }
+
   async setTeamUserSpecs(
     { specs, teamId, userId, curator }: SetTeamUserSpecs,
     sessionInfo: GetSessionInfoDto,
@@ -457,7 +460,10 @@ export class TeamsService {
       });
     }
 
-    return;
+    return await this.prisma.team.findUnique({
+      where: filters,
+      include: this.teamListInclude,
+    });
   }
 
   async addTeamUsers(
@@ -517,10 +523,6 @@ export class TeamsService {
       if (!accessibleTeamIds.includes(teamId)) {
         throw new ForbiddenException('У вас нет доступа к этой команде.');
       }
-      // const team = await this.prisma.team.findUnique({
-      //   where: { id: teamId }
-      // });
-      // if (team.curatorId === sessionInfo.id) throw new ForbiddenException('У вас нет доступа к этой команде.');
     }
 
     return this.prisma.userTeam.deleteMany({

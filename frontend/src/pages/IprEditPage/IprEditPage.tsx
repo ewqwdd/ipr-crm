@@ -7,7 +7,7 @@ import { useParams } from 'react-router';
 
 const notifTypes: NotificationType[] = ['IPR_ASSIGNED'];
 
-export default function Ipr() {
+export default function IprEditPage() {
   const { rateId } = useParams<{ rateId: string }>();
   const { data, isFetching } = iprApi.useFindRateQuery(Number(rateId), {
     refetchOnMountOrArgChange: true,
@@ -15,7 +15,7 @@ export default function Ipr() {
   useReadNotifsOnClose(notifTypes);
 
   return (
-    <LoadingOverlay active={isFetching}>
+    <LoadingOverlay fullScereen active={isFetching}>
       <IprEdit ipr={data} />
     </LoadingOverlay>
   );

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { boardActions } from '../../model/boardSlice';
 import { $api } from '@/shared/lib/$api';
 import toast from 'react-hot-toast';
-import { iprApi } from '@/shared/api/iprApi';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 interface DeleteTaskModalProps {
   isOpen: boolean;
@@ -23,6 +23,7 @@ export default function DeleteTaskModal({
   const dispatch = useAppDispatch();
   const [checked, setChecked] = useState(false);
   const board = useAppSelector((state) => state.board.board);
+  const invalidateTags = useInvalidateTags();
 
   const onDelete = async () => {
     const prev = board;
@@ -43,11 +44,7 @@ export default function DeleteTaskModal({
           .delete('/ipr/task', {
             data: { ids: [task.id] },
           })
-          .then(() =>
-            dispatch(
-              iprApi.util.invalidateTags([{ type: 'ipr', id: task.planId }]),
-            ),
-          )
+          .then(() => invalidateTags([{ type: 'Ipr', id: task.planId }]))
       : $api.post('/ipr/task/remove-from-board', {
           id: task.id,
         });

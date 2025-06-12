@@ -6,9 +6,8 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/outline';
 import { FC, memo, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Calendar } from 'react-multi-date-picker';
-import { iprApi } from '@/shared/api/iprApi';
-import { useAppDispatch } from '@/app';
 import { dateService } from '@/shared/lib/dateService';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 type Status = Task['status'];
 
@@ -22,7 +21,7 @@ const DeadlineTooltip: FC<{
   const [date, setDate] = useState<Date | null>(
     defaultValue ? new Date(defaultValue) : null,
   );
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   useEffect(() => {
     setDate(defaultValue ? new Date(defaultValue) : null);
@@ -47,7 +46,7 @@ const DeadlineTooltip: FC<{
         const newDeadline = date?.toISOString() ?? null;
         onUpdate(newDeadline);
         closeModal();
-        dispatch(iprApi.util.invalidateTags(['ipr']));
+        invalidateTags(['Ipr']);
         toast.success('Дедлайн успешно обновлен');
       })
       .catch(() => {
@@ -100,7 +99,7 @@ const Deadline: FC<{
 }> = ({ deadline: initialDeadline, status, id, className, onUdpate }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const openModal = () => {
     setIsOpen(true);
@@ -121,7 +120,7 @@ const Deadline: FC<{
     $api
       .post('/ipr/task/deadline', { id, deadline: null })
       .then(() => {
-        dispatch(iprApi.util.invalidateTags(['ipr']));
+        invalidateTags(['Ipr']);
         updateDeadline(null);
         toast.success('Дедлайн успешно удален');
       })

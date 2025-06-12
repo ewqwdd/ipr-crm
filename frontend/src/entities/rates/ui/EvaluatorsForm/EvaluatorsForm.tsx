@@ -1,11 +1,10 @@
 import EvaluatorTeam from './partials/EvaluatorTeam';
 import NoTeamEvaluators from './partials/NoTeamEvaluators';
-import React, { memo, useLayoutEffect, useMemo, useState } from 'react';
+import React, { memo, useLayoutEffect, useMemo } from 'react';
 import { AddRateDto, EvaluateUser, EvaulatorType } from '../../types/types';
 import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
 import { useFilteredTeams } from '../../hooks/useFilteredTeams';
-import TeamFilters from '../SelectSpecsForm/partials/TeamFilters';
 import { teamsApi } from '@/shared/api/teamsApi';
 
 interface EvaluatorsFormProps {
@@ -16,6 +15,9 @@ interface EvaluatorsFormProps {
   selected: EvaluateUser[];
   setSelected: React.Dispatch<React.SetStateAction<EvaluateUser[]>>;
   selectedSpecs: AddRateDto[];
+  teams?: MultiValue<Option>;
+  specs?: MultiValue<Option>;
+  search?: string;
 }
 
 export default memo(function EvaluatorsForm({
@@ -26,11 +28,10 @@ export default memo(function EvaluatorsForm({
   selected = [],
   setSelected,
   selectedSpecs,
+  search = '',
+  teams = [],
+  specs = [],
 }: EvaluatorsFormProps) {
-  const [teams, setTeams] = useState<MultiValue<Option>>([]);
-  const [specs, setSpecs] = useState<MultiValue<Option>>([]);
-  const [search, setSearch] = useState('');
-
   const { data } = teamsApi.useGetTeamsQuery();
 
   const teamSpecs = useMemo(
@@ -81,20 +82,13 @@ export default memo(function EvaluatorsForm({
 
   return (
     <div className="flex flex-col gap-4 pt-4">
-      <TeamFilters
-        search={search}
-        setSearch={setSearch}
-        specs={specs}
-        setSpecs={setSpecs}
-        teams={teams}
-        setTeams={setTeams}
-      />
       <NoTeamEvaluators
         setSelected={setSelected}
         excluded={excluded}
         selected={selected}
         evaluateTeam={evaluateTeam}
         type={type}
+        search={search}
       />
       {filteredTeams?.map((team) => (
         <EvaluatorTeam

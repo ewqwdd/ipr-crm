@@ -13,7 +13,7 @@ interface UserHeaderProps {
 }
 
 export default memo(function UserRateHeader({ rate }: UserHeaderProps) {
-  const { data, isLoading } = usersApi.useGetUsersQuery({});
+  const { data, isLoading } = usersApi.useGetUsersQuery();
   const user = useAppSelector((state) => state.user.user);
   const foundUser = data?.users.find((user) => user.id === rate?.userId);
 

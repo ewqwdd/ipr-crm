@@ -7,8 +7,7 @@ import { ImportUsersStateType } from './types';
 import ImportUsersTable from './ImportUsersTable';
 import { usersApi } from '@/shared/api/usersApi/usersApi';
 import toast from 'react-hot-toast';
-import { useAppDispatch } from '@/app';
-import { teamsApi } from '@/shared/api/teamsApi';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 interface ImportModalProps {
   isOpen: boolean;
@@ -22,7 +21,7 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
   const [response, setReponse] = useState<ImportUsersStateType>(null);
   const [addMultiple, addMultipleState] =
     usersApi.useAddMultipleUsersMutation();
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const handleSubmit = async () => {
     if (!response) return toast.error('Пожалуйста, загрузите файл для импорта');
@@ -101,7 +100,7 @@ export default function ImportUsers({ closeModal, isOpen }: ImportModalProps) {
         ];
 
         if (teams.length > 0) {
-          dispatch(teamsApi.util.invalidateTags(['Team']));
+          invalidateTags(['Team']);
         }
       }
       closeModal();

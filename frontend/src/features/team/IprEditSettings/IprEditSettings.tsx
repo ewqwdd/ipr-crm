@@ -1,8 +1,7 @@
 import { TaskType } from '@/entities/ipr/model/types';
 import { iprApi } from '@/shared/api/iprApi';
-import { cva } from '@/shared/lib/cva';
-import { SoftButton } from '@/shared/ui/SoftButton';
-import { TrashIcon, XIcon } from '@heroicons/react/outline';
+import { ActionBar } from '@/widgets/ActionBar';
+import { TrashIcon } from '@heroicons/react/outline';
 import { FC, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
@@ -38,14 +37,13 @@ const errorHandling = (
   }
 };
 
-const ActionBar: FC<ActionBarProps> = ({
+const IprEditSettings: FC<ActionBarProps> = ({
   type,
   selectedMaterials,
   resetSelection,
   planId,
   userId,
 }) => {
-  const selectedMatterialsLength = selectedMaterials.length;
   const [deleteFn, deleteOptions] = iprApi.useDeleteTasksMutation();
   const [addBoardFn, addBoardOptions] = iprApi.useAddToBoardMutation();
   const [transferToObviousFn, transferToObviousOptions] =
@@ -91,6 +89,10 @@ const ActionBar: FC<ActionBarProps> = ({
     transferToOtherFn({ ids: selectedMaterials, planId, userId });
   };
 
+  if (selectedMaterials.length === 0) {
+    return null;
+  }
+
   const isLoading =
     deleteOptions.isLoading ||
     addBoardOptions.isLoading ||
@@ -119,54 +121,35 @@ const ActionBar: FC<ActionBarProps> = ({
   );
 
   return (
-    <div
-      style={{
-        left: `min(33.3%, 24rem)`,
-        width: `calc(100% - min(33.3%, 24rem))`,
-      }}
-      className={cva(
-        `fixed bottom-0 p-2 bg-white border-t-black/10 border-t shadow-2xl flex items-center max-sm:!left-0 max-sm:!w-full ${selectedMatterialsLength > 0 ? 'visible' : 'invisible'}`,
+    <ActionBar
+      selected={selectedMaterials}
+      loading={isLoading}
+      clearSelected={resetSelection}
+      buttonsConfig={[
         {
-          'animate-pulse pointer-events-none': !!isLoading,
+          label: onBoardText,
+          onClick: addOnBoard,
+          hide: type !== 'GENERAL' && type !== 'OTHER',
         },
-      )}
-    >
-      <span className="max-sm:hidden">
-        Выбран {selectedMatterialsLength} материал
-      </span>
-      <span className="sm:hidden text-sm mr-2">{selectedMatterialsLength}</span>
-      <SoftButton className="ml-2 max-sm:p-2" onClick={resetSelection}>
-        <span className="max-sm:hidden">Снять выбор</span>
-        <XIcon className="size-5 sm:hidden" />
-      </SoftButton>
-      <div className="ml-auto flex gap-2">
-        {type === 'GENERAL' && (
-          <SoftButton className="ml-2 max-sm:p-1" onClick={addOnBoard}>
-            {onBoardText}
-          </SoftButton>
-        )}
-        {type === 'OTHER' && (
-          <div className="flex gap-2">
-            <SoftButton className="ml-2 max-sm:p-2" onClick={transferToObvious}>
-              {transferToObviousText}
-            </SoftButton>
-            <SoftButton className="max-sm:p-2" onClick={addOnBoard}>
-              {onBoardText}
-            </SoftButton>
-          </div>
-        )}
-        {type === 'OBVIOUS' && (
-          <SoftButton className="ml-2 max-sm:p-2" onClick={transferToOther}>
-            {transferToOtherText}
-          </SoftButton>
-        )}
-      </div>
-      <SoftButton className="ml-2 max-sm:p-2" onClick={removeTasks} danger>
-        <span className="max-sm:hidden">Удалить</span>
-        <TrashIcon className="size-5 sm:hidden" />
-      </SoftButton>
-    </div>
+        {
+          label: transferToObviousText,
+          onClick: transferToObvious,
+          hide: type !== 'OTHER',
+        },
+        {
+          label: transferToOtherText,
+          onClick: transferToOther,
+          hide: type !== 'OBVIOUS',
+        },
+        {
+          label: 'Удалить',
+          onClick: removeTasks,
+          danger: true,
+          icon: <TrashIcon className="text-red-500" />,
+        },
+      ]}
+    />
   );
 };
 
-export default ActionBar;
+export default IprEditSettings;

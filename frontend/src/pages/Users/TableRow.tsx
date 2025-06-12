@@ -29,7 +29,7 @@ export default function TableRow({
   const [deleteUser, deleteState] = usersApi.useRemoveUserMutation();
   const isAdmin = useIsAdmin();
   const [loading, setLoading] = useState(false);
-  const {openModal} = useModal();
+  const { openModal } = useModal();
 
   const resendInvite = () => {
     setLoading(true);
@@ -47,16 +47,16 @@ export default function TableRow({
   };
 
   const onDelete = () => {
-        openModal('CONFIRM', {
+    openModal('CONFIRM', {
       submitText: 'Удалить',
       title: 'Удалить пользователя?',
       variant: 'error',
       onSubmit: async () => {
-if (!person.id) return;
-                      return await deleteUser(person.id);
+        if (!person.id) return;
+        return await deleteUser(person.id);
       },
     });
-  }
+  };
 
   useEffect(() => {
     if (deleteState.isSuccess) {
@@ -70,7 +70,7 @@ if (!person.id) return;
   return (
     <tr
       className={cva({
-        'animate-pulse pointer-events-none opacity-50':  !!loading,
+        'animate-pulse pointer-events-none opacity-50': !!loading,
         '[&_span]:opacity-60 [&_a]:opacity-60': !person?.access,
       })}
     >

@@ -21,9 +21,9 @@ const Rate360MeList = React.lazy(
 const Report360 = React.lazy(() => import('@/pages/Report360/index'));
 const Skills = React.lazy(() => import('@/pages/Skills/ui/Skills'));
 const Progress = React.lazy(() => import('@/pages/Progress/Progress'));
-const Ipr = React.lazy(() => import('@/pages/Ipr/Ipr'));
+const IprEditPage = React.lazy(() => import('@/pages/IprEditPage/IprEditPage'));
 const IprListPage = React.lazy(
-  () => import('@/entities/ipr/ui/IprListPage/IprListPage'),
+  () => import('@/widgets/IprListPage/IprListPage'),
 );
 const Board = React.lazy(() => import('@/pages/Board/BoardPage'));
 const AdminBoard = React.lazy(() => import('@/pages/AdminBoard/AdminBoard'));
@@ -113,7 +113,7 @@ export const routerItems: RouterItemType[] = [
   { path: '/progress', element: <Progress /> },
   { path: '/progress/:id', element: <Rate360Assesment /> },
   { path: '/', element: <Profile /> },
-  { path: '/ipr/360/:rateId', element: <Ipr /> },
+  { path: '/ipr/360/:rateId', element: <IprEditPage /> },
   { path: '/board', element: <Board /> },
   { path: '/board/:userId', element: <AdminBoard /> },
   {

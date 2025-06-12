@@ -5,7 +5,7 @@ export const useFilterUsersByCurator = (
   teamCurator?: User['teamCurator'],
   role?: User['role']['name'],
 ) => {
-  const { data, isFetching } = usersApi.useGetUsersQuery({});
+  const { data, isFetching } = usersApi.useGetUsersQuery();
 
   if (role === 'admin') {
     return { data: data?.users, isFetching: isFetching };

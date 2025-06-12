@@ -12,9 +12,9 @@ import { Modal } from '@/shared/ui/Modal';
 import AddUserForm from '@/entities/user/ui/AddUserForm';
 import { SpecsFilter } from '@/widgets/SpecsFilter';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
-import { useAppDispatch, useAppSelector } from '@/app';
-import { usersApi } from '@/shared/api/usersApi/usersApi';
+import { useAppSelector } from '@/app';
 import { SoftButton } from '@/shared/ui/SoftButton';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +25,7 @@ export default function TeamPage() {
   const [selected, setSelected] = useState<number[]>([]);
   const [mutate, { isLoading: mutateLoading, isSuccess: mutateSuccess }] =
     teamsApi.useAddUsersMutation();
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const user = useAppSelector((state) => state.user.user);
 
@@ -44,7 +44,7 @@ export default function TeamPage() {
   useEffect(() => {
     if (mutateSuccess) {
       setOpenNewUser(false);
-      dispatch(usersApi.util.invalidateTags(['User']));
+      invalidateTags(['User']);
     }
   }, [mutateSuccess]);
 

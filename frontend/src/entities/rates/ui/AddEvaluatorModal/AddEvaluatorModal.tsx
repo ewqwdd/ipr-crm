@@ -3,6 +3,7 @@ import { EvaluateUser, EvaulatorType } from '../../types/types';
 import { useAppSelector } from '@/app';
 import { useState } from 'react';
 import EvaluatorsForm from '../EvaluatorsForm/EvaluatorsForm';
+import { TeamFilters } from '@/features/team/TeamFilters';
 
 interface AddEvaluatorModalData {
   onSubmit: (data: EvaluateUser[]) => void;
@@ -39,15 +40,20 @@ export default function AddEvaluatorModal({
       submitText="Добавить"
       className="w-full sm:max-w-4xl"
     >
-      <EvaluatorsForm
-        selectedSpecs={selectedSpecs}
-        selected={selected}
-        setSelected={setSelected}
-        specId={specId}
-        teamId={teamId}
-        type={type}
-        userId={userId}
-      />
+      <TeamFilters>
+        {(filters) => (
+          <EvaluatorsForm
+            selectedSpecs={selectedSpecs}
+            selected={selected}
+            setSelected={setSelected}
+            specId={specId}
+            teamId={teamId}
+            type={type}
+            userId={userId}
+            {...filters}
+          />
+        )}
+      </TeamFilters>
     </Modal>
   );
 }

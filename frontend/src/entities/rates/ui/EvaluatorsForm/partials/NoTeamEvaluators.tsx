@@ -11,10 +11,14 @@ interface EvaluatorTeamProps {
   setSelected: React.Dispatch<React.SetStateAction<EvaluateUser[]>>;
   evaluateTeam?: Team;
   type?: EvaulatorType;
+  search?: string;
 }
 
-export default function NoTeamEvaluators(props: EvaluatorTeamProps) {
-  const { data } = usersApi.useGetUsersQuery({});
+export default function NoTeamEvaluators({
+  search = '',
+  ...props
+}: EvaluatorTeamProps) {
+  const { data } = usersApi.useGetUsersQuery();
   const users = useMemo(
     () =>
       data?.users?.filter(
@@ -26,16 +30,18 @@ export default function NoTeamEvaluators(props: EvaluatorTeamProps) {
   if (!users) return null;
 
   const renderUsers: Team['users'] =
-    users?.map((u) => ({
-      user: {
-        avatar: generalService.transformFileUrl(u.avatar),
-        id: u.id,
-        specsOnTeams: u.Spec?.id
-          ? [{ specId: u.Spec.id, spec: { name: '' } }]
-          : [],
-        username: u.username,
-      },
-    })) ?? [];
+    users
+      ?.filter((u) => u.username.toLocaleLowerCase().includes(search))
+      .map((u) => ({
+        user: {
+          avatar: generalService.transformFileUrl(u.avatar),
+          id: u.id,
+          specsOnTeams: u.Spec?.id
+            ? [{ specId: u.Spec.id, spec: { name: '' } }]
+            : [],
+          username: u.username,
+        },
+      })) ?? [];
 
   return (
     <EvaluatorTeam

@@ -12,8 +12,7 @@ import {
 import { cva } from '@/shared/lib/cva';
 import { skillsApi } from '@/shared/api/skillsApi';
 import toast from 'react-hot-toast';
-import { universalApi } from '@/shared/api/universalApi';
-import { useAppDispatch } from '@/app';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 enum CompetencyType {
   COMPETENCY_BLOCK = 'COMPETENCY_BLOCK',
@@ -55,6 +54,7 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
   ...props
 }) => {
   const { competency, indicator } = useSkillsService();
+  const invalidateTags = useInvalidateTags();
 
   const removeFromSpec = skillsApi.useRemoveCompetencyBlockFromSpecMutation();
 
@@ -62,7 +62,6 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
   const deleteCompetency = competency.delete[0];
   const deleteIndicator = indicator.delete[0];
 
-  const dispatch = useAppDispatch();
   const loading =
     removeFromSpec[1].isLoading ||
     competency.delete[1].isLoading ||
@@ -177,7 +176,7 @@ const CompetencyListItem_V2: FC<CompetencyListItemProps> = ({
                   if (!selectedSpec)
                     return toast.error('Выберите специализацию');
                   await deleteCompetencyBlock({ id, specId: selectedSpec });
-                  dispatch(universalApi.util.invalidateTags(['Spec']));
+                  invalidateTags(['Spec']);
                 };
                 break;
               case CompetencyType.COMPETENCY:

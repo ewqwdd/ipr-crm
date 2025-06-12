@@ -1,5 +1,4 @@
 import { useAppSelector } from '@/app';
-import { Board } from '@/entities/ipr';
 import { NotificationType } from '@/entities/notifications';
 import { iprApi } from '@/shared/api/iprApi';
 import { useReadNotifsOnClose } from '@/shared/hooks/useReadNotifsOnClose';
@@ -7,6 +6,7 @@ import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { Board } from '@/widgets/Board';
 
 const notifTypes: NotificationType[] = ['TASK_ASSIGNED'];
 

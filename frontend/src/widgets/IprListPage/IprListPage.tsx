@@ -28,7 +28,9 @@ export default function IprListPage({ type }: IprListPageProps) {
     user: filters.userId === -1 ? undefined : filters.userId,
     teams:
       filters.teams.length > 0
-        ? filters.teams.map((team) => team.value)
+        ? filters.teams.map((team) =>
+            typeof team.value === 'string' ? parseInt(team.value) : team.value,
+          )
         : undefined,
     startDate: filters.period?.[0]?.toDate()?.toISOString(),
     endDate: filters.period?.[1]?.toDate()?.toISOString(),

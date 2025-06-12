@@ -27,7 +27,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
     setFilters((prev) => ({ ...prev, ...newFilters }));
   }, []);
 
-  const { data: users } = usersApi.useGetUsersQuery({});
+  const { data: users } = usersApi.useGetUsersQuery();
   const { data: teams } = teamsApi.useGetTeamsQuery();
   const { data: specs } = universalApi.useGetSpecsQuery();
   const teamAccess = useAppSelector((state) => state.user.user?.teamAccess);

@@ -34,35 +34,35 @@ const iprApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['ipr', 'board', 'user-ipr', 'competency-blocks'],
+  tagTypes: ['Ipr', 'IprBoard', 'UserIpr', 'CompetencyBlocksByIprId'],
   endpoints: (build) => ({
     createIpr: build.mutation<void, number>({
       query: (id) => ({
         url: '/ipr/360/' + id,
         method: 'POST',
       }),
-      invalidatesTags: ['ipr', 'user-ipr'],
+      invalidatesTags: ['Ipr', 'UserIpr'],
     }),
     findRate: build.query<Ipr, number>({
       query: (id) => ({
         url: '/ipr/360/' + id,
         method: 'GET',
       }),
-      providesTags: (_, __, id) => [{ type: 'ipr', id }],
+      providesTags: (_, __, id) => [{ type: 'Ipr', id }],
     }),
     findBoard: build.query<Ipr['tasks'], void>({
       query: () => ({
         url: '/ipr/task/board',
         method: 'GET',
       }),
-      providesTags: ['board'],
+      providesTags: ['IprBoard'],
     }),
     findBoardForUser: build.query<Ipr['tasks'], number>({
       query: (id) => ({
         url: '/ipr/task/board/' + id,
         method: 'GET',
       }),
-      providesTags: (_, __, id) => [{ type: 'board', id }],
+      providesTags: (_, __, id) => [{ type: 'IprBoard', id }],
     }),
     addTask: build.mutation<void, AddTaskDto>({
       query: (body) => ({
@@ -71,9 +71,9 @@ const iprApi = createApi({
         body,
       }),
       invalidatesTags: (_, __, { planId, userId }) => [
-        { type: 'ipr', id: planId },
-        { type: 'board', id: userId },
-        { type: 'user-ipr', id: userId },
+        { type: 'Ipr', id: planId },
+        { type: 'IprBoard', id: userId },
+        { type: 'UserIpr', id: userId },
       ],
     }),
     deleteTasks: build.mutation<
@@ -86,9 +86,9 @@ const iprApi = createApi({
         body: { ids },
       }),
       invalidatesTags: (_, __, { userId, planId }) => [
-        { type: 'ipr', id: planId },
-        { type: 'board', id: userId },
-        { type: 'user-ipr', id: userId },
+        { type: 'Ipr', id: planId },
+        { type: 'IprBoard', id: userId },
+        { type: 'UserIpr', id: userId },
       ],
     }),
     addToBoard: build.mutation<
@@ -101,10 +101,10 @@ const iprApi = createApi({
         body: { ids: data.ids },
       }),
       invalidatesTags: (_, __, { userId, planId }) => [
-        { type: 'ipr', id: planId },
-        { type: 'board', id: userId },
+        { type: 'Ipr', id: planId },
+        { type: 'IprBoard', id: userId },
 
-        { type: 'user-ipr', id: userId },
+        { type: 'UserIpr', id: userId },
       ],
     }),
     transferToObvious: build.mutation<
@@ -117,9 +117,9 @@ const iprApi = createApi({
         body: { ids: data.ids },
       }),
       invalidatesTags: (_, __, { userId, planId }) => [
-        { type: 'ipr', id: planId },
-        { type: 'board', id: userId },
-        { type: 'user-ipr', id: userId },
+        { type: 'Ipr', id: planId },
+        { type: 'IprBoard', id: userId },
+        { type: 'UserIpr', id: userId },
       ],
     }),
     transferToOther: build.mutation<
@@ -132,9 +132,9 @@ const iprApi = createApi({
         body: { ids: data.ids },
       }),
       invalidatesTags: (_, __, { userId, planId }) => [
-        { type: 'ipr', id: planId },
-        { type: 'board', id: userId },
-        { type: 'user-ipr', id: userId },
+        { type: 'Ipr', id: planId },
+        { type: 'IprBoard', id: userId },
+        { type: 'UserIpr', id: userId },
       ],
     }),
     findAllIpr: build.query<{ data: Ipr[]; total: number }, IprFiltersDto>({
@@ -163,14 +163,14 @@ const iprApi = createApi({
           subbordinatesOnly,
         },
       }),
-      providesTags: (_, __, params) => [{ type: 'ipr', params }],
+      providesTags: (_, __, params) => [{ type: 'Ipr', params }],
     }),
     findUserIprById: build.query<Ipr, number>({
       query: (id) => ({
         url: '/ipr/user/' + id,
         method: 'GET',
       }),
-      providesTags: (_, __, id) => [{ type: 'user-ipr', id }],
+      providesTags: (_, __, id) => [{ type: 'UserIpr', id }],
     }),
     findUserIprs: build.query<{ data: Ipr[]; total: number }, IprFiltersDto>({
       query: ({ limit, page }) => ({
@@ -178,14 +178,14 @@ const iprApi = createApi({
         method: 'GET',
         params: { limit, page },
       }),
-      providesTags: (_, __, params) => [{ type: 'user-ipr', params }],
+      providesTags: (_, __, params) => [{ type: 'UserIpr', params }],
     }),
     findCompetencyBlocksByIprId: build.query<CompetencyBlock[], number>({
       query: (id) => ({
-        url: `/ipr/${id}/competency-blocks`,
+        url: `/ipr/${id}/CompetencyBlocksByIprId`,
         method: 'GET',
       }),
-      providesTags: (_, __, id) => [{ type: 'competency-blocks', id }],
+      providesTags: (_, __, id) => [{ type: 'CompetencyBlocksByIprId', id }],
     }),
     deleteIprs: build.mutation<void, { ids: number[] }>({
       query: (data) => ({
@@ -195,9 +195,9 @@ const iprApi = createApi({
       }),
       // @ts-ignore
       invalidatesTags: (_, __, { ids }) => [
-        'ipr',
-        'user-ipr',
-        ...ids.map((id) => ({ type: 'board', id })),
+        'Ipr',
+        'UserIpr',
+        ...ids.map((id) => ({ type: 'IprBoard', id })),
       ],
     }),
   }),

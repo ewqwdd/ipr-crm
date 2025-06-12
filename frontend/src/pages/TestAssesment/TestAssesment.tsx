@@ -2,6 +2,7 @@ import { useAppDispatch } from '@/app';
 import { TestQuestion } from '@/entities/test';
 import { testAssesmentActions } from '@/entities/test/testAssesmentSlice';
 import { testsApi } from '@/shared/api/testsApi';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
@@ -19,6 +20,7 @@ export default function TestAssesment() {
   const dispatch = useAppDispatch();
   const [finish, finishState] = testsApi.useFinishTestMutation();
   const navigate = useNavigate();
+  const invalidateTags = useInvalidateTags();
 
   useEffect(() => {
     return () => {
@@ -64,12 +66,7 @@ export default function TestAssesment() {
 
   useEffect(() => {
     return () => {
-      dispatch(
-        testsApi.util.invalidateTags([
-          { type: 'Assigned' },
-          { type: 'Assigned', id },
-        ]),
-      );
+      invalidateTags([{ type: 'TestAssigned' }, { type: 'TestAssigned', id }]);
     };
   }, [id, dispatch]);
 

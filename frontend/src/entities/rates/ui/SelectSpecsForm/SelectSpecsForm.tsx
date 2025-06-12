@@ -1,10 +1,8 @@
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import TeamFilters from './partials/TeamFilters';
+import TeamFilters from '../../../../features/team/TeamFilters/TeamFilters';
 import TeamList from './partials/TeamList/TeamList';
 import SkillsFilter from './partials/SkillsFilter';
 import { useMemo } from 'react';
-import { MultiValue } from 'react-select';
-import { Option } from '@/shared/types/Option';
 import { AddRateDto, ChangeSpecsType, Rate } from '../../types/types';
 import ConfirmCheckbox from '../AddRate/ConfirmCheckbox/ConfirmCheckbox';
 import RateTypeRadio from './partials/RateTypeRadio';
@@ -14,16 +12,10 @@ interface SelectSpecsFormProps {
   setSkillTypes?: (skills: string[]) => void;
   onSubmit: () => void;
   selectedSpecs: AddRateDto[];
-  teams: MultiValue<Option>;
-  specs: MultiValue<Option>;
-  search: string;
   confirmCurator?: boolean;
   confirmUser?: boolean;
   rateType?: Rate['rateType'];
 
-  setTeams: React.Dispatch<React.SetStateAction<MultiValue<Option>>>;
-  setSpecs: React.Dispatch<React.SetStateAction<MultiValue<Option>>>;
-  setSearch: React.Dispatch<React.SetStateAction<string>>;
   setRateType?: (rateType: Rate['rateType']) => void;
 
   onChangeConfirmCurator?: (v: boolean) => void;
@@ -37,12 +29,6 @@ export default function SelectSpecsForm({
   setSkillTypes,
   skillTypes,
   selectedSpecs,
-  search,
-  setSearch,
-  setSpecs,
-  setTeams,
-  specs,
-  teams,
   onChangeSpecs,
   confirmCurator,
   confirmUser,
@@ -106,28 +92,23 @@ export default function SelectSpecsForm({
       </div>
       <h2 className="text-xl font-semibold">Выберите оцениваемых</h2>
 
-      <TeamFilters
-        search={search}
-        setSearch={setSearch}
-        specs={specs}
-        setSpecs={setSpecs}
-        teams={teams}
-        setTeams={setTeams}
-      />
-
-      <div className="text-gray-500 text-sm max-sm:text-left">
-        Выбрано специализаций: {selectedCount}
-      </div>
-      <div className="flex flex-col gap-2 max-sm:text-left">
-        <TeamList
-          onChangeSpecs={onChangeSpecs}
-          onDeselect={onDeselect}
-          selectedSpecs={selectedSpecs}
-          search={search}
-          specs={specs}
-          teams={teams}
-        />
-      </div>
+      <TeamFilters>
+        {(filters) => (
+          <>
+            <div className="text-gray-500 text-sm max-sm:text-left">
+              Выбрано специализаций: {selectedCount}
+            </div>
+            <div className="flex flex-col gap-2 max-sm:text-left">
+              <TeamList
+                onChangeSpecs={onChangeSpecs}
+                onDeselect={onDeselect}
+                selectedSpecs={selectedSpecs}
+                {...filters}
+              />
+            </div>
+          </>
+        )}
+      </TeamFilters>
     </>
   );
 }

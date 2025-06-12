@@ -32,7 +32,7 @@ export default function ImportUsersTable({
   onSubmit,
 }: ImportUsersTablrProps) {
   const { data: usersData, isLoading: usersLoading } =
-    usersApi.useGetUsersQuery({});
+    usersApi.useGetUsersQuery();
 
   const newProducts = products.filter(
     (s) => s.trim() !== '-' && s.trim() !== '',

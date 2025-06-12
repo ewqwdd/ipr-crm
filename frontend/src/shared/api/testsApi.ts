@@ -8,7 +8,7 @@ export const testsApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Test', 'Assigned', 'Finished'],
+  tagTypes: ['Test', 'TestAssigned', 'TestFinished'],
   endpoints: (build) => ({
     getTests: build.query<Test[], void>({
       query: () => '/test',
@@ -44,7 +44,7 @@ export const testsApi = createApi({
             : undefined,
         },
       }),
-      invalidatesTags: ['Test', 'Assigned', 'Finished'],
+      invalidatesTags: ['Test', 'TestAssigned', 'TestFinished'],
     }),
     getTestAdmin: build.query<Test, number>({
       query: (id) => `/test/admin/${id}`,
@@ -52,7 +52,7 @@ export const testsApi = createApi({
     }),
     getAssignedTests: build.query<AssignedTest[], void>({
       query: () => '/test/assigned',
-      providesTags: ['Assigned'],
+      providesTags: ['TestAssigned'],
     }),
     getTest: build.query<Test, number>({
       query: (id) => `/test/${id}`,
@@ -60,7 +60,7 @@ export const testsApi = createApi({
     }),
     getAssignedTest: build.query<AssignedTest, number>({
       query: (id) => `/test/assigned/${id}`,
-      providesTags: (_, __, id) => [{ type: 'Assigned', id }],
+      providesTags: (_, __, id) => [{ type: 'TestAssigned', id }],
     }),
     assignUsers: build.mutation<
       void,
@@ -76,22 +76,22 @@ export const testsApi = createApi({
             : undefined,
         },
       }),
-      invalidatesTags: ['Assigned', 'Test'],
+      invalidatesTags: ['TestAssigned', 'Test'],
     }),
     finishTest: build.mutation<void, number>({
       query: (id) => ({
         url: `/test/assigned/${id}/finish`,
         method: 'POST',
       }),
-      invalidatesTags: ['Finished', 'Assigned', 'Test'],
+      invalidatesTags: ['TestFinished', 'TestAssigned', 'Test'],
     }),
     getFinishedTests: build.query<AssignedTest[], void>({
       query: () => '/test/finished',
-      providesTags: ['Finished'],
+      providesTags: ['TestFinished'],
     }),
     getFinishedTestForUser: build.query<AssignedTest, number>({
       query: (id) => `/test/finished/${id}`,
-      providesTags: (_, __, id) => [{ type: 'Finished', id }],
+      providesTags: (_, __, id) => [{ type: 'TestFinished', id }],
     }),
     toggleHidden: build.mutation<void, { id: number; hidden: boolean }>({
       query: ({ id, hidden }) => ({
@@ -99,14 +99,14 @@ export const testsApi = createApi({
         method: 'PUT',
         body: { hidden },
       }),
-      invalidatesTags: ['Test', 'Assigned'],
+      invalidatesTags: ['Test', 'TestAssigned'],
     }),
     testDelete: build.mutation<void, number>({
       query: (id) => ({
         url: `/test/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Test', 'Assigned', 'Finished'],
+      invalidatesTags: ['Test', 'TestAssigned', 'TestFinished'],
     }),
   }),
 });

@@ -13,8 +13,8 @@ import { Link } from 'react-router';
 import LeaderDropdown from './LeaderDropdown';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { SpecOnUser } from '@/entities/team/types/types';
-import { useAppDispatch } from '@/app';
 import { generalService } from '@/shared/lib/generalService';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 interface UserItemProps {
   userId: number;
@@ -35,7 +35,7 @@ export default memo(function UserItem({
   curatorSpecs,
   accessType = 'user',
 }: UserItemProps) {
-  const { data } = usersApi.useGetUsersQuery({});
+  const { data } = usersApi.useGetUsersQuery();
   const [open, setOpen] = useState(false);
   const user = data?.users?.find((user) => user.id === userId);
   const [mutate, { isLoading: mutateLoading, isSuccess }] =
@@ -44,7 +44,7 @@ export default memo(function UserItem({
     universalApi.useGetSpecsQuery();
   const [spec, setSpec] = useState<SelectOption[]>([]);
   const [remove, removeOptions] = teamsApi.useRemoveUserMutation();
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   useEffect(() => {
     if (isSuccess) {
@@ -75,7 +75,7 @@ export default memo(function UserItem({
 
   useEffect(() => {
     if (removeOptions.isSuccess) {
-      dispatch(usersApi.util.invalidateTags(['User']));
+      invalidateTags(['User']);
     }
   }, [removeOptions.isSuccess]);
 

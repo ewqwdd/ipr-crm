@@ -4,9 +4,9 @@ import { BadgeProps } from '@/shared/ui/Badge/Badge';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { TrashIcon } from '@heroicons/react/outline';
 import { useModal } from '@/app/hooks/useModal';
-import { priorityNames } from '../../model/constants';
 import { materialTypes } from '@/entities/material/model/types';
 import MaterialIcon from '@/entities/material/ui/MaterialIcon';
+import { priorityNames } from '@/entities/ipr/model/constants';
 
 interface BoardCardProps {
   card: CustomCard;

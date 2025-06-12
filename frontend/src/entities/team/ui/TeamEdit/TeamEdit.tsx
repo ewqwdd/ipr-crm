@@ -12,7 +12,7 @@ interface TeamEditProps {
 export default function TeamEdit({ team }: TeamEditProps) {
   const [mutate, { isLoading, isSuccess, error }] =
     teamsApi.useUpdateTeamMutation();
-  const { refetch } = usersApi.useGetUsersQuery({});
+  const { refetch } = usersApi.useGetUsersQuery();
 
   useEffect(() => {
     if (isSuccess) {

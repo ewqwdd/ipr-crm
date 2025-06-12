@@ -9,6 +9,7 @@ import { cva } from '@/shared/lib/cva';
 import { iprApi } from '@/shared/api/iprApi';
 import { useAppDispatch } from '@/app';
 import { dateService } from '@/shared/lib/dateService';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 interface UserIprTaskProps {
   task: Task;
@@ -17,6 +18,7 @@ interface UserIprTaskProps {
 
 export default function UserIprMaterial({ task, iprId }: UserIprTaskProps) {
   const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const setStatus = (status: Task['status']) => {
     dispatch(
@@ -27,7 +29,7 @@ export default function UserIprMaterial({ task, iprId }: UserIprTaskProps) {
         }
       }),
     );
-    dispatch(iprApi.util.invalidateTags(['user-ipr']));
+    invalidateTags(['UserIpr']);
   };
 
   const changeStatus = (status: Task['status']) => {

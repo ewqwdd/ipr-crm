@@ -1,9 +1,10 @@
 import { useAppDispatch, useAppSelector } from '@/app';
-import { Board } from '@/entities/ipr';
 import { iprApi } from '@/shared/api/iprApi';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { Board } from '@/widgets/Board';
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
 
@@ -11,16 +12,12 @@ export default function AdminBoard() {
   const { userId } = useParams<{ userId: string }>();
   const { data, isLoading } = iprApi.useFindBoardForUserQuery(Number(userId));
   const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   useEffect(() => {
     return () => {
       if (data) {
-        dispatch(
-          iprApi.util.invalidateTags([
-            'ipr',
-            { type: 'board', id: Number(userId) },
-          ]),
-        );
+        invalidateTags(['Ipr', { type: 'IprBoard', id: Number(userId) }]);
       }
     };
   }, [dispatch, data, userId]);

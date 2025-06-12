@@ -1,12 +1,11 @@
-import { useAppDispatch } from '@/app';
 import { TaskPriority } from '@/entities/ipr/model/types';
-import { iprApi } from '@/shared/api/iprApi';
 import { $api } from '@/shared/lib/$api';
 import { cva } from '@/shared/lib/cva';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import { ChangeEvent, FC } from 'react';
 import toast from 'react-hot-toast';
 import { taskPriorityOptions } from '../constants';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 type PrioritySelectorProps = {
   priority: TaskPriority;
@@ -29,7 +28,7 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
 }) => {
   const label = isLabel ? 'Важность' : undefined;
 
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
     if (onChange_) {
@@ -40,8 +39,8 @@ export const PrioritySelector: FC<PrioritySelectorProps> = ({
     $api
       .post(`/ipr/${id}/priority`, { priority: e.target.value })
       .then(() => {
-        dispatch(iprApi.util.invalidateTags([{ type: 'board', id: userId }]));
-        dispatch(iprApi.util.invalidateTags(['ipr']));
+        invalidateTags([{ type: 'IprBoard', id: userId }]);
+        invalidateTags(['Ipr']);
       })
       .then(() => {
         toast.success('Приоритет успешно обновлен');

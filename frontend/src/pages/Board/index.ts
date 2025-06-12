@@ -1,2 +1,2 @@
-import Board from './BoardPage';
-export { Board };
+import BoardPage from './BoardPage';
+export { BoardPage };

@@ -3,11 +3,10 @@ import { FC, ChangeEvent } from 'react';
 import { cva } from '@/shared/lib/cva';
 import { SelectLight } from '@/shared/ui/SelectLight';
 import toast from 'react-hot-toast';
-import { useAppDispatch } from '@/app';
-import { iprApi } from '@/shared/api/iprApi';
 import { taskStatusOptions } from '../constants';
 import { Task } from '@/entities/ipr/model/types';
 import { $api } from '@/shared/lib/$api';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 type Status = Task['status'];
 
@@ -26,15 +25,16 @@ const StatusSelector: FC<StatusSelectorProps> = ({
   userId,
   onChange: onChange_,
 }) => {
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
+
   const onChange = (e: ChangeEvent<HTMLSelectElement>) => {
     if (onChange_) onChange_(e.target.value as Status);
     $api
       .post(`/ipr/task/status`, { status: e.target.value, id })
       .then(() => {
         toast.success('Статус успешно обновлен');
-        dispatch(iprApi.util.invalidateTags([{ type: 'board', id: userId }]));
-        dispatch(iprApi.util.invalidateTags(['ipr']));
+        invalidateTags([{ type: 'IprBoard', id: userId }]);
+        invalidateTags(['Ipr']);
       })
       .catch(() => {
         toast.error('Не удалось обновить статус');

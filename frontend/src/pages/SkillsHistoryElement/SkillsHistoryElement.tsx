@@ -1,8 +1,7 @@
 import { useAppDispatch } from '@/app';
 import { useModal } from '@/app/hooks/useModal';
-import { foldersApi } from '@/shared/api/foldersApi';
 import { skillsApi } from '@/shared/api/skillsApi';
-import { universalApi } from '@/shared/api/universalApi';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 import { dateService } from '@/shared/lib/dateService';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
@@ -20,6 +19,7 @@ export default function SkillsHistoryElement() {
   const dispatch = useAppDispatch();
   const { openModal } = useModal();
   const navigate = useNavigate();
+  const invalidateTags = useInvalidateTags();
 
   const onRestoreVersion = () => {
     openModal('CONFIRM', {
@@ -37,14 +37,8 @@ export default function SkillsHistoryElement() {
     }
     if (isSuccess) {
       toast.success('Версия профиля востановлена');
-      dispatch(universalApi.util.invalidateTags(['Spec']));
-      dispatch(
-        foldersApi.util.invalidateTags([
-          'ProductFolders',
-          'TeamFolders',
-          'SpecFolders',
-        ]),
-      );
+      invalidateTags(['Spec']);
+      invalidateTags(['ProductFolders', 'TeamFolders', 'SpecFolders']);
       navigate('/skills/history');
     }
   }, [isError, isSuccess, dispatch, navigate]);

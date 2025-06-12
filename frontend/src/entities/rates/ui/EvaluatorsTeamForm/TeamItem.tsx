@@ -36,9 +36,8 @@ export default function TeamItem({
   const { data, isFetching } = teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =
     universalApi.useGetSpecsQuery();
-  const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
-    {},
-  );
+  const { data: users, isFetching: usersFetching } =
+    usersApi.useGetUsersQuery();
 
   const team = useMemo(
     () => data?.list.find((t) => t.id === teamId.teamId),

@@ -15,7 +15,7 @@ const skillsApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL + '/profile-constructor',
     credentials: 'include',
   }),
-  tagTypes: ['Skills', 'Version', 'Versions-history'],
+  tagTypes: ['Skills', 'Version', 'VersionsHistory'],
   endpoints: (build) => ({
     getSkills: build.query<CompetencyBlock[], void>({
       query: () => '',
@@ -165,7 +165,7 @@ const skillsApi = createApi({
         url: '/archive',
         method: 'POST',
       }),
-      invalidatesTags: ['Skills', 'Version', 'Versions-history'],
+      invalidatesTags: ['Skills', 'Version', 'VersionsHistory'],
     }),
     getVersion: build.query<Version, void>({
       query: () => '/version',
@@ -182,7 +182,7 @@ const skillsApi = createApi({
           date: new Date(version.date),
           id: version.id,
         })),
-      providesTags: ['Versions-history'],
+      providesTags: ['VersionsHistory'],
     }),
     getVersionById: build.query<
       { date: Date; blocks: CompetencyBlock[] },
@@ -214,7 +214,7 @@ const skillsApi = createApi({
         url: `/restore-archive/${id}`,
         method: 'POST',
       }),
-      invalidatesTags: ['Skills', 'Version', 'Versions-history'],
+      invalidatesTags: ['Skills', 'Version', 'VersionsHistory'],
     }),
   }),
 });

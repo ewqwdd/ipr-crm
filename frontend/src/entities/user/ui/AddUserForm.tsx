@@ -17,9 +17,7 @@ export default function AddUserForm({
   setSelected,
   curatorId,
 }: AddUserFormProps) {
-  const { data: users, isLoading: usersLoading } = usersApi.useGetUsersQuery(
-    {},
-  );
+  const { data: users, isLoading: usersLoading } = usersApi.useGetUsersQuery();
   const { data, isLoading: teamsLoading } = teamsApi.useGetTeamsQuery();
 
   const noTeamUsers = useMemo(

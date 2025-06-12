@@ -8,7 +8,7 @@ const surveyApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Survey', 'Assigned', 'Finished', 'Result'],
+  tagTypes: ['Survey', 'SurveyAssigned', 'SurveyFinished', 'SurveyResult'],
   endpoints: (build) => ({
     getSurveys: build.query<Survey[], void>({
       query: () => '/survey',
@@ -44,7 +44,7 @@ const surveyApi = createApi({
             : undefined,
         },
       }),
-      invalidatesTags: ['Assigned'],
+      invalidatesTags: ['SurveyAssigned'],
     }),
     toggleHidden: build.mutation<void, { id: number; hidden: boolean }>({
       query: ({ id, hidden }) => ({
@@ -52,14 +52,14 @@ const surveyApi = createApi({
         method: 'PUT',
         body: { hidden },
       }),
-      invalidatesTags: ['Survey', 'Assigned'],
+      invalidatesTags: ['Survey', 'SurveyAssigned'],
     }),
     surveyDelete: build.mutation<void, number>({
       query: (id) => ({
         url: `/survey/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Survey', 'Assigned', 'Finished'],
+      invalidatesTags: ['Survey', 'SurveyAssigned', 'SurveyFinished'],
     }),
     getSurveyAdmin: build.query<Survey, number>({
       query: (id) => `/survey/admin/${id}`,
@@ -79,34 +79,34 @@ const surveyApi = createApi({
             : undefined,
         },
       }),
-      invalidatesTags: ['Survey', 'Assigned', 'Finished'],
+      invalidatesTags: ['Survey', 'SurveyAssigned', 'SurveyFinished'],
     }),
     getAssignedSurveys: build.query<AssignedSurvey[], void>({
       query: () => '/survey/assigned',
-      providesTags: ['Assigned'],
+      providesTags: ['SurveyAssigned'],
     }),
     getAssignedSurvey: build.query<AssignedSurvey, number>({
       query: (id) => `/survey/assigned/${id}`,
-      providesTags: (_, __, id) => [{ type: 'Assigned', id }],
+      providesTags: (_, __, id) => [{ type: 'SurveyAssigned', id }],
     }),
     finishSurvey: build.mutation<void, number>({
       query: (id) => ({
         url: `/survey/assigned/${id}/finish`,
         method: 'POST',
       }),
-      invalidatesTags: ['Assigned', 'Finished'],
+      invalidatesTags: ['SurveyAssigned', 'SurveyFinished'],
     }),
     getFinishedSurveyForUser: build.query<AssignedSurvey, number>({
       query: (id) => `/survey/finished/${id}`,
-      providesTags: (_, __, id) => [{ type: 'Finished', id }],
+      providesTags: (_, __, id) => [{ type: 'SurveyFinished', id }],
     }),
     getFinishedTestsForUser: build.query<AssignedSurvey[], void>({
       query: () => '/survey/finished',
-      providesTags: ['Finished'],
+      providesTags: ['SurveyFinished'],
     }),
     getResultById: build.query<Survey, number>({
       query: (id) => `/survey/${id}/result`,
-      providesTags: (_, __, id) => [{ type: 'Result', id }],
+      providesTags: (_, __, id) => [{ type: 'SurveyResult', id }],
     }),
   }),
 });

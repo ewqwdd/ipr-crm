@@ -77,7 +77,7 @@ const teamsApi = createApi({
       query: (id) => `/teams/${id}`,
     }),
     setTeamSpecs: build.mutation<
-      null,
+      Team,
       { teamId: number; userId: number; specs: number[]; curator?: boolean }
     >({
       query: (body) => ({
@@ -85,7 +85,38 @@ const teamsApi = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Team'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          const { data: newTeam } = await queryFulfilled;
+
+          dispatch(
+            teamsApi.util.updateQueryData('getTeams', undefined, (draft) => {
+              // Обновляем list
+              const index = draft.list.findIndex(
+                (team) => team.id === newTeam.id,
+              );
+              if (index !== -1) {
+                draft.list[index] = newTeam;
+              }
+
+              // Обновляем structure (рекурсивно)
+              const updateInTree = (teams: Team[]) => {
+                for (const team of teams) {
+                  if (team.id === newTeam.id) {
+                    Object.assign(team, newTeam);
+                  }
+                  if (team.subTeams) {
+                    updateInTree(team.subTeams);
+                  }
+                }
+              };
+              updateInTree(draft.structure);
+            }),
+          );
+        } catch (error) {
+          console.error('Error updating team:', error);
+        }
+      },
     }),
     addUsers: build.mutation<null, { userIds: number[]; teamId: number }>({
       query: (body) => ({

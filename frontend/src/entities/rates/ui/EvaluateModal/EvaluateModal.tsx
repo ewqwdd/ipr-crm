@@ -28,9 +28,8 @@ export default function EvaluateModal({
   modalData,
 }: EvaluateModalProps) {
   const { rate } = modalData as EvaluateModalData;
-  const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
-    {},
-  );
+  const { data: users, isFetching: usersFetching } =
+    usersApi.useGetUsersQuery();
   const { data: teams, isFetching: teamsFetching } =
     teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =

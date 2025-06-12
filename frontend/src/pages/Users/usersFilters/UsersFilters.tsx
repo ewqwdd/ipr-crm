@@ -45,11 +45,10 @@ const UsersFilters: FC<UsersFiltersProps> = ({
     [updateFilters],
   );
 
-  const  onChangeAccess = useCallback(
+  const onChangeAccess = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
       updateFilters('access', e.target.value);
-    }
-    ,
+    },
     [updateFilters],
   );
 
@@ -108,7 +107,10 @@ const UsersFilters: FC<UsersFiltersProps> = ({
             value={filters.specs}
             onChange={onChangeSpecs}
           />
-  <AccessSelect access={filters.access} onChangeAccess={onChangeAccess} />
+          <AccessSelect
+            access={filters.access}
+            onChangeAccess={onChangeAccess}
+          />
         </div>
       )}
     </div>

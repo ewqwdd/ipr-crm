@@ -5,11 +5,9 @@ import Competency from './competency';
 import { Tabs } from '@/shared/ui/Tabs';
 import { skillsApi } from '@/shared/api/skillsApi';
 import toast from 'react-hot-toast';
-import { rate360Api } from '@/shared/api/rate360Api';
-import { universalApi } from '@/shared/api/universalApi';
 import { useAppDispatch } from '@/app';
 import FoldersWrapper from './folders/FoldersWrapper';
-import { foldersApi } from '@/shared/api/foldersApi';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 
 const tabs = [
   { name: 'Компетенции', key: 'COMPETENCY' },
@@ -20,6 +18,7 @@ const tabs = [
 export default function Skills() {
   const [tab, setTab] = useState(tabs[0]);
   const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const setTabWrapper = (tab: string) => {
     setTab((s) => tabs.find((t) => t.key === tab) || s);
@@ -30,15 +29,9 @@ export default function Skills() {
     if (archiveMutation[1].isSuccess) {
       toast.success('Версия зафиксирована');
       console.log('Версия зафиксирована');
-      dispatch(rate360Api.util.invalidateTags(['Rate360']));
-      dispatch(universalApi.util.invalidateTags(['Spec']));
-      dispatch(
-        foldersApi.util.invalidateTags([
-          'ProductFolders',
-          'TeamFolders',
-          'SpecFolders',
-        ]),
-      );
+      invalidateTags(['Rate360']);
+      invalidateTags(['Spec']);
+      invalidateTags(['ProductFolders', 'TeamFolders', 'SpecFolders']);
     }
   }, [archiveMutation[1].isSuccess, dispatch]);
 

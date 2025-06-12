@@ -11,10 +11,14 @@ import BoardCard from './BoardCard';
 import { useAppDispatch, useAppSelector } from '@/app';
 import { Card } from '@/shared/ui/Card';
 import { Progress } from '@/shared/ui/Progress';
-import { columnNames, lane_names, typeColors } from '../../model/constants';
 import BoardFilters from './boardFilters';
 import { initialFilters } from './boardFilters';
 import { BoardFiltersType } from './boardFilters/constants';
+import {
+  columnNames,
+  lane_names,
+  typeColors,
+} from '@/entities/ipr/model/constants';
 
 const backgrounds: Record<TaskStatus, string> = {
   COMPLETED: 'rgb(187 247 208)',

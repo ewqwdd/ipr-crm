@@ -13,6 +13,7 @@ import ConfirmTitle from './ConfirmTitle';
 import { rate360Api } from '@/shared/api/rate360Api';
 import toast from 'react-hot-toast';
 import { TextArea } from '@/shared/ui/TextArea';
+import TeamFilters from '../../../../features/team/TeamFilters/TeamFilters';
 
 interface ConfirmEvaluatorsModalData {
   rate: Rate;
@@ -232,15 +233,20 @@ export default function ConfirmEvaluatorsModal({
           onSubmit={() => onSubmit(addType!)}
           className="sm:max-w-3xl"
         >
-          <EvaluatorsForm
-            selectedSpecs={selectedSpecs}
-            specId={rate.specId}
-            teamId={rate.teamId}
-            type={addType!}
-            userId={rate.userId}
-            selected={selected}
-            setSelected={setSelected}
-          />
+          <TeamFilters>
+            {(filters) => (
+              <EvaluatorsForm
+                selectedSpecs={selectedSpecs}
+                specId={rate.specId}
+                teamId={rate.teamId}
+                type={addType!}
+                userId={rate.userId}
+                selected={selected}
+                setSelected={setSelected}
+                {...filters}
+              />
+            )}
+          </TeamFilters>
         </Modal>
       </div>
     </Modal>

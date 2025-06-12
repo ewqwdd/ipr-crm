@@ -3,9 +3,9 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, memo, useState } from 'react';
 import { BoardFiltersType, initialFilters } from './constants';
 import StaticSelectFilter from '@/shared/ui/StaticSelectFilter/StaticSelectFilter';
-import { taskPriorityOptions } from '../../partials/tasks/constants';
 import PeriodSelector from '@/shared/ui/PeriodSelector/PeriodSelector';
 import { DateObject } from 'react-multi-date-picker';
+import { taskPriorityOptions } from '@/entities/ipr/ui/partials/tasks/constants';
 
 interface BoardFiltersProps {
   filters: BoardFiltersType;

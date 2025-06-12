@@ -1,6 +1,5 @@
-import { useAppDispatch } from '@/app';
 import { Spec } from '@/entities/user';
-import { teamsApi } from '@/shared/api/teamsApi';
+import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
 import { $api } from '@/shared/lib/$api';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { SoftButton } from '@/shared/ui/SoftButton';
@@ -23,7 +22,7 @@ export default function SpecializationTableItem({
   selectedSpec,
 }: SpecializationTableItemProps) {
   const [active, setActive] = useState(!!row.active);
-  const dispatch = useAppDispatch();
+  const invalidateTags = useInvalidateTags();
 
   const onChangeActive = () => {
     setActive(!active);
@@ -32,7 +31,7 @@ export default function SpecializationTableItem({
         active: !active,
       })
       .then(() => {
-        dispatch(teamsApi.util.invalidateTags(['Team']));
+        invalidateTags(['Team']);
       })
       .catch((e) => {
         console.log(e);

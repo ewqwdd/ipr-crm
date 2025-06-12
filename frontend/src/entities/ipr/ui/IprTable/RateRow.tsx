@@ -6,6 +6,7 @@ import { ArrowRightIcon, PencilAltIcon } from '@heroicons/react/outline';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { useCallback } from 'react';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
+import { usersService } from '@/shared/lib/usersService';
 
 interface RateRowProps {
   task: Ipr;
@@ -25,13 +26,6 @@ export default function RateRow({
     (task) => task.status === 'IN_PROGRESS',
   );
   const isAdmin = useIsAdmin();
-
-  // const requiredTasks = task.tasks.filter(
-  //   (task) => ['OBVIOUS', 'GENERAL'].includes(task.type) && task.onBoard,
-  // );
-  // const obviousTasksCompleted = requiredTasks.filter((task) =>
-  //   ['COMPLETED', 'IN_REVIEW'].includes(task.status),
-  // ).length;
 
   const inReviewTasks = task.tasks.filter(
     (task) => task.status === 'IN_REVIEW',
@@ -72,7 +66,7 @@ export default function RateRow({
           className="font-medium text-gray-900  hover:text-violet-900 transition-all"
           to={'/users/' + task?.userId}
         >
-          {task?.user?.firstName} {task?.user?.lastName}
+          {usersService.displayName(task.user)}
         </Link>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">

@@ -30,9 +30,8 @@ export default function RateRow({
   const evaluatorsCount = rate.evaluators.length ?? 0;
   const ratesCount = rate.userRates.length ?? 0;
   // const [deleteFn] = rate360Api.useDeleteRateMutation();
-  const { data: users, isFetching: usersFetching } = usersApi.useGetUsersQuery(
-    {},
-  );
+  const { data: users, isFetching: usersFetching } =
+    usersApi.useGetUsersQuery();
   const { data: teams, isFetching: teamsFetching } =
     teamsApi.useGetTeamsQuery();
   const { data: specs, isFetching: specsFetching } =

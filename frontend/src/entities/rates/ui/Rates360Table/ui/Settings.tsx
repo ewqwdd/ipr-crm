@@ -3,8 +3,7 @@ import { useModal } from '@/app/hooks/useModal';
 import { Rate } from '@/entities/rates';
 import { rate360Api } from '@/shared/api/rate360Api';
 import { $api } from '@/shared/lib/$api';
-import { cva } from '@/shared/lib/cva';
-import { SoftButton } from '@/shared/ui/SoftButton';
+import { ActionBar } from '@/widgets/ActionBar';
 import {
   ArchiveIcon,
   BellIcon,
@@ -89,67 +88,47 @@ export default memo(function Settings({
   );
 
   return (
-    <div
-      className={cva(
-        'flex gap-3 p-3 pb-5 fixed bottom-0 right-0 w-full bg-white shadow-2xl items-center',
+    <ActionBar
+      selected={selected}
+      clearSelected={() => setSelected([])}
+      loading={
+        removeRatesProps.isLoading ||
+        toggleReportVisibilityState.isLoading ||
+        archiveRatesProps.isLoading
+      }
+      buttonsConfig={[
         {
-          'animate-pulse pointer-events-none':
-            removeRatesProps.isLoading ||
-            toggleReportVisibilityState.isLoading ||
-            archiveRatesProps.isLoading,
+          label: 'Архивировать',
+          icon: <ArchiveIcon />,
+          onClick: onArchive,
+          hide: !isAllFinished,
         },
-      )}
-    >
-      <p className="font-medium text-gray-800 max-sm:text-sm text-nowrap">
-        <span className="max-sm:hidden">Выбрано</span> {selected.length}
-      </p>
-
-      <button
-        className="text-indigo-500 hover:text-indigo-700 max-sm:text-sm"
-        onClick={() => setSelected([])}
-      >
-        Сбросить
-      </button>
-
-      {isAllFinished && (
-        <SoftButton className="ml-auto max-sm:p-2" onClick={onArchive}>
-          <ArchiveIcon className="h-5 w-5" />
-          <span className="max-sm:hidden">Архивировать</span>
-        </SoftButton>
-      )}
-
-      <SoftButton
-        className={cva('max-sm:p-2', {
-          'ml-auto': !isAllFinished,
-        })}
-        success
-        onClick={() => onReportVisibilityChange(true)}
-      >
-        <DocumentAddIcon className="h-5 w-5" />
-        <span className="max-sm:hidden">Показать отчет сотруднику</span>
-      </SoftButton>
-
-      <SoftButton
-        className="max-sm:p-2"
-        danger
-        onClick={() => onReportVisibilityChange(false)}
-      >
-        <DocumentRemoveIcon className="h-5 w-5" />
-        <span className="max-sm:hidden">Скрыть отчет</span>
-      </SoftButton>
-
-      {!isFinished && (
-        <SoftButton className="max-sm:p-2" onClick={notifyRates}>
-          <BellIcon className="h-5 w-5" />
-          <span className="max-sm:hidden">Напомнить</span>
-        </SoftButton>
-      )}
-      {role === 'admin' && (
-        <SoftButton className={'max-sm:p-2'} onClick={onDelete} danger>
-          <TrashIcon className="h-5 w-5 text-red-500" />
-          <span className="max-sm:hidden">Удалить</span>
-        </SoftButton>
-      )}
-    </div>
+        {
+          label: 'Показать отчет сотрудник',
+          icon: <DocumentAddIcon />,
+          onClick: () => onReportVisibilityChange(true),
+          success: true,
+        },
+        {
+          label: 'Скрыть отчет',
+          icon: <DocumentRemoveIcon />,
+          onClick: () => onReportVisibilityChange(false),
+          danger: true,
+        },
+        {
+          label: 'Напомнить',
+          icon: <BellIcon />,
+          onClick: notifyRates,
+          hide: isFinished,
+        },
+        {
+          label: 'Удалить',
+          icon: <TrashIcon className="text-red-500" />,
+          onClick: onDelete,
+          danger: true,
+          hide: role !== 'admin',
+        },
+      ]}
+    />
   );
 });

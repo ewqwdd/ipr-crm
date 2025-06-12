@@ -1,5 +1,4 @@
 import IprEdit from './ui/IprEdit';
-import Board from './ui/Board/Board';
 import { boardReducer, boardActions } from './model/boardSlice';
 import IprTable from './ui/IprTable/IprTable';
 import DeleteTaskModal from './ui/DeleteTaskModal/DeleteTaskModal';
@@ -8,7 +7,6 @@ import IprHeadingCurator from './ui/partials/IprHeadingCurator';
 import { taskStatuses, taskTypes } from './model/types';
 import UserIprTasks from './ui/partials/user-tasks/UserIprTasks';
 import IprProgress from './ui/partials/IprProgress';
-import IprListPage from './ui/IprListPage/IprListPage';
 
 export type {
   Ipr,
@@ -23,7 +21,6 @@ export {
   IprEdit,
   boardReducer,
   boardActions,
-  Board,
   IprTable,
   DeleteTaskModal,
   TaskPreviewModal,
@@ -32,5 +29,4 @@ export {
   UserIprTasks,
   taskTypes,
   IprProgress,
-  IprListPage,
 };
