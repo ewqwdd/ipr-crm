@@ -115,7 +115,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
             <p className="text-right">{dateFormatter(rate?.startDate)}</p>
             {isAdmin && <WorkSpace rate={rate} />}
             <div>
-              <ProgressBarBlock />
+              <ProgressBarBlock type={rate?.type ?? 'HARD'} />
               <div className="mt-16">
                 {rate?.competencyBlocks?.map((blocksCompetencies) => {
                   return (

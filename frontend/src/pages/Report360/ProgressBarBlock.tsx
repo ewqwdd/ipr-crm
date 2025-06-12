@@ -1,6 +1,14 @@
+import { SkillType } from '@/entities/skill';
 import { FC } from 'react';
 
-const ProgressBarBlock: FC = () => {
+interface ProgressBarBlockProps {
+  type: SkillType;
+}
+
+const ProgressBarBlock: FC<ProgressBarBlockProps> = ({type}) => {
+
+  const boundary = type === 'HARD' ? 4 : 5;
+
   return (
     <div>
       <p className="mt-6 text-sm text-gray-700">
@@ -29,11 +37,13 @@ const ProgressBarBlock: FC = () => {
           в таблицах соответствует шкале):
         </p>
         <div className="mt-[50px] flex gap-1">
-          <div className="w-[50%]" aria-hidden="true">
+          <div style={{
+            width: `${(2 / boundary) * 100}%`
+          }} aria-hidden="true">
             <div className="bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-2 bg-red-600 rounded-full"
-                style={{ width: '100%' }}
+                className="h-2 bg-red-600 rounded-full w-full"
+                
               />
             </div>
             <div className="">0</div>
@@ -41,11 +51,12 @@ const ProgressBarBlock: FC = () => {
               <div className="text-center">Ниже ожиданий</div>
             </div>
           </div>
-          <div className="w-[25%]" aria-hidden="true">
+          <div aria-hidden="true" style={{
+            width: `${(1 / boundary) * 100}%`
+          }}>
             <div className="bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-2 bg-indigo-600 rounded-full"
-                style={{ width: '100%' }}
+                className="h-2 bg-indigo-600 rounded-full w-full"
               />
             </div>
             <div className="flex justify-between">
@@ -56,14 +67,15 @@ const ProgressBarBlock: FC = () => {
               <div className="text-center">Соответствует ожиданиям</div>
             </div>
           </div>
-          <div className=" w-[25%]" aria-hidden="true">
+          <div style={{
+            width: `${((boundary - 3) / boundary) * 100}%`
+          }} aria-hidden="true">
             <div className="bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-2 bg-green-600 rounded-full"
-                style={{ width: '100%' }}
+                className="h-2 bg-green-600 rounded-full w-full"
               />
             </div>
-            <div className="text-right">4</div>
+            <div className="text-right">{boundary}</div>
             <div className="text-sm font-medium text-gray-600 mt-1">
               <div className="text-center">Выше ожиданий</div>
             </div>
