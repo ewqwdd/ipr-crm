@@ -748,6 +748,7 @@ export class UsersService {
         return { to: user.email, subject, html };
       }),
     );
+        console.debug('Resending invite for user:', inviteEmails);
 
     this.mailService.sendBulkMail(inviteEmails);
   }
