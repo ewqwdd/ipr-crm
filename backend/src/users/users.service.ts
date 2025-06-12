@@ -27,31 +27,31 @@ export class UsersService {
     private usersAccessService: UsersAccessService,
     private filesService: FilesService,
   ) {}
-  
+
   defaultInclude: Prisma.UserInclude = {
-        role: true,
-        Spec: {
-          where: {
-            archived: false,
-          },
-        },
-        teams: {
-          select: { teamId: true, team: { select: { name: true } } },
-        },
-        teamCurator: {
-          select: { id: true, name: true },
-        },
-        specsOnTeams: {
+    role: true,
+    Spec: {
+      where: {
+        archived: false,
+      },
+    },
+    teams: {
+      select: { teamId: true, team: { select: { name: true } } },
+    },
+    teamCurator: {
+      select: { id: true, name: true },
+    },
+    specsOnTeams: {
+      select: {
+        spec: {
           select: {
-            spec: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+            id: true,
+            name: true,
           },
         },
-      }
+      },
+    },
+  };
 
   async findOneByEmail(email: string) {
     const user = await this.prisma.user.findFirst({
@@ -726,5 +726,29 @@ export class UsersService {
     }
     await this.prisma.user.delete({ where: { id } });
     return user;
+  }
+
+  async resendInvitesAll() {
+    const users = await this.prisma.user.findMany({
+      where: { passwordHash: null },
+    });
+
+    const inviteEmails = await Promise.all(
+      users.map(async (user) => {
+        if (!user.authCode) {
+          const authCode = Math.random().toString(36).substring(2, 15);
+          const hashed = this.passwordService.getHash(authCode);
+          await this.prisma.user.update({
+            where: { id: user.id },
+            data: { authCode: hashed },
+          });
+          user.authCode = hashed;
+        }
+        const { html, subject } = this.mailService.generateInvite(user);
+        return { to: user.email, subject, html };
+      }),
+    );
+
+    this.mailService.sendBulkMail(inviteEmails);
   }
 }

@@ -42,7 +42,11 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.setGlobalPrefix('api');
   app.use(cookieParser());
-  app.use('/api/admin/queues', adminExpressMiddleware, serverAdapter.getRouter());
+  app.use(
+    '/api/admin/queues',
+    adminExpressMiddleware,
+    serverAdapter.getRouter(),
+  );
 
   await app.listen(process.env.PORT ?? 3000, () => {
     console.log(`Server is running on http://localhost:${port}`);

@@ -18,34 +18,34 @@ export class TeamsService {
   ) {}
 
   teamListInclude = {
-        curatorSpecs: {
-          where: { spec: { archived: false } },
+    curatorSpecs: {
+      where: { spec: { archived: false } },
+      select: {
+        specId: true,
+        spec: { select: { name: true, active: true } },
+      },
+    },
+    users: {
+      select: {
+        user: {
           select: {
-            specId: true,
-            spec: { select: { name: true, active: true } },
-          },
-        },
-        users: {
-          select: {
-            user: {
+            avatar: true,
+            id: true,
+            username: true,
+            specsOnTeams: {
+              where: { spec: { archived: false } },
               select: {
-                avatar: true,
-                id: true,
-                username: true,
-                specsOnTeams: {
-                  where: { spec: { archived: false } },
-                  select: {
-                    specId: true,
-                    spec: { select: { name: true, active: true } },
-                    teamId: true,
-                  },
-                },
+                specId: true,
+                spec: { select: { name: true, active: true } },
+                teamId: true,
               },
             },
           },
         },
-        curator: { select: { avatar: true, id: true, username: true } },
-      }
+      },
+    },
+    curator: { select: { avatar: true, id: true, username: true } },
+  };
 
   async create(
     name: string,

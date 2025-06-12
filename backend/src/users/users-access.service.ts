@@ -93,12 +93,12 @@ export class UsersAccessService {
         ...(team.curatorId
           ? [{ userId: team.curatorId, teamId: team.id }]
           : []),
-        ...team.subTeams.map((subTeam) => ({
-          userId: subTeam.curatorId,
-          teamId: subTeam.id,
-        })).filter(
-          (subTeam) => subTeam.userId !== null,
-        )
+        ...team.subTeams
+          .map((subTeam) => ({
+            userId: subTeam.curatorId,
+            teamId: subTeam.id,
+          }))
+          .filter((subTeam) => subTeam.userId !== null),
       ];
     });
   }

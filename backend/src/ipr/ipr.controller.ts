@@ -69,7 +69,11 @@ export class IprController {
     @Body() data: SetPriorityStatusDto,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    return this.iprService.updateTask(id, { priority: data.priority }, sessionInfo);
+    return this.iprService.updateTask(
+      id,
+      { priority: data.priority },
+      sessionInfo,
+    );
   }
 
   @Post('/task/status')

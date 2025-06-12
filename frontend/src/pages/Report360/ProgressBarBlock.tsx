@@ -5,8 +5,7 @@ interface ProgressBarBlockProps {
   type: SkillType;
 }
 
-const ProgressBarBlock: FC<ProgressBarBlockProps> = ({type}) => {
-
+const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
   const boundary = type === 'HARD' ? 4 : 5;
 
   return (
@@ -37,27 +36,28 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({type}) => {
           в таблицах соответствует шкале):
         </p>
         <div className="mt-[50px] flex gap-1">
-          <div style={{
-            width: `${(2 / boundary) * 100}%`
-          }} aria-hidden="true">
+          <div
+            style={{
+              width: `${(2 / boundary) * 100}%`,
+            }}
+            aria-hidden="true"
+          >
             <div className="bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-2 bg-red-600 rounded-full w-full"
-                
-              />
+              <div className="h-2 bg-red-600 rounded-full w-full" />
             </div>
             <div className="">0</div>
             <div className="text-sm font-medium text-gray-600 mt-1">
               <div className="text-center">Ниже ожиданий</div>
             </div>
           </div>
-          <div aria-hidden="true" style={{
-            width: `${(1 / boundary) * 100}%`
-          }}>
+          <div
+            aria-hidden="true"
+            style={{
+              width: `${(1 / boundary) * 100}%`,
+            }}
+          >
             <div className="bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-2 bg-indigo-600 rounded-full w-full"
-              />
+              <div className="h-2 bg-indigo-600 rounded-full w-full" />
             </div>
             <div className="flex justify-between">
               <div className="ml-[-0.5rem]">2</div>
@@ -67,13 +67,14 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({type}) => {
               <div className="text-center">Соответствует ожиданиям</div>
             </div>
           </div>
-          <div style={{
-            width: `${((boundary - 3) / boundary) * 100}%`
-          }} aria-hidden="true">
+          <div
+            style={{
+              width: `${((boundary - 3) / boundary) * 100}%`,
+            }}
+            aria-hidden="true"
+          >
             <div className="bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-2 bg-green-600 rounded-full w-full"
-              />
+              <div className="h-2 bg-green-600 rounded-full w-full" />
             </div>
             <div className="text-right">{boundary}</div>
             <div className="text-sm font-medium text-gray-600 mt-1">
