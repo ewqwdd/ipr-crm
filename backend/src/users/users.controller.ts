@@ -149,6 +149,13 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
+  @Post('/resend-invite/all')
+  @UseGuards(AdminGuard)
+  @HttpCode(HttpStatus.OK)
+  async resendAllInvites() {
+    // return this.usersService.resendInvitesAll();
+  }
+
   @Post('/resend-invite/:id')
   @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.OK)
@@ -158,10 +165,4 @@ export class UsersController {
     return this.usersService.resendInvite(id);
   }
 
-  @Post('/resend-invite/all')
-  @UseGuards(AdminGuard)
-  @HttpCode(HttpStatus.OK)
-  async resendAllInvites() {
-    return this.usersService.resendInvitesAll();
-  }
 }
