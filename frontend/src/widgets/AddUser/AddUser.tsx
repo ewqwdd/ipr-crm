@@ -15,7 +15,7 @@ export default function AddUser() {
       title: 'Повторно пригласить всех участников?',
       onSubmit: () => {
         toast.success('Приглашения отправлены всем участникам');
-        $api.post('/users/invite-all').catch((error) => {
+        $api.post('/users/invite/all').catch((error) => {
           console.error('Ошибка при отправке приглашений:', error);
           toast.error('Произошла ошибка при отправке приглашений');
         });
