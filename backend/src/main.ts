@@ -48,15 +48,15 @@ async function bootstrap() {
     adminExpressMiddleware,
     serverAdapter.getRouter(),
   );
-app.use(
-  '/prometheus',
-  adminExpressMiddleware,
-  createProxyMiddleware({
-    target: 'http://localhost:9090',
-    changeOrigin: true,
-    ws: true,
-  }),
-);
+  app.use(
+    '/prometheus',
+    adminExpressMiddleware,
+    createProxyMiddleware({
+      target: 'http://localhost:9090',
+      changeOrigin: true,
+      ws: true,
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 3000, () => {
     console.log(`Server is running on http://localhost:${port}`);

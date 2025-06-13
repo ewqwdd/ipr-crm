@@ -1,15 +1,14 @@
 import {
   ChartBarIcon,
-  ClipboardListIcon,
   HomeIcon,
-  InboxIcon,
   InboxInIcon,
   MapIcon,
   QuestionMarkCircleIcon,
 } from '@heroicons/react/outline';
-import { NavType, types360, typesTasks } from './types';
+import { NavType, typesTasks } from './types';
 import { User } from '@/entities/user';
 import { administrationNavigation } from './administrationNavigation';
+import { assignedNavigation } from './assignedNavigation';
 
 export const adminNavigation: (user: User | null) => NavType[] = (user) => [
   { name: 'Дашборд', icon: HomeIcon, href: '/' },
@@ -31,35 +30,7 @@ export const adminNavigation: (user: User | null) => NavType[] = (user) => [
     icon: InboxInIcon,
     href: '/360rate/me',
   },
-  {
-    name: 'Мне назначено',
-    icon: InboxIcon,
-    children: [
-      {
-        name: 'Оценка 360',
-        href: '/progress',
-        count: user?.notifications.filter(
-          (n) => types360.includes(n.type) && !n.watched,
-        ).length,
-      },
-      {
-        name: 'Тесты',
-        href: '/assigned-tests',
-        icon: QuestionMarkCircleIcon,
-        count: user?.notifications.filter(
-          (n) => n.type === 'TEST_ASSIGNED' && !n.watched,
-        ).length,
-      },
-      {
-        name: 'Опросы',
-        href: '/assigned-surveys',
-        icon: ClipboardListIcon,
-        count: user?.notifications.filter(
-          (n) => n.type === 'SURVEY_ASSIGNED' && !n.watched,
-        ).length,
-      },
-    ],
-  },
+  ...assignedNavigation,
   {
     name: 'Поддержка',
     icon: QuestionMarkCircleIcon,

@@ -42,7 +42,7 @@ export class AuthService {
   }
 
   async getSesssionInfo(id: number) {
-    const user = await this.usersService.findOne(id);
+    const user = await this.usersService.findOne(id, true);
     return user;
   }
 

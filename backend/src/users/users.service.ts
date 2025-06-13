@@ -86,7 +86,7 @@ export class UsersService {
     return { ...user, teamAccess };
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, includeAccess = false) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -110,11 +110,12 @@ export class UsersService {
       },
       omit: { passwordHash: true, roleId: true, specId: true, authCode: true },
     });
+    if (includeAccess) return user;
+
     const teamAccess = await this.usersAccessService.findAllowedTeams(
       { email: user.email, id: user.id, role: user.role.name },
       true,
     );
-    console.log(user.role.name, teamAccess.length);
 
     return { ...user, teamAccess };
   }

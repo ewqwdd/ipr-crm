@@ -26,8 +26,6 @@ export default function EditFolderModal({
     folderType: FolderType;
   }) || { id: -1, name: '', folderType: FolderType.PRODUCT };
 
-  console.debug(folderType);
-
   // Хуки для разных типов папок
   const [updateProductFolder, productProps] =
     foldersApi.useUpdateProductFolderMutation();

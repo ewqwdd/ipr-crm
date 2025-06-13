@@ -35,7 +35,10 @@ export default memo(function Progress() {
             'Самооценка 360'
           ) : (
             <div className="flex items-center gap-2 [&>span]:rounded-full [&>span]size-4">
-              Самооценка 360 <Badge color={'red'}>{selfNotifs.length}</Badge>
+              Самооценка 360{' '}
+              <Badge color={'red'}>
+                {selfNotifs.filter((r) => !r.finished).length}
+              </Badge>
             </div>
           ),
         key: 'self-assessment',
@@ -48,7 +51,9 @@ export default memo(function Progress() {
           ) : (
             <div className="flex items-center gap-2 [&>span]:rounded-full [&>span]size-4">
               По другим пользователям{' '}
-              <Badge color={'red'}>{rateAssigned.length}</Badge>
+              <Badge color={'red'}>
+                {rateAssigned.filter((r) => !r.finished).length}
+              </Badge>
             </div>
           ),
         key: 'by-others',
