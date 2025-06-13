@@ -54,9 +54,6 @@ async function bootstrap() {
     createProxyMiddleware({
       target: 'http://localhost:9090',
       changeOrigin: true,
-      pathRewrite: {
-        '^/api/admin/prometheus': '/prometheus', // если Prometheus с route-prefix
-      },
       ws: true,
     }),
   );
