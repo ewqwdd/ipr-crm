@@ -49,13 +49,13 @@ async function bootstrap() {
     serverAdapter.getRouter(),
   );
 app.use(
-  '/api/admin/prometheus',
+  '/prometheus',
   adminExpressMiddleware,
   createProxyMiddleware({
     target: 'http://localhost:9090',
     changeOrigin: true,
     pathRewrite: {
-      '^/api/admin/prometheus': '/prometheus',
+      '^/prometheus': '/prometheus',
     },
     ws: true,
   }),
