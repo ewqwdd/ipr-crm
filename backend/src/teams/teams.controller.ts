@@ -27,8 +27,8 @@ export class TeamsController {
 
   @Get()
   @UseGuards(AuthGuard)
-  async findAll() {
-    return this.teamsService.findAll();
+  async findAll(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+    return this.teamsService.findAll(sessionInfo);
   }
 
   @Post()

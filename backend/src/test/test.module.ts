@@ -3,12 +3,12 @@ import { TestController } from './test.controller';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { TestService } from './test.service';
 import { ExcelService } from 'src/utils/excel/excel.service';
-import { UsersAccessService } from 'src/users/users-access.service';
 import { NotificationModule } from 'src/notification/notification.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   controllers: [TestController],
-  imports: [NotificationModule],
-  providers: [PrismaService, TestService, ExcelService, UsersAccessService],
+  imports: [NotificationModule, UsersModule],
+  providers: [PrismaService, TestService, ExcelService],
 })
 export class TestModule {}

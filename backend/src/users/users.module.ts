@@ -8,6 +8,7 @@ import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
 import { FilesService } from 'src/utils/files/files.service';
 import { MailModule } from 'src/mail/mail.module';
+import { RedisService } from 'src/utils/redis/redis.service';
 
 @Module({
   controllers: [UsersController],
@@ -20,7 +21,8 @@ import { MailModule } from 'src/mail/mail.module';
     CreateProductsService,
     UsersAccessService,
     FilesService,
+    RedisService,
   ],
-  exports: [UsersService],
+  exports: [UsersService, UsersAccessService],
 })
 export class UsersModule {}

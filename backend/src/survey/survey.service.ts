@@ -124,9 +124,8 @@ export class SurveyService {
     let allowedUsers = userIds;
 
     if (sessionInfo.role !== 'admin') {
-      const teamIds = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const teamIds =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
 
       const teamUsers = await this.prismaService.user.findMany({
         where: {
@@ -237,9 +236,8 @@ export class SurveyService {
     let filters: Prisma.User_Assigned_SurveyWhereInput = {};
 
     if (sessionInfo.role !== 'admin') {
-      const allowedTeams = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const allowedTeams =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
 
       filters = {
         user: {

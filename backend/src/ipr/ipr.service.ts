@@ -41,7 +41,7 @@ export class IprService {
                     team: {
                       id: {
                         in: await this.usersAccessService.findAllowedTeams(
-                          sessionInfo.id,
+                          sessionInfo,
                         ),
                       },
                     },
@@ -91,17 +91,11 @@ export class IprService {
     const rate360 = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
-        ...(sessionInfo.role !== 'admin'
-          ? {
-              team: {
-                id: {
-                  in: await this.usersAccessService.findAllowedTeams(
-                    sessionInfo.id,
-                  ),
-                },
-              },
-            }
-          : {}),
+        team: {
+          id: {
+            in: await this.usersAccessService.findAllowedTeams(sessionInfo),
+          },
+        },
       },
       include: {
         spec: true,
@@ -241,9 +235,7 @@ export class IprService {
           rate360: {
             team: {
               id: {
-                in: await this.usersAccessService.findAllowedTeams(
-                  sessionInfo.id,
-                ),
+                in: await this.usersAccessService.findAllowedTeams(sessionInfo),
               },
             },
           },
@@ -282,7 +274,7 @@ export class IprService {
           rate360: {
             team: {
               id: {
-                in: await this.usersAccessService.findAllowedTeams(session.id),
+                in: await this.usersAccessService.findAllowedTeams(session),
               },
             },
           },
@@ -465,7 +457,7 @@ export class IprService {
 
     if (
       clientInfo.role !== 'admin' &&
-      !(await this.usersAccessService.findAllowedTeams(clientInfo.id)).includes(
+      !(await this.usersAccessService.findAllowedTeams(clientInfo)).includes(
         plan.rate360.team.id,
       )
     ) {
@@ -613,9 +605,8 @@ export class IprService {
       };
     }
 
-    const accessTeams = await this.usersAccessService.findAllowedTeams(
-      sessionInfo.id,
-    );
+    const accessTeams =
+      await this.usersAccessService.findAllowedTeams(sessionInfo);
 
     where.OR = [
       {

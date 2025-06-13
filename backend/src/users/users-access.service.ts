@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { PrismaService } from 'src/utils/db/prisma.service';
+import { RedisService } from 'src/utils/redis/redis.service';
 
 type SubTeam = {
   id: number;
@@ -9,7 +11,12 @@ type SubTeam = {
 
 @Injectable()
 export class UsersAccessService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private redis: RedisService,
+  ) {}
+
+  cacheTime = 3600; // 1 hour in seconds
 
   findSubTeams = (teams: SubTeam[] = []) => {
     const filterTeam = (team: SubTeam) => {
@@ -21,10 +28,32 @@ export class UsersAccessService {
     return teams.flatMap((team) => filterTeam(team)).filter((t) => t !== null);
   };
 
-  async findAllowedTeams(userId: number): Promise<number[]> {
+  getRedisTeamsKey = (userId: number) => `allowedTeams:${userId}`;
+
+  async findAllowedTeams(
+    { role, id }: GetSessionInfoDto,
+    rewriteCache?: boolean,
+  ): Promise<number[]> {
+    if (role === 'admin') {
+      return this.prisma.team
+        .findMany({
+          select: {
+            id: true,
+          },
+        })
+        .then((teams) => teams.map((team) => team.id));
+    }
+
+    if (!rewriteCache) {
+      const cachedTeams = await this.redis.get(this.getRedisTeamsKey(id));
+      if (cachedTeams) {
+        return JSON.parse(cachedTeams) as number[];
+      }
+    }
+
     const curatorTeams = await this.prisma.team.findMany({
       where: {
-        curatorId: userId,
+        curatorId: id,
       },
       select: {
         id: true,
@@ -58,7 +87,19 @@ export class UsersAccessService {
 
     const allTeams = this.findSubTeams(curatorTeams);
     const allowedTeamIds = allTeams.map((team) => team.id);
+    await this.redis.setex(
+      this.getRedisTeamsKey(id),
+      this.cacheTime,
+      JSON.stringify(allowedTeamIds),
+    );
     return allowedTeamIds;
+  }
+
+  async removeRedisTeamsCache(userId: number): Promise<void> {
+    const redisKey = this.getRedisTeamsKey(userId);
+    await this.redis.del(redisKey).catch((error) => {
+      console.error(`Failed to delete Redis key ${redisKey}:`, error);
+    });
   }
 
   async findAllowedSubbordinates(

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User, UserStoreSchema } from './types/types';
+import { teamsApi } from '@/shared/api/teamsApi';
 
 const initialState: UserStoreSchema = {
   user: null,
@@ -51,6 +52,17 @@ const userSlice = createSlice({
         state.user.notifications = action.payload;
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      teamsApi.endpoints.getTeams.matchFulfilled,
+      (state, action) => {
+        const { teamAccess } = action.payload;
+        if (state.user) {
+          state.user.teamAccess = teamAccess;
+        }
+      },
+    );
   },
 });
 

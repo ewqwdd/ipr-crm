@@ -78,7 +78,10 @@ export class UsersService {
       omit: { roleId: true, specId: true, authCode: true },
     });
     if (!user) throw new NotFoundException('Пользователь не найден.');
-    const teamAccess = await this.usersAccessService.findAllowedTeams(user.id);
+    const teamAccess = await this.usersAccessService.findAllowedTeams(
+      { email: user.email, id: user.id, role: user.role.name },
+      true,
+    );
 
     return { ...user, teamAccess };
   }
@@ -107,8 +110,11 @@ export class UsersService {
       },
       omit: { passwordHash: true, roleId: true, specId: true, authCode: true },
     });
-
-    const teamAccess = await this.usersAccessService.findAllowedTeams(id);
+    const teamAccess = await this.usersAccessService.findAllowedTeams(
+      { email: user.email, id: user.id, role: user.role.name },
+      true,
+    );
+    console.log(user.role.name, teamAccess.length);
 
     return { ...user, teamAccess };
   }
@@ -748,7 +754,7 @@ export class UsersService {
         return { to: user.email, subject, html };
       }),
     );
-        console.debug('Resending invite for user:', inviteEmails);
+    console.debug('Resending invite for user:', inviteEmails);
 
     this.mailService.sendBulkMail(inviteEmails);
   }

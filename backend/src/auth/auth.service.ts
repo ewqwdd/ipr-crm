@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
-import { UsersAccessService } from 'src/users/users-access.service';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { PasswordService } from 'src/utils/password/password';

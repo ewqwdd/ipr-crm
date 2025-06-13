@@ -164,5 +164,4 @@ export class UsersController {
   ) {
     return this.usersService.resendInvite(id);
   }
-
 }

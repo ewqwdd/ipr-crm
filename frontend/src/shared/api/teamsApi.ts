@@ -9,21 +9,30 @@ const teamsApi = createApi({
   }),
   tagTypes: ['Team'],
   endpoints: (build) => ({
-    getTeams: build.query<{ structure: Team[]; list: Team[] }, void>({
+    getTeams: build.query<
+      { structure: Team[]; list: Team[]; teamAccess: number[] },
+      void
+    >({
       query: () => '/teams',
       providesTags: ['Team'],
-      transformResponse: (response: Team[]) => {
-        const noParent = response
+      transformResponse: ({
+        teamAccess,
+        teams,
+      }: {
+        teams: Team[];
+        teamAccess: number[];
+      }) => {
+        const noParent = teams
           .filter((team) => !team.parentTeamId)
           .map((t) => ({ ...t, type: teamTypes[0] }));
         const findChildren = (team: Team, index: number) => {
-          team.subTeams = response
+          team.subTeams = teams
             .filter((t) => t.parentTeamId === team.id)
             .map((t) => ({ ...t, type: teamTypes[index] }));
           team.subTeams.forEach((t) => findChildren(t, index + 1));
         };
         noParent.forEach((t) => findChildren(t, 1));
-        return { structure: noParent, list: response };
+        return { structure: noParent, list: teams, teamAccess };
       },
     }),
     createTeam: build.mutation<Team[], CreateTeamDto>({

@@ -45,9 +45,8 @@ export class Rate360Service {
     if (sessionInfo.role === 'admin') {
       return {};
     }
-    const allowedTeamIds = await this.usersService.findAllowedTeams(
-      sessionInfo.id,
-    );
+    const allowedTeamIds =
+      await this.usersService.findAllowedTeams(sessionInfo);
 
     return {
       team: {
@@ -81,15 +80,15 @@ export class Rate360Service {
     };
   }
 
-  async findAll(data: RateFiltersDto, curatorId?: number) {
+  async findAll(data: RateFiltersDto, curator?: GetSessionInfoDto) {
     const teams = data.teams ? data.teams.split(',').map(Number) : [];
     let teamsFilter: number[] = teams ?? [];
     const { page, limit } = data;
 
     const where = this.findAllFilters(data);
 
-    if (curatorId) {
-      teamsFilter = await this.usersService.findAllowedTeams(curatorId);
+    if (curator?.id) {
+      teamsFilter = await this.usersService.findAllowedTeams(curator);
       if (teams) {
         teamsFilter =
           teams.length > 0
@@ -98,7 +97,7 @@ export class Rate360Service {
       }
     }
 
-    if (curatorId || teams.length > 0) {
+    if (curator?.id || teams.length > 0) {
       where.team = { id: { in: teamsFilter } };
     }
 
@@ -1672,9 +1671,7 @@ export class Rate360Service {
     };
 
     if (sessionInfo.role !== 'admin') {
-      const teamAccess = await this.usersService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const teamAccess = await this.usersService.findAllowedTeams(sessionInfo);
       query.where = {
         ...query.where,
         team: {

@@ -157,9 +157,8 @@ export class TestService {
     const userAssignedFilters: Prisma.User_Assigned_TestAggregateArgs = {};
 
     if (sessionInfo.role !== 'admin') {
-      const accessTeams = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const accessTeams =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       userAssignedFilters.where = {
         user: {
           OR: [
@@ -600,9 +599,8 @@ export class TestService {
     let allowedUsers = userIds;
 
     if (sessionInfo.role !== 'admin') {
-      const teamAccess = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const teamAccess =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       if (!teamAccess.length) throw new ForbiddenException();
 
       const teamUsers = await this.prismaService.user.findMany({
@@ -878,9 +876,8 @@ export class TestService {
 
     let filters: Prisma.User_Assigned_TestWhereInput = {};
     if (!access) {
-      const allowedTeams = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const allowedTeams =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       filters = {
         user: {
           OR: [
@@ -939,9 +936,8 @@ export class TestService {
 
     let filters: Prisma.User_Assigned_TestWhereInput = {};
     if (!access) {
-      const allowedTeams = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const allowedTeams =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       filters = {
         user: {
           OR: [

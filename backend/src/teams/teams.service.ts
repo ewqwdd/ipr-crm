@@ -7,7 +7,7 @@ import { PrismaService } from 'src/utils/db/prisma.service';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { SetTeamUserSpecs } from './dto/set-team-user-specs';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
-import { Prisma, Team } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { UsersAccessService } from 'src/users/users-access.service';
 
 @Injectable()
@@ -73,7 +73,7 @@ export class TeamsService {
     return team;
   }
 
-  async findAll() {
+  async findAll(sessionInfo?: GetSessionInfoDto) {
     const teams = await this.prisma.team.findMany({
       orderBy: { createdAt: 'desc' },
       include: this.teamListInclude,
@@ -86,8 +86,13 @@ export class TeamsService {
         );
       }
     }
+    const teamAccess = await this.usersAccessService.findAllowedTeams(
+      sessionInfo,
+      true,
+    );
+    console.log(teamAccess.length);
 
-    return teams;
+    return { teams, teamAccess };
   }
 
   async findOne(id: number) {
@@ -231,9 +236,8 @@ export class TeamsService {
     }
 
     if (sessionInfo.role !== 'admin') {
-      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const accessibleTeamIds =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       if (
         !accessibleTeamIds.includes(teamId) ||
         team.curatorId === sessionInfo.id
@@ -284,9 +288,8 @@ export class TeamsService {
     }
 
     if (sessionInfo.role !== 'admin') {
-      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const accessibleTeamIds =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       if (
         !accessibleTeamIds.includes(teamId) ||
         team.curatorId === sessionInfo.id
@@ -366,9 +369,8 @@ export class TeamsService {
     const filters = { id: teamId } as Prisma.TeamWhereUniqueInput;
 
     if (sessionInfo.role !== 'admin') {
-      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const accessibleTeamIds =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       if (!accessibleTeamIds.includes(teamId)) {
         throw new ForbiddenException('У вас нет доступа к этой команде.');
       }
@@ -474,9 +476,8 @@ export class TeamsService {
     const filters = { id: teamId } as Prisma.TeamWhereUniqueInput;
 
     if (sessionInfo.role !== 'admin') {
-      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const accessibleTeamIds =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       if (!accessibleTeamIds.includes(teamId)) {
         throw new ForbiddenException('У вас нет доступа к этой команде.');
       }
@@ -517,9 +518,8 @@ export class TeamsService {
     const filters = { teamId, userId } as Prisma.UserTeamWhereInput;
 
     if (sessionInfo.role !== 'admin') {
-      const accessibleTeamIds = await this.usersAccessService.findAllowedTeams(
-        sessionInfo.id,
-      );
+      const accessibleTeamIds =
+        await this.usersAccessService.findAllowedTeams(sessionInfo);
       if (!accessibleTeamIds.includes(teamId)) {
         throw new ForbiddenException('У вас нет доступа к этой команде.');
       }

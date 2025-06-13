@@ -24,6 +24,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AdminLoggerInterceptor } from './utils/interceptors/admin-interceptor';
 import { BullModule } from '@nestjs/bull';
 import { MailModule } from './mail/mail.module';
+import { RedisService } from './utils/redis/redis.service';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { MailModule } from './mail/mail.module';
     JwtService,
     PasswordService,
     S3Service,
+    RedisService,
     {
       provide: APP_INTERCEPTOR,
       useClass: AdminLoggerInterceptor,
