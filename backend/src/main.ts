@@ -54,9 +54,6 @@ app.use(
   createProxyMiddleware({
     target: 'http://localhost:9090',
     changeOrigin: true,
-    pathRewrite: {
-      '^/prometheus': '/prometheus',
-    },
     ws: true,
   }),
 );
