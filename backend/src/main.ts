@@ -9,6 +9,7 @@ import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { ExpressAdapter } from '@bull-board/express';
 import { getQueueToken } from '@nestjs/bull';
 import { adminExpressMiddleware } from './utils/middleware/adminExpress.middleware';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -46,6 +47,18 @@ async function bootstrap() {
     '/api/admin/queues',
     adminExpressMiddleware,
     serverAdapter.getRouter(),
+  );
+  app.use(
+    '/api/admin/prometheus',
+    adminExpressMiddleware,
+    createProxyMiddleware({
+      target: 'http://localhost:9090',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/api/admin/prometheus': '/prometheus', // если Prometheus с route-prefix
+      },
+      ws: true,
+    }),
   );
 
   await app.listen(process.env.PORT ?? 3000, () => {
