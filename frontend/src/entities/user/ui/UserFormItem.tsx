@@ -2,6 +2,7 @@ import { Avatar } from '@/shared/ui/Avatar';
 import { Badge } from '@/shared/ui/Badge';
 import { User } from '../types/types';
 import { generalService } from '@/shared/lib/generalService';
+import { usersService } from '@/shared/lib/usersService';
 
 interface UserFormItemProps {
   user?: User;
@@ -14,12 +15,6 @@ export default function UserFormItem({
   setSelected,
   user,
 }: UserFormItemProps) {
-  let nameToShow = (user?.firstName ?? '') + ' ' + (user?.lastName ?? '');
-
-  if (nameToShow === ' ') {
-    nameToShow = user?.username ?? '';
-  }
-
   return (
     <label className="flex gap-4 items-center">
       <input
@@ -37,7 +32,9 @@ export default function UserFormItem({
         src={generalService.transformFileUrl(user?.avatar)}
         className="sm:size-8 size-4"
       />
-      <span className="text-nowrap">{nameToShow}</span>
+      <span className="text-nowrap">
+        {user && usersService.displayName(user)}
+      </span>
       {user?.Spec && (
         <Badge size="sm" color="blue" className="truncate">
           {user.Spec.name}
