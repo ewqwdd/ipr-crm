@@ -27,7 +27,7 @@ export default function TeamFilters({ children }: TeamFiltersProps) {
         <InputWithLabelLight
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Поиск по ФИО"
+          placeholder="Поиск"
           className="mt-0"
         />
         <SpecsMultiSelect value={specs} onChange={(v) => setSpecs(v)} />

@@ -46,6 +46,17 @@ export default function ImportUsersTable({
 
   return (
     <>
+      {rows.length > 0 && (
+        <PrimaryButton
+          onClick={onSubmit}
+          className="mt-4 w-full"
+          disabled={usersLoading || isLoading}
+        >
+          {usersLoading || isLoading
+            ? 'Загрузка...'
+            : 'Импортировать пользователей'}
+        </PrimaryButton>
+      )}
       <div
         className={cva('flex flex-col gap-3 overflow-x-auto sm:-mx-6 -mx-4', {
           'animate-pulse pointer-events-none': usersLoading,
@@ -201,17 +212,6 @@ export default function ImportUsersTable({
           </div>
         )}
       </div>
-      {rows.length > 0 && (
-        <PrimaryButton
-          onClick={onSubmit}
-          className="mt-4 w-full"
-          disabled={usersLoading || isLoading}
-        >
-          {usersLoading || isLoading
-            ? 'Загрузка...'
-            : 'Импортировать пользователей'}
-        </PrimaryButton>
-      )}
     </>
   );
 }

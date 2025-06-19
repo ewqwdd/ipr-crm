@@ -16,7 +16,7 @@ const SpecSelector: FC<SpecSelectorProps> = ({ options, value, onChange }) => {
         Специализация
       </label>
       <Select
-        placeholder="Выберите специализации"
+        placeholder="Специализации"
         isMulti
         name="teams"
         onChange={onChange}

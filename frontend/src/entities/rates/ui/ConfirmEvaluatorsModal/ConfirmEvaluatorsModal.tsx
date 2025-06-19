@@ -14,6 +14,8 @@ import { rate360Api } from '@/shared/api/rate360Api';
 import toast from 'react-hot-toast';
 import { TextArea } from '@/shared/ui/TextArea';
 import TeamFilters from '../../../../features/team/TeamFilters/TeamFilters';
+import { SecondaryButton } from '@/shared/ui/SecondaryButton';
+import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 
 interface ConfirmEvaluatorsModalData {
   rate: Rate;
@@ -231,8 +233,20 @@ export default function ConfirmEvaluatorsModal({
           setOpen={() => setAddType(undefined)}
           title="Добавить оценивающего"
           onSubmit={() => onSubmit(addType!)}
+          footer={false}
           className="sm:max-w-3xl"
         >
+          <div className="my-3 flex justify-end gap-3">
+            <SecondaryButton onClick={() => setAddType(undefined)}>
+              Отмена
+            </SecondaryButton>
+            <PrimaryButton
+              onClick={() => onSubmit(addType!)}
+              disabled={selected.length === 0}
+            >
+              Добавить
+            </PrimaryButton>
+          </div>
           <TeamFilters>
             {(filters) => (
               <EvaluatorsForm

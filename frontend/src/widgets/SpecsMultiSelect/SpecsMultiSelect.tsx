@@ -24,7 +24,7 @@ export default function SpecsMultiSelect({
 
   return (
     <Select
-      placeholder="Выберите специализации"
+      placeholder="Специализации"
       isMulti
       name="specs"
       onChange={onChange}

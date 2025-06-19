@@ -4,6 +4,8 @@ import { useAppSelector } from '@/app';
 import { useState } from 'react';
 import EvaluatorsForm from '../EvaluatorsForm/EvaluatorsForm';
 import { TeamFilters } from '@/features/team/TeamFilters';
+import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 
 interface AddEvaluatorModalData {
   onSubmit: (data: EvaluateUser[]) => void;
@@ -33,13 +35,21 @@ export default function AddEvaluatorModal({
       open={isOpen}
       setOpen={closeModal}
       title="Добавить оценщика"
-      onSubmit={() => {
-        onSubmit(selected);
-        closeModal();
-      }}
+      footer={false}
       submitText="Добавить"
       className="w-full sm:max-w-4xl"
     >
+      <div className="flex justify-end gap-3 my-3">
+        <SecondaryButton onClick={closeModal}>Отмена</SecondaryButton>
+        <PrimaryButton
+          onClick={() => {
+            onSubmit(selected);
+            closeModal();
+          }}
+        >
+          Добавить
+        </PrimaryButton>
+      </div>
       <TeamFilters>
         {(filters) => (
           <EvaluatorsForm

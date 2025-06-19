@@ -15,6 +15,7 @@ import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { useAppSelector } from '@/app';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
+import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -156,15 +157,28 @@ export default function TeamPage() {
         open={openNewUser}
         setOpen={setOpenNewUser}
         title="Добавить участника"
-        onSubmit={() => mutate({ userIds: selected, teamId: Number(id) })}
+        footer={false}
         loading={mutateLoading}
       >
-        <AddUserForm
-          curatorId={data?.curator?.id}
-          selected={selected}
-          setSelected={setSelected}
-          teamId={Number(id)}
-        />
+        <>
+          <div className="flex justify-end gap-3 mt-2">
+            <SecondaryButton onClick={() => setOpenNewUser(false)}>
+              Отмена
+            </SecondaryButton>
+            <PrimaryButton
+              onClick={() => mutate({ userIds: selected, teamId: Number(id) })}
+              disabled={selected.length === 0 || mutateLoading}
+            >
+              Добавить
+            </PrimaryButton>
+          </div>
+          <AddUserForm
+            curatorId={data?.curator?.id}
+            selected={selected}
+            setSelected={setSelected}
+            teamId={Number(id)}
+          />
+        </>
       </Modal>
     </LoadingOverlay>
   );

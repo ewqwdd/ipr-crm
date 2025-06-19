@@ -34,19 +34,17 @@ export class NotificationsService {
       },
     });
 
-    if (process.env.MAIL_ENABLED === 'true') {
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = `Вам назначен индивидуальный план развития №${iprId}`;
-      const link = `${process.env.FRONTEND_URL}/board`;
+    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const message = `Вам назначен индивидуальный план развития №${iprId}`;
+    const link = `${process.env.FRONTEND_URL}/board`;
 
-      const html = this.generateText(heading, message, link);
+    const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(
-        user.email,
-        'Вам назначен индивидуальный план развития',
-        html,
-      );
-    }
+    await this.mailService.sendMail(
+      user.email,
+      'Вам назначен индивидуальный план развития',
+      html,
+    );
 
     await this.prismaService.notification.create({
       data: {
@@ -73,17 +71,14 @@ export class NotificationsService {
       },
     });
 
-    if (process.env.MAIL_ENABLED === 'true') {
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = `Вам назначена оценка №${rateId}`;
-      const link = `${process.env.FRONTEND_URL}/progress`;
+    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const message = `Вам назначена оценка №${rateId}`;
+    const link = `${process.env.FRONTEND_URL}/progress`;
 
-      const html = this.generateText(heading, message, link);
+    const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
-    }
+    await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
 
-    console.log(rateId);
     await (tx ?? this.prismaService).notification.create({
       data: {
         title: 'Вам назначена оценка',
@@ -102,15 +97,13 @@ export class NotificationsService {
       },
     });
 
-    if (process.env.MAIL_ENABLED === 'true') {
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = `Вам назначена оценка №${rateId}`;
-      const link = `${process.env.FRONTEND_URL}/progress?tab=self-assessment`;
+    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const message = `Вам назначена оценка №${rateId}`;
+    const link = `${process.env.FRONTEND_URL}/progress?tab=self-assessment`;
 
-      const html = this.generateText(heading, message, link);
+    const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
-    }
+    await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
 
     await this.prismaService.notification.create({
       data: {
@@ -138,19 +131,17 @@ export class NotificationsService {
         },
       });
 
-      if (process.env.MAIL_ENABLED === 'true') {
-        const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-        const message = `Вам назначено утверждение оценки №${rateId}`;
-        const link = `${process.env.FRONTEND_URL}/progress?tab=confirm-list`;
+      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+      const message = `Вам назначено утверждение оценки №${rateId}`;
+      const link = `${process.env.FRONTEND_URL}/progress?tab=confirm-list`;
 
-        const html = this.generateText(heading, message, link);
+      const html = this.generateText(heading, message, link);
 
-        await this.mailService.sendMail(
-          user.email,
-          'Вам назначено утверждение оценки',
-          html,
-        );
-      }
+      await this.mailService.sendMail(
+        user.email,
+        'Вам назначено утверждение оценки',
+        html,
+      );
 
       await (tx ?? this.prismaService).notification.create({
         data: {
@@ -173,15 +164,13 @@ export class NotificationsService {
       },
     });
 
-    if (process.env.MAIL_ENABLED === 'true') {
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = 'Вам назначен тест';
-      const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=tests`;
+    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const message = 'Вам назначен тест';
+    const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=tests`;
 
-      const html = this.generateText(heading, message, link);
+    const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(user.email, 'Вам назначен тест', html);
-    }
+    await this.mailService.sendMail(user.email, 'Вам назначен тест', html);
 
     await this.prismaService.notification.create({
       data: {
@@ -203,19 +192,17 @@ export class NotificationsService {
       },
     });
 
-    if (process.env.MAIL_ENABLED === 'true') {
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = 'Время для теста истекло';
-      const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=finished`;
+    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const message = 'Время для теста истекло';
+    const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=finished`;
 
-      const html = this.generateText(heading, message, link);
+    const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(
-        user.email,
-        'Время для теста истекло',
-        html,
-      );
-    }
+    await this.mailService.sendMail(
+      user.email,
+      'Время для теста истекло',
+      html,
+    );
 
     await this.prismaService.notification.create({
       data: {
@@ -307,15 +294,13 @@ export class NotificationsService {
       },
     });
 
-    if (process.env.MAIL_ENABLED === 'true') {
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = 'Вам назначен опрос';
-      const link = `${process.env.FRONTEND_URL}/assigned-surveys?tab=surveys`;
+    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const message = 'Вам назначен опрос';
+    const link = `${process.env.FRONTEND_URL}/assigned-surveys?tab=surveys`;
 
-      const html = this.generateText(heading, message, link);
+    const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(user.email, 'Вам назначен опрос', html);
-    }
+    await this.mailService.sendMail(user.email, 'Вам назначен опрос', html);
 
     await this.prismaService.notification.create({
       data: {
@@ -334,19 +319,17 @@ export class NotificationsService {
     ticketId: number,
     user: { id: number; firstName: string; lastName: string; email: string },
   ) {
-    if (process.env.MAIL_ENABLED === 'true') {
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = 'Новое обращение в поддержку';
-      const link = `${process.env.FRONTEND_URL}/support/admin`;
+    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const message = 'Новое обращение в поддержку';
+    const link = `${process.env.FRONTEND_URL}/support/admin`;
 
-      const html = this.generateText(heading, message, link);
+    const html = this.generateText(heading, message, link);
 
-      await this.mailService.sendMail(
-        user.email,
-        'Новое обращение в поддержку',
-        html,
-      );
-    }
+    await this.mailService.sendMail(
+      user.email,
+      'Новое обращение в поддержку',
+      html,
+    );
 
     await this.prismaService.notification.create({
       data: {

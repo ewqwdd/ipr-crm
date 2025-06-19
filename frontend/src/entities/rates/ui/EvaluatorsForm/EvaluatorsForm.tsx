@@ -82,14 +82,16 @@ export default memo(function EvaluatorsForm({
 
   return (
     <div className="flex flex-col gap-4 pt-4">
-      <NoTeamEvaluators
-        setSelected={setSelected}
-        excluded={excluded}
-        selected={selected}
-        evaluateTeam={evaluateTeam}
-        type={type}
-        search={search}
-      />
+      {teams.length === 0 && (
+        <NoTeamEvaluators
+          setSelected={setSelected}
+          excluded={excluded}
+          selected={selected}
+          evaluateTeam={evaluateTeam}
+          type={type}
+          search={search}
+        />
+      )}
       {filteredTeams?.map((team) => (
         <EvaluatorTeam
           excluded={excluded}
