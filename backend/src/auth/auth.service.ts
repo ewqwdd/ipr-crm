@@ -55,6 +55,12 @@ export class AuthService {
       throw new UnauthorizedException('Пользователь не найден');
     }
 
+    if (user.authCode) {
+      const { html, subject } = this.mailService.generateResetPassword(user);
+      await this.mailService.sendMail(user.email, subject, html);
+      return;
+    }
+
     const authCode = Math.random().toString(36).substring(2, 15);
     const hashed = this.passwordService.getHash(authCode);
 
