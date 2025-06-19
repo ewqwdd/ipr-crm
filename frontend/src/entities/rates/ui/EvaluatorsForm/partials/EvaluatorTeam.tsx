@@ -47,9 +47,7 @@ export default function EvaluatorTeam({
     !subTeamsCurators?.find((u) => u?.id === user.userId) &&
     parentTeam?.curatorId !== user.userId;
 
-  const otherTeamCount =
-    (excluded?.filter(filterFn)?.length ?? 0) +
-    (selected.filter(filterFn)?.length ?? 0);
+  const otherTeamCount = selected.filter(filterFn)?.length ?? 0;
 
   const onChange = (user: TeamUser) => {
     if (

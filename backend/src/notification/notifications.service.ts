@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, User } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { errorLogger } from 'src/utils/filters/logger';
@@ -25,6 +25,26 @@ export class NotificationsService {
 <p style="max-width:560px;margin:30px auto;">${message}</p>
 <a href="${link}" style="display:inline-block;margin-top:20px;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;margin-left:30px;">Перейти</a>
 </div>`;
+  }
+
+  generateButtonText(user: User, message: string, link: string, linkText: string) {
+    return `<div style="font-family: 'Nunito Sans', sans-serif; padding: 24px; text-align: center; color: #374151; background-color: #f9fafb; border-radius: 8px;">
+
+    <h2 style="font-size: 24px; font-weight: 800; line-height: 1.25; margin-bottom: 16px; color: #111827;">Вам назначено утверждение оценки в AYA SKILLS</h2>
+
+    <div style="max-width: 600px; margin: 0 auto; padding: 24px; background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);">
+
+        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 16px;">Здравствуйте, ${user.firstName ?? user.username ?? user.email}!</p>
+
+        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 16px;">${message}</p>
+
+        <a href="${link}" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 600; transition: background-color 0.2s ease-in-out;">${linkText}</a>
+
+    </div>
+
+    <p style="font-size: 14px; line-height: 1.5; margin-top: 24px; color: #6b7280;">С уважением,<br>Команда AYA Group</p>
+
+</div>`
   }
 
   async sendIprAssignedNotification(userId: number, iprId: number) {
@@ -131,11 +151,10 @@ export class NotificationsService {
         },
       });
 
-      const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
-      const message = `Вам назначено утверждение оценки №${rateId}`;
+      const message = "Вам назначено утверждение оценки";
       const link = `${process.env.FRONTEND_URL}/progress?tab=confirm-list`;
 
-      const html = this.generateText(heading, message, link);
+      const html = this.generateButtonText(user, message, link, "Перейти");
 
       await this.mailService.sendMail(
         user.email,
