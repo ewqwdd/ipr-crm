@@ -1,6 +1,5 @@
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import RatesFiltersWrapper from './ui/RatesFilters';
 import { SelectAll } from '@/widgets/SelectAll';
 import RatesTable from './ui/RatesTable';
 import { Pagination } from '@/shared/ui/Pagination';
@@ -8,13 +7,15 @@ import Settings from './ui/Settings';
 import AddRate from '../AddRate/AddRate';
 import { Modal } from '@/shared/ui/Modal';
 import { useEffect, useState } from 'react';
-import { Filters } from './ui/RatesFilters/types';
-import { initialFilters } from './ui/RatesFilters/constatnts';
 import { useAppDispatch } from '@/app';
 import { rate360Api } from '@/shared/api/rate360Api';
 import { ratesActions } from '../../model/rateSlice';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Rates360TableType } from './types';
+import RatesFiltersWrapper, {
+  initialRateFilters,
+  RateFilters,
+} from '@/features/rate/RatesFilters';
 
 const LIMIT = 10;
 
@@ -26,7 +27,7 @@ export default function Rates360Table({ type }: Rates360TableProps) {
   const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [filters, setFilters] = useState<RateFilters>(initialRateFilters);
   const dispatch = useAppDispatch();
 
   const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery({
@@ -48,7 +49,7 @@ export default function Rates360Table({ type }: Rates360TableProps) {
 
   useEffect(() => {
     setPage(1);
-    setFilters(initialFilters);
+    setFilters(initialRateFilters);
   }, [type]);
 
   useEffect(() => {

@@ -74,6 +74,9 @@ const SupportAdmin = React.lazy(
 const SupportOverview = React.lazy(
   () => import('@/pages/SupportOverview/SupportOverview'),
 );
+const Rate360Statistic = React.lazy(
+  () => import('@/pages/Rate360Statistic/Rate360Statistic'),
+);
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -202,6 +205,12 @@ export const routerItems: RouterItemType[] = [
   { path: '/support', element: <Support /> },
   { path: '/support-admin', element: <SupportAdmin />, onlyAdmin: true },
   { path: '/support/:id', element: <SupportOverview /> },
+  {
+    path: '/rate-statistics',
+    element: <Rate360Statistic />,
+    curator: true,
+    onlyAdmin: true,
+  },
 ];
 
 export const guestRoutes = ['/login', '/invite', '/reset-password'];

@@ -27,8 +27,8 @@ export class RateFiltersDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(['COMPLETED', 'NOT_COMPLETED'])
-  status?: 'COMPLETED' | 'NOT_COMPLETED';
+  @IsEnum(['COMPLETED', 'NOT_COMPLETED', 'NOT_CONFIRMED'])
+  status?: 'COMPLETED' | 'NOT_COMPLETED' | 'NOT_CONFIRMED';
 
   @IsOptional()
   @Transform(({ value }) => Number(value))

@@ -8,8 +8,9 @@ import { rateDescriptions } from './model/rateDescriptions';
 import ConfirmEvaluatorsModal from './ui/ConfirmEvaluatorsModal/ConfirmEvaluatorsModal';
 import { EditEvaluatorsModal } from './ui/EditEvaluatorsModal';
 import Rates360Table from './ui/Rates360Table/Rates360Table';
+import type { Rates360TableType } from './ui/Rates360Table/types';
 
-export type { Rate, AddRateDto };
+export type { Rate, AddRateDto, Rates360TableType };
 
 export {
   ratesReducer,

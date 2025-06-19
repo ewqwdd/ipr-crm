@@ -62,7 +62,7 @@ export default function WithAvatarsAndMultiLineContent() {
       <div className="flex mb-4 text-sm text-gray-700">
         Активных пользователей:{' '}
         <span className="ml-2 font-semibold">
-          {activeUsers.length} / {(data?.count ?? 0) - activeUsers.length}
+          {activeUsers.length} из {data?.count ?? 0}
         </span>
       </div>
 

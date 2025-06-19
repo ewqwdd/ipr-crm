@@ -42,6 +42,10 @@ export const administrationNavigation = (type: 'admin' | 'curator') => [
         name: 'Оценки команды',
         href: '/360rate-team',
       },
+      {
+        name: 'Статистика 360',
+        href: '/rate-statistics',
+      },
     ],
   },
   {

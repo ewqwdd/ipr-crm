@@ -14,7 +14,7 @@ interface RateFiltersDto {
   page?: number;
   limit?: number;
   skill?: 'HARD' | 'SOFT';
-  status?: 'COMPLETED' | 'NOT_COMPLETED';
+  status?: 'COMPLETED' | 'NOT_COMPLETED' | 'NOT_CONFIRMED';
   specId?: number;
   user?: number;
   teams?: number[];

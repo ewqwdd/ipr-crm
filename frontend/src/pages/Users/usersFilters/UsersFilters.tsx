@@ -7,8 +7,8 @@ import { getAllFilterOptions } from './helpers';
 import SpecSelector from './SpecSelector';
 import { Filters, initialFilters } from './constants';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
-import TeamSelector from '@/entities/rates/ui/Rates360Table/ui/RatesFilters/TeamSelector';
 import AccessSelect from './AccessSelect';
+import { TeamSelector } from '@/widgets/TeamSelector';
 
 interface UsersFiltersProps {
   data?: User[];

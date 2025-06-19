@@ -1,6 +1,5 @@
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useState } from 'react';
-import TeamSelector from './TeamSelector';
 import {
   initialFilters,
   progressOptions,
@@ -16,8 +15,9 @@ import { StaticSelectFilter } from '@/shared/ui/StaticSelectFilter';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
 import { User } from '@/entities/user';
 import { Checkbox } from '@/shared/ui/Checkbox';
-import { Rates360TableType } from '../../types';
 import { PeriodSelector } from '@/shared/ui/PeriodSelector';
+import { Rates360TableType } from '@/entities/rates';
+import { TeamSelector } from '@/widgets/TeamSelector';
 
 type OnChange = (value: string | number) => void;
 
@@ -35,6 +35,7 @@ interface RatesFiltersProps {
   onChangePeriod: (value?: DateObject | DateObject[]) => void;
   onChangeHidden: (value: boolean) => void;
   type: Rates360TableType;
+  exclude?: (keyof Filters)[];
 }
 
 const RatesFilters: FC<RatesFiltersProps> = ({
@@ -51,6 +52,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
   onChangePeriod,
   onChangeHidden,
   type,
+  exclude = [],
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -78,7 +80,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
       </div>
       {isOpen && (
         <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {type !== 'TEAM' && (
+          {type !== 'TEAM' && !exclude.includes('teams') && (
             <TeamSelector
               options={teamsOptions}
               value={filters.teams}
@@ -95,25 +97,33 @@ const RatesFilters: FC<RatesFiltersProps> = ({
               setValue={onChangeUser}
             />
           </div>
-          <StaticSelectFilter
-            label="Специализации"
-            options={specsOptions}
-            onChange={onChangeSpec}
-            value={filters.specId}
-          />
-          <StaticSelectFilter
-            label="Навыки"
-            options={skillTypeOptions}
-            onChange={onChangeSkillType}
-            value={filters.skillType}
-          />
-          <StaticSelectFilter
-            label="Прогресс"
-            options={progressOptions}
-            onChange={onChangeProgress}
-            value={filters.status}
-          />
-          <PeriodSelector value={filters.period} onChange={onChangePeriod} />
+          {!exclude.includes('specId') && (
+            <StaticSelectFilter
+              label="Специализации"
+              options={specsOptions}
+              onChange={onChangeSpec}
+              value={filters.specId}
+            />
+          )}
+          {!exclude.includes('skillType') && (
+            <StaticSelectFilter
+              label="Навыки"
+              options={skillTypeOptions}
+              onChange={onChangeSkillType}
+              value={filters.skillType}
+            />
+          )}
+          {!exclude.includes('status') && (
+            <StaticSelectFilter
+              label="Прогресс"
+              options={progressOptions}
+              onChange={onChangeProgress}
+              value={filters.status}
+            />
+          )}
+          {!exclude.includes('period') && (
+            <PeriodSelector value={filters.period} onChange={onChangePeriod} />
+          )}
           <div className="flex 2xl:mt-5 max-xl:my-3 lg:col-span-3 xl:col-span-2 sm:col-span-2">
             <Checkbox
               title={'Архивные'}

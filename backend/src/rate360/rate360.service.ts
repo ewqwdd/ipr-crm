@@ -69,11 +69,13 @@ export class Rate360Service {
       ...(user ? { userId: user } : {}),
       ...(specId ? { specId } : {}),
       ...(skill ? { type: skill } : {}),
-      ...(status === 'COMPLETED'
-        ? { finished: true }
-        : status === 'NOT_COMPLETED'
-          ? { finished: false }
-          : {}),
+      ...(status === 'COMPLETED' ? { finished: true } : {}),
+      ...(status === 'NOT_COMPLETED' ? { finished: false } : {}),
+      ...(status === 'NOT_CONFIRMED'
+        ? {
+            OR: [{ curatorConfirmed: false }, { userConfirmed: false }],
+          }
+        : {}),
       ...(startDate ? { startDate: { gte: new Date(startDate) } } : {}),
       ...(endDate ? { endDate: { lte: new Date(endDate) } } : {}),
       hidden: !!hidden,
@@ -99,6 +101,15 @@ export class Rate360Service {
 
     if (curator?.id || teams.length > 0) {
       where.team = { id: { in: teamsFilter } };
+    }
+
+    if (curator?.id) {
+      where.evaluators = {
+        some: {
+          type: EvaluatorType.CURATOR,
+          userId: curator?.id,
+        },
+      };
     }
 
     let [total, rates] = await this.prismaService.$transaction([
@@ -360,30 +371,14 @@ export class Rate360Service {
 
         return await Promise.all(
           ratesToCreate.map(async (rate, index) => {
+            const curator = rate.evaluateCurators[0];
             const team = await tx.team.findUnique({
-              where: {
-                id: rate.teamId,
-              },
-              select: {
-                curatorId: true,
-                parentTeamId: true,
-                name: true,
-                parentTeam: {
-                  include: {
-                    curator: true,
-                  },
-                },
-              },
+              where: { id: rate.teamId },
+              select: { name: true },
             });
 
-            let curatorConfirm = data.confirmCurator;
-
-            if (
-              team.curatorId === rate.userId &&
-              (!team.parentTeamId || team.parentTeam.curatorId === rate.userId)
-            ) {
-              curatorConfirm = false;
-            }
+            let curatorNeedConfirm =
+              data.confirmCurator && curator.userId !== rate.userId;
 
             if (data.confirmUser) {
               await this.notificationsService.sendRateConfirmNotification(
@@ -391,20 +386,12 @@ export class Rate360Service {
                 createdRates[index].id,
                 tx,
               );
-            } else if (curatorConfirm) {
-              if (team.curatorId === rate.userId) {
-                await this.notificationsService.sendRateConfirmNotification(
-                  team.parentTeam.curator.id,
-                  createdRates[index].id,
-                  tx,
-                );
-              } else {
-                await this.notificationsService.sendRateConfirmNotification(
-                  team.curatorId,
-                  createdRates[index].id,
-                  tx,
-                );
-              }
+            } else if (curatorNeedConfirm) {
+              await this.notificationsService.sendRateConfirmNotification(
+                curator.userId,
+                createdRates[index].id,
+                tx,
+              );
             } else {
               await this.notificationsService.sendRateAssignedNotification(
                 rate.userId,
@@ -441,7 +428,7 @@ export class Rate360Service {
             return await tx.rate360.update({
               where: { id: createdRates[index].id },
               data: {
-                curatorConfirmed: !curatorConfirm,
+                curatorConfirmed: !curatorNeedConfirm,
                 evaluators: {
                   createMany: {
                     data: [
@@ -1134,17 +1121,11 @@ export class Rate360Service {
   async findRatesToConfirmByCurator(userId: number) {
     const rates = await this.prismaService.rate360.findMany({
       where: {
-        team: {
-          OR: [
-            {
-              curatorId: userId,
-            },
-            {
-              parentTeam: {
-                curatorId: userId,
-              },
-            },
-          ],
+        evaluators: {
+          some: {
+            userId,
+            type: EvaluatorType.CURATOR,
+          },
         },
         curatorConfirmed: false,
         userConfirmed: true,
@@ -1193,21 +1174,7 @@ export class Rate360Service {
       },
     });
 
-    // Для куратора оценки челнов его команды или куратора дочерней команды
-
-    const filtered = rates.filter(({ team, userId: rateUserId }) => {
-      const isCurator = team.curatorId === userId;
-      const isSelfCurator = team.curatorId === rateUserId;
-
-      const isParentCurator =
-        (!team.curatorId || isSelfCurator) &&
-        team.parentTeam &&
-        team.parentTeam?.curatorId === userId &&
-        team.parentTeam?.curatorId !== rateUserId;
-
-      return (isCurator && !isSelfCurator) || isParentCurator;
-    });
-    return filtered;
+    return rates;
   }
 
   async confirmByCurator(
@@ -1223,17 +1190,11 @@ export class Rate360Service {
     const rate = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
-        team: {
-          OR: [
-            {
-              curatorId,
-            },
-            {
-              parentTeam: {
-                curatorId,
-              },
-            },
-          ],
+        evaluators: {
+          some: {
+            userId: curatorId,
+            type: EvaluatorType.CURATOR,
+          },
         },
       },
     });
@@ -1385,6 +1346,7 @@ export class Rate360Service {
         evaluators: {
           select: {
             userId: true,
+            type: true,
           },
         },
       },
@@ -1393,24 +1355,16 @@ export class Rate360Service {
       throw new NotFoundException('Rate not found');
     }
 
-    const isCurator =
-      rate.team.curatorId && rate.team.curatorId !== rate.userId;
-    const isParentCurator =
-      rate.team.parentTeam?.curatorId &&
-      rate.team.parentTeam?.curatorId !== rate.userId;
+    const curator = rate.evaluators[0];
 
     if (!rate.userConfirmed) {
       await this.notificationsService.sendRateSelfAssignedNotification(
         rate.userId,
         rateId,
       );
-    } else if (!rate.curatorConfirmed && (isCurator || isParentCurator)) {
-      let curatorId = rate.team?.curatorId;
-      if (!isCurator) {
-        curatorId = rate.team.parentTeam?.curatorId;
-      }
+    } else if (!rate.curatorConfirmed) {
       await this.notificationsService.sendRateConfirmNotification(
-        curatorId,
+        curator.userId,
         rateId,
       );
     } else {
