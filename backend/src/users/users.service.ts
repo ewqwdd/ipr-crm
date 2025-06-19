@@ -55,7 +55,7 @@ export class UsersService {
 
   async findOneByEmail(email: string) {
     const user = await this.prisma.user.findFirst({
-      where: { email: email.toLowerCase() },
+      where: { OR: [{ email }, { email: email.toLowerCase() }] },
       include: {
         role: true,
         Spec: {
