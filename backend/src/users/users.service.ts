@@ -55,7 +55,7 @@ export class UsersService {
 
   async findOneByEmail(email: string) {
     const user = await this.prisma.user.findFirst({
-      where: { email },
+      where: { email: email.toLowerCase() },
       include: {
         role: true,
         Spec: {
@@ -124,6 +124,7 @@ export class UsersService {
     const passwordHash = await this.passwordService.getHash(data.password);
     const userData = {
       ...data,
+      email: data.email.toLowerCase(),
       roleId: data.roleId || 2,
       passwordHash,
       teams: { createMany: { data: data.teams.map((t) => ({ teamId: t })) } },
@@ -411,7 +412,7 @@ export class UsersService {
           username: u.username.toLowerCase(),
         }));
 
-        const emails = users.map((u) => u.email);
+        const emails = users.map((u) => u.email.toLowerCase());
         const usernames = users.map((u) => u.username);
         const teams = [
           ...new Set(
