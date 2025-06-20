@@ -71,11 +71,7 @@ export class Rate360Service {
       ...(skill ? { type: skill } : {}),
       ...(status === 'COMPLETED' ? { finished: true } : {}),
       ...(status === 'NOT_COMPLETED' ? { finished: false } : {}),
-      ...(status === 'NOT_CONFIRMED'
-        ? {
-            OR: [{ curatorConfirmed: false }, { userConfirmed: false }],
-          }
-        : {}),
+      ...(status === 'NOT_CONFIRMED' ? { curatorConfirmed: false } : {}),
       ...(startDate ? { startDate: { gte: new Date(startDate) } } : {}),
       ...(endDate ? { endDate: { lte: new Date(endDate) } } : {}),
       hidden: !!hidden,
