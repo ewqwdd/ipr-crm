@@ -33,6 +33,7 @@ export default function ConfirmCheckbox({
             onChangeConfirmCurator(true);
           } else {
             onChangeConfirmCurator(false);
+            onChageConfirmUser(false);
           }
         }}
         title={'Подтверждение руководителем в оценке 360'}

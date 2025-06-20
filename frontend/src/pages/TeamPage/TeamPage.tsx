@@ -133,10 +133,10 @@ export default function TeamPage() {
           <h3 className="text-lg font-medium text-gray-900">
             Дочерние команды
           </h3>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {data?.subTeams?.map((team) => (
               <Link to={`/teams/${team.id}`} key={team.id}>
-                <SoftButton>
+                <SoftButton className="whitespace-nowrap">
                   {team.name}{' '}
                   <span className="opacity-80 font-normal">
                     {(team.users?.length ?? 0) + (team.curatorId ? 1 : 0)} чел.

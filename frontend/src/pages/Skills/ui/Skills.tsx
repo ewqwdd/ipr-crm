@@ -28,7 +28,6 @@ export default function Skills() {
   useEffect(() => {
     if (archiveMutation[1].isSuccess) {
       toast.success('Версия зафиксирована');
-      console.log('Версия зафиксирована');
       invalidateTags(['Rate360']);
       invalidateTags(['Spec']);
       invalidateTags(['ProductFolders', 'TeamFolders', 'SpecFolders']);

@@ -207,7 +207,8 @@ export class TeamsService {
           : undefined,
       },
     });
-
+    await this.usersAccessService.removeRedisTeamsCache(team.curatorId);
+    await this.usersAccessService.removeRedisTeamsCache(body.curatorId);
     if (body.curatorId && team.users.find((e) => e.userId === body.curatorId)) {
       await this.prisma.userTeam.deleteMany({
         where: {
@@ -245,6 +246,9 @@ export class TeamsService {
         throw new ForbiddenException('У вас нет доступа к этой команде.');
       }
     }
+
+    await this.usersAccessService.removeRedisTeamsCache(team.curatorId);
+    await this.usersAccessService.removeRedisTeamsCache(sessionInfo.id);
 
     await this.prisma.team.update({
       where: { id: teamId },

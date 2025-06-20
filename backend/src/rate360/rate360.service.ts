@@ -85,12 +85,14 @@ export class Rate360Service {
   async findAll(data: RateFiltersDto, curator?: GetSessionInfoDto) {
     const teams = data.teams ? data.teams.split(',').map(Number) : [];
     let teamsFilter: number[] = teams ?? [];
+    let teamAccess;
     const { page, limit } = data;
 
     const where = this.findAllFilters(data);
 
     if (curator?.id) {
-      teamsFilter = await this.usersService.findAllowedTeams(curator);
+      teamAccess = await this.usersService.findAllowedTeams(curator);
+      teamsFilter = teamAccess;
       if (teams) {
         teamsFilter =
           teams.length > 0
@@ -103,13 +105,39 @@ export class Rate360Service {
       where.team = { id: { in: teamsFilter } };
     }
 
-    if (curator?.id) {
-      where.evaluators = {
-        some: {
-          type: EvaluatorType.CURATOR,
-          userId: curator?.id,
+    if (curator?.id && data.includeWhereEvaluatorCurator) {
+      if (where.team) {
+        if (teams.length > 0) {
+          where.team = { id: { in: teams ?? [] } };
+        } else {
+          delete where.team;
+        }
+      }
+      const or = [
+        {
+          team: { id: { in: teamAccess } },
         },
-      };
+        {
+          evaluators: {
+            some: {
+              type: EvaluatorType.CURATOR,
+              userId: curator.id,
+            },
+          },
+        },
+      ];
+      if (!where.OR) {
+        where.OR = or;
+      } else if (!where.AND) {
+        where.AND = [{ OR: where.OR }, { OR: or }];
+      } else {
+        where.AND = [
+          ...(Array.isArray(where.AND) ? where.AND : []),
+          { OR: or },
+          { OR: where.OR },
+        ];
+        delete where.OR;
+      }
     }
 
     let [total, rates] = await this.prismaService.$transaction([
@@ -138,13 +166,12 @@ export class Rate360Service {
 
     const where = this.findAllFilters(data);
 
-    const allowedTeamUsers =
-      await this.usersService.findAllowedSubbordinates(curatorId);
-
-    where.OR = allowedTeamUsers.map(({ teamId, userId }) => ({
-      teamId,
-      userId,
-    }));
+    where.evaluators = {
+      some: {
+        type: EvaluatorType.CURATOR,
+        userId: curatorId,
+      },
+    };
 
     let [total, rates] = await this.prismaService.$transaction([
       this.prismaService.rate360.count({ where }),

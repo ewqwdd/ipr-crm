@@ -27,7 +27,12 @@ export class NotificationsService {
 </div>`;
   }
 
-  generateButtonText(user: User, message: string, link: string, linkText: string) {
+  generateButtonText(
+    user: User,
+    message: string,
+    link: string,
+    linkText: string,
+  ) {
     return `<div style="font-family: 'Nunito Sans', sans-serif; padding: 24px; text-align: center; color: #374151; background-color: #f9fafb; border-radius: 8px;">
 
     <h2 style="font-size: 24px; font-weight: 800; line-height: 1.25; margin-bottom: 16px; color: #111827;">Вам назначено утверждение оценки в AYA SKILLS</h2>
@@ -44,7 +49,7 @@ export class NotificationsService {
 
     <p style="font-size: 14px; line-height: 1.5; margin-top: 24px; color: #6b7280;">С уважением,<br>Команда AYA Group</p>
 
-</div>`
+</div>`;
   }
 
   async sendIprAssignedNotification(userId: number, iprId: number) {
@@ -54,7 +59,7 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = `Вам назначен индивидуальный план развития №${iprId}`;
     const link = `${process.env.FRONTEND_URL}/board`;
 
@@ -91,7 +96,7 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = `Вам назначена оценка №${rateId}`;
     const link = `${process.env.FRONTEND_URL}/progress`;
 
@@ -117,7 +122,7 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = `Вам назначена оценка №${rateId}`;
     const link = `${process.env.FRONTEND_URL}/progress?tab=self-assessment`;
 
@@ -151,10 +156,10 @@ export class NotificationsService {
         },
       });
 
-      const message = "Вам назначено утверждение оценки";
+      const message = 'Вам назначено утверждение оценки';
       const link = `${process.env.FRONTEND_URL}/progress?tab=confirm-list`;
 
-      const html = this.generateButtonText(user, message, link, "Перейти");
+      const html = this.generateButtonText(user, message, link, 'Перейти');
 
       await this.mailService.sendMail(
         user.email,
@@ -183,7 +188,7 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Вам назначен тест';
     const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=tests`;
 
@@ -211,7 +216,7 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Время для теста истекло';
     const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=finished`;
 
@@ -313,7 +318,7 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Вам назначен опрос';
     const link = `${process.env.FRONTEND_URL}/assigned-surveys?tab=surveys`;
 
@@ -336,9 +341,15 @@ export class NotificationsService {
 
   async sendSupportTicketCreatedNotification(
     ticketId: number,
-    user: { id: number; firstName: string; lastName: string; email: string },
+    user: {
+      id: number;
+      firstName: string;
+      lastName: string;
+      email: string;
+      username?: string;
+    },
   ) {
-    const heading = `Здраствуйте, ${user.firstName} ${user.lastName}.`;
+    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Новое обращение в поддержку';
     const link = `${process.env.FRONTEND_URL}/support/admin`;
 

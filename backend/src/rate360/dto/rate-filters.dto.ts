@@ -61,4 +61,9 @@ export class RateFiltersDto {
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
   subbordinatesOnly?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  includeWhereEvaluatorCurator?: boolean;
 }

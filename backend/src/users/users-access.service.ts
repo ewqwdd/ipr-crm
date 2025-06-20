@@ -16,7 +16,7 @@ export class UsersAccessService {
     private redis: RedisService,
   ) {}
 
-  cacheTime = 3600; // 1 hour in seconds
+  cacheTime = 60 * 5; // 5 minutes in seconds
 
   findSubTeams = (teams: SubTeam[] = []) => {
     const filterTeam = (team: SubTeam) => {

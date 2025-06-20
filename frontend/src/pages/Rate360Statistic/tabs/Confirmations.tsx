@@ -33,6 +33,7 @@ export default function Confirmations({ filters }: ConfirmationsProps) {
     startDate: filters.period?.[0]?.toDate()?.toISOString(),
     endDate: filters.period?.[1]?.toDate()?.toISOString(),
     hidden: !!filters.hidden,
+    includeWhereEvaluatorCurator: true,
   });
 
   const sendNotification = (rateId: number) => {

@@ -22,6 +22,7 @@ interface RateFiltersDto {
   endDate?: string;
   hidden?: boolean;
   subbordinatesOnly?: boolean;
+  includeWhereEvaluatorCurator?: boolean;
 }
 
 const rate360Api = createApi({
