@@ -93,7 +93,7 @@ export const routerItems: RouterItemType[] = [
   { path: '/addUser', element: <AddUser />, onlyAdmin: true },
   { path: '/structure', element: <Structure />, onlyAdmin: true },
   { path: '/teams', element: <Teams />, onlyAdmin: true, curator: true },
-  { path: '/teams/:id', element: <TeamPage />, onlyAdmin: true, curator: true },
+  { path: '/teams/:id', element: <TeamPage /> },
   {
     path: '/360rate',
     element: <Rates360Table type="ALL" />,

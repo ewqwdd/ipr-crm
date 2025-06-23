@@ -274,6 +274,8 @@ export class Rate360Service {
 
   async createRate(data: CreateRateDto, sessionInfo: GetSessionInfoDto) {
     const { rate, skill, confirmCurator, confirmUser } = data;
+    if (sessionInfo.role !== 'admin')
+      throw new ForbiddenException('You are not allowed to create this rate');
 
     const { folders, products, specs } = await this.findFolderdsForRates(
       rate.map((r) => r.teamId),

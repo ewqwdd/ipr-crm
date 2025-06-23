@@ -9,6 +9,7 @@ import { surveyApi } from '../api/surveyApi';
 import { teamsApi } from '../api/teamsApi';
 import { testsApi } from '../api/testsApi';
 import { universalApi } from '../api/universalApi';
+import { useCallback } from 'react';
 
 const apis = [
   usersApi,
@@ -69,24 +70,27 @@ type Tags = (AllTags | { type: AllTags; id: number })[];
 export function useInvalidateTags() {
   const dispatch = useDispatch();
 
-  return (tags: Tags) =>
-    tags.forEach((tag) => {
-      if (typeof tag === 'string') {
-        const foundReducer = Object.entries(tagsMap).find(([, reducerTags]) =>
-          reducerTags.find((t) => t === tag),
-        )?.[0] as keyof TabMapType;
-        const foundApi = apis.find((api) => api.reducerPath === foundReducer);
-        if (!foundApi) return;
-        // @ts-expect-error impossible to type this correctly
-        dispatch(foundApi.util.invalidateTags([tag]));
-      } else {
-        const foundReducer = Object.entries(tagsMap).find(([, reducerTags]) =>
-          reducerTags.find((t) => t === tag?.type),
-        )?.[0] as keyof TabMapType;
-        const foundApi = apis.find((api) => api.reducerPath === foundReducer);
-        if (!foundApi) return;
-        // @ts-expect-error impossible to type this correctly
-        dispatch(foundApi.util.invalidateTags([tag]));
-      }
-    });
+  return useCallback(
+    (tags: Tags) =>
+      tags.forEach((tag) => {
+        if (typeof tag === 'string') {
+          const foundReducer = Object.entries(tagsMap).find(([, reducerTags]) =>
+            reducerTags.find((t) => t === tag),
+          )?.[0] as keyof TabMapType;
+          const foundApi = apis.find((api) => api.reducerPath === foundReducer);
+          if (!foundApi) return;
+          // @ts-expect-error impossible to type this correctly
+          dispatch(foundApi.util.invalidateTags([tag]));
+        } else {
+          const foundReducer = Object.entries(tagsMap).find(([, reducerTags]) =>
+            reducerTags.find((t) => t === tag?.type),
+          )?.[0] as keyof TabMapType;
+          const foundApi = apis.find((api) => api.reducerPath === foundReducer);
+          if (!foundApi) return;
+          // @ts-expect-error impossible to type this correctly
+          dispatch(foundApi.util.invalidateTags([tag]));
+        }
+      }),
+    [dispatch],
+  );
 }

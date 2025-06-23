@@ -16,6 +16,7 @@ import RatesFiltersWrapper, {
   initialRateFilters,
   RateFilters,
 } from '@/features/rate/RatesFilters';
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 
 const LIMIT = 10;
 
@@ -29,6 +30,7 @@ export default function Rates360Table({ type }: Rates360TableProps) {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<RateFilters>(initialRateFilters);
   const dispatch = useAppDispatch();
+  const isAdmin = useIsAdmin();
 
   const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery({
     page,
@@ -73,9 +75,11 @@ export default function Rates360Table({ type }: Rates360TableProps) {
                 : 'Список 360 оценок'
             }
           />
-          <PrimaryButton onClick={() => setOpen(true)} className="self-start">
-            Добавить
-          </PrimaryButton>
+          {isAdmin && (
+            <PrimaryButton onClick={() => setOpen(true)} className="self-start">
+              Добавить
+            </PrimaryButton>
+          )}
         </div>
         <div className="flex-col gap-1 mt-6 relative mb-2">
           <RatesFiltersWrapper

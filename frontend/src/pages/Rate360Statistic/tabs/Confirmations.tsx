@@ -10,6 +10,7 @@ import { TableHeading } from '@/widgets/TableHeading';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router';
 
 interface ConfirmationsProps {
   filters: RateFilters;
@@ -56,8 +57,8 @@ export default function Confirmations({ filters }: ConfirmationsProps) {
               headings={[
                 'Оцениваемый',
                 'Спец-я',
-                'Навыки',
                 'Команда',
+                'Навыки',
                 'Назначен',
                 'Утвержден сотрудником',
                 'Утвержден руководителем',
@@ -69,9 +70,12 @@ export default function Confirmations({ filters }: ConfirmationsProps) {
               columnRender={[
                 {
                   render: (item) => (
-                    <span className="text-gray-900 font-medium">
+                    <Link
+                      to={`/users/${item.user.id}`}
+                      className="text-indigo-950 font-medium hover:text-indigo-800 transition-all"
+                    >
                       {usersService.displayName(item.user)}
-                    </span>
+                    </Link>
                   ),
                 },
                 {
@@ -83,9 +87,12 @@ export default function Confirmations({ filters }: ConfirmationsProps) {
                 },
                 {
                   render: (item) => (
-                    <span className="text-violet-500 font-medium">
+                    <Link
+                      to={`/teams/${item.teamId}`}
+                      className="text-violet-500 hover:text-violet-700 transition-all font-medium"
+                    >
                       {item.team?.name ?? '-'}
-                    </span>
+                    </Link>
                   ),
                 },
 

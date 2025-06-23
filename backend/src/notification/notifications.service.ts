@@ -351,7 +351,7 @@ export class NotificationsService {
   ) {
     const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Новое обращение в поддержку';
-    const link = `${process.env.FRONTEND_URL}/support/admin`;
+    const link = `${process.env.FRONTEND_URL}/support-admin`;
 
     const html = this.generateText(heading, message, link);
 
@@ -366,7 +366,7 @@ export class NotificationsService {
         title: 'Новое обращение в поддержку',
         userId: user.id,
         type: 'SUPPORT_TICKET_CREATED',
-        url: '/support/admin',
+        url: '/support-admin',
       },
     });
   }

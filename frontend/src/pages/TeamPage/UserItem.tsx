@@ -138,7 +138,7 @@ export default memo(function UserItem({
             )}
           </div>
         </div>
-        {!leader && (
+        {!leader && accessType !== 'user' && (
           <SoftButton
             size="xs"
             className="rounded-full p-2"

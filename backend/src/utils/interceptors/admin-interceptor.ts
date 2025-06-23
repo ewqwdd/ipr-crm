@@ -7,7 +7,6 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import * as winston from 'winston';
-import * as path from 'path';
 
 @Injectable()
 export class AdminLoggerInterceptor implements NestInterceptor {
@@ -24,7 +23,7 @@ export class AdminLoggerInterceptor implements NestInterceptor {
       ),
       transports: [
         new winston.transports.File({
-          filename: path.join(__dirname, 'logs', 'admin.log'), // Путь к файлу логов
+          filename: 'logs/admin.log', // Путь к файлу логов
         }),
       ],
     });
@@ -34,7 +33,7 @@ export class AdminLoggerInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest();
     const user = req.session;
 
-    if (user && Array.isArray(user.roles) && user.roles.includes('admin')) {
+    if (user && user.role === 'admin') {
       const logMessage = {
         timestamp: new Date().toISOString(),
         method: req.method,
