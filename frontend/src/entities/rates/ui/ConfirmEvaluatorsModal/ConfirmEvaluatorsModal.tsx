@@ -16,6 +16,7 @@ import { TextArea } from '@/shared/ui/TextArea';
 import TeamFilters from '../../../../features/team/TeamFilters/TeamFilters';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { AlertPortal } from '@/shared/ui/AlertPortal';
 
 interface ConfirmEvaluatorsModalData {
   rate: Rate;
@@ -38,6 +39,11 @@ export default function ConfirmEvaluatorsModal({
     rate360Api.useConfirmRateByCuratorMutation();
   const [confirmUser, userProps] = rate360Api.useConfirmRateByUserMutation();
   const [comment, setComment] = useState<string>('');
+
+  const { portal } = AlertPortal({
+    initial: true,
+    children: 'Утвердите список. Вы можете добавить оценивающих, а также оставить комментарий к оценке.',
+  });
 
   const [addType, setAddType] = useState<EvaulatorType | undefined>();
 
@@ -262,6 +268,10 @@ export default function ConfirmEvaluatorsModal({
             )}
           </TeamFilters>
         </Modal>
+          <p className="text-gray-500">
+            Утвердите список оценивающих, чтобы продолжить. Вы можете удалить или доабвить участников, а также оставить комментарий к оценке.
+            </p>
+            {portal}
       </div>
     </Modal>
   );

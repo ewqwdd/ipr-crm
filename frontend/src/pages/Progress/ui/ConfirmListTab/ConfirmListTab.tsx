@@ -51,6 +51,7 @@ export default function ConfirmListTab() {
 
         {listToShow?.map((rate, index) => (
           <ConfirmListItem
+            key={rate.id}
             index={index}
             specs={specs.data ?? []}
             rate={rate}

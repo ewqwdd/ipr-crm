@@ -160,6 +160,8 @@ export class UsersService {
       throw new NotFoundException('id указан неправильно.');
     }
 
+    this.usersAccessService.removeRedisTeamsCache(user.id);
+
     const { roleId, specId, teams, ...rest } = updateUserDto;
     const updates: any = { ...rest };
 
