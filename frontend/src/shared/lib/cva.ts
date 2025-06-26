@@ -1,9 +1,9 @@
 import { twMerge } from 'tailwind-merge';
 
 type CVAelem = string | Record<string, boolean> | undefined;
-  /**
-   * аналог либы clsx, можно передавать обьект где ключ - это класс, а значение - булево или строку
-   */
+/**
+ * аналог либы clsx, можно передавать обьект где ключ - это класс, а значение - булево или строку
+ */
 export const cva = (...args: CVAelem[]) => {
   const val = args.map((elem) => {
     if (typeof elem === 'string') {

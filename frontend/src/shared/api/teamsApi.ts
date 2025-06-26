@@ -97,22 +97,33 @@ const teamsApi = createApi({
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
           const { data: newTeam } = await queryFulfilled;
+          const filtered = {
+            ...newTeam,
+            users: newTeam.users?.map((user) => ({
+              user: {
+                ...user.user,
+                specsOnTeams: user.user.specsOnTeams?.filter(
+                  (t) => t.teamId === newTeam.id,
+                ),
+              },
+            })),
+          } as Team;
 
           dispatch(
             teamsApi.util.updateQueryData('getTeams', undefined, (draft) => {
               // Обновляем list
               const index = draft.list.findIndex(
-                (team) => team.id === newTeam.id,
+                (team) => team.id === filtered.id,
               );
               if (index !== -1) {
-                draft.list[index] = newTeam;
+                draft.list[index] = filtered;
               }
 
               // Обновляем structure (рекурсивно)
               const updateInTree = (teams: Team[]) => {
                 for (const team of teams) {
-                  if (team.id === newTeam.id) {
-                    Object.assign(team, newTeam);
+                  if (team.id === filtered.id) {
+                    Object.assign(team, filtered);
                   }
                   if (team.subTeams) {
                     updateInTree(team.subTeams);

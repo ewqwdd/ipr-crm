@@ -50,7 +50,7 @@ export default function Assesment({
     debounce((params: DebouncedRateParams) => {
       const { rate, rateId, indicatorId, onError, onFinally } = params;
 
-      indicatorControllers.current[indicatorId]?.abort(); 
+      indicatorControllers.current[indicatorId]?.abort();
       const controller = new AbortController();
       indicatorControllers.current[indicatorId] = controller;
 
@@ -58,14 +58,14 @@ export default function Assesment({
         .post(
           '/rate360/assesment/indicator',
           { rate, rateId, indicatorId },
-          { signal: controller.signal }
+          { signal: controller.signal },
         )
         .catch(onError)
         .finally(onFinally);
     }, 400),
-    []
+    [],
   );
-  
+
   return (
     <div className="flex flex-col gap-6 px-6 flex-1 overflow-y-auto overflow-x-clip pt-6">
       {block.competencies
@@ -110,7 +110,7 @@ export default function Assesment({
                         rate,
                         rateId,
                         indicatorId: indicator.id,
-                        onError:() => {
+                        onError: () => {
                           setAssesment((prev) => {
                             const newAssesment = { ...prev };
                             if (!newAssesment[block.id]) {
@@ -133,8 +133,8 @@ export default function Assesment({
                               ),
                             50,
                           );
-                        }
-                      })
+                        },
+                      });
 
                       newAssesment[block.id][competency.id][indicator.id] = {
                         rate,

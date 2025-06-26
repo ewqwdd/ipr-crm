@@ -110,7 +110,7 @@ export class UsersService {
       },
       omit: { passwordHash: true, roleId: true, specId: true, authCode: true },
     });
-    if (includeAccess) return user;
+    if (!includeAccess) return user;
 
     const teamAccess = await this.usersAccessService.findAllowedTeams(
       { email: user.email, id: user.id, role: user.role.name },
@@ -160,7 +160,7 @@ export class UsersService {
       throw new NotFoundException('id указан неправильно.');
     }
 
-    this.usersAccessService.removeRedisTeamsCache(user.id);
+    await this.usersAccessService.removeRedisTeamsCache(user.id);
 
     const { roleId, specId, teams, ...rest } = updateUserDto;
     const updates: any = { ...rest };

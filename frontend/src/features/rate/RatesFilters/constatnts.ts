@@ -18,7 +18,7 @@ export const progressOptions: Array<{
 ] as const;
 
 export const initialFilters: Filters = {
-  teams: [],
+  teams: {},
   skillType: 'ALL',
   userId: 'ALL',
   specId: 'ALL',

@@ -2,15 +2,12 @@ import { FC, useCallback, useMemo } from 'react';
 import RatesFilters from './RatesFilters';
 import { initialFilters } from './constatnts';
 import { Option } from '@/shared/types/Option';
-import { MultiValue } from 'react-select';
 import { DateObject } from 'react-multi-date-picker';
 import { Filters, FiltersSkillType } from './types';
 import { usersApi } from '@/shared/api/usersApi/usersApi';
-import { teamsApi } from '@/shared/api/teamsApi';
-import { useAppSelector } from '@/app';
-import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { universalApi } from '@/shared/api/universalApi';
 import { Rates360TableType } from '@/entities/rates';
+import { TeamsHierarchyFilterType } from '@/widgets/TeamsHierarchyFilter/types';
 
 interface RatesFiltersWrapperProps {
   filters: Filters;
@@ -30,10 +27,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
   }, []);
 
   const { data: users } = usersApi.useGetUsersQuery();
-  const { data: teams } = teamsApi.useGetTeamsQuery();
   const { data: specs } = universalApi.useGetSpecsQuery();
-  const teamAccess = useAppSelector((state) => state.user.user?.teamAccess);
-  const isAdmin = useIsAdmin();
 
   const resetFilters = useCallback(() => {
     updateFilters(initialFilters);
@@ -59,7 +53,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
   );
 
   const onChangeTeams = useCallback(
-    (value: MultiValue<Option>) => handleFilterChange('teams', value),
+    (value: TeamsHierarchyFilterType) => handleFilterChange('teams', value),
     [handleFilterChange],
   );
 
@@ -84,27 +78,18 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
     [handleFilterChange],
   );
 
-  const { teamsOptions, specsOptions } = useMemo(
-    () => ({
-      teamsOptions: (isAdmin
-        ? teams?.list
-        : teams?.list.filter((team) => teamAccess?.includes(team.id))
-      )?.map((team) => ({
-        value: team.id,
-        label: team.name,
-      })) as Option[],
-      specsOptions: specs?.map((spec) => ({
+  const specsOptions = useMemo(
+    () =>
+      specs?.map((spec) => ({
         value: spec.id,
         label: spec.name,
       })) as Option[],
-    }),
-    [teams, teamAccess, isAdmin, specs],
+    [specs],
   );
 
   return (
     <div className="">
       <RatesFilters
-        teamsOptions={teamsOptions}
         specsOptions={specsOptions}
         filters={filters}
         resetFilters={resetFilters}

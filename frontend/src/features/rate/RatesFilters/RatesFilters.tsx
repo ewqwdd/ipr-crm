@@ -7,7 +7,6 @@ import {
 } from './constatnts';
 import { getChangedFilters } from './helpers';
 import { Option } from '@/shared/types/Option';
-import { MultiValue } from 'react-select';
 import { DateObject } from 'react-multi-date-picker';
 import { PingCircle } from '@/shared/ui/PingCircle';
 import { Filters } from './types';
@@ -17,19 +16,19 @@ import { User } from '@/entities/user';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { PeriodSelector } from '@/shared/ui/PeriodSelector';
 import { Rates360TableType } from '@/entities/rates';
-import { TeamSelector } from '@/widgets/TeamSelector';
+import TeamsHierarchyFilter from '@/widgets/TeamsHierarchyFilter';
+import { TeamsHierarchyFilterType } from '@/widgets/TeamsHierarchyFilter/types';
 
 type OnChange = (value: string | number) => void;
 
 interface RatesFiltersProps {
-  teamsOptions: Option[];
   specsOptions: Option[];
   users: User[];
   filters: Filters;
   resetFilters: () => void;
   onChangeSkillType: OnChange;
   onChangeProgress: OnChange;
-  onChangeTeams: (teams: MultiValue<Option>) => void;
+  onChangeTeams: (teams: TeamsHierarchyFilterType) => void;
   onChangeSpec: OnChange;
   onChangeUser: (value?: number) => void;
   onChangePeriod: (value?: DateObject | DateObject[]) => void;
@@ -39,7 +38,6 @@ interface RatesFiltersProps {
 }
 
 const RatesFilters: FC<RatesFiltersProps> = ({
-  teamsOptions,
   specsOptions,
   users,
   filters,
@@ -81,11 +79,12 @@ const RatesFilters: FC<RatesFiltersProps> = ({
       {isOpen && (
         <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {type !== 'TEAM' && !exclude.includes('teams') && (
-            <TeamSelector
-              options={teamsOptions}
-              value={filters.teams}
-              onChange={onChangeTeams}
-            />
+            <div className="grid gap-4  sm:grid-cols-2 md:grid-cols-4 sm:col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-3 2xl:col-span-4">
+              <TeamsHierarchyFilter
+                filters={filters.teams}
+                onChange={onChangeTeams}
+              />
+            </div>
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -124,7 +123,8 @@ const RatesFilters: FC<RatesFiltersProps> = ({
           {!exclude.includes('period') && (
             <PeriodSelector value={filters.period} onChange={onChangePeriod} />
           )}
-          <div className="flex 2xl:mt-5 max-xl:my-3 lg:col-span-3 xl:col-span-2 sm:col-span-2">
+
+          <div className="flex 2xl:mt-5">
             <Checkbox
               title={'Архивные'}
               checked={!!filters.hidden}

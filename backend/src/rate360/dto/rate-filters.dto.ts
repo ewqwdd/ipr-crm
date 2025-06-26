@@ -1,14 +1,14 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
   IsEnum,
   IsInt,
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
 } from 'class-validator';
-
 export class RateFiltersDto {
   @IsOptional()
   @Transform(({ value }) => Number(value))
@@ -41,8 +41,24 @@ export class RateFiltersDto {
   user?: number;
 
   @IsOptional()
-  @IsString()
-  teams?: string;
+  @Type(() => Number)
+  @IsNumber()
+  product?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  department?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  direction?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  group?: number;
 
   @IsOptional()
   @IsDateString()

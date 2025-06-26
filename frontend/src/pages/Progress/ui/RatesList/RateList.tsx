@@ -5,6 +5,7 @@ import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import RateItem from '../RateItem/RateItem';
 import { useAppSelector } from '@/app';
+import RateTeamItem from '../RateTeamItem/RateTeamItem';
 
 interface RateListProps {
   data?: Rate[];
@@ -40,7 +41,11 @@ export default function RateList({
   const selfTeam = data?.filter(
     (rate) =>
       user?.teams?.find((team) => team.teamId === rate.teamId) ||
-      user?.teamCurator?.find((t) => rate.teamId === t.id),
+      user?.teamCurator?.find((t) => rate.teamId === t.id) ||
+      rate.evaluators.some(
+        (evaluator) =>
+          evaluator.userId === user?.id && evaluator.type === 'CURATOR',
+      ),
   );
   if (includeSelfTeam) {
     teams = teams?.filter(
@@ -72,20 +77,19 @@ export default function RateList({
           </span>
         </>
       )}
-      {teams?.map((team) => (
-        <div key={team.id} className="flex flex-col gap-2">
-          <span className="text-violet-600 font-semibold text-lg">
-            {team.name}
-          </span>
-          <div className="flex flex-col bg-gray-50 py-2">
-            {filtered
-              ?.filter((t) => t.teamId === team.id)
-              .map((rate) => (
-                <RateItem specs={specsData ?? []} key={rate.id} rate={rate} />
-              ))}
-          </div>
-        </div>
-      ))}
+      {teams?.map(
+        (team) =>
+          user && (
+            <RateTeamItem
+              key={team.id}
+              rates={filtered}
+              team={team}
+              userId={user.id}
+              specsData={specsData ?? []}
+              includeSelfTeam={includeSelfTeam}
+            />
+          ),
+      )}
 
       {noTeam.length > 0 && (
         <div className="flex flex-col gap-2">

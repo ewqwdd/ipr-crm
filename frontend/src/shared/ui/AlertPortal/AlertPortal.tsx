@@ -1,17 +1,22 @@
-import { Transition } from "@headlessui/react";
-import React, { useState, useEffect, useRef, Fragment } from "react";
-import ReactDOM from "react-dom";
+import { Transition } from '@headlessui/react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
+import ReactDOM from 'react-dom';
 
 interface AlertPortalProps {
-    children: React.ReactNode;
-    autoClose?: boolean;
-    autoCloseDelay?: number;
-    initial?: boolean;
+  children: React.ReactNode;
+  autoClose?: boolean;
+  autoCloseDelay?: number;
+  initial?: boolean;
 }
 
-const AlertPortal = ({ children, autoClose = false, autoCloseDelay = 3000, initial = false }: AlertPortalProps) => {
+const AlertPortal = ({
+  children,
+  autoClose = false,
+  autoCloseDelay = 3000,
+  initial = false,
+}: AlertPortalProps) => {
   const [open, setOpen] = useState(false);
-  const el = useRef(document.createElement("div"));
+  const el = useRef(document.createElement('div'));
 
   useEffect(() => {
     const current = el.current;
@@ -72,7 +77,7 @@ const AlertPortal = ({ children, autoClose = false, autoCloseDelay = 3000, initi
         </div>
       </div>
     </Transition>,
-    el.current
+    el.current,
   );
 
   return { portal, show, hide, isOpen: open };

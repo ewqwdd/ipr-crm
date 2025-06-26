@@ -42,7 +42,8 @@ export default function ConfirmEvaluatorsModal({
 
   const { portal } = AlertPortal({
     initial: true,
-    children: 'Утвердите список. Вы можете добавить оценивающих, а также оставить комментарий к оценке.',
+    children:
+      'Утвердите список. Вы можете добавить оценивающих, а также оставить комментарий к оценке.',
   });
 
   const [addType, setAddType] = useState<EvaulatorType | undefined>();
@@ -268,10 +269,11 @@ export default function ConfirmEvaluatorsModal({
             )}
           </TeamFilters>
         </Modal>
-          <p className="text-gray-500">
-            Утвердите список оценивающих, чтобы продолжить. Вы можете удалить или доабвить участников, а также оставить комментарий к оценке.
-            </p>
-            {portal}
+        <p className="text-gray-500">
+          Утвердите список оценивающих, чтобы продолжить. Вы можете удалить или
+          доабвить участников, а также оставить комментарий к оценке.
+        </p>
+        {portal}
       </div>
     </Modal>
   );

@@ -39,10 +39,7 @@ export default function Rates360Table({ type }: Rates360TableProps) {
     status: filters.status === 'ALL' ? undefined : filters.status,
     skill: filters.skillType === 'ALL' ? undefined : filters.skillType,
     user: filters.userId === 'ALL' ? undefined : filters.userId,
-    teams:
-      filters.teams.length > 0
-        ? filters.teams.map((team) => Number(team.value))
-        : undefined,
+    ...filters.teams,
     startDate: filters.period?.[0]?.toDate()?.toISOString(),
     endDate: filters.period?.[1]?.toDate()?.toISOString(),
     hidden: !!filters.hidden,

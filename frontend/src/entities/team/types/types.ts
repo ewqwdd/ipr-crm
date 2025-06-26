@@ -1,6 +1,7 @@
 export type SpecOnUser = {
   specId: number;
   spec: { name: string; active?: boolean };
+  teamId?: number;
 };
 
 export const teamTypes = [

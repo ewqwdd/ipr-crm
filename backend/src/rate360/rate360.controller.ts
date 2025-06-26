@@ -43,11 +43,7 @@ export class Rate360Controller {
         sessionInfo.id,
       );
     }
-    if (sessionInfo.role === 'admin') {
-      return await this.rate360Service.findAll(params);
-    } else {
-      return await this.rate360Service.findAll(params, sessionInfo);
-    }
+    return await this.rate360Service.findAll(params, sessionInfo);
   }
 
   @Post('/')

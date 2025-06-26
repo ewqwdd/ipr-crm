@@ -78,36 +78,51 @@ export class Rate360Service {
     };
   }
 
-  async findAll(data: RateFiltersDto, curator?: GetSessionInfoDto) {
-    const teams = data.teams ? data.teams.split(',').map(Number) : [];
-    let teamsFilter: number[] = teams ?? [];
-    let teamAccess;
+  async findAll(data: RateFiltersDto, curator: GetSessionInfoDto) {
+    const teamAccess = await this.usersService.findAllowedTeams(curator);
+    const teamFilter = {
+      product: data.product,
+      department: data.department,
+      direction: data.direction,
+      group: data.group,
+    };
+    const isTeamFilter = Object.values(teamFilter).filter(Boolean).length > 0;
     const { page, limit } = data;
 
     const where = this.findAllFilters(data);
 
-    if (curator?.id) {
-      teamAccess = await this.usersService.findAllowedTeams(curator);
-      teamsFilter = teamAccess;
-      if (teams) {
-        teamsFilter =
-          teams.length > 0
-            ? teams.filter((team) => teamsFilter.includes(team))
-            : teamsFilter;
-      }
-    }
+    where.team = {
+      id: {
+        in: teamAccess,
+      },
+    };
 
-    if (curator?.id || teams.length > 0) {
-      where.team = { id: { in: teamsFilter } };
+    if (isTeamFilter) {
+      const ids = [
+        teamFilter.group,
+        teamFilter.direction,
+        teamFilter.department,
+        teamFilter.product,
+      ].filter(Boolean) as number[];
+      if (ids.some((id) => !teamAccess.includes(id))) return [];
+      // const recur = (ids: number[]): Prisma.Rate360WhereInput['team'] => {
+      //   const current = ids.shift();
+      //   if (!current) return undefined;
+      //   return {
+      //     id: current,
+      //     parentTeam: {
+      //       ...recur(ids),
+      //     }
+      //   }
+      // }
+      where.team = {
+        id: ids[0],
+      };
     }
 
     if (curator?.id && data.includeWhereEvaluatorCurator) {
-      if (where.team) {
-        if (teams.length > 0) {
-          where.team = { id: { in: teams ?? [] } };
-        } else {
-          delete where.team;
-        }
+      if (!isTeamFilter) {
+        delete where.team;
       }
       const or = [
         {

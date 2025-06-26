@@ -17,7 +17,10 @@ interface RateFiltersDto {
   status?: 'COMPLETED' | 'NOT_COMPLETED' | 'NOT_CONFIRMED';
   specId?: number;
   user?: number;
-  teams?: number[];
+  product?: number;
+  department?: number;
+  direction?: number;
+  group?: number;
   startDate?: string;
   endDate?: string;
   hidden?: boolean;
