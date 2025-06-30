@@ -40,6 +40,7 @@ export default function NoTeamEvaluators({
             ? [{ specId: u.Spec.id, spec: { name: '' } }]
             : [],
           username: u.username,
+          deputyRelationsAsDeputy: u.deputyRelationsAsDeputy
         },
       })) ?? [];
 

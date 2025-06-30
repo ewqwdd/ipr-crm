@@ -40,6 +40,17 @@ export class TeamsService {
                 teamId: true,
               },
             },
+            deputyRelationsAsDeputy: {
+              select: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -90,7 +101,6 @@ export class TeamsService {
       sessionInfo,
       true,
     );
-    console.log(teamAccess.length);
 
     return { teams, teamAccess };
   }
@@ -118,6 +128,17 @@ export class TeamsService {
                 },
                 username: true,
                 avatar: true,
+                deputyRelationsAsDeputy: {
+                  select: {
+                    user: {
+                      select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },

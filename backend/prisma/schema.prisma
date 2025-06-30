@@ -25,7 +25,6 @@ model User {
   assignedTests     User_Assigned_Test[]
   assignedSurveys   User_Assigned_Survey[]
   growthPlans       IndividualGrowthPlan[] @relation("UserGrowthPlans")
-  growthPlansMentor IndividualGrowthPlan[] @relation("MentorGrowthPlans")
 
   Spec              Spec?                  @relation(fields: [specId], references: [id])
   ratesToEvaluate   Rate360Evaluator[]
@@ -43,12 +42,28 @@ model User {
   mentees     User[] @relation("MentorMentees")
   mentor      User?  @relation("MentorMentees", fields: [mentorId], references: [id])
   mentorId    Int?
+  deputyRelationsAsUser    UserDeputy[] @relation("UserDeputyUser")
+  deputyRelationsAsDeputy  UserDeputy[] @relation("UserDeputyDeputy")
+
   teamCurator Team[]
 
   supportTickets SupportTicket[] @relation("UserSupportTicket")
   curatorTickets SupportTicket[] @relation("CuratorSupportTicket")
 
   createdAt DateTime @default(now())
+}
+
+model UserDeputy {
+  id       Int @id @default(autoincrement())
+  userId   Int
+  deputyId Int
+  
+  user   User @relation("UserDeputyUser", fields: [userId], references: [id], onDelete: Cascade)
+  deputy User @relation("UserDeputyDeputy", fields: [deputyId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, deputyId])
 }
 
 model Rate360 {
@@ -353,9 +368,7 @@ model GrowthPlanCurator {
   id           Int @id @default(autoincrement())
   userId       Int
   planId       Int
-  competencyId Int
 
-  competency Competency?           @relation(fields: [competencyId], references: [id])
   user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan       IndividualGrowthPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
 }
@@ -389,12 +402,10 @@ model IndividualGrowthPlan {
   goal      String
   result    Resut?
   specId    Int?
-  mentorId  Int?
   rate360Id Int?      @unique // Добавляем @unique
 
   spec          Spec?               @relation(fields: [specId], references: [id])
   user          User                @relation("UserGrowthPlans", fields: [userId], references: [id], onDelete: Cascade)
-  mentor        User?               @relation("MentorGrowthPlans", fields: [mentorId], references: [id], onDelete: SetNull)
   rate360       Rate360?            @relation(fields: [rate360Id], references: [id], onDelete: SetNull) // Делаем опциональным
   materials     Material[]
   logs          GrowthPlanLog[]
@@ -516,7 +527,6 @@ model Competency {
   materials    CompetencyMaterial[]
   comments     UserComments[]
   task         GrowthPlanTask[]
-  planCurators GrowthPlanCurator[]
   order        Int @default(0)
   archived     Boolean?             @default(false)
   archivedDate DateTime?

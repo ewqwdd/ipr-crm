@@ -15,6 +15,7 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { SpecOnUser } from '@/entities/team/types/types';
 import { generalService } from '@/shared/lib/generalService';
 import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
+import { DeputyList } from '@/features/user/DeputyList';
 
 interface UserItemProps {
   userId: number;
@@ -120,7 +121,7 @@ export default memo(function UserItem({
             )}
           >
             <BriefcaseIcon className="size-4" />
-            <p className="-ml-1 mr-2 font-medium text-sm text-gray-500">
+            <p className="-ml-1 mr-2 font-medium text-sm text-gray-500 max-sm:hidden">
               Специализация
             </p>{' '}
             {(leader ? curatorSpecs : specs)?.map((e, i) => (
@@ -138,6 +139,11 @@ export default memo(function UserItem({
             )}
           </div>
         </div>
+
+        <div className="self-center ml-auto sm:mr-20 w-full sm:w-1/2 max-w-md max-sm:[&>div]:justify-center">
+          {user && <DeputyList user={user} />}
+        </div>
+
         {!leader && accessType !== 'user' && (
           <SoftButton
             size="xs"

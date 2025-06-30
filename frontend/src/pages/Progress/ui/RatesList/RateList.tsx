@@ -1,17 +1,18 @@
 import { Rate } from '@/entities/rates';
-import { teamsApi } from '@/shared/api/teamsApi';
 import { universalApi } from '@/shared/api/universalApi';
 import { cva } from '@/shared/lib/cva';
 import { Heading } from '@/shared/ui/Heading';
 import RateItem from '../RateItem/RateItem';
 import { useAppSelector } from '@/app';
-import RateTeamItem from '../RateTeamItem/RateTeamItem';
+import { RateMyTeamList } from '../RateMyTeamList';
 
 interface RateListProps {
   data?: Rate[];
   isLoading: boolean;
   heading?: string;
   includeSelfTeam?: boolean;
+  includeOtherTeam?: boolean;
+  includeSelfRates?: boolean;
 }
 
 export default function RateList({
@@ -19,9 +20,9 @@ export default function RateList({
   data,
   heading,
   includeSelfTeam,
+  includeSelfRates,
+  includeOtherTeam,
 }: RateListProps) {
-  const { data: teamData, isLoading: teamsLoading } =
-    teamsApi.useGetTeamsQuery();
   const { data: specsData, isLoading: specsLoading } =
     universalApi.useGetSpecsQuery();
   const user = useAppSelector((state) => state.user.user);
@@ -33,8 +34,6 @@ export default function RateList({
           cb.competencies.flatMap((cp) => cp.indicators),
         ).length > 0,
     ) ?? [];
-  const teamIds = Array.from(new Set(filtered?.map((rate) => rate.teamId)));
-  let teams = teamData?.list.filter((team) => teamIds.includes(team.id));
 
   const noTeam = filtered?.filter((rate) => !rate.teamId);
 
@@ -47,18 +46,21 @@ export default function RateList({
           evaluator.userId === user?.id && evaluator.type === 'CURATOR',
       ),
   );
-  if (includeSelfTeam) {
-    teams = teams?.filter(
-      (team) =>
-        !user?.teams?.find((t) => team.id === t.teamId) &&
-        !user?.teamCurator?.find((t) => team.id === t.id),
-    );
-  }
+
+  const otherTeamRates = data?.filter(
+    (rate) =>
+      !user?.teams?.some((team) => team.teamId === rate.teamId) &&
+      !user?.teamCurator?.some((team) => team.id === rate.teamId) &&
+      !rate.evaluators.some(
+        (evaluator) =>
+          evaluator.userId === user?.id && evaluator.type === 'CURATOR',
+      ),
+  );
 
   return (
     <div
       className={cva('flex flex-col gap-4 p-4', {
-        'animate-pulse': isLoading || teamsLoading || specsLoading,
+        'animate-pulse': isLoading || specsLoading,
       })}
     >
       <Heading title={heading} />
@@ -77,20 +79,12 @@ export default function RateList({
           </span>
         </>
       )}
-      {teams?.map(
-        (team) =>
-          user && (
-            <RateTeamItem
-              key={team.id}
-              rates={filtered}
-              team={team}
-              userId={user.id}
-              specsData={specsData ?? []}
-              includeSelfTeam={includeSelfTeam}
-            />
-          ),
+      {includeOtherTeam && (
+        <RateMyTeamList isLoading={isLoading} rates={otherTeamRates} />
       )}
-
+      {includeSelfRates && (
+        <RateMyTeamList isLoading={isLoading} rates={data} />
+      )}
       {noTeam.length > 0 && (
         <div className="flex flex-col gap-2">
           <span className="text-violet-600 font-semibold text-lg">

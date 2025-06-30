@@ -42,6 +42,7 @@ export interface Rate {
     indicatorId: number;
     comment?: string;
     approved: boolean;
+    createdAt: string;
   }[];
   comments: {
     id: number;

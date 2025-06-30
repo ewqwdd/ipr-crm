@@ -35,6 +35,7 @@ export default function IprListPage({ type }: IprListPageProps) {
     startDate: filters.period?.[0]?.toDate()?.toISOString(),
     endDate: filters.period?.[1]?.toDate()?.toISOString(),
     subbordinatesOnly: type === 'TEAM' ? true : undefined,
+    deputyOnly: filters.deputyOnly,
   });
   const [selected, setSelected] = useState<number[]>([]);
 

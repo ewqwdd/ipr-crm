@@ -16,6 +16,7 @@ import { PeriodSelector } from '@/shared/ui/PeriodSelector';
 import { StaticSelectFilter } from '@/shared/ui/StaticSelectFilter';
 import { universalApi } from '@/shared/api/universalApi';
 import { IprListPageType } from '../config';
+import { Checkbox } from '@/shared/ui/Checkbox';
 
 interface IprFiltersProps {
   filters: IprFiltersType;
@@ -70,6 +71,11 @@ export default memo(function IprFilters({
         skillType: value as IprFiltersType['skillType'],
       })),
     [setFilters],
+  );
+
+  const onChangeDeputyOnly = useCallback(
+    (value?: boolean) => setFilters((prev) => ({ ...prev, deputyOnly: value })),
+    [],
   );
 
   const resetFilters = useCallback(() => {
@@ -161,6 +167,13 @@ export default memo(function IprFilters({
             onChange={onChangeSkillType}
             value={filters.skillType}
           />
+          <div className="flex items-center gap-2">
+            <Checkbox
+              title="Только заместители"
+              checked={filters.deputyOnly}
+              onChange={() => onChangeDeputyOnly(!filters.deputyOnly)}
+            />
+          </div>
         </div>
       )}
     </div>

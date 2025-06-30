@@ -10,6 +10,7 @@ export type IprFilters = {
   status: 'COMPLETED' | 'NOT_COMPLETED' | 'ALL';
   period?: DateObject[];
   skillType: 'ALL' | Rate['type'];
+  deputyOnly?: boolean;
 };
 
 export const initialIprFilters: IprFilters = {

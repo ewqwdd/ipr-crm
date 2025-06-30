@@ -26,6 +26,7 @@ interface IprFiltersDto {
   startDate?: string;
   endDate?: string;
   subbordinatesOnly?: boolean;
+  deputyOnly?: boolean;
 }
 
 const iprApi = createApi({
@@ -148,6 +149,7 @@ const iprApi = createApi({
         teams,
         user,
         subbordinatesOnly,
+        deputyOnly,
       }) => ({
         url: '/ipr',
         method: 'GET',
@@ -161,6 +163,7 @@ const iprApi = createApi({
           teams: teams?.join(','),
           user,
           subbordinatesOnly,
+          deputyOnly,
         },
       }),
       providesTags: (_, __, params) => [{ type: 'Ipr', params }],
@@ -182,7 +185,7 @@ const iprApi = createApi({
     }),
     findCompetencyBlocksByIprId: build.query<CompetencyBlock[], number>({
       query: (id) => ({
-        url: `/ipr/${id}/CompetencyBlocksByIprId`,
+        url: `/ipr/${id}/competency-blocks`,
         method: 'GET',
       }),
       providesTags: (_, __, id) => [{ type: 'CompetencyBlocksByIprId', id }],

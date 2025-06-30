@@ -6,6 +6,8 @@ import UserDataItem from './ui/UserDataItem';
 import { User } from '../../types/types';
 import { useAppSelector } from '@/app';
 import { generalService } from '@/shared/lib/generalService';
+import UserDeputyOf from './ui/UserDeputyOf';
+import UserDeputy from './ui/UserDeputy';
 
 interface UserProfileProps {
   data: User;
@@ -105,16 +107,47 @@ export default function UserProfile({ data }: UserProfileProps) {
                       </SoftButton>
                     ))}
                   />
-                  <UserDataItem
-                    className="sm:col-span-2"
-                    label="Руководитель в командах"
-                    valueStyles="flex flex-wrap gap-2"
-                    value={data?.teamCurator?.map((t) => (
-                      <SoftButton size="sm" to={`/teams/${t.id}`} key={t.id}>
-                        {t.name}
-                      </SoftButton>
-                    ))}
-                  />
+                  {data?.teamCurator && data?.teamCurator?.length > 0 && (
+                    <UserDataItem
+                      className="sm:col-span-2"
+                      label="Руководитель в командах"
+                      valueStyles="flex flex-wrap gap-2"
+                      value={data?.teamCurator?.map((t) => (
+                        <SoftButton size="sm" to={`/teams/${t.id}`} key={t.id}>
+                          {t.name}
+                        </SoftButton>
+                      ))}
+                    />
+                  )}
+                  {data?.deputyRelationsAsUser?.length > 0 && (
+                    <UserDataItem
+                      className="sm:col-span-2"
+                      label="Заместители пользователя"
+                      valueStyles="flex flex-wrap gap-2"
+                      value={data?.deputyRelationsAsUser?.map((t) => (
+                        <UserDeputy
+                          userId={data.id}
+                          deputy={t.deputy}
+                          key={t.deputy.id}
+                          canEdit={canEdit}
+                        />
+                      ))}
+                    />
+                  )}
+                  {data?.deputyRelationsAsDeputy?.length > 0 && (
+                    <UserDataItem
+                      className="sm:col-span-2"
+                      label="Заместитель"
+                      valueStyles="flex flex-wrap gap-2"
+                      value={data?.deputyRelationsAsDeputy?.map((t) => (
+                        <UserDeputyOf
+                          deputyId={data.id}
+                          user={t.user}
+                          key={t.user.id}
+                        />
+                      ))}
+                    />
+                  )}
                 </dl>
               </div>
             </div>

@@ -22,7 +22,6 @@ export interface Notification {
   rateId?: number;
   iprId?: number;
 }
-
 export interface User {
   id: number;
   email: string;
@@ -39,6 +38,12 @@ export interface User {
   notifications: Notification[];
   access?: boolean;
   specsOnTeams?: { spec: { id: number; name: string } }[];
+  deputyRelationsAsDeputy: {
+    user: DeputyUser;
+  }[];
+  deputyRelationsAsUser: {
+    deputy: DeputyUser;
+  }[];
 }
 
 export interface UserStoreSchema {
@@ -46,6 +51,8 @@ export interface UserStoreSchema {
   isMounted: boolean;
   isAdmin: boolean;
 }
+
+export type DeputyUser = { id: number; username: string; avatar?: string };
 
 export interface UserFormData {
   username?: string;

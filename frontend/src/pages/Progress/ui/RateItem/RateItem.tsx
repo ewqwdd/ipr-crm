@@ -8,6 +8,8 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import AlreadyRated from '../AlreadyRated/AlreadyRated';
+import { usersService } from '@/shared/lib/usersService';
+import { Link } from 'react-router';
 
 interface RateItemProps {
   rate: Rate;
@@ -40,8 +42,10 @@ export default function RateItem({ rate, specs }: RateItemProps) {
   const indicators = rate.competencyBlocks.flatMap((cb) =>
     cb.competencies.flatMap((cp) => cp.indicators),
   );
-  const userRates = rate.userRates.filter((ur) => ur.userId === userId);
-  const isRated = indicators.length === userRates.length;
+  const userRates = rate.userRates.filter(
+    (ur) => ur.userId === userId && ur.approved,
+  );
+  const isRated = indicators.length <= userRates.length;
 
   return (
     <div className="flex sm:items-center justify-between p-1.5 sm:p-3 rounded-sm border-t border-gray-300 first:border-transparent max-sm:flex-col gap-y-3">
@@ -50,9 +54,12 @@ export default function RateItem({ rate, specs }: RateItemProps) {
           <Badge color="pink" size="sm" className="self-start">
             {spec?.name}
           </Badge>
-          <span className="text-gray-700 font-medium text-lbaseg">
-            {rate.user.username}
-          </span>
+          <Link
+            to={`/users/${rate.user.id}`}
+            className="text-gray-700 font-medium hover:text-violet-600 transition-all"
+          >
+            {usersService.displayName(rate.user)}
+          </Link>
           {isRated && <AlreadyRated rate={rate} />}
         </div>
         <div className="flex items-center gap-2 sm:gap-4 text-gray-800 text-sm">

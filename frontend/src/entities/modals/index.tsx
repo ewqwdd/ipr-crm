@@ -36,6 +36,7 @@ import {
 } from '../folders';
 import AddSpecFolderModal from '../folders/ui/AddSpecFolderModal';
 import { ComptenciesEditModal } from '@/widgets/ComptenciesEditModal';
+import { UserDeputyModal } from '@/features/user/UserDeputyModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -119,6 +120,8 @@ const ModalWrapper: FC = () => {
       return <EditFolderModal {...updatedModalProps} />;
     case 'EDIT_COMPETENCY_BLOCKS':
       return <ComptenciesEditModal {...updatedModalProps} />;
+    case 'SET_DEPUTY':
+      return <UserDeputyModal {...updatedModalProps} />;
     default:
       break;
   }

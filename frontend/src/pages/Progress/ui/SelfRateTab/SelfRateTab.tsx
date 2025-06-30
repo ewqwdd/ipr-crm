@@ -7,7 +7,12 @@ export default function SelfRateTab() {
 
   return (
     <LoadingOverlay active={isLoading}>
-      <RateList data={data} isLoading={isLoading} heading="Самооценка 360" />
+      <RateList
+        data={data}
+        isLoading={isLoading}
+        includeSelfRates
+        heading="Самооценка 360"
+      />
     </LoadingOverlay>
   );
 }

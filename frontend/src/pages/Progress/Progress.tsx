@@ -7,7 +7,11 @@ import { memo, useMemo } from 'react';
 import { Badge } from '@/shared/ui/Badge';
 import { useReadNotifsOnClose } from '@/shared/hooks/useReadNotifsOnClose';
 import { NotificationType } from '@/entities/notifications';
-import { rate360Api } from '@/shared/api/rate360Api';
+import {
+  useAssignedRatesCounter,
+  useAssignedSelfRatesCounter,
+  useConfirmRatesCounter,
+} from '@/shared/hooks/useAssignedCounters';
 
 const notifTypes: NotificationType[] = [
   'RATE_ASSIGNED_SELF',
@@ -16,29 +20,22 @@ const notifTypes: NotificationType[] = [
 ];
 
 export default memo(function Progress() {
-  const { data: rateAssigned } = rate360Api.useAssignedRatesQuery();
-  const { data: confirmByUser } = rate360Api.useConfirmByUserQuery();
-  const { data: confirmByCurator } = rate360Api.useConfirmByCuratorQuery();
-  const { data: selfNotifs } = rate360Api.useSelfRatesQuery();
+  const assignedCount = useAssignedRatesCounter();
+  const confirmRatesCount = useConfirmRatesCounter();
+  const selfAssignedCount = useAssignedSelfRatesCounter();
 
   useReadNotifsOnClose(notifTypes);
 
   const tabs = useMemo(() => {
-    const confirm =
-      (confirmByUser?.length ?? 0) + (confirmByCurator?.length ?? 0);
-
     return [
       {
         name: 'Самооценка 360',
         element:
-          !selfNotifs || selfNotifs.length === 0 ? (
+          selfAssignedCount === 0 ? (
             'Самооценка 360'
           ) : (
             <div className="flex items-center gap-2 [&>span]:rounded-full [&>span]size-4">
-              Самооценка 360{' '}
-              <Badge color={'red'}>
-                {selfNotifs.filter((r) => !r.finished).length}
-              </Badge>
+              Самооценка 360 <Badge color={'red'}>{selfAssignedCount}</Badge>
             </div>
           ),
         key: 'self-assessment',
@@ -46,14 +43,12 @@ export default memo(function Progress() {
       {
         name: 'По другим пользователям',
         element:
-          !rateAssigned || rateAssigned.length === 0 ? (
+          assignedCount === 0 ? (
             'По другим пользователям'
           ) : (
             <div className="flex items-center gap-2 [&>span]:rounded-full [&>span]size-4">
               По другим пользователям{' '}
-              <Badge color={'red'}>
-                {rateAssigned.filter((r) => !r.finished).length}
-              </Badge>
+              <Badge color={'red'}>{assignedCount}</Badge>
             </div>
           ),
         key: 'by-others',
@@ -61,17 +56,17 @@ export default memo(function Progress() {
       {
         name: 'Утвердить список',
         element:
-          confirm === 0 ? (
+          confirmRatesCount === 0 ? (
             'Утвердить список'
           ) : (
             <div className="flex items-center gap-2 [&>span]:rounded-full [&>span]size-4">
-              Утвердить список <Badge color={'red'}>{confirm}</Badge>
+              Утвердить список <Badge color={'red'}>{confirmRatesCount}</Badge>
             </div>
           ),
         key: 'confirm-list',
       },
     ];
-  }, [rateAssigned, confirmByUser, confirmByCurator, selfNotifs]);
+  }, [assignedCount, confirmRatesCount, selfAssignedCount]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || tabs[0].key;

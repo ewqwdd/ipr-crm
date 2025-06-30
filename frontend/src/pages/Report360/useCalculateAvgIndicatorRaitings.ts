@@ -119,9 +119,9 @@ export const useCalculateAvgIndicatorRaitings = (
   currentUserId?: number,
 ): FinalRatings => {
   return useMemo(() => {
-    if (!assessors?.length || !userRates?.length || !currentUserId) return {};
+    if (!userRates?.length || !currentUserId) return {};
     return calculateFinalRatings(
-      assessors,
+      assessors ?? [],
       userRates,
       currentUserId,
     ) as FinalRatings;

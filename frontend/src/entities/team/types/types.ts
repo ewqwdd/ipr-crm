@@ -1,8 +1,13 @@
+import { DeputyUser } from '@/entities/user';
+
 export type SpecOnUser = {
   specId: number;
   spec: { name: string; active?: boolean };
   teamId?: number;
 };
+
+export const userTeamRoles = ['MEMBER', 'DEPUTY'] as const;
+export type UserTeamRole = (typeof userTeamRoles)[number];
 
 export const teamTypes = [
   'PRODUCT',
@@ -25,6 +30,9 @@ export type TeamUser = {
   username: string;
   avatar?: string;
   specsOnTeams?: SpecOnUser[];
+  deputyRelationsAsDeputy: {
+    user: DeputyUser;
+  }[];
 };
 
 interface Team {

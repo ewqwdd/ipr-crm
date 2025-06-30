@@ -7,6 +7,7 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { PencilAltIcon } from '@heroicons/react/outline';
 import { StarIcon } from '@heroicons/react/solid';
 import { generalService } from '@/shared/lib/generalService';
+import { DeputyList } from '@/features/user/DeputyList';
 
 interface UserItemProps {
   user: TeamUser;
@@ -39,6 +40,7 @@ export default function UserItem({
         <SoftButton className="p-1" onClick={() => setOpen?.({ teamId, user })}>
           <PencilAltIcon className="size-4" />
         </SoftButton>
+        <DeputyList user={user} />
       </div>
       {userSpecsExist || curatorSpecsExist ? (
         <div className="flex flex-col pl-2 bg-violet-50 pt-2 pb-3">

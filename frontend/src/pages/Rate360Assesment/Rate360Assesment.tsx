@@ -2,6 +2,7 @@ import { rate360Api } from '@/shared/api/rate360Api';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
+  Link,
   useLocation,
   useNavigate,
   useParams,
@@ -18,6 +19,7 @@ import Tooltip from '@/shared/ui/Tooltip';
 import { UserRateHeader } from '@/widgets/UserRateHeader';
 import { generalService } from '@/shared/lib/generalService';
 import { useInvalidateTags } from '@/shared/hooks/useInvalidateTags';
+import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 
 export default function Rate360Assesment() {
   const { id } = useParams();
@@ -151,10 +153,13 @@ export default function Rate360Assesment() {
             loading={loadingRef}
           />
         )}
-        <div className="flex justify-end px-6 pt-2">
-          {/* <Link to={'/progress'}>
+        <div className="flex justify-end px-6 pt-2 items-center gap-4">
+          <Link to={'/progress'} className="mr-auto max-sm:hidden">
             <SecondaryButton>Назад</SecondaryButton>
-          </Link> */}
+          </Link>
+          <p className="text-gray-600 sm:text-sm text-xs">
+            Сохрання, вы больше не сможете изменить оценку.
+          </p>
           {(loading ?? 0) > 0 ? (
             <Tooltip content="Подождите...">
               <PrimaryButton disabled={true}>Сохранить</PrimaryButton>

@@ -28,6 +28,31 @@ export class UsersService {
     private filesService: FilesService,
   ) {}
 
+  deputyInclude: Prisma.UserInclude = {
+    deputyRelationsAsDeputy: {
+      select: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+      },
+    },
+    deputyRelationsAsUser: {
+      select: {
+        deputy: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+      },
+    },
+  };
+
   defaultInclude: Prisma.UserInclude = {
     role: true,
     Spec: {
@@ -51,6 +76,7 @@ export class UsersService {
         },
       },
     },
+    ...this.deputyInclude,
   };
 
   async findOneByEmail(email: string) {
@@ -107,6 +133,7 @@ export class UsersService {
         teamCurator: {
           select: { id: true, name: true },
         },
+        ...this.deputyInclude,
       },
       omit: { passwordHash: true, roleId: true, specId: true, authCode: true },
     });

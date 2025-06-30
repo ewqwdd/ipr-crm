@@ -53,6 +53,13 @@ export interface Ipr {
   user: User;
   rate360: Rate;
   team: { name: string };
+  planCurators: {
+    user: {
+      avatar?: string;
+      id: number;
+      username: string;
+    };
+  }[];
 }
 
 export interface CustomCard extends Card {

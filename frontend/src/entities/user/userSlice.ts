@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User, UserStoreSchema } from './types/types';
 import { teamsApi } from '@/shared/api/teamsApi';
+import { usersApi } from '@/shared/api/usersApi/usersApi';
 
 const initialState: UserStoreSchema = {
   user: null,
@@ -60,6 +61,50 @@ const userSlice = createSlice({
         const { teamAccess } = action.payload;
         if (state.user) {
           state.user.teamAccess = teamAccess;
+        }
+      },
+    );
+    builder.addMatcher(
+      usersApi.endpoints.setDeputy.matchFulfilled,
+      (state, action) => {
+        if (
+          state.user &&
+          action.meta.arg.originalArgs.userId === state.user.id
+        ) {
+          state.user.deputyRelationsAsUser.push({
+            deputy: action.payload.deputy,
+          });
+        } else if (
+          state.user &&
+          action.meta.arg.originalArgs.deputyId === state.user.id
+        ) {
+          state.user.deputyRelationsAsDeputy.push({
+            user: action.payload.user,
+          });
+        }
+      },
+    );
+    builder.addMatcher(
+      usersApi.endpoints.removeDeputy.matchFulfilled,
+      (state, action) => {
+        if (
+          state.user &&
+          state.user.id === action.meta.arg.originalArgs.userId
+        ) {
+          state.user.deputyRelationsAsUser =
+            state.user.deputyRelationsAsUser.filter(
+              (deputy) =>
+                deputy.deputy.id !== action.meta.arg.originalArgs.deputyId,
+            );
+        } else if (
+          state.user &&
+          state.user.id === action.meta.arg.originalArgs.deputyId
+        ) {
+          state.user.deputyRelationsAsDeputy =
+            state.user.deputyRelationsAsDeputy.filter(
+              (deputy) =>
+                deputy.user.id !== action.meta.arg.originalArgs.userId,
+            );
         }
       },
     );

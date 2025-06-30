@@ -1,4 +1,5 @@
 import { CreateTeamDto, Team, TeamSingle, teamTypes } from '@/entities/team';
+import { UserTeamRole } from '@/entities/team/types/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const teamsApi = createApi({
@@ -152,6 +153,17 @@ const teamsApi = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['Team'],
+    }),
+    setTeamUserRole: build.mutation<
+      TeamSingle,
+      { teamId: number; userId: number; role: UserTeamRole }
+    >({
+      query: ({ teamId, userId, role }) => ({
+        url: `/teams/${teamId}/users/${userId}`,
+        method: 'PUT',
+        body: { role },
+      }),
+      invalidatesTags: (_, __, { teamId }) => [{ type: 'Team', id: teamId }],
     }),
   }),
 });

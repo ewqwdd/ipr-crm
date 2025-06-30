@@ -1,6 +1,7 @@
 import {
   ConflictException,
   ForbiddenException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { UsersAccessService } from 'src/users/users-access.service';
 import { findAllIprInclude } from './constants';
 import { DeleteIprsDto } from './dto/delete-iprs.dto';
 import { NotificationsService } from 'src/notification/notifications.service';
+import { SetDeputyDto } from './dto/set-deputy.dto';
 
 @Injectable()
 export class IprService {
@@ -81,8 +83,32 @@ export class IprService {
             },
           },
         },
-        mentor: true,
-        user: true,
+        user: {
+          include: {
+            deputyRelationsAsDeputy: {
+              select: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        planCurators: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -194,9 +220,16 @@ export class IprService {
         startDate: new Date(),
         status: 'ACTIVE',
         userId: rate360.userId,
-        mentorId:
-          rate360.team?.curator?.id ??
-          rate360.evaluators?.find((u) => u.type === 'CURATOR')?.userId,
+        planCurators: {
+          createMany: {
+            data:
+              rate360.evaluators
+                ?.filter((u) => u.type === 'CURATOR')
+                .map((u) => ({
+                  userId: u.userId,
+                })) || [],
+          },
+        },
         tasks: {
           create: [...competencyTasks, ...indicatorTasks],
         },
@@ -378,10 +411,9 @@ export class IprService {
     });
   }
 
-  async setCurator(id: number, curatorId: number, competencyId: number) {
+  async setCurator(id: number, curatorId: number) {
     await this.prismaService.growthPlanCurator.deleteMany({
       where: {
-        competencyId,
         userId: curatorId,
         planId: id,
       },
@@ -395,7 +427,6 @@ export class IprService {
         planCurators: {
           connect: {
             id: curatorId,
-            competencyId,
           },
         },
       },
@@ -502,11 +533,10 @@ export class IprService {
     return material;
   }
 
-  findAllFilters({
-    startDate,
-    endDate,
-    user,
-  }: IprFiltersDto): Prisma.IndividualGrowthPlanWhereInput {
+  findAllFilters(
+    { startDate, endDate, user, deputyOnly }: IprFiltersDto,
+    sessionInfo: GetSessionInfoDto,
+  ): Prisma.IndividualGrowthPlanWhereInput {
     return {
       ...(startDate
         ? {
@@ -523,6 +553,17 @@ export class IprService {
           }
         : {}),
       ...(user ? { userId: user } : {}),
+      ...(deputyOnly
+        ? {
+            user: {
+              deputyRelationsAsDeputy: {
+                some: {
+                  userId: sessionInfo.id,
+                },
+              },
+            },
+          }
+        : {}),
     };
   }
 
@@ -532,7 +573,7 @@ export class IprService {
   ) {
     const { limit, page, skill, specId } = params;
 
-    const where = this.findAllFilters(params);
+    const where = this.findAllFilters(params, sessionInfo);
 
     const allowedSubbordinates =
       await this.usersAccessService.findAllowedSubbordinates(sessionInfo.id);
@@ -540,11 +581,25 @@ export class IprService {
     where.rate360 = {
       ...(specId ? { specId } : {}),
       ...(skill ? { type: skill } : {}),
-      OR: allowedSubbordinates.map(({ teamId, userId }) => ({
-        userId,
-        teamId,
-      })),
     };
+
+    where.OR = [
+      {
+        rate360: {
+          OR: allowedSubbordinates.map(({ teamId, userId }) => ({
+            userId,
+            teamId,
+          })),
+        },
+      },
+      {
+        planCurators: {
+          some: {
+            userId: sessionInfo.id,
+          },
+        },
+      },
+    ];
 
     const [data, total] = await Promise.all([
       this.prismaService.individualGrowthPlan.findMany({
@@ -569,7 +624,7 @@ export class IprService {
     const { limit, page, skill, specId, teams } = params;
     const teamFilters = teams?.split(',').map((t) => Number(t)) || [];
 
-    const where = this.findAllFilters(params);
+    const where = this.findAllFilters(params, sessionInfo);
 
     if (teamFilters.length > 0 || specId || skill) {
       where.rate360 = {
@@ -666,6 +721,17 @@ export class IprService {
         plan: {
           select: {
             userId: true,
+            planCurators: {
+              select: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -692,6 +758,10 @@ export class IprService {
       return true;
     }
 
+    if (foundTask.plan.planCurators.some((c) => c.user.id === sessionInfo.id)) {
+      return true;
+    }
+
     return false;
   }
 
@@ -704,11 +774,22 @@ export class IprService {
       ...(sessionInfo.role !== 'admin'
         ? {
             plan: {
-              rate360: {
-                team: {
-                  curatorId: sessionInfo.id,
+              OR: [
+                {
+                  rate360: {
+                    team: {
+                      curatorId: sessionInfo.id,
+                    },
+                  },
                 },
-              },
+                {
+                  planCurators: {
+                    some: {
+                      userId: sessionInfo.id,
+                    },
+                  },
+                },
+              ],
             },
           }
         : {}),
@@ -751,17 +832,21 @@ export class IprService {
             },
           },
         },
-        mentor: {
-          select: {
-            username: true,
-            id: true,
-            avatar: true,
-          },
-        },
         user: {
           select: {
             username: true,
             id: true,
+          },
+        },
+        planCurators: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+              },
+            },
           },
         },
       },
@@ -783,6 +868,17 @@ export class IprService {
           rate360: {
             include: {
               spec: true,
+            },
+          },
+          planCurators: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  avatar: true,
+                },
+              },
             },
           },
         },
@@ -831,5 +927,92 @@ export class IprService {
         },
       },
     });
+  }
+
+  async deputyAccessCheck(sessionInfo: GetSessionInfoDto, body: SetDeputyDto) {
+    if (sessionInfo.role !== 'admin') {
+      if (body.userId !== sessionInfo.id)
+        throw new ForbiddenException(
+          'Вы не можете назначить заместителя для другого пользователя',
+        );
+      const user = await this.prismaService.user.findFirst({
+        where: {
+          id: body.deputyId,
+          OR: [
+            {
+              teams: {
+                some: {
+                  team: {
+                    curatorId: sessionInfo.id,
+                  },
+                },
+              },
+            },
+            {
+              growthPlans: {
+                some: {
+                  planCurators: {
+                    some: {
+                      userId: sessionInfo.id,
+                    },
+                  },
+                },
+              },
+            },
+            {
+              deputyRelationsAsDeputy: {
+                some: {
+                  userId: sessionInfo.id,
+                },
+              },
+            },
+          ],
+        },
+      });
+      if (!user)
+        throw new ForbiddenException(
+          'У вас нет прав на установку заместителя для этого пользователя',
+        );
+    }
+  }
+
+  async setDeputy(body: SetDeputyDto, sessionInfo: GetSessionInfoDto) {
+    await this.deputyAccessCheck(sessionInfo, body);
+    const deputy = await this.prismaService.userDeputy.create({
+      data: {
+        userId: body.userId,
+        deputyId: body.deputyId,
+      },
+      select: {
+        deputy: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+    return deputy;
+  }
+
+  async removeDeputy(body: SetDeputyDto, sessionInfo: GetSessionInfoDto) {
+    await this.deputyAccessCheck(sessionInfo, body);
+    await this.prismaService.userDeputy.delete({
+      where: {
+        userId_deputyId: {
+          userId: body.userId,
+          deputyId: body.deputyId,
+        },
+      },
+    });
+    return HttpStatus.OK;
   }
 }

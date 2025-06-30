@@ -19,7 +19,6 @@ import { UsersService } from './users.service';
 import { AdminGuard } from 'src/utils/guards/admin.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { extname } from 'path';
 import { SessionInfo } from 'src/auth/decorator/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { InviteUserDTO } from './dto/invite-user.dto';

@@ -26,6 +26,7 @@ import { SingleCommentDto } from './dto/single-comment.dto';
 import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
 import { AddEvaluatorsDto } from './dto/add-evalators.dto';
 import { RateFiltersDto } from './dto/rate-filters.dto';
+import { MultipleRateIdDto } from './dto/multiple-rate-id.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -102,13 +103,23 @@ export class Rate360Controller {
     return await this.rate360Service.userAssessment(sessionInfo.id, data);
   }
 
-  @Post('/assesment/indicator')
+  @Post('/assesment/indicator/:id')
   @UseGuards(AuthGuard)
-  async assesmentIndicator(
+  async assesmentIndicatorId(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
     @Body() data: SingleRateIdDto,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    return await this.rate360Service.singleAssessment(sessionInfo.id, data);
+    return await this.rate360Service.singleAssessment(sessionInfo.id, id, data);
+  }
+
+  @Post('/assesment/indicator')
+  @UseGuards(AuthGuard)
+  async assesmentIndicator(
+    @Body() data: MultipleRateIdDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return await this.rate360Service.multipleAssessment(sessionInfo.id, data);
   }
 
   @Post('/assesment/comment')

@@ -1,10 +1,12 @@
 import { User } from '@/entities/user';
-import type { ImportMultipleUser } from '@/entities/user';
+import type { DeputyUser, ImportMultipleUser } from '@/entities/user';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   handleCreateUserQuery,
   handleEditSelfQuery,
+  handleRemoveDeputyQuery,
   handleRemoveUserQuery,
+  handleSetDeputyQuery,
   handleUpdateUserQuery,
 } from './usersApi.service';
 
@@ -67,6 +69,27 @@ const usersApi = createApi({
       }),
       onQueryStarted: handleRemoveUserQuery,
       invalidatesTags: (_, __, id) => [{ type: 'User', id }],
+    }),
+    setDeputy: build.mutation<
+      { user: DeputyUser; deputy: DeputyUser },
+      { userId: number; deputyId: number }
+    >({
+      query: ({ userId, deputyId }) => ({
+        url: '/ipr/deputy',
+        method: 'POST',
+        body: { userId, deputyId },
+      }),
+      onQueryStarted: handleSetDeputyQuery,
+      invalidatesTags: (_, __, { userId }) => [{ type: 'User', id: userId }],
+    }),
+    removeDeputy: build.mutation<void, { userId: number; deputyId: number }>({
+      query: ({ userId, deputyId }) => ({
+        url: '/ipr/deputy',
+        method: 'DELETE',
+        body: { userId, deputyId },
+      }),
+      onQueryStarted: handleRemoveDeputyQuery,
+      invalidatesTags: (_, __, { userId }) => [{ type: 'User', id: userId }],
     }),
   }),
 });

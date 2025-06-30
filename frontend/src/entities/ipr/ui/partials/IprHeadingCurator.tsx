@@ -8,7 +8,7 @@ interface IprHeadingCuratorProps {
 }
 
 export default function IprHeadingCurator({ ipr }: IprHeadingCuratorProps) {
-  const user = ipr?.mentor ?? ipr?.rate360?.team?.curator;
+  const user = ipr?.planCurators[0]?.user ?? ipr?.rate360?.team?.curator;
   const avatar = generalService.transformFileUrl(user?.avatar);
   const title = user?.username;
   const subTitle = 'Куратор';

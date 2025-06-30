@@ -23,6 +23,7 @@ import { SetDeadlineDto } from './dto/set-deadline.dto';
 import { RemoveFromBoardDto } from './dto/remove-from-board.dto';
 import { IprFiltersDto } from './dto/ipr-filters.dto';
 import { DeleteIprsDto } from './dto/delete-iprs.dto';
+import { SetDeputyDto } from './dto/set-deputy.dto';
 
 @Controller('ipr')
 export class IprController {
@@ -212,5 +213,23 @@ export class IprController {
     @Param('id', { transform: (v: string) => parseInt(v) }) id: number,
   ) {
     return this.iprService.findCompetencyBlocksByIpr(id);
+  }
+
+  @Post('/deputy')
+  @UseGuards(AuthGuard)
+  async setDeputy(
+    @Body() data: SetDeputyDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.setDeputy(data, sessionInfo);
+  }
+
+  @Delete('/deputy')
+  @UseGuards(AuthGuard)
+  async removeDeputy(
+    @Body() data: SetDeputyDto,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.iprService.removeDeputy(data, sessionInfo);
   }
 }

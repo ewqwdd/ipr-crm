@@ -50,4 +50,9 @@ export class IprFiltersDto {
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
   subbordinatesOnly?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  deputyOnly?: boolean;
 }

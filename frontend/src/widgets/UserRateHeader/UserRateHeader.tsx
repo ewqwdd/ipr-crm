@@ -33,7 +33,12 @@ export default memo(function UserRateHeader({ rate }: UserHeaderProps) {
       />
       <div className="flex flex-col">
         <h2 className="sm:text-lg text-base leading-6 font-medium text-gray-900">
-          {(foundUser && usersService.displayName(foundUser)) ?? '-'}
+          <Link
+            to={`/users/${foundUser?.id}`}
+            className="hover:text-violet-600"
+          >
+            {(foundUser && usersService.displayName(foundUser)) ?? '-'}
+          </Link>
         </h2>
         {isTeamAccessible ? (
           <Link

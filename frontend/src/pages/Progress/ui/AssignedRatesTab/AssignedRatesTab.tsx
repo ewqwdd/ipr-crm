@@ -9,6 +9,7 @@ export default function AssignedRatesTab() {
     <LoadingOverlay active={isLoading}>
       <RateList
         includeSelfTeam
+        includeOtherTeam
         data={data}
         isLoading={isFetching}
         heading="По другим пользователям"

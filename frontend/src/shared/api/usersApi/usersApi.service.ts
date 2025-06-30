@@ -1,6 +1,6 @@
 import { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { usersApi } from './usersApi';
-import { User } from '@/entities/user';
+import { DeputyUser, User } from '@/entities/user';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Dispatch = ThunkDispatch<any, any, UnknownAction>;
@@ -14,6 +14,27 @@ const updateUserInCache = (dispatch: Dispatch, updatedUser: User) => {
       if (index !== -1) {
         draft.users[index] = updatedUser;
       }
+    }),
+  );
+};
+
+const updateUserInCacheCallback = (
+  dispatch: Dispatch,
+  userId: number,
+  update: (u: User) => User,
+) => {
+  dispatch(
+    usersApi.util.updateQueryData('getUsers', undefined, (draft) => {
+      const index = draft.users.findIndex((user) => user.id === userId);
+      if (index !== -1) {
+        draft.users[index] = update(draft.users[index]);
+      }
+    }),
+  );
+  dispatch(
+    usersApi.util.updateQueryData('getUserById', userId, (draft) => {
+      draft = update(draft);
+      return draft;
     }),
   );
 };
@@ -90,6 +111,57 @@ const handleRemoveUserQuery = async (
   }
 };
 
+const handleRemoveDeputyQuery = async (
+  { deputyId, userId }: { deputyId: number; userId: number },
+  { dispatch, queryFulfilled }: Options<void>,
+) => {
+  try {
+    await queryFulfilled;
+    updateUserInCacheCallback(dispatch, deputyId, (user) => ({
+      ...user,
+      deputyRelationsAsDeputy: user.deputyRelationsAsDeputy.filter(
+        (relation) => relation.user.id !== userId,
+      ),
+    }));
+    updateUserInCacheCallback(dispatch, userId, (user) => ({
+      ...user,
+      deputyRelationsAsUser: user.deputyRelationsAsUser.filter(
+        (relation) => relation.deputy.id !== deputyId,
+      ),
+    }));
+  } catch (error) {
+    console.error('Ошибка при удалении заместителя:', error);
+  }
+};
+
+const handleSetDeputyQuery = async (
+  _: unknown,
+  {
+    dispatch,
+    queryFulfilled,
+  }: Options<{ user: DeputyUser; deputy: DeputyUser }>,
+) => {
+  try {
+    const { data } = await queryFulfilled;
+    updateUserInCacheCallback(dispatch, data.user.id, (user) => ({
+      ...user,
+      deputyRelationsAsUser: [
+        ...user.deputyRelationsAsUser,
+        { deputy: data.deputy },
+      ],
+    }));
+    updateUserInCacheCallback(dispatch, data.deputy.id, (user) => ({
+      ...user,
+      deputyRelationsAsDeputy: [
+        ...user.deputyRelationsAsDeputy,
+        { user: data.user },
+      ],
+    }));
+  } catch (error) {
+    console.error('Ошибка при установке заместителя:', error);
+  }
+};
+
 export {
   updateUserInCache,
   addUserToCache,
@@ -98,4 +170,6 @@ export {
   handleCreateUserQuery,
   handleEditSelfQuery,
   handleRemoveUserQuery,
+  handleRemoveDeputyQuery,
+  handleSetDeputyQuery,
 };

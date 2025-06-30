@@ -21,6 +21,7 @@ import { findAllRateInclude } from './constants';
 import { TeamsHelpersService } from 'src/teams/teams.helpers.service';
 import { findHierarchyElements } from './helpers';
 import { NotificationsService } from 'src/notification/notifications.service';
+import { MultipleRateIdDto } from './dto/multiple-rate-id.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -677,8 +678,12 @@ export class Rate360Service {
     }
   }
 
-  async singleAssessment(userId: number, data: SingleRateIdDto) {
-    const { rate, indicatorId, rateId } = data;
+  async singleAssessment(
+    userId: number,
+    indicatorId: number,
+    data: SingleRateIdDto,
+  ) {
+    const { rate, rateId } = data;
     const found = await this.findForUser(userId, rateId);
     if (!found) {
       throw new NotFoundException('Rate not found');
@@ -711,6 +716,34 @@ export class Rate360Service {
         },
       });
     }
+  }
+
+  async multipleAssessment(userId: number, data: MultipleRateIdDto) {
+    const { rates, rateId } = data;
+    const found = await this.findForUser(userId, rateId);
+    if (!found) {
+      throw new NotFoundException('Rate not found');
+    }
+
+    await this.prismaService.userRates.deleteMany({
+      where: {
+        userId,
+        rate360Id: rateId,
+        indicatorId: {
+          in: rates.map((r) => r.indicatorId),
+        },
+      },
+    });
+
+    await this.prismaService.userRates.createMany({
+      data: rates.map((r) => ({
+        userId,
+        rate360Id: rateId,
+        indicatorId: r.indicatorId,
+        rate: r.rate,
+      })),
+    });
+    return HttpStatus.OK;
   }
 
   async userAssessment(

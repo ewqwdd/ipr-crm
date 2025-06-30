@@ -7,6 +7,8 @@ import { Checkbox } from '@/shared/ui/Checkbox';
 import { useCallback } from 'react';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { usersService } from '@/shared/lib/usersService';
+import { useAppSelector } from '@/app';
+import { Badge } from '@/shared/ui/Badge';
 
 interface RateRowProps {
   task: Ipr;
@@ -26,6 +28,10 @@ export default function RateRow({
     (task) => task.status === 'IN_PROGRESS',
   );
   const isAdmin = useIsAdmin();
+  const userId = useAppSelector((state) => state.user.user?.id);
+  const isDeputy = task.user.deputyRelationsAsDeputy.some(
+    (relation) => relation.user.id === userId,
+  );
 
   const inReviewTasks = task.tasks.filter(
     (task) => task.status === 'IN_REVIEW',
@@ -68,6 +74,11 @@ export default function RateRow({
         >
           {usersService.displayName(task.user)}
         </Link>
+        {isDeputy && (
+          <Badge color="green" size="sm" className="ml-1">
+            Ваш заместитель
+          </Badge>
+        )}
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
         <Link
