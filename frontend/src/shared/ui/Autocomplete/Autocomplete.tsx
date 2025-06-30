@@ -26,7 +26,6 @@ export default function Autocomplete({
     opt.toLowerCase().includes((value || '').toLowerCase()),
   );
 
-  // Закрытие списка при клике вне компонента
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (

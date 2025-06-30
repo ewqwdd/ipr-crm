@@ -65,7 +65,6 @@ export default function SearchSelectMultiple({
           <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
         </Combobox.Button>
 
-        {/* Выбранные элементы */}
         <div className="flex flex-wrap gap-2 mt-2">
           {value.map((item) => (
             <Badge key={item.id} color="gray" size="sm">

@@ -45,7 +45,7 @@ const CompetencyListItem: FC<CompetencyListItemProps> = ({
   skipHint,
   skipValue,
   skillType,
-  pageType = 'profile', // Default to 'profile' if not provided
+  pageType = 'profile',
   folderId,
   setList,
 }) => {

@@ -2,10 +2,12 @@ import { surveyCreateTabs } from '@/entities/survey/constants';
 import { Heading } from '@/shared/ui/Heading';
 import { Tabs } from '@/shared/ui/Tabs';
 import { useSearchParams } from 'react-router';
-import SurveySettings from '../../entities/survey/ui/edit/ui/SurveySettings';
-import SurveyQuestions from '../../entities/survey/ui/edit/ui/SurveyQuestions';
-import SurveyCreateAccess from '../../entities/survey/ui/edit/ui/SurveyCreateAccess';
-import { SurveySubmit } from '@/entities/survey';
+import {
+  SurveySettings,
+  SurveySubmit,
+  SurveyQuestions,
+  SurveyCreateAccess,
+} from '@/entities/survey';
 import { surveyApi } from '@/shared/api/surveyApi';
 
 export default function SurveyCreate() {

@@ -22,10 +22,8 @@ export default function PhoneQuestion({
 
     const hasError = !!val && !isValidPhoneNumber(val);
 
-    // Передаём значение и флаг ошибки
     onChange(val, hasError);
 
-    // Обновляем текст ошибки
     if (setError) {
       if (hasError) {
         setError('Введите корректный номер телефона с кодом страны');

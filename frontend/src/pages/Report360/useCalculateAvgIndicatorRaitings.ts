@@ -33,14 +33,12 @@ export type FinalRatings = Record<
   { CURATOR: number; TEAM_MEMBER: number; SUBORDINATE: number; SELF: number }
 >;
 
-// Функция: Создаёт карту userId → type
 const createUserTypeMap = (rateEvaluators: RateEvaluator[]) =>
   rateEvaluators.reduce((acc, { userId, type }) => {
     acc.set(userId, type);
     return acc;
   }, new Map());
 
-// Функция: Группирует оценки по indicatorId и userType
 const groupRatingsByIndicator = (
   userRates: UserRate[],
   userTypeMap: Map<number, string>,
@@ -71,7 +69,6 @@ const groupRatingsByIndicator = (
   return indicatorRatings;
 };
 
-// Функция: Рассчитывает средние оценки
 const calculateAverageRatings = (
   indicatorRatings: Map<number, IndicatorRatings>,
 ): FinalRatings => {

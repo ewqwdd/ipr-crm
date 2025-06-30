@@ -40,7 +40,7 @@ export class MailService {
       data: { ...email, from: process.env.GOOGLE_EMAIL },
       opts: {
         priority: 0,
-        delay: index * 5000, // задержка между письмами (1 сек)
+        delay: index * 5000,
       },
     }));
 
@@ -57,7 +57,6 @@ export class MailService {
     });
   }
 
-  // Методы для мониторинга очереди
   async getQueueStats() {
     const waiting = await this.mailQueue.getWaiting();
     const active = await this.mailQueue.getActive();

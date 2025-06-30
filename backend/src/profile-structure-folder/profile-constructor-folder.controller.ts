@@ -23,7 +23,6 @@ export class ProfileStructureFolderController {
     private readonly folderService: ProfileConstructorFolderService,
   ) {}
 
-  // Получить всю структуру
   @Get()
   getAll() {
     return this.folderService.getProfileStructureFolders();

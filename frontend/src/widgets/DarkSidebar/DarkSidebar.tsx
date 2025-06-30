@@ -1,4 +1,3 @@
-/* This example requires Tailwind CSS v2.0+ */
 import { lazy, Suspense } from 'react';
 import Content from './Content';
 import { useMaxMediaQuery } from '@/shared/hooks/useMediaQuery.ts';

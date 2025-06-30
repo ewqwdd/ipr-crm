@@ -7,7 +7,6 @@ export const skillTypeOptions: Array<{ value: Rate['type']; label: string }> = [
 ] as const;
 
 // TODO: add rate360StatusOptions
-// export const rate360StatusOptions = [];
 
 export const progressOptions: Array<{
   value: 'COMPLETED' | 'NOT_COMPLETED' | 'ALL';

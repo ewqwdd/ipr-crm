@@ -50,7 +50,6 @@ export default function Assesment({
     }[]
   >([]);
 
-  // дебаунс + отмена предыдущего запроса
   const debouncedRate = useCallback(
     debounce((params: DebouncedRateParams) => {
       const { rateId } = params;

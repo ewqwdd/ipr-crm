@@ -112,8 +112,8 @@ export interface Survey {
   archived?: boolean;
   hidden?: boolean;
 
-  surveyQuestions: SurveyQuestion[]; // аналогично surveyQuestions
-  usersAssigned: AssignedSurvey[]; // ты не дал его тип, оставляю как есть
+  surveyQuestions: SurveyQuestion[];
+  usersAssigned: AssignedSurvey[];
 }
 
 export interface AssignedAnsweredQuestion {
@@ -134,8 +134,8 @@ export interface AssignedSurvey {
   id: number;
   userId: number;
   surveyId: number;
-  startDate: string; // или `Date`, если ты парсишь в дату
-  endDate: string | null; // или `Date | null`
+  startDate: string;
+  endDate: string | null;
   finished: boolean;
   survey: Survey;
   answeredQUestions?: AssignedAnsweredQuestion[];

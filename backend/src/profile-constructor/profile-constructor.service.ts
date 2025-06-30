@@ -318,7 +318,6 @@ export class ProfileConstructorService {
           },
         });
 
-        // Получаем данные для копирования
         const blocksToClone = await tx.competencyBlock.findMany({
           where: { archived: false },
           include: {
@@ -350,19 +349,17 @@ export class ProfileConstructorService {
           },
         });
 
-        // Архивируем все блоки компетенций
+        // Архивация
         await tx.competencyBlock.updateMany({
           where: { archived: false },
           data: { archived: true, archivedDate: date },
         });
 
-        // Архивируем компетенции
         await tx.competency.updateMany({
           where: { archived: false },
           data: { archived: true, archivedDate: date },
         });
 
-        // Архивируем индикаторы
         await tx.indicator.updateMany({
           where: { archived: false },
           data: { archived: true, archivedDate: date },
@@ -423,7 +420,7 @@ export class ProfileConstructorService {
         }
 
         let competencyOrder = 0;
-        // Подготовка данных для новых компетенций
+
         const newCompetenciesData = blocksToClone
           .flatMap((block) =>
             block.competencies.map((comp) => ({
@@ -436,12 +433,12 @@ export class ProfileConstructorService {
           )
           .sort((a, b) => a.order - b.order);
 
-        // Создаём новые компетенции
+        // Новые компетенции
         await tx.competency.createMany({
           data: newCompetenciesData.map(({ id, ...rest }) => rest),
         });
 
-        // Получаем созданные компетенции
+        // Созданные компетенции
         const createdCompetencies = await tx.competency.findMany({
           where: { archived: false },
           orderBy: {
@@ -449,7 +446,7 @@ export class ProfileConstructorService {
           },
         });
 
-        // Словарь соответствий старых и новых компетенций
+        // Map старых и новых компетенций
         const competencyIdMap = new Map(
           newCompetenciesData.map((oldComp, index) => {
             if (oldComp.name !== createdCompetencies[index]?.name)
@@ -515,7 +512,7 @@ export class ProfileConstructorService {
           },
         });
 
-        // Словарь соответствий старых и новых индикаторов
+        // Map соответствий старых и новых индикаторов
         const indicatorIdMap = new Map(
           newIndicatorsData.map((oldInd, index) => {
             if (oldInd.name !== createdIndicators[index]?.name)
@@ -627,7 +624,7 @@ export class ProfileConstructorService {
       },
     });
 
-    return updated; // Возвращаем результат обновления
+    return updated;
   }
 
   async restoreArchivedVersion(id: number) {
@@ -759,7 +756,6 @@ export class ProfileConstructorService {
 
     const base = path.resolve(__dirname, '..', '..', 'backups');
 
-    // Создаём директорию, если она не существует
     if (!fs.existsSync(base)) {
       fs.mkdirSync(base, { recursive: true });
     }

@@ -34,7 +34,6 @@ export class TeamsHelpersService {
   ): Promise<Map<number, { id: number; name: string }>> {
     if (!teamIds.length) return new Map();
 
-    // 1. Получаем все команды в иерархии для указанных ID
     const result = await this.prisma.$queryRaw`
     WITH RECURSIVE team_hierarchy AS (
       SELECT id, "parentTeamId", name, id as original_id
@@ -52,7 +51,6 @@ export class TeamsHelpersService {
     WHERE "parentTeamId" IS NULL;
   `;
 
-    // 2. Создаем Map: ID исходной команды -> корневая команда
     const rootTeamsMap = new Map<number, { id: number; name: string }>();
 
     for (const row of result as {

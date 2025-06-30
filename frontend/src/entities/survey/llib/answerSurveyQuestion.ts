@@ -20,24 +20,20 @@ const request = (
   const formData = new FormData();
   formData.append('questionId', String(questionId));
 
-  // Добавляем остальные простые поля
   Object.entries(rest).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       formData.append(key, String(value));
     }
   });
 
-  // Добавляем дату
   if (dateAnswer) {
     formData.append('dateAnswer', dateAnswer);
   }
 
-  // Добавляем файл
   if (fileAnswer) {
     formData.append('fileAnswer', fileAnswer);
   }
 
-  // Добавляем массив
   if (optionAnswer && optionAnswer.length > 0) {
     optionAnswer.forEach((val) => {
       formData.append('optionAnswer', String(val));

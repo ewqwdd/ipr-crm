@@ -29,7 +29,6 @@ async function bootstrap() {
     }),
   );
 
-  // Получаем очередь через DI
   const mailQueue = app.get(getQueueToken('mail'));
 
   const serverAdapter = new ExpressAdapter();

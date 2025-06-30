@@ -192,7 +192,6 @@ export class UsersService {
     const { roleId, specId, teams, ...rest } = updateUserDto;
     const updates: any = { ...rest };
 
-    // Validate spec and role
     const [specExists, roleExists] = await Promise.all([
       specId ? this.prisma.spec.findUnique({ where: { id: specId } }) : null,
       this.prisma.role.findUnique({ where: { id: roleId } }),
@@ -209,14 +208,12 @@ export class UsersService {
     }
     updates.role = { connect: { id: roleId } };
 
-    // teams that user is not in and not a curator of
     const curatorAt = user.teamCurator.map((t) => t.id);
     const teamIdsToAdd = teams.filter(
       (teamId) =>
         !user.teams.some((ut) => ut.teamId === teamId) &&
         !curatorAt.includes(teamId),
     );
-    // teams that user is in but not in the list
     const teamIdsToRemove = user.teams
       .map((ut) => ut.teamId)
       .filter((teamId) => !teams.includes(teamId));
@@ -245,7 +242,6 @@ export class UsersService {
       delete updates.password;
     }
 
-    // Update user
     return await this.prisma.user.update({
       where: { id },
       data: updates,
@@ -342,7 +338,7 @@ export class UsersService {
 
     const teams = await this.prisma.team.findMany();
 
-    const worksheet = workbook.worksheets[0]; // Первый лист
+    const worksheet = workbook.worksheets[0];
 
     const headers: string[] = [];
     const rows: Record<string, any>[] = [];
@@ -361,7 +357,6 @@ export class UsersService {
     worksheet.eachRow((row, rowNumber) => {
       const values = row.values as (string | null)[];
 
-      // Строка заголовков
       if (rowNumber === 1) {
         for (let i = 1; i < values.length; i++) {
           headers.push((values[i] ?? '').toString().trim());
@@ -511,10 +506,8 @@ export class UsersService {
 
         const createdProducts = await tx.team.createManyAndReturn({
           data: productsToCreate.map((name) => ({ name, parentTeamId: null })),
-          // skipDuplicates: true,
         });
 
-        // Создыне продукты
         const productNameToId = new Map();
 
         createdProducts.forEach((p) => {
@@ -537,13 +530,10 @@ export class UsersService {
               };
             }),
           ),
-          // skipDuplicates: true,
         });
 
-        // Создать мапу департаментов
         const departmentKeyToId = new Map();
 
-        // сначала новые департаменты
         createdDepartments.forEach((d) => {
           const productName = Array.from(productNameToId.entries()).find(
             ([name, id]) => id === d.parentTeamId,
@@ -553,13 +543,12 @@ export class UsersService {
           }
         });
 
-        // затем существующие департаменты
         existingTeams.forEach((team) => {
-          if (!team.parentTeamId) return; // пропускаем продукты и корневые
+          if (!team.parentTeamId) return;
           const parentProduct = existingTeams.find(
             (p) => p.id === team.parentTeamId,
           );
-          if (!parentProduct || parentProduct.parentTeamId !== null) return; // только департаменты под продуктами
+          if (!parentProduct || parentProduct.parentTeamId !== null) return;
           departmentKeyToId.set(`${parentProduct.name}:${team.name}`, team.id);
         });
 
@@ -572,7 +561,6 @@ export class UsersService {
               })),
             ),
           ),
-          // skipDuplicates: true,
         });
 
         const directionsKeyToId = new Map();
@@ -586,7 +574,6 @@ export class UsersService {
           }
         });
 
-        // затем существующие направления
         existingTeams.forEach((team) => {
           if (!team.parentTeamId) return;
           const parentDepartment = existingTeams.find(
@@ -620,7 +607,6 @@ export class UsersService {
               ),
             ),
           ),
-          // skipDuplicates: true,
         });
 
         const groupsKeyToId = new Map();

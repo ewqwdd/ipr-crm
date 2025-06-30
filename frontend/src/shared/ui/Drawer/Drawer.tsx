@@ -73,9 +73,7 @@ export default function Drawer({
                     </div>
                   </div>
                   <div className="relative mt-6 flex-1 px-4 sm:px-6 flex flex-col overflow-hidden">
-                    {/* Replace with your content */}
                     {children}
-                    {/* /End replace */}
                   </div>
                 </div>
               </div>

@@ -51,7 +51,6 @@ const IprEditSettings: FC<ActionBarProps> = ({
   const [transferToOtherFn, transferToOtherOptions] =
     iprApi.useTransferToOtherMutation();
 
-  // Error handling
   useEffect(() => {
     if (
       addBoardOptions.isError ||

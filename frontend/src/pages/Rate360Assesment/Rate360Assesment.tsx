@@ -85,7 +85,6 @@ export default function Rate360Assesment() {
     const isCompleted = (userRates?.length ?? 0) >= indicators.length;
 
     if (!isCompleted) {
-      // находим все вопросы, которые не были оценены
       const notAnswered = Object.values(assessment)
         .flatMap((a) => Object.values(a).flatMap((b) => Object.entries(b)))
         .filter(([, v]) => v.rate === undefined)

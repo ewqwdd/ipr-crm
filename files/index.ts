@@ -10,20 +10,20 @@ import fastifyStatic from '@fastify/static';
 dotenv.config();
 
 const app = Fastify({
-  // logger:
-  //   process.env.NODE_ENV === 'production'
-  //     ? true
-  //     : {
-  //         level: 'info',
-  //         transport: {
-  //           target: 'pino-pretty',
-  //           options: {
-  //             colorize: true,
-  //             translateTime: 'SYS:standard',
-  //             ignore: 'pid,hostname',
-  //           },
-  //         },
-  //       },
+  logger:
+    process.env.NODE_ENV === 'production'
+      ? true
+      : {
+          level: 'info',
+          transport: {
+            target: 'pino-pretty',
+            options: {
+              colorize: true,
+              translateTime: 'SYS:standard',
+              ignore: 'pid,hostname',
+            },
+          },
+        },
 });
 
 app.register(multipart);
@@ -41,7 +41,7 @@ if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR);
 
 app.register(fastifyStatic, {
   root: path.join(UPLOAD_DIR),
-  maxAge: '1h', // 1 hour
+  maxAge: '1h',
 });
 
 app.decorate(
@@ -77,7 +77,7 @@ app.get(
     if (!fs.existsSync(filePath)) {
       return reply.code(404).send({ error: 'Not found' });
     }
-    
+
     return reply.sendFile(fileName);
   },
 );

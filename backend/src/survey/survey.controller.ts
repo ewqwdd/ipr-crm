@@ -160,7 +160,6 @@ export class SurveyController {
       'optionAnswer',
     ]);
 
-    // Трансформируем и валидируем
     const dto = plainToInstance(AnswerQuestionDTO, normalized, {
       enableImplicitConversion: true,
     });

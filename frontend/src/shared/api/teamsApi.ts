@@ -112,7 +112,6 @@ const teamsApi = createApi({
 
           dispatch(
             teamsApi.util.updateQueryData('getTeams', undefined, (draft) => {
-              // Обновляем list
               const index = draft.list.findIndex(
                 (team) => team.id === filtered.id,
               );
@@ -120,7 +119,6 @@ const teamsApi = createApi({
                 draft.list[index] = filtered;
               }
 
-              // Обновляем structure (рекурсивно)
               const updateInTree = (teams: Team[]) => {
                 for (const team of teams) {
                   if (team.id === filtered.id) {

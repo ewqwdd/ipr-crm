@@ -7,10 +7,8 @@ export const exportReportPDF = async (
 ) => {
   if (!element) return;
 
-  // Клонируем блок
   const clone = element as HTMLElement;
   loader?.classList.remove('hidden');
-  // Заменяем canvas на img
   const canvases = clone.querySelectorAll('canvas');
   canvases.forEach((canvas) => {
     const img = document.createElement('img');
@@ -20,7 +18,6 @@ export const exportReportPDF = async (
     canvas.parentNode?.replaceChild(img, canvas);
   });
 
-  // Оформляем клон
   Object.assign(clone.style, {
     position: 'absolute',
     top: '0',
@@ -33,7 +30,6 @@ export const exportReportPDF = async (
     padding: '20px',
   });
 
-  // ⏳ ОЖИДАЕМ, пока ВСЕ картинки (в том числе бывшие canvas) загрузятся
   await Promise.all(
     Array.from(clone.querySelectorAll('img')).map((img) => {
       if (img.complete) return Promise.resolve();
@@ -44,7 +40,6 @@ export const exportReportPDF = async (
   );
 
   await new Promise((r) => requestAnimationFrame(r));
-  // Теперь точно можно рендерить
   const canvas = await html2canvas(clone, {
     backgroundColor: '#fff',
     scrollX: 0,

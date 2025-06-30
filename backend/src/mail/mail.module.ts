@@ -9,13 +9,13 @@ import { MailProcessor } from './mail.processor';
       name: 'mail',
       defaultJobOptions: {
         delay: 5000,
-        attempts: 10, // бесконечные попытки (или укажите число, например 10)
+        attempts: 10,
         backoff: {
           type: 'fixed',
           delay: 5 * 60 * 1000, // 5 минут между попытками
         },
-        removeOnComplete: 100, // оставляем 100 успешных задач для истории
-        removeOnFail: 600, // оставляем 300 неудачных для анализа
+        removeOnComplete: 100, // 100 успешных задач для истории
+        removeOnFail: 600, // 300 неудачных для анализа
       },
     }),
   ],

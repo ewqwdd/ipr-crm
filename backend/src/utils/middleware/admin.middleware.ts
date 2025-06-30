@@ -24,7 +24,7 @@ export class AdminMiddleware implements NestMiddleware {
       }
       next();
     } catch (error) {
-      res.status(401).json({ message: error.message }); // Отправляем ошибку клиенту
+      res.status(401).json({ message: error.message });
     }
   }
 }

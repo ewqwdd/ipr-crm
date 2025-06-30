@@ -14,16 +14,16 @@ export class AdminLoggerInterceptor implements NestInterceptor {
 
   constructor() {
     this.logger = winston.createLogger({
-      level: 'info', // Уровень логирования
+      level: 'info',
       format: winston.format.combine(
         winston.format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss', // Формат времени
+          format: 'YYYY-MM-DD HH:mm:ss',
         }),
-        winston.format.json(), // Формат JSON
+        winston.format.json(),
       ),
       transports: [
         new winston.transports.File({
-          filename: 'logs/admin.log', // Путь к файлу логов
+          filename: 'logs/admin.log',
         }),
       ],
     });
@@ -42,13 +42,9 @@ export class AdminLoggerInterceptor implements NestInterceptor {
         body: req.body,
       };
 
-      this.logger.info('Admin Request', logMessage); // Логируем сообщение
+      this.logger.info('Admin Request', logMessage);
     }
 
-    return next.handle().pipe(
-      tap(() => {
-        // Можно добавить логирование после обработки запроса
-      }),
-    );
+    return next.handle().pipe(tap(() => {}));
   }
 }

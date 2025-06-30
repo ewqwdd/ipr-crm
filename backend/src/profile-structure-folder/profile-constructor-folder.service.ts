@@ -42,7 +42,6 @@ export class ProfileConstructorFolderService {
     });
   }
 
-  // Product Folder Methods
   async createProductFolder({ name }: CreateProductFolderDto) {
     const existingFolder =
       await this.prismaService.profileConstructorFolderProduct.findFirst({
@@ -111,7 +110,6 @@ export class ProfileConstructorFolderService {
     });
   }
 
-  // Team Folder Methods
   async createTeamFolder({ name, productId }: CreateTeamFolderDto) {
     const product =
       await this.prismaService.profileConstructorFolderProduct.findUnique({
@@ -196,7 +194,6 @@ export class ProfileConstructorFolderService {
     });
   }
 
-  // Spec Folder Methods
   async createSpecFolder({ specs, teamId }: CreateSpecFolderDto) {
     const team =
       await this.prismaService.profileConstructorFolderTeam.findUnique({
@@ -285,7 +282,6 @@ export class ProfileConstructorFolderService {
     specFolderId: number,
     { competencyBlockIds }: SetCompetencyBlocksForSpecFolderDto,
   ) {
-    // Проверяем существование папки спецификации
     const specFolder =
       await this.prismaService.profileConstructorFolderSpec.findUnique({
         where: { id: specFolderId },
@@ -295,13 +291,12 @@ export class ProfileConstructorFolderService {
       throw new NotFoundException('Папка спецификации не найдена');
     }
 
-    // Проверяем существование всех блоков компетенций
     const competencyBlocks = await this.prismaService.competencyBlock.findMany({
       where: {
         id: {
           in: competencyBlockIds,
         },
-        archived: false, // Только неархивированные блоки
+        archived: false,
       },
     });
 
@@ -309,7 +304,6 @@ export class ProfileConstructorFolderService {
       throw new BadRequestException('Некоторые блоки компетенций не найдены');
     }
 
-    // Обновляем связи между спецификацией и блоками компетенций
     await this.prismaService.profileConstructorFolderSpec.update({
       where: { id: specFolderId },
       data: {
@@ -319,7 +313,6 @@ export class ProfileConstructorFolderService {
       },
     });
 
-    // Возвращаем обновленную спецификацию со всеми блоками
     return this.prismaService.profileConstructorFolderSpec.findUnique({
       where: { id: specFolderId },
       include: {
@@ -332,7 +325,6 @@ export class ProfileConstructorFolderService {
     specFolderId: number,
     competencyBlockId: number,
   ) {
-    // Проверяем существование папки спецификации
     const specFolder =
       await this.prismaService.profileConstructorFolderSpec.findUnique({
         where: { id: specFolderId },
@@ -342,7 +334,6 @@ export class ProfileConstructorFolderService {
       throw new NotFoundException('Папка спецификации не найдена');
     }
 
-    // Удаляем связь между спецификацией и блоком компетенции
     await this.prismaService.profileConstructorFolderSpec.update({
       where: { id: specFolderId },
       data: {

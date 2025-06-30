@@ -21,7 +21,6 @@ export interface ProfileConstructorFolderSpec {
   competencyBlocks?: { id: number; name: string }[];
 }
 
-// DTO для создания и обновления
 export interface CreateProductFolderDto {
   name: string;
 }
@@ -48,7 +47,6 @@ export interface UpdateSpecFolderDto {
   name: string;
 }
 
-// Тип для действий с папками
 export enum FolderType {
   PRODUCT = 'PRODUCT',
   TEAM = 'TEAM',

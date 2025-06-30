@@ -25,7 +25,7 @@ export class FilesService {
 
   async uploadFile(
     file: Express.Multer.File,
-    subfolder?: string, // например, 'avatars' или 'docs/2024'
+    subfolder?: string,
   ): Promise<string> {
     if (!file) {
       throw new BadRequestException('Файл не предоставлен');
@@ -46,7 +46,6 @@ export class FilesService {
 
     try {
       await fs.writeFile(filePath, file.buffer);
-      // Путь для отдачи статики
       const staticPath = safeSubfolder
         ? `/uploads/${safeSubfolder}/${filename}`
         : `/uploads/${filename}`;

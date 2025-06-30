@@ -31,7 +31,7 @@ export class MailProcessor {
       return { success: true, to, subject };
     } catch (error) {
       this.logger.error(`Failed to send email to ${to}: ${error.message}`);
-      throw error; // Bull автоматически сделает retry
+      throw error;
     }
   }
 

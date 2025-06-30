@@ -45,11 +45,7 @@ export default function SurveyEdit() {
   return (
     <LoadingOverlay active={isLoading || state.isLoading} fullScereen>
       {isMounted && (
-        <div
-          className={cva('px-8 py-10 flex flex-col h-full relative', {
-            //   'animate-pulse pointer-events-none': state.isLoading,
-          })}
-        >
+        <div className={cva('px-8 py-10 flex flex-col h-full relative')}>
           <div className="flex justify-between items-center">
             <Heading title="Редактирование опроса" />
             <Tabs

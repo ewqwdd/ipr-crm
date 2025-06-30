@@ -1582,7 +1582,6 @@ export class Rate360Service {
       (id) => !allIds.includes(id),
     );
 
-    // deletion of evaluators
     await this.prismaService.$transaction([
       this.prismaService.rate360Evaluator.deleteMany({
         where: {

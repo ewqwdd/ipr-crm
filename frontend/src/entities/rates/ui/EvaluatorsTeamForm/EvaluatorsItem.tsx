@@ -98,7 +98,6 @@ export default memo(
     );
   },
   (prev, next) => {
-    // если что-то изменилось — нужно ререндерить → return false
     if (
       prev.userId !== next.userId ||
       prev.teamId !== next.teamId ||
@@ -110,14 +109,12 @@ export default memo(
       return false;
     }
 
-    // сравниваем каждый элемент в массиве по userId
     for (let i = 0; i < prev.evaluators.length; i++) {
       if (prev.evaluators[i].userId !== next.evaluators[i].userId) {
         return false;
       }
     }
 
-    // всё одинаково — можно не ререндерить
     return true;
   },
 );

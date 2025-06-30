@@ -181,7 +181,7 @@ export class SurveyService {
             : undefined,
           firstNotificationSent: false,
         })),
-        skipDuplicates: true, // на всякий случай
+        skipDuplicates: true,
       });
 
     return createdAssignments;

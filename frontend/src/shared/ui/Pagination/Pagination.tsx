@@ -38,32 +38,26 @@ export default function Pagination({
       (p) => p >= 1 && p <= pages,
     );
 
-    // Всегда добавляем первую страницу
     pageNumbers.push(1);
 
-    // Добавляем многоточие если нужно
     if (currentGroup[0] > 2) {
       pageNumbers.push('...');
     }
 
-    // Добавляем группу вокруг текущей страницы (исключая первую и последнюю)
     currentGroup.forEach((p) => {
       if (p > 1 && p < pages) {
         pageNumbers.push(p);
       }
     });
 
-    // Добавляем многоточие если нужно
     if (currentGroup[currentGroup.length - 1] < pages - 1) {
       pageNumbers.push('...');
     }
 
-    // Всегда добавляем последнюю страницу
     if (pages > 1) {
       pageNumbers.push(pages);
     }
 
-    // Убираем дубликаты и сортируем
     return [...new Set(pageNumbers)].sort((a, b) => {
       if (a === '...' || b === '...') return 0;
       return (a as number) - (b as number);

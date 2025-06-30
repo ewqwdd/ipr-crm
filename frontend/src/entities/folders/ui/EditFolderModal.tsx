@@ -19,14 +19,12 @@ export default function EditFolderModal({
 }: EditFolderModalProps) {
   const [value, setValue] = useState('');
 
-  // Получаем данные из modalData
   const { id, name, folderType } = (modalData as {
     id: number;
     name: string;
     folderType: FolderType;
   }) || { id: -1, name: '', folderType: FolderType.PRODUCT };
 
-  // Хуки для разных типов папок
   const [updateProductFolder, productProps] =
     foldersApi.useUpdateProductFolderMutation();
   const [updateTeamFolder, teamProps] =
@@ -34,14 +32,12 @@ export default function EditFolderModal({
   const [updateSpecFolder, specProps] =
     foldersApi.useUpdateSpecFolderMutation();
 
-  // Устанавливаем начальное значение при открытии модалки
   useEffect(() => {
     if (isOpen && name) {
       setValue(name);
     }
   }, [isOpen, name]);
 
-  // Определяем текущее состояние загрузки в зависимости от типа папки
   const isLoading =
     folderType === FolderType.PRODUCT
       ? productProps.isLoading
@@ -49,7 +45,6 @@ export default function EditFolderModal({
         ? teamProps.isLoading
         : specProps.isLoading;
 
-  // Определяем успешное выполнение в зависимости от типа папки
   const isSuccess =
     folderType === FolderType.PRODUCT
       ? productProps.isSuccess
@@ -57,7 +52,6 @@ export default function EditFolderModal({
         ? teamProps.isSuccess
         : specProps.isSuccess;
 
-  // Определяем ошибку в зависимости от типа папки
   const error =
     folderType === FolderType.PRODUCT
       ? productProps.error
@@ -72,7 +66,6 @@ export default function EditFolderModal({
         ? teamProps.isError
         : specProps.isError;
 
-  // Функция для отправки запроса на обновление
   const handleSubmit = (newName: string) => {
     if (!newName.trim()) {
       toast.error('Название папки не может быть пустым');
@@ -84,7 +77,6 @@ export default function EditFolderModal({
       return;
     }
 
-    // Вызываем соответствующую функцию в зависимости от типа папки
     switch (folderType) {
       case FolderType.PRODUCT:
         updateProductFolder({ id, dto: { name: newName } });
@@ -100,14 +92,12 @@ export default function EditFolderModal({
     }
   };
 
-  // Обработка успешного выполнения
   useEffect(() => {
     if (isSuccess) {
       closeModal();
     }
   }, [isSuccess, closeModal]);
 
-  // Обработка ошибок
   useEffect(() => {
     if (isError) {
       let errorMessage = 'Ошибка при обновлении папки';
@@ -118,7 +108,6 @@ export default function EditFolderModal({
     }
   }, [isError, error]);
 
-  // Определяем заголовок модалки в зависимости от типа папки
   const getModalTitle = () => {
     switch (folderType) {
       case FolderType.PRODUCT:

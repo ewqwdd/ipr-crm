@@ -15,26 +15,23 @@ export class ExcelService {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(data.name);
 
-    // Установка колонок
     worksheet.columns = data.keys.map((key) => ({
       header: data.headers[key],
       key: key,
       width: 20,
     }));
 
-    // Добавление строк
     data.rows.forEach((row) => {
       worksheet.addRow(row);
     });
 
-    // Стилизация заголовков
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FFFFDDDD' }, // светло-серый фон
+        fgColor: { argb: 'FFFFDDDD' },
       };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
       cell.border = {
@@ -44,9 +41,8 @@ export class ExcelService {
         right: { style: 'thin' },
       };
     });
-    headerRow.commit(); // обязательно, если используешь потоковую запись (в данном случае — не критично, но good practice)
+    headerRow.commit();
 
-    // Заголовки HTTP-ответа
     res.setHeader(
       'Content-Type',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -56,7 +52,6 @@ export class ExcelService {
       `attachment; filename*=UTF-8''${encodeURIComponent(data.name)}.xlsx`,
     );
 
-    // Записываем файл в ответ
     await workbook.xlsx.write(res);
     res.end();
   }

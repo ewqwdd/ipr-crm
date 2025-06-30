@@ -121,9 +121,8 @@ export interface AssignedTest {
   userId: number;
   testId: number;
   rate360Id: number | null;
-  startDate: string; // или `Date`, если ты парсишь в дату
-  endDate: string | null; // или `Date | null`
-  // result: any | null; // уточни тип, если знаешь структуру result
+  startDate: string;
+  endDate: string | null;
   finished: boolean;
   test: Test;
   score: number | null;

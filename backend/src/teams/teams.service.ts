@@ -401,7 +401,6 @@ export class TeamsService {
       }
     }
 
-    // Проверяем, существует ли команда
     const team = await this.prisma.team.findUnique({
       where: filters,
       include: {
@@ -412,7 +411,6 @@ export class TeamsService {
       throw new NotFoundException('Команда не найдена.');
     }
 
-    // Проверяем, существует ли пользователь
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('Пользователь не найден.');
@@ -422,10 +420,9 @@ export class TeamsService {
     if (curator) {
       currentSpecs = team.curatorSpecs.map((spec) => spec.specId);
     } else {
-      // Получаем текущие спецификации пользователя в команде
       const userTeam = await this.prisma.userTeam.findUnique({
         where: { userId_teamId: { userId, teamId } },
-        include: { specs: true }, // Включаем связанные спецификации
+        include: { specs: true },
       });
 
       if (!userTeam) {
@@ -435,10 +432,8 @@ export class TeamsService {
       currentSpecs = userTeam.specs.map((spec) => spec.specId);
     }
 
-    // Определяем, какие спецификации нужно добавить
     const specsToAdd = specs.filter((spec) => !currentSpecs.includes(spec));
 
-    // Определяем, какие спецификации нужно удалить
     const specsToRemove = currentSpecs.filter((spec) => !specs.includes(spec));
 
     if (specsToRemove.length > 0) {
@@ -450,7 +445,6 @@ export class TeamsService {
           },
         });
       } else {
-        // Удаляем лишние спецификации
         await this.prisma.specsOnUserTeam.deleteMany({
           where: {
             teamId,

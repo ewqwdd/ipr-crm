@@ -43,6 +43,6 @@ export class AnswerQuestionDTO {
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
-  @Type(() => Number) // 👈 обязательно!
+  @Type(() => Number)
   optionAnswer?: number[];
 }

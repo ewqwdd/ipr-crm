@@ -45,14 +45,12 @@ const FolderItem: FC<FolderItemProps> = ({
     openModal('EDIT_FOLDER', { id, name, folderType });
   };
 
-  // Определяем отступ в зависимости от типа папки
   const indentClass = cva('flex items-center gap-2 w-full', {
     'pl-0': folderType === FolderType.PRODUCT,
     'pl-4': folderType === FolderType.TEAM,
     'pl-8': folderType === FolderType.SPEC,
   });
 
-  // Определяем цвет иконки в зависимости от типа папки
   const iconColorClass = cva('size-5 min-w-5', {
     'text-blue-500': folderType === FolderType.PRODUCT,
     'text-green-500': folderType === FolderType.TEAM,

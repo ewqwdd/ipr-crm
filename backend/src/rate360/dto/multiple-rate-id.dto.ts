@@ -1,7 +1,7 @@
 import { IsNumber, ValidateNested } from 'class-validator';
 
 class SingleRateIdDto {
-  @IsNumber({}, { message: 'rate must be a valid number' }) // Добавили {} для строгой проверки
+  @IsNumber({}, { message: 'rate must be a valid number' })
   rate: number;
 
   @IsNumber({}, { message: 'indicatorId must be a valid number' })

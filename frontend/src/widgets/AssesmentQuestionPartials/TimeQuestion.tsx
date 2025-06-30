@@ -8,7 +8,6 @@ interface TimeQuestionProps {
   setError?: (error?: string) => void;
 }
 
-// Валидация времени: 00:00 — 23:59
 const isValidTime = (value: string): boolean => {
   const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
   return timeRegex.test(value);

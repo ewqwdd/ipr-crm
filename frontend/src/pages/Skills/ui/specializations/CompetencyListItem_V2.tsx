@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { MinusCircleIcon, PencilIcon } from '@heroicons/react/outline';
-// import { CompetencyListItemProps } from './types';
 import {
   Competency,
   CompetencyBlock,

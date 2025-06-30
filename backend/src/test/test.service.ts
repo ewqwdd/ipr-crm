@@ -661,7 +661,7 @@ export class TestService {
             : undefined,
           firstNotificationSent: false,
         })),
-        skipDuplicates: true, // на всякий случай
+        skipDuplicates: true,
       });
 
     return createdAssignments;

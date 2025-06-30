@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 
 class UserAssessmentDto {
-  @IsNumber({}, { message: 'rate must be a valid number' }) // Добавили {} для строгой проверки
+  @IsNumber({}, { message: 'rate must be a valid number' })
   rate: number;
 
   @IsOptional()

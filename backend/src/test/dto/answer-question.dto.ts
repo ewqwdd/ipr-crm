@@ -20,6 +20,6 @@ export class AnswerQuestionDTO {
 
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true }) // если хочешь проверить, что каждый элемент — целое число
+  @IsInt({ each: true })
   optionAnswer?: number[];
 }
