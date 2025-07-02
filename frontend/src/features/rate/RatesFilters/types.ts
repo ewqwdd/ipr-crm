@@ -8,7 +8,13 @@ export type Filters = {
   teams: TeamsHierarchyFilterType;
   userId: number | 'ALL';
   specId: number | 'ALL';
-  status: 'COMPLETED' | 'NOT_COMPLETED' | 'ALL';
+  status:
+    | 'COMPLETED'
+    | 'NOT_COMPLETED'
+    | 'NOT_CONFIRMED'
+    | 'CONFIRMED'
+    | 'CONFIRMED_BY_USER'
+    | 'ALL';
   skillType: FiltersSkillType;
   period?: DateObject[];
   hidden?: boolean;

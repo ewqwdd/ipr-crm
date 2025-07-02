@@ -19,16 +19,14 @@ export class NotificationsService {
     return notifications ?? [];
   }
 
-  generateText(heading: string, message: string, link: string) {
-    return `<div style="font-family:Arial,sans-serif;padding:20px;text-align: center;">
-<h2 style="max-width:560px;margin:30px auto;">${heading}</h2>
-<p style="max-width:560px;margin:30px auto;">${message}</p>
-<a href="${link}" style="display:inline-block;margin-top:20px;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;margin-left:30px;">Перейти</a>
-</div>`;
-  }
-
   generateButtonText(
-    user: User,
+    user: {
+      id: number;
+      firstName: string;
+      lastName: string;
+      email: string;
+      username?: string;
+    },
     message: string,
     link: string,
     linkText: string,
@@ -59,11 +57,10 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
-    const message = `Вам назначен индивидуальный план развития №${iprId}`;
+    const message = `Вам назначен индивидуальный план развития`;
     const link = `${process.env.FRONTEND_URL}/board`;
 
-    const html = this.generateText(heading, message, link);
+    const html = this.generateButtonText(user, message, link, 'Перейти');
 
     await this.mailService.sendMail(
       user.email,
@@ -90,19 +87,32 @@ export class NotificationsService {
       '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
     >,
   ) {
-    const user = await (tx ?? this.prismaService).user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
+    const [user, rate] = await Promise.all([
+      (tx ?? this.prismaService).user.findUnique({
+        where: {
+          id: userId,
+        },
+      }),
+      (tx ?? this.prismaService).rate360.findUnique({
+        where: {
+          id: rateId,
+        },
+        select: {
+          type: true,
+        },
+      }),
+    ]);
 
-    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
-    const message = `Вам назначена оценка №${rateId}`;
+    const message = `Вам назначена оценка ${rate.type}`;
     const link = `${process.env.FRONTEND_URL}/progress`;
 
-    const html = this.generateText(heading, message, link);
+    const html = this.generateButtonText(user, message, link, 'Перейти');
 
-    await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
+    await this.mailService.sendMail(
+      user.email,
+      'Вам назначена оценка в  AYA SKILLS',
+      html,
+    );
 
     await (tx ?? this.prismaService).notification.create({
       data: {
@@ -116,19 +126,32 @@ export class NotificationsService {
   }
 
   async sendRateSelfAssignedNotification(userId: number, rateId: number) {
-    const user = await this.prismaService.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
+    const [user, rate] = await Promise.all([
+      this.prismaService.user.findUnique({
+        where: {
+          id: userId,
+        },
+      }),
+      this.prismaService.rate360.findUnique({
+        where: {
+          id: rateId,
+        },
+        select: {
+          type: true,
+        },
+      }),
+    ]);
 
-    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
-    const message = `Вам назначена оценка №${rateId}`;
+    const message = `Вам назначена оценка ${rate.type}`;
     const link = `${process.env.FRONTEND_URL}/progress?tab=self-assessment`;
 
-    const html = this.generateText(heading, message, link);
+    const html = this.generateButtonText(user, message, link, 'Перейти');
 
-    await this.mailService.sendMail(user.email, 'Вам назначена оценка', html);
+    await this.mailService.sendMail(
+      user.email,
+      'Вам назначена оценка в  AYA SKILLS',
+      html,
+    );
 
     await this.prismaService.notification.create({
       data: {
@@ -188,11 +211,10 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Вам назначен тест';
     const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=tests`;
 
-    const html = this.generateText(heading, message, link);
+    const html = this.generateButtonText(user, message, link, 'Перейти');
 
     await this.mailService.sendMail(user.email, 'Вам назначен тест', html);
 
@@ -216,11 +238,10 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Время для теста истекло';
     const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=finished`;
 
-    const html = this.generateText(heading, message, link);
+    const html = this.generateButtonText(user, message, link, 'Перейти');
 
     await this.mailService.sendMail(
       user.email,
@@ -318,11 +339,10 @@ export class NotificationsService {
       },
     });
 
-    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Вам назначен опрос';
     const link = `${process.env.FRONTEND_URL}/assigned-surveys?tab=surveys`;
 
-    const html = this.generateText(heading, message, link);
+    const html = this.generateButtonText(user, message, link, 'Перейти');
 
     await this.mailService.sendMail(user.email, 'Вам назначен опрос', html);
 
@@ -349,11 +369,10 @@ export class NotificationsService {
       username?: string;
     },
   ) {
-    const heading = `Здраствуйте, ${user.firstName ?? user.username ?? user.email}.`;
     const message = 'Новое обращение в поддержку';
     const link = `${process.env.FRONTEND_URL}/support-admin`;
 
-    const html = this.generateText(heading, message, link);
+    const html = this.generateButtonText(user, message, link, 'Перейти');
 
     await this.mailService.sendMail(
       user.email,

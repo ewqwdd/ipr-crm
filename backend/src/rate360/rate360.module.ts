@@ -5,10 +5,11 @@ import { Rate360Service } from './rate360.service';
 import { TeamsHelpersService } from 'src/teams/teams.helpers.service';
 import { NotificationModule } from 'src/notification/notification.module';
 import { UsersModule } from 'src/users/users.module';
+import { ExportModule } from 'src/export/export.module';
 
 @Module({
   controllers: [Rate360Controller],
-  imports: [NotificationModule, UsersModule],
+  imports: [NotificationModule, UsersModule, ExportModule],
   providers: [PrismaService, Rate360Service, TeamsHelpersService],
 })
 export class Rate360Module {}

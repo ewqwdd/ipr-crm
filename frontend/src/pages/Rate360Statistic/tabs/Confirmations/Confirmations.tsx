@@ -8,9 +8,12 @@ import { Pagination } from '@/shared/ui/Pagination';
 import { TableBody } from '@/widgets/TableBody';
 import { TableHeading } from '@/widgets/TableHeading';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router';
+import StatusFilter from './StatusFilter';
+import { transformFiltersToParams } from './confirmations.config';
+import ExportConfirmations from './ExportConfirmations';
 
 interface ConfirmationsProps {
   filters: RateFilters;
@@ -20,19 +23,10 @@ const LIMIT = 8;
 
 export default function Confirmations({ filters }: ConfirmationsProps) {
   const [page, setPage] = useState(1);
-  const { data, isFetching } = rate360Api.useGetRatesQuery({
-    page,
-    limit: LIMIT,
-    status: 'NOT_CONFIRMED',
-    specId: filters.specId === 'ALL' ? undefined : filters.specId,
-    skill: filters.skillType === 'ALL' ? undefined : filters.skillType,
-    user: filters.userId === 'ALL' ? undefined : filters.userId,
-    ...filters.teams,
-    startDate: filters.period?.[0]?.toDate()?.toISOString(),
-    endDate: filters.period?.[1]?.toDate()?.toISOString(),
-    hidden: !!filters.hidden,
-    includeWhereEvaluatorCurator: true,
-  });
+  const [status, setStatus] = useState<RateFilters['status']>('NOT_CONFIRMED');
+  const { data, isFetching } = rate360Api.useGetRatesQuery(
+    transformFiltersToParams({ ...filters, status }, page),
+  );
 
   const sendNotification = (rateId: number) => {
     $api
@@ -45,8 +39,16 @@ export default function Confirmations({ filters }: ConfirmationsProps) {
       });
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [filters, status]);
+
   return (
     <div className="mt-6 flex flex-col 2xl:px-8 px-0">
+      <div className="flex justify-between  px-3 sm:px-5 mb-4 flex-wrap gap-5">
+        <StatusFilter filter={status} setFilter={setStatus} />
+        <ExportConfirmations filters={filters} status={status} />
+      </div>
       <div className="flex-1 overflow-x-auto">
         <LoadingOverlay active={isFetching} className="h-full">
           <table className="w-full">

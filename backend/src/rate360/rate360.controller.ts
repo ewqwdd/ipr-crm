@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { Rate360Service } from './rate360.service';
@@ -27,10 +28,15 @@ import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
 import { AddEvaluatorsDto } from './dto/add-evalators.dto';
 import { RateFiltersDto } from './dto/rate-filters.dto';
 import { MultipleRateIdDto } from './dto/multiple-rate-id.dto';
+import { ExportService } from 'src/export/export.service';
+import { Response } from 'express';
 
 @Controller('rate360')
 export class Rate360Controller {
-  constructor(private readonly rate360Service: Rate360Service) {}
+  constructor(
+    private readonly rate360Service: Rate360Service,
+    private readonly exportService: ExportService,
+  ) {}
 
   @Get('/')
   @UseGuards(AuthGuard)
@@ -229,6 +235,22 @@ export class Rate360Controller {
     @Query() params: RateFiltersDto,
   ) {
     return await this.rate360Service.findMyRates(sessionInfo.id, params);
+  }
+
+  @Get('/export/confirm')
+  @UseGuards(AuthGuard)
+  async exportConfirm(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: RateFiltersDto,
+    @Res() res: Response,
+  ) {
+    const rates = await this.rate360Service.findAll(params, sessionInfo);
+
+    if (!rates.data) {
+      throw new NotFoundException('Нет данных для экспорта');
+    }
+
+    return this.exportService.ratesConfirm(res, rates.data);
   }
 
   @Get('/:id/report')

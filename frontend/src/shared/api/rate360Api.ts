@@ -10,11 +10,16 @@ interface ConfirmDto {
   comment?: string;
 }
 
-interface RateFiltersDto {
+export interface RateFiltersDto {
   page?: number;
   limit?: number;
   skill?: 'HARD' | 'SOFT';
-  status?: 'COMPLETED' | 'NOT_COMPLETED' | 'NOT_CONFIRMED';
+  status?:
+    | 'COMPLETED'
+    | 'NOT_COMPLETED'
+    | 'NOT_CONFIRMED'
+    | 'CONFIRMED'
+    | 'CONFIRMED_BY_USER';
   specId?: number;
   user?: number;
   product?: number;

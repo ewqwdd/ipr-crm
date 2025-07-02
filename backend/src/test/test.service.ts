@@ -9,7 +9,7 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
 import { Prisma, QuestionType } from '@prisma/client';
 import { AssignUsersDTO } from './dto/assign-users.dto';
-import { ExcelService } from 'src/utils/excel/excel.service';
+import { ExcelService } from 'src/export/excel.service';
 import { Response } from 'express';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { UsersAccessService } from 'src/users/users-access.service';

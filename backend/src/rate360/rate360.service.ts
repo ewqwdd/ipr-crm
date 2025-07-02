@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/utils/db/prisma.service';
 import { CreateRateDto } from './dto/create-rate.dto';
-import { EvaluatorType, Prisma, SkillType } from '@prisma/client';
+import { EvaluatorType, Prisma, Rate360, SkillType } from '@prisma/client';
 import { RatingsDto } from './dto/user-assesment.dto';
 import { ConfirmRateDto } from './dto/confirm-rate.dto';
 import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
@@ -72,7 +72,15 @@ export class Rate360Service {
       ...(skill ? { type: skill } : {}),
       ...(status === 'COMPLETED' ? { finished: true } : {}),
       ...(status === 'NOT_COMPLETED' ? { finished: false } : {}),
-      ...(status === 'NOT_CONFIRMED' ? { curatorConfirmed: false } : {}),
+      ...(status === 'NOT_CONFIRMED'
+        ? { userConfirmed: false, curatorConfirmed: false }
+        : {}),
+      ...(status === 'CONFIRMED'
+        ? { userConfirmed: true, curatorConfirmed: true }
+        : {}),
+      ...(status === 'CONFIRMED_BY_USER'
+        ? { userConfirmed: true, curatorConfirmed: false }
+        : {}),
       ...(startDate ? { startDate: { gte: new Date(startDate) } } : {}),
       ...(endDate ? { endDate: { lte: new Date(endDate) } } : {}),
       hidden: !!hidden,
@@ -105,7 +113,8 @@ export class Rate360Service {
         teamFilter.department,
         teamFilter.product,
       ].filter(Boolean) as number[];
-      if (ids.some((id) => !teamAccess.includes(id))) return [];
+      if (ids.some((id) => !teamAccess.includes(id)))
+        return { total: 0, page, limit, data: [] };
       // const recur = (ids: number[]): Prisma.Rate360WhereInput['team'] => {
       //   const current = ids.shift();
       //   if (!current) return undefined;

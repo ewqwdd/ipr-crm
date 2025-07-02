@@ -2,7 +2,7 @@ import { Heading } from '@/shared/ui/Heading';
 import { Tabs } from '@/shared/ui/Tabs';
 import { useSearchParams } from 'react-router';
 import { rate360StatistcTabs } from './config';
-import Confirmations from './tabs/Confirmations';
+import Confirmations from './tabs/Confirmations/Confirmations';
 import { useState } from 'react';
 import RatesFiltersWrapper, {
   initialRateFilters,

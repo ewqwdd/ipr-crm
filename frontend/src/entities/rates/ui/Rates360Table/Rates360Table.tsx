@@ -52,6 +52,10 @@ export default function Rates360Table({ type }: Rates360TableProps) {
   }, [type]);
 
   useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  useEffect(() => {
     setSelected([]);
   }, [data]);
 

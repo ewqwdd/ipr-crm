@@ -25,6 +25,7 @@ import { AdminLoggerInterceptor } from './utils/interceptors/admin-interceptor';
 import { BullModule } from '@nestjs/bull';
 import { MailModule } from './mail/mail.module';
 import { RedisService } from './utils/redis/redis.service';
+import { ExportModule } from './export/export.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { RedisService } from './utils/redis/redis.service';
     SupportModule,
     ProfileStructureFolderModule,
     MailModule,
+    ExportModule,
   ],
   providers: [
     PrismaService,
