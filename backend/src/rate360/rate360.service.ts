@@ -611,6 +611,11 @@ export class Rate360Service {
             },
           },
         },
+        evaluators: {
+          where: {
+            userId,
+          },
+        },
       },
     });
     const filtered = rate360.filter((rate) => {

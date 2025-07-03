@@ -41,7 +41,7 @@ export default function RateList({
     (rate) =>
       user?.teams?.find((team) => team.teamId === rate.teamId) ||
       user?.teamCurator?.find((t) => rate.teamId === t.id) ||
-      rate.evaluators.some(
+      rate?.evaluators.some(
         (evaluator) =>
           evaluator.userId === user?.id && evaluator.type === 'CURATOR',
       ),
@@ -51,7 +51,7 @@ export default function RateList({
     (rate) =>
       !user?.teams?.some((team) => team.teamId === rate.teamId) &&
       !user?.teamCurator?.some((team) => team.id === rate.teamId) &&
-      !rate.evaluators.some(
+      !rate?.evaluators.some(
         (evaluator) =>
           evaluator.userId === user?.id && evaluator.type === 'CURATOR',
       ),
