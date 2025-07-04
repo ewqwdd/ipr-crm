@@ -29,4 +29,28 @@ export class ExportService {
       })),
     });
   }
+
+  async exportRates(
+    res: Response,
+    rates: (Rate360 & { user: { username: string }; progress: number })[],
+  ) {
+    const keys = ['username', 'progress'];
+
+    await this.excelService.generateExcel(res, {
+      keys,
+      headers: {
+        index: '',
+        username: 'Никнейм',
+        type: 'Тип',
+        progress: 'Прогресс',
+      },
+      name: '360 оценки',
+      rows: rates.map((rate, i) => ({
+        index: i + 1,
+        username: rate.user.username,
+        type: rate.type,
+        progress: `${(Math.min(rate.progress, 1) * 100).toFixed()}%`,
+      })),
+    });
+  }
 }

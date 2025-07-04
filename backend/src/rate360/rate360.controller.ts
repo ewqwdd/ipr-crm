@@ -30,6 +30,7 @@ import { RateFiltersDto } from './dto/rate-filters.dto';
 import { MultipleRateIdDto } from './dto/multiple-rate-id.dto';
 import { ExportService } from 'src/export/export.service';
 import { Response } from 'express';
+import { Indicator } from '@prisma/client';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -296,5 +297,41 @@ export class Rate360Controller {
     @Body() data: DeleteRatesDto,
   ) {
     return await this.rate360Service.archiveRate(data.ids, sessionInfo);
+  }
+
+  @Get('/export')
+  @UseGuards(AuthGuard)
+  async exportRates(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: RateFiltersDto,
+    @Res() res: Response,
+  ) {
+    const rates = await (params.subbordinatesOnly
+      ? this.rate360Service.findAllSubbordinates(params, sessionInfo.id)
+      : this.rate360Service.findAll(params, sessionInfo));
+
+    const ratesWithProgress = rates.data
+      ?.map((rate) => {
+        const evaluatorsCount = rate.evaluators.length ?? 0;
+        const ratesCount = rate.userRates.length ?? 0;
+
+        const indicators = rate?.competencyBlocks.flatMap((skill) =>
+          // @ts-ignore
+          skill!.competencies.flatMap((comp) => comp.indicators),
+        ) as Indicator[];
+
+        let progress =
+          ratesCount /
+          Math.max((evaluatorsCount + 1) * (indicators?.length ?? 1), 1);
+
+        return {
+          ...rate,
+          progress,
+        };
+      })
+      .sort((a, b) => {
+        return a.progress - b.progress;
+      });
+    this.exportService.exportRates(res, ratesWithProgress);
   }
 }

@@ -17,6 +17,8 @@ import RatesFiltersWrapper, {
   RateFilters,
 } from '@/features/rate/RatesFilters';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
+import { transformRateFilters } from './transformRateFilters';
+import { SoftButton } from '@/shared/ui/SoftButton';
 
 const LIMIT = 10;
 
@@ -32,19 +34,9 @@ export default function Rates360Table({ type }: Rates360TableProps) {
   const dispatch = useAppDispatch();
   const isAdmin = useIsAdmin();
 
-  const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery({
-    page,
-    limit: LIMIT,
-    specId: filters.specId === 'ALL' ? undefined : filters.specId,
-    status: filters.status === 'ALL' ? undefined : filters.status,
-    skill: filters.skillType === 'ALL' ? undefined : filters.skillType,
-    user: filters.userId === 'ALL' ? undefined : filters.userId,
-    ...filters.teams,
-    startDate: filters.period?.[0]?.toDate()?.toISOString(),
-    endDate: filters.period?.[1]?.toDate()?.toISOString(),
-    hidden: !!filters.hidden,
-    subbordinatesOnly: type === 'TEAM' ? true : undefined,
-  });
+  const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery(
+    transformRateFilters(filters, type, LIMIT, page),
+  );
 
   useEffect(() => {
     setPage(1);
@@ -64,10 +56,23 @@ export default function Rates360Table({ type }: Rates360TableProps) {
     dispatch(ratesActions.clear());
   };
 
+  const handleExport = async () => {
+    const url = new URL(import.meta.env.VITE_API_URL + '/rate360/export');
+    const params = transformRateFilters(filters, type);
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        url.searchParams.append(key, String(value));
+      }
+    });
+
+    window.open(url);
+  };
+
   return (
     <LoadingOverlay active={isLoading}>
       <div className="sm:px-8 sm:pt-10 py-6 flex flex-col h-full realtive">
-        <div className="flex justify-between items-center max-sm:pr-14 max-sm:px-4">
+        <div className="flex items-center max-sm:pr-14 max-sm:px-4">
           <Heading
             title="Командные отчёты"
             description={
@@ -77,9 +82,17 @@ export default function Rates360Table({ type }: Rates360TableProps) {
             }
           />
           {isAdmin && (
-            <PrimaryButton onClick={() => setOpen(true)} className="self-start">
-              Добавить
-            </PrimaryButton>
+            <>
+              <PrimaryButton
+                onClick={() => setOpen(true)}
+                className="self-start ml-auto"
+              >
+                Добавить
+              </PrimaryButton>
+              <SoftButton onClick={handleExport} className="ml-2 self-start">
+                Експортировать
+              </SoftButton>
+            </>
           )}
         </div>
         <div className="flex-col gap-1 mt-6 relative mb-2">

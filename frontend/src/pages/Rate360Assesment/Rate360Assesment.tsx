@@ -157,7 +157,7 @@ export default function Rate360Assesment() {
             <SecondaryButton>Назад</SecondaryButton>
           </Link>
           <p className="text-gray-600 sm:text-sm text-xs">
-            Сохрання, вы больше не сможете изменить оценку.
+            Сохраняя, вы больше не сможете изменить оценку.
           </p>
           {(loading ?? 0) > 0 ? (
             <Tooltip content="Подождите...">
