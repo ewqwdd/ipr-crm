@@ -14,6 +14,7 @@ import {
   TextOptions,
 } from '@/widgets/QuestionPartials';
 import TestOptions from '@/widgets/QuestionPartials/options/TestOptions';
+import QuestionPictureUpload from './QuesyionPartials/TestQuestionPictureUpload';
 
 interface QuestionProps {
   index: number;
@@ -52,6 +53,7 @@ interface QuestionProps {
     value: number | undefined,
   ) => void;
   setQuestionScore: (questionIndex: number, value: number | undefined) => void;
+  setQuestionPhotoUrl: (index: number, url: string) => void;
 }
 
 export default memo(function Question({
@@ -76,6 +78,7 @@ export default memo(function Question({
   setMaxMinToggle,
   setOptionScore,
   setQuestionScore,
+  setQuestionPhotoUrl,
 }: QuestionProps) {
   const correctRequired = !!questions[index].correctRequired;
 
@@ -87,6 +90,11 @@ export default memo(function Question({
 
   return (
     <Card className="[&>div]:flex [&>div]:flex-col [&>div]:gap-4">
+      <QuestionPictureUpload
+        questions={questions}
+        index={index}
+        onChange={setQuestionPhotoUrl}
+      />
       <div className="flex gap-4 items-center">
         <QuestionTypeSelect
           questions={questions}

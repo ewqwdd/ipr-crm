@@ -6,6 +6,7 @@ import multipart, { MultipartFile } from '@fastify/multipart';
 import cookie from '@fastify/cookie';
 import jwt from '@fastify/jwt';
 import fastifyStatic from '@fastify/static';
+import cors from '@fastify/cors';
 
 dotenv.config();
 
@@ -26,7 +27,17 @@ const app = Fastify({
         },
 });
 
-app.register(multipart);
+app.register(cors, {
+  origin: process.env.NODE_ENV === 'production' ? 'https://skills.ayagroup.pro' : 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+});
+
+app.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10 MB
+  },
+});
 app.register(cookie);
 app.register(jwt, {
   secret: process.env.JWT_SECRET!,
@@ -79,6 +90,27 @@ app.get(
     }
 
     return reply.sendFile(fileName);
+  },
+);
+
+app.delete(
+  '/uploads/:filename',
+  { preHandler: [app.authenticate] },
+  async (req: FastifyRequest, reply: FastifyReply) => {
+    const { filename } = req.params as { filename: string };
+    const filePath = path.join(UPLOAD_DIR, filename);
+
+    if (!fs.existsSync(filePath)) {
+      return reply.code(404).send({ error: 'File not found' });
+    }
+
+    try {
+      await fs.promises.unlink(filePath);
+      reply.send({ success: true, message: 'File deleted successfully' });
+    } catch (err) {
+      app.log.error(err);
+      reply.code(500).send({ error: 'Failed to delete file' });
+    }
   },
 );
 

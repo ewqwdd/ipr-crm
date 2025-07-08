@@ -48,6 +48,7 @@ interface TestQuestionsProps {
   ) => void;
   setQuestionScore: (questionIndex: number, value: number | undefined) => void;
   changeQuestionOrder: (sourceIndex: number, destinationIndex: number) => void;
+  setQuestionPhotoUrl: (index: number, url: string) => void;
 }
 
 export default function TestQuestions(props: TestQuestionsProps) {

@@ -5,6 +5,8 @@ import { TestResultScore } from '@/shared/ui/TestResultScore';
 import { Pagination } from '@/shared/ui/Pagination';
 import { usersService } from '@/shared/lib/usersService';
 import { generalService } from '@/shared/lib/generalService';
+import { SoftButton } from '@/shared/ui/SoftButton';
+import { XIcon } from '@heroicons/react/outline';
 
 type RateTestsModalProps = {
   isOpen: boolean;
@@ -26,6 +28,8 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
   const [page, setPage] = useState(1);
   const { data: finishedTests, isLoading: finishedTestsLoading } =
     testsApi.useGetTestsQuery();
+  const [removeAssigned, removeAssignedState] =
+    testsApi.useRemoveAssignedMutation();
 
   const test = finishedTests?.find((test) => test.id === testId);
   const users = test?.usersAssigned?.map((user) => {
@@ -36,10 +40,11 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
       finished: user.finished,
       score,
       questionsCount: maxScore,
+      userId: user.userId,
     };
   });
 
-  const loading = finishedTestsLoading;
+  const loading = finishedTestsLoading || removeAssignedState.isLoading;
 
   return (
     <Modal
@@ -54,7 +59,7 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
         <div className="flex flex-col divide-y divide-gray-200">
           {users
             ?.slice((page - 1) * LIMIT, LIMIT * page)
-            ?.map(({ id, name, finished, questionsCount, score }) => (
+            ?.map(({ id, name, finished, questionsCount, score, userId }) => (
               <div
                 key={id}
                 className="flex items-center justify-between py-3 gap-4"
@@ -68,6 +73,13 @@ const RateTestsModal: FC<RateTestsModalProps> = ({
                     />
                   )}
                 </div>
+                <SoftButton
+                  danger
+                  className="p-1 rounded-full"
+                  onClick={() => testId && removeAssigned({ testId, userId })}
+                >
+                  <XIcon className="size-4" />
+                </SoftButton>
               </div>
             ))}
         </div>

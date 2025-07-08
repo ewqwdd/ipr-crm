@@ -110,18 +110,40 @@ export default function QuestionScreen({
       required={test.testQuestions[screen]?.required}
     >
       <div className="flex flex-col gap-4 mt-2">
+        {question.photoUrl && (
+          <img
+            src={
+              import.meta.env.VITE_FILES_URL + '/uploads/' + question.photoUrl
+            }
+            alt="Question"
+            className="h-40 self-center rounded shadow"
+          />
+        )}
         <h3 className="text-lg font-medium text-gray-900">{question?.label}</h3>
         {question?.type === 'TEXT' && (
-          <TextQuestion {...defaultProps} onChange={onChangeText(screen)} />
+          <TextQuestion
+            key={screen}
+            {...defaultProps}
+            onChange={onChangeText(screen)}
+          />
         )}
         {question?.type === 'NUMBER' && (
-          <NumberQuestion {...defaultProps} onChange={onChangeNumber(screen)} />
+          <NumberQuestion
+            key={screen}
+            {...defaultProps}
+            onChange={onChangeNumber(screen)}
+          />
         )}
         {question?.type === 'SINGLE' && (
-          <SingleQuestion {...defaultProps} onChange={onChangeSingle(screen)} />
+          <SingleQuestion
+            key={screen}
+            {...defaultProps}
+            onChange={onChangeSingle(screen)}
+          />
         )}
         {question?.type === 'MULTIPLE' && (
           <MultipleQuestion
+            key={screen}
             {...defaultProps}
             onChange={onChangeMultiple(screen)}
           />

@@ -15,6 +15,9 @@ export default function TestCreateSettings() {
   const passedMessage = useAppSelector(
     (state) => state.testCreate.passedMessage,
   );
+  const shuffleQuestions = useAppSelector(
+    (state) => state.testCreate.shuffleQuestions,
+  );
 
   // errors
   const errors = useAppSelector((state) => state.testCreate.errors);
@@ -89,16 +92,27 @@ export default function TestCreateSettings() {
     [dispatch],
   );
 
+  const onChangeShuffleQuestions = useCallback(() => {
+    dispatch(
+      testCreateActions.setField({
+        field: 'shuffleQuestions',
+        value: !shuffleQuestions,
+      }),
+    );
+  }, [dispatch, shuffleQuestions]);
+
   const props = {
     name,
     description,
     passedMessage,
     showScoreToUser,
+    shuffleQuestions,
     errors,
     onChangeName,
     onChangeDescription,
     onChangeShowScore,
     onChangePassedMessage,
+    onChangeShuffleQuestions,
   };
 
   return <TestSettings {...props} />;

@@ -76,6 +76,7 @@ const Row = ({
             onClick={() => {
               openModal('RATE_TESTS', {
                 testId: id,
+                testName: name,
               });
             }}
           >

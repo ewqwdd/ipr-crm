@@ -15,6 +15,7 @@ import { useAppDispatch } from '@/app';
 import { useCallback } from 'react';
 import { surveyCreateActions } from '../surveyCreateSlice';
 import ScaleOptions from '@/widgets/QuestionPartials/ScaleOptions';
+import SurveyQuestionPictureUpload from './edit/ui/SurveyQuestionPictureUpload';
 
 interface SurveyQuestionCreateProps {
   index: number;
@@ -217,8 +218,26 @@ export default function SurveyQuestionCreate({
     [dispatch],
   );
 
+  const onPhotoUrlChange = useCallback(
+    (index: number, url: string) => {
+      dispatch(
+        surveyCreateActions.setQuestionField({
+          index,
+          field: 'photoUrl',
+          value: url,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   return (
     <Card className="[&>div]:flex [&>div]:flex-col [&>div]:gap-4">
+      <SurveyQuestionPictureUpload
+        index={index}
+        questions={questions}
+        onChange={onPhotoUrlChange}
+      />
       <div className="flex gap-4 items-center">
         <SurveyQuestionTypeSelect
           questions={questions}

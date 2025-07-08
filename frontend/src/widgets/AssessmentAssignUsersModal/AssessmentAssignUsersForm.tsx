@@ -66,7 +66,7 @@ export default function TestAssignedForm({
     return users.filter(
       (user) =>
         (!user.teams || user.teams.length === 0) &&
-        !user.teamCurator &&
+        (!user.teamCurator || user.teamCurator.length === 0) &&
         (!search ||
           usersService
             .displayName(user)
@@ -107,6 +107,8 @@ export default function TestAssignedForm({
     selected,
     setSelected,
   };
+
+  console.debug(noTeamUsers);
 
   return (
     <div className="flex flex-col gap-4 min-h-96">

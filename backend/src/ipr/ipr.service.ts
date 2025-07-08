@@ -117,11 +117,23 @@ export class IprService {
     const rate360 = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
-        team: {
-          id: {
-            in: await this.usersAccessService.findAllowedTeams(sessionInfo),
+        OR: [
+          {
+            team: {
+              id: {
+                in: await this.usersAccessService.findAllowedTeams(sessionInfo),
+              },
+            },
           },
-        },
+          {
+            evaluators: {
+              some: {
+                userId: sessionInfo.id,
+                type: 'CURATOR',
+              },
+            },
+          },
+        ],
       },
       include: {
         spec: true,
@@ -445,11 +457,22 @@ export class IprService {
             ...(isAllTasksAccess
               ? {}
               : {
-                  rate360: {
-                    team: {
-                      curatorId: session.id,
+                  OR: [
+                    {
+                      rate360: {
+                        team: {
+                          curatorId: session.id,
+                        },
+                      },
                     },
-                  },
+                    {
+                      planCurators: {
+                        some: {
+                          userId: session.id,
+                        },
+                      },
+                    },
+                  ],
                 }),
           },
           onBoard: true,
@@ -480,6 +503,7 @@ export class IprService {
             },
           },
         },
+        planCurators: true,
       },
     });
     if (!plan) {
@@ -488,8 +512,11 @@ export class IprService {
 
     if (
       clientInfo.role !== 'admin' &&
-      !(await this.usersAccessService.findAllowedTeams(clientInfo)).includes(
-        plan.rate360.team.id,
+      !(
+        (await this.usersAccessService.findAllowedTeams(clientInfo)).includes(
+          plan.rate360.team.id,
+        ) ||
+        plan.planCurators.some((curator) => curator.userId === clientInfo.id)
       )
     ) {
       throw new ForbiddenException(

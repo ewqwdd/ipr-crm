@@ -91,6 +91,10 @@ class QuestionDTO {
   @IsOptional()
   score?: number;
 
+  @IsString()
+  @IsOptional()
+  photoUrl?: string;
+
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
@@ -149,6 +153,10 @@ export class CreateTestDTO {
   @IsOptional()
   @IsString()
   finishMessage?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  shuffleQuestions?: boolean;
 
   @IsArray()
   @ValidateNested({ each: true })

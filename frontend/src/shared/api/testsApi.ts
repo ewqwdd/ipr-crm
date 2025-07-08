@@ -61,6 +61,26 @@ export const testsApi = createApi({
     getAssignedTest: build.query<AssignedTest, number>({
       query: (id) => `/test/assigned/${id}`,
       providesTags: (_, __, id) => [{ type: 'TestAssigned', id }],
+      transformResponse: (response: AssignedTest) => {
+        if (!response.test.shuffleQuestions) return response;
+        const answeredQuestions = response.test.testQuestions.filter((q) =>
+          response.answeredQUestions.some((aq) => aq.questionId === q.id),
+        );
+        const notAnsweredQuestions = response.test.testQuestions.filter(
+          (q) =>
+            !response.answeredQUestions.some((aq) => aq.questionId === q.id),
+        );
+        return {
+          ...response,
+          test: {
+            ...response.test,
+            testQuestions: [
+              ...answeredQuestions,
+              ...notAnsweredQuestions.sort(() => Math.random() - 0.5),
+            ],
+          },
+        };
+      },
     }),
     assignUsers: build.mutation<
       void,
@@ -107,6 +127,23 @@ export const testsApi = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['Test', 'TestAssigned', 'TestFinished'],
+    }),
+    testCopy: build.mutation<Test, number>({
+      query: (id) => ({
+        url: `/test/${id}/copy`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Test'],
+    }),
+    removeAssigned: build.mutation<void, { testId: number; userId: number }>({
+      query: ({ testId, userId }) => ({
+        url: `/test/assigned/${testId}`,
+        method: 'DELETE',
+        body: {
+          userId,
+        },
+      }),
+      invalidatesTags: ['TestAssigned', 'Test'],
     }),
   }),
 });

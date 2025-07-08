@@ -26,6 +26,7 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
 
   const [toggleHide, toggleHiddenState] = testsApi.useToggleHiddenMutation();
   const [testDelete, testDeleteState] = testsApi.useTestDeleteMutation();
+  const [testCopy, testCopyState] = testsApi.useTestCopyMutation();
 
   const notify = () => {
     $api
@@ -63,6 +64,9 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
       case 'delete':
         testDelete(testId!);
         break;
+      case 'copy':
+        testCopy(testId!);
+        break;
       default:
         console.log('Unknown action');
         break;
@@ -71,7 +75,7 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
 
   const dropdownItems = [
     { id: 'edit', label: 'Редактировать тест' },
-
+    { id: 'copy', label: 'Скопировать тест' },
     hidden
       ? { id: 'show', label: 'Сделать доступным' }
       : { id: 'hide', label: 'Скрыть доступ' },
@@ -97,7 +101,9 @@ const TestRowDropdown: FC<TestRowDropdownProps> = ({ hidden, testId }) => {
       buttons={dropdownItems}
       bodyClassName={cva('z-10', {
         'pointer-events-none animate-pulse':
-          toggleHiddenState.isLoading || testDeleteState.isLoading,
+          toggleHiddenState.isLoading ||
+          testDeleteState.isLoading ||
+          testCopyState.isLoading,
       })}
     />
   );

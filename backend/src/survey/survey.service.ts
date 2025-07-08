@@ -94,6 +94,7 @@ export class SurveyService {
           archived: false,
           description: question.description,
           allowDecimal: question.allowDecimal,
+          photoUrl: question.photoUrl,
           Survey: {
             connect: {
               id: created.id,
@@ -357,6 +358,7 @@ export class SurveyService {
             scaleStart: found.scaleStart ?? null,
             scaleEnd: found.scaleEnd ?? null,
             order: found.order ?? question.order,
+          photoUrl: found.photoUrl,
           },
         });
         const options = await this.prismaService.option.findMany({
@@ -424,6 +426,7 @@ export class SurveyService {
             scaleEnd: question.scaleEnd,
             allowDecimal: question.allowDecimal,
             required: question.required,
+            photoUrl: question.photoUrl,
             Survey: {
               connect: {
                 id: updatedSurvey.id,

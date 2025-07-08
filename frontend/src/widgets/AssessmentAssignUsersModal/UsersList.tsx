@@ -19,7 +19,7 @@ export default function UsersList({
         <UsersIcon className="w-5 h-5 mr-2 inline" />
         {team.team?.name}
       </h2>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
         {team.users.map((user) => (
           <UserCheckbox
             key={user.id}

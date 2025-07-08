@@ -7,6 +7,7 @@ import { CountdownTimer } from '@/shared/ui/CountdownTimer';
 import { useEffect, useState } from 'react';
 import { $api } from '@/shared/lib/$api';
 import { testsApi } from '@/shared/api/testsApi';
+import TestProgress from './TestProgress';
 
 interface TestQuestionProps {
   test: AssignedTest;
@@ -57,6 +58,7 @@ export default function TestQuestion({ test, onFinish }: TestQuestionProps) {
             <div>{test.test.timeLimit}:00</div>
           ))}
       </div>
+      <TestProgress test={test} />
     </>
   );
 }

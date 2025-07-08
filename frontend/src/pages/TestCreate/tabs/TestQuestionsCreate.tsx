@@ -249,6 +249,19 @@ export default function TestQuestionsCreate() {
     [dispatch],
   );
 
+  const setQuestionPhotoUrl = useCallback(
+    (index: number, url: string) => {
+      dispatch(
+        testCreateActions.setQuestionField({
+          index,
+          field: 'photoUrl',
+          value: url,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   const props = {
     clearCorrectOptions: onClear,
     questions: questions,
@@ -271,6 +284,7 @@ export default function TestQuestionsCreate() {
     setOptionScore: setOptionScore,
     setQuestionScore: setQuestionScore,
     changeQuestionOrder: changeQuestionOrder,
+    setQuestionPhotoUrl: setQuestionPhotoUrl,
   };
 
   return <TestQuestions {...props} />;

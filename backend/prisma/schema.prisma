@@ -267,6 +267,7 @@ model SurveyQuestion {
   order       Int
   required    Boolean    @default(true)
   archived    Boolean    @default(false)
+  photoUrl String?
 
   maxLength Int?
 
@@ -306,6 +307,7 @@ model Test {
 
   archived Boolean @default(false)
   hidden   Boolean @default(true)
+  shuffleQuestions Boolean @default(false)
 }
 
 model Question {
@@ -326,6 +328,7 @@ model Question {
   score              Int?
 
   archived Boolean @default(false)
+  photoUrl String?
 
   Test              Test                   @relation(fields: [testId], references: [id], onDelete: Cascade)
   answeredQuestions UserAnsweredQuestion[]

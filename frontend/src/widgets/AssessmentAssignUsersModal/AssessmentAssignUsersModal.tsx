@@ -60,6 +60,8 @@ export default function AssessmentAssignUsersModal({
       loading={isFetching || testState.isLoading || surveyState.isLoading}
       title="Назначить тест"
       onSubmit={handleAssignUsers}
+      footer={false}
+      submitHeader
     >
       <AssessmentAssignUsersForm
         role={role?.name}

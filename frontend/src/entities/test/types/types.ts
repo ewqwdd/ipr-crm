@@ -33,6 +33,7 @@ export interface Question {
   textCorrectValue?: string;
   allowDecimal?: boolean;
   score?: number;
+  photoUrl?: string;
 }
 
 interface CreateOption extends Omit<TestOption, 'id'> {
@@ -65,6 +66,7 @@ export interface TestCreate {
   limitedByTime?: boolean;
   timeLimit?: number;
   minimumScore?: number;
+  shuffleQuestions?: boolean;
 }
 
 export interface TestCreateStoreSchema extends TestCreate {
@@ -103,6 +105,7 @@ export interface Test {
   limitedByTime?: boolean;
   timeLimit?: number;
   minimumScore?: number;
+  shuffleQuestions?: boolean;
 
   usersAssigned: AssignedTest[];
 }

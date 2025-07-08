@@ -1,6 +1,7 @@
 import {
   PassedMessage,
   ShowScoreToUser,
+  ShuffleQuestions,
   TaskDescription,
   TaskName,
 } from '@/widgets/TestSettings';
@@ -10,6 +11,7 @@ interface TestSettingsProps {
   description?: string;
   passedMessage?: string;
   showScoreToUser?: boolean;
+  shuffleQuestions?: boolean;
   errors: {
     name?: string;
     description?: string;
@@ -19,6 +21,7 @@ interface TestSettingsProps {
   onChangeDescription: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onChangeShowScore: () => void;
   onChangePassedMessage: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChangeShuffleQuestions: () => void;
 }
 
 export default function TestSettings({
@@ -29,8 +32,10 @@ export default function TestSettings({
   onChangeName,
   onChangePassedMessage,
   onChangeShowScore,
+  onChangeShuffleQuestions,
   passedMessage,
   showScoreToUser,
+  shuffleQuestions,
 }: TestSettingsProps) {
   return (
     <div className="flex flex-col gap-8 mt-6 max-w-2xl">
@@ -48,6 +53,10 @@ export default function TestSettings({
         onChange={onChangePassedMessage}
         passedMessage={passedMessage}
         error={errors?.passedMessage}
+      />
+      <ShuffleQuestions
+        onChange={onChangeShuffleQuestions}
+        shuffleQuestions={!!shuffleQuestions}
       />
     </div>
   );

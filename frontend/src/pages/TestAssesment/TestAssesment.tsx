@@ -12,11 +12,9 @@ import { useNavigate, useParams } from 'react-router';
 
 export default function TestAssesment() {
   const { id } = useParams<{ id: string }>();
-  const {
-    data,
-    isFetching: isLoading,
-    isError,
-  } = testsApi.useGetAssignedTestQuery(parseInt(id ?? '-1'));
+  const { data, isFetching: isLoading } = testsApi.useGetAssignedTestQuery(
+    parseInt(id ?? '-1'),
+  );
   const dispatch = useAppDispatch();
   const [finish, finishState] = testsApi.useFinishTestMutation();
   const navigate = useNavigate();
@@ -51,12 +49,6 @@ export default function TestAssesment() {
       toast.error('Ошибка при завершении теста');
     }
   }, [finishState.isError]);
-
-  useEffect(() => {
-    if (isError) {
-      toast.error('Ошибка при загрузке теста');
-    }
-  }, [isError]);
 
   useEffect(() => {
     if (data?.answeredQUestions && data.answeredQUestions.length > 0) {

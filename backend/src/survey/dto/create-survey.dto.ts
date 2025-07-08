@@ -79,6 +79,10 @@ class QuestionDTO {
   order?: number;
 
   @IsOptional()
+  @IsString()
+  photoUrl?: string;
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OptionDTO)

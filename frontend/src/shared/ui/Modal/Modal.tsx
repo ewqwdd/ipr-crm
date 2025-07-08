@@ -19,6 +19,7 @@ interface ModalProps {
   loading?: boolean;
   className?: string;
   childrenFlex?: boolean;
+  submitHeader?: boolean;
 }
 
 export default function Modal({
@@ -35,6 +36,7 @@ export default function Modal({
   loading,
   className,
   childrenFlex = true,
+  submitHeader = false,
 }: ModalProps) {
   const btnColors: Record<Variant, string> = {
     error: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
@@ -123,6 +125,18 @@ export default function Modal({
                     )}
                     {children}
                   </div>
+                  {submitHeader && (
+                    <button
+                      type="button"
+                      className={cva(
+                        'w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm',
+                        btnColors[variant],
+                      )}
+                      onClick={onSubmit}
+                    >
+                      {submitText}
+                    </button>
+                  )}
                 </div>
               </div>
               {footer && (

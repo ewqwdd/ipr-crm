@@ -21,6 +21,7 @@ import { AssignUsersDTO } from './dto/assign-users.dto';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
 import { ToggleHiddenDTO } from './dto/toggle-hidden.dto';
 import { Response } from 'express';
+import { RemoveAssignedDTO } from './dto/remove-assigned.dto';
 
 @Controller('test')
 export class TestController {
@@ -125,6 +126,21 @@ export class TestController {
 
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
+  @Delete('/assigned/:id')
+  async removeAssignedUser(
+    @Param('id') id: string,
+    @Body() data: RemoveAssignedDTO,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.testService.removeAssignedUser(
+      Number(id),
+      data.userId,
+      sessionInfo,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Post('/assigned/:id/finish')
   async finishTest(
     @Param('id') id: string,
@@ -198,5 +214,14 @@ export class TestController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     return this.testService.deleteTest(Number(id), sessionInfo);
+  }
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('/:id/copy')
+  async copyTest(
+    @Param('id') id: string,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+  ) {
+    return this.testService.copyTest(Number(id), sessionInfo);
   }
 }
