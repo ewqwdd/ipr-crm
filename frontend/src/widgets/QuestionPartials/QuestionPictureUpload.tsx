@@ -17,7 +17,7 @@ export default function QuestionPictureUpload({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (value) {
+    if (value !== '' && !!value) {
       await $fileApi.delete('/uploads/' + value);
     }
     const fileName = await $uploadFile(file);
