@@ -3,15 +3,17 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { promises as fs } from 'fs';
 import { join, normalize } from 'path';
+import { PrismaService } from 'src/utils/db/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class FilesService {
   private readonly uploadRoot = join(process.cwd(), '..', 'uploads');
 
-  constructor() {
+  constructor(private prismaService: PrismaService) {
     this.ensureDirectory(this.uploadRoot);
   }
 
@@ -57,6 +59,7 @@ export class FilesService {
 
   async deleteFile(filePath: string): Promise<void> {
     const absolutePath = join(process.cwd(), '..', filePath);
+    console.log('Deleting file:', absolutePath);
 
     try {
       await fs.access(absolutePath);
@@ -73,5 +76,55 @@ export class FilesService {
     return safeSubfolder
       ? `/uploads/${safeSubfolder}/${filename}`
       : `/uploads/${filename}`;
+  }
+
+  //   @Cron('0 0 * * 0')
+  @Cron(CronExpression.EVERY_MINUTE)
+  async cleanUpUnusedFiles() {
+    try {
+      console.log('Starting cleanup of unused files...');
+
+      const testQuestionFiles = await this.prismaService.question.findMany({
+        where: {
+          photoUrl: {
+            not: null,
+          },
+        },
+        select: {
+          photoUrl: true,
+        },
+      });
+
+      const surveyQuestionFiles =
+        await this.prismaService.surveyQuestion.findMany({
+          where: {
+            photoUrl: {
+              not: null,
+            },
+          },
+          select: {
+            photoUrl: true,
+          },
+        });
+
+      const allUsedFiles = new Set([
+        ...testQuestionFiles.map((q) => q.photoUrl),
+        ...surveyQuestionFiles.map((q) => q.photoUrl),
+      ]);
+
+      const files = await fs.readdir(this.uploadRoot);
+      const unusedFiles = files.filter((file) => {
+        return !allUsedFiles.has(file) && file.includes('.');
+      });
+
+      console.log(`Found ${unusedFiles.length} unused files.`);
+
+      for (const file of unusedFiles) {
+        await this.deleteFile(this.getFilePath(file));
+      }
+    } catch (error) {
+      console.error('Error during file cleanup:', error);
+      throw new BadRequestException('Ошибка при очистке файлов');
+    }
   }
 }

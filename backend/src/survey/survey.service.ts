@@ -10,8 +10,8 @@ import { AssignUsersDTO } from './dto/assign-users.dto';
 import { AnswerQuestionDTO } from './dto/answer-question.dto';
 import { Prisma } from '@prisma/client';
 import { UsersAccessService } from 'src/users/users-access.service';
-import { FilesService } from 'src/utils/files/files.service';
 import { NotificationsService } from 'src/notification/notifications.service';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class SurveyService {
@@ -57,6 +57,9 @@ export class SurveyService {
             user: true,
           },
         },
+      },
+      where: {
+        archived: false,
       },
     });
     return surveys;
@@ -358,7 +361,7 @@ export class SurveyService {
             scaleStart: found.scaleStart ?? null,
             scaleEnd: found.scaleEnd ?? null,
             order: found.order ?? question.order,
-          photoUrl: found.photoUrl,
+            photoUrl: found.photoUrl,
           },
         });
         const options = await this.prismaService.option.findMany({

@@ -13,9 +13,9 @@ import { Workbook } from 'exceljs';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
-import { FilesService } from 'src/utils/files/files.service';
 import { MailService } from 'src/mail/mail.service';
 import { Prisma } from '@prisma/client';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class UsersService {

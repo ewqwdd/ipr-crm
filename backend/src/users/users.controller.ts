@@ -24,7 +24,7 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { InviteUserDTO } from './dto/invite-user.dto';
 import { InviteAcceptDTO } from './dto/invite-accept.dto';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
-import { FilesService } from 'src/utils/files/files.service';
+import { FilesService } from 'src/files/files.service';
 
 @Controller('users')
 export class UsersController {

@@ -6,13 +6,13 @@ import { PasswordService } from 'src/utils/password/password';
 import { S3Service } from 'src/utils/s3/s3.service';
 import { CreateProductsService } from './create-products.service';
 import { UsersAccessService } from './users-access.service';
-import { FilesService } from 'src/utils/files/files.service';
 import { MailModule } from 'src/mail/mail.module';
 import { RedisService } from 'src/utils/redis/redis.service';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   controllers: [UsersController],
-  imports: [MailModule],
+  imports: [MailModule, FilesModule],
   providers: [
     UsersService,
     PrismaService,
@@ -20,7 +20,6 @@ import { RedisService } from 'src/utils/redis/redis.service';
     S3Service,
     CreateProductsService,
     UsersAccessService,
-    FilesService,
     RedisService,
   ],
   exports: [UsersService, UsersAccessService],

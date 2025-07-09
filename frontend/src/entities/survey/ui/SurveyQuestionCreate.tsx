@@ -15,7 +15,7 @@ import { useAppDispatch } from '@/app';
 import { useCallback } from 'react';
 import { surveyCreateActions } from '../surveyCreateSlice';
 import ScaleOptions from '@/widgets/QuestionPartials/ScaleOptions';
-import SurveyQuestionPictureUpload from './edit/ui/SurveyQuestionPictureUpload';
+import SurveyQuestionPictureUpload from './edit/ui/TestQuestionPictureUpload';
 
 interface SurveyQuestionCreateProps {
   index: number;

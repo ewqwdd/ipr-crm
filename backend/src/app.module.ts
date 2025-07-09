@@ -26,6 +26,7 @@ import { BullModule } from '@nestjs/bull';
 import { MailModule } from './mail/mail.module';
 import { RedisService } from './utils/redis/redis.service';
 import { ExportModule } from './export/export.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { ExportModule } from './export/export.module';
     ProfileStructureFolderModule,
     MailModule,
     ExportModule,
+    FilesModule,
   ],
   providers: [
     PrismaService,
