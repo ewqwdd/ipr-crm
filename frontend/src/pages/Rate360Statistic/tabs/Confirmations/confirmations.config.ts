@@ -18,4 +18,5 @@ export const transformFiltersToParams = (
   endDate: filters.period?.[1]?.toDate()?.toISOString(),
   hidden: !!filters.hidden,
   includeWhereEvaluatorCurator: true,
+  curatorId: filters.curatorId === 'ALL' ? undefined : filters.curatorId,
 });

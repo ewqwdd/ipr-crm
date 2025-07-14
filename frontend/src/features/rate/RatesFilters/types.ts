@@ -8,6 +8,7 @@ export type Filters = {
   teams: TeamsHierarchyFilterType;
   userId: number | 'ALL';
   specId: number | 'ALL';
+  curatorId: number | 'ALL';
   status:
     | 'COMPLETED'
     | 'NOT_COMPLETED'

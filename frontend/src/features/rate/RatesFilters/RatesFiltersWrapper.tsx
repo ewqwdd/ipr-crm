@@ -87,6 +87,11 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
     [specs],
   );
 
+  const onChangeCuratorId = useCallback(
+    (value?: number) => handleFilterChange('curatorId', value ?? 'ALL'),
+    [handleFilterChange],
+  );
+
   return (
     <div className="">
       <RatesFilters
@@ -100,6 +105,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
         onChangeUser={onChangeUser}
         onChangePeriod={onChangePeriod}
         onChangeHidden={onChangeHidden}
+        onChangeCuratorId={onChangeCuratorId}
         users={users?.users ?? []}
         type={type}
         exclude={exclude}

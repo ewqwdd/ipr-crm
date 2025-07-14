@@ -31,6 +31,7 @@ export interface RateFiltersDto {
   hidden?: boolean;
   subbordinatesOnly?: boolean;
   includeWhereEvaluatorCurator?: boolean;
+  curatorId?: number;
 }
 
 const rate360Api = createApi({

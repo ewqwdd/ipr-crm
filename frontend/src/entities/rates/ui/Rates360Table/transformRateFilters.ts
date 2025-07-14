@@ -17,4 +17,5 @@ export const transformRateFilters = (
   endDate: filters.period?.[1]?.toDate()?.toISOString(),
   hidden: !!filters.hidden,
   subbordinatesOnly: type === 'TEAM' ? true : undefined,
+  curatorId: filters.curatorId === 'ALL' ? undefined : filters.curatorId,
 });

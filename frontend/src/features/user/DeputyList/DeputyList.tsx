@@ -19,7 +19,7 @@ export default function DeputyList({ user }: DeputyListProps) {
         </Badge>
       ))}
     </div>
-  ) : currentUser?.deputyRelationsAsUser.some(
+  ) : currentUser?.deputyRelationsAsUser?.some(
       (deputy) => deputy.deputy.id === user.id,
     ) ? (
     <Badge color="green" size="md">

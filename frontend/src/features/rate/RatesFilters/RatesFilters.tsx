@@ -33,6 +33,7 @@ interface RatesFiltersProps {
   onChangeUser: (value?: number) => void;
   onChangePeriod: (value?: DateObject | DateObject[]) => void;
   onChangeHidden: (value: boolean) => void;
+  onChangeCuratorId: (value?: number) => void;
   type: Rates360TableType;
   exclude?: (keyof Filters)[];
 }
@@ -50,6 +51,7 @@ const RatesFilters: FC<RatesFiltersProps> = ({
   onChangePeriod,
   onChangeHidden,
   type,
+  onChangeCuratorId,
   exclude = [],
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -122,6 +124,21 @@ const RatesFilters: FC<RatesFiltersProps> = ({
           )}
           {!exclude.includes('period') && (
             <PeriodSelector value={filters.period} onChange={onChangePeriod} />
+          )}
+
+          {!exclude.includes('curatorId') && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Руководитель оценки
+              </label>
+              <UsersSelect
+                users={users}
+                value={
+                  filters.curatorId === 'ALL' ? undefined : filters.curatorId
+                }
+                setValue={onChangeCuratorId}
+              />
+            </div>
           )}
 
           <div className="flex 2xl:mt-5">

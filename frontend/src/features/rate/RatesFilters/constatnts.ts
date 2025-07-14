@@ -23,4 +23,5 @@ export const initialFilters: Filters = {
   specId: 'ALL',
   period: undefined,
   status: 'ALL', // TODO: add status
+  curatorId: 'ALL',
 };

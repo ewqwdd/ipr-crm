@@ -139,6 +139,17 @@ export class TeamsService {
                     },
                   },
                 },
+                deputyRelationsAsUser: {
+                  select: {
+                    deputy: {
+                      select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },

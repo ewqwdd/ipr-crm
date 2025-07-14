@@ -64,6 +64,7 @@ export class Rate360Service {
     status,
     user,
     hidden,
+    curatorId,
   }: RateFiltersDto): Prisma.Rate360FindManyArgs['where'] {
     return {
       archived: false,
@@ -83,6 +84,9 @@ export class Rate360Service {
         : {}),
       ...(startDate ? { startDate: { gte: new Date(startDate) } } : {}),
       ...(endDate ? { endDate: { lte: new Date(endDate) } } : {}),
+      ...(curatorId
+        ? { evaluators: { some: { userId: curatorId, type: 'CURATOR' } } }
+        : {}),
       hidden: !!hidden,
     };
   }

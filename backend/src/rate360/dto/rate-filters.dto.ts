@@ -93,4 +93,9 @@ export class RateFiltersDto {
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
   includeWhereEvaluatorCurator?: boolean;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  curatorId?: number;
 }
