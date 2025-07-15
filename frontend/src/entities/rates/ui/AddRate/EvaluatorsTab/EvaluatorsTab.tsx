@@ -96,6 +96,25 @@ export default function EvaluatorsTab({
     dispatch(ratesActions.setSpecsForUser(data));
   }, []);
 
+  const handleCreateRate = () => {
+    if (selectedSpecs.length === 0) {
+      toast.error('Необходимо выбрать хотя бы одного пользователя');
+      return;
+    }
+    if (confirmCurator && selectedSpecs.some(s => s.specs.some(spec => spec.evaluateCurators.length === 0))) {
+      toast.error('Невозможно создать оценку с подтверждением состава, если не выбран куратор');
+      return;
+    }
+    addRate({
+                rate: selectedSpecs,
+                skill: skillTypes,
+                confirmCurator,
+                confirmUser,
+                rateType,
+              })
+
+            }
+
   return (
     <>
       <div
@@ -124,15 +143,7 @@ export default function EvaluatorsTab({
             Назад
           </SecondaryButton>
           <PrimaryButton
-            onClick={() =>
-              addRate({
-                rate: selectedSpecs,
-                skill: skillTypes,
-                confirmCurator,
-                confirmUser,
-                rateType,
-              })
-            }
+            onClick={handleCreateRate}
             disabled={isLoading}
           >
             Добавить оценку

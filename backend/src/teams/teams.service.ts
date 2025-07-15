@@ -531,7 +531,6 @@ export class TeamsService {
       teamId,
       userId,
     }));
-    console.log(data);
 
     await this.prisma.userTeam.createMany({
       data,

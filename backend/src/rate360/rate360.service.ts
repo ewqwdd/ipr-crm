@@ -426,6 +426,9 @@ export class Rate360Service {
         return await Promise.all(
           ratesToCreate.map(async (rate, index) => {
             const curator = rate.evaluateCurators[0];
+            if (data.confirmCurator && !curator) {
+              throw new ForbiddenException('Необходимо назначить куратора');
+            }
             const team = await tx.team.findUnique({
               where: { id: rate.teamId },
               select: { name: true },
