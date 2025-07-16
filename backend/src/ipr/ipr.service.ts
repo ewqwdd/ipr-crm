@@ -31,33 +31,47 @@ export class IprService {
     private usersAccessService: UsersAccessService,
   ) {}
 
+  async planAccessFilters(
+    sessionInfo: GetSessionInfoDto,
+  ): Promise<Prisma.IndividualGrowthPlanWhereInput> {
+    if (sessionInfo.role === 'admin') {
+      return {};
+    }
+    return {
+      OR: [
+        {
+          rate360: {
+            team: {
+              id: {
+                in: await this.usersAccessService.findAllowedTeams(sessionInfo),
+              },
+            },
+          },
+        },
+        {
+          planCurators: {
+            some: {
+              userId: sessionInfo.id,
+            },
+          },
+        },
+        {
+          userId: {
+            in: await this.usersAccessService.findAllowedSubbordinates(
+              sessionInfo.id,
+            ),
+          },
+        },
+      ],
+    };
+  }
+
   async findOneby360Id(id: number, sessionInfo: GetSessionInfoDto) {
     return await this.prismaService.individualGrowthPlan.findFirst({
       where: {
         id: id,
         ...(sessionInfo.role !== 'admin'
-          ? {
-              OR: [
-                {
-                  rate360: {
-                    team: {
-                      id: {
-                        in: await this.usersAccessService.findAllowedTeams(
-                          sessionInfo,
-                        ),
-                      },
-                    },
-                  },
-                },
-                {
-                  planCurators: {
-                    some: {
-                      userId: sessionInfo.id,
-                    },
-                  },
-                },
-              ],
-            }
+          ? await this.planAccessFilters(sessionInfo)
           : {}),
       },
       include: {
@@ -131,6 +145,13 @@ export class IprService {
                 userId: sessionInfo.id,
                 type: 'CURATOR',
               },
+            },
+          },
+          {
+            userId: {
+              in: await this.usersAccessService.findAllowedSubbordinates(
+                sessionInfo.id,
+              ),
             },
           },
         ],
@@ -271,29 +292,9 @@ export class IprService {
     sessionInfo: GetSessionInfoDto,
   ) {
     const filters = {
+      ...(await this.planAccessFilters(sessionInfo)),
       rate360Id: id,
     } as Prisma.IndividualGrowthPlanWhereUniqueInput;
-
-    if (sessionInfo.role !== 'admin') {
-      filters.OR = [
-        {
-          rate360: {
-            team: {
-              id: {
-                in: await this.usersAccessService.findAllowedTeams(sessionInfo),
-              },
-            },
-          },
-        },
-        {
-          planCurators: {
-            some: {
-              userId: sessionInfo.id,
-            },
-          },
-        },
-      ];
-    }
 
     return this.prismaService.individualGrowthPlan.update({
       where: filters,
@@ -307,32 +308,13 @@ export class IprService {
     session: GetSessionInfoDto,
   ) {
     const filters = {
+      ...(await this.planAccessFilters(session)),
       tasks: {
         some: {
           id: id,
         },
       },
     } as Prisma.IndividualGrowthPlanWhereInput;
-    if (session.role !== 'admin') {
-      filters.OR = [
-        {
-          rate360: {
-            team: {
-              id: {
-                in: await this.usersAccessService.findAllowedTeams(session),
-              },
-            },
-          },
-        },
-        {
-          planCurators: {
-            some: {
-              userId: session.id,
-            },
-          },
-        },
-      ];
-    }
 
     const plan = await this.prismaService.individualGrowthPlan.findFirst({
       where: filters,
@@ -395,15 +377,19 @@ export class IprService {
     });
   }
 
-  deleteTasks(ids: number[], sessionInfo: GetSessionInfoDto) {
+  async deleteTasks(ids: number[], sessionInfo: GetSessionInfoDto) {
     return this.prismaService.growthPlanTask.deleteMany({
-      where: this.taskMultiupleQuery(ids, sessionInfo),
+      where: await this.taskMultiupleQuery(ids, sessionInfo),
     });
   }
 
-  boardChange(ids: number[], onBoard: boolean, sessionInfo: GetSessionInfoDto) {
+  async boardChange(
+    ids: number[],
+    onBoard: boolean,
+    sessionInfo: GetSessionInfoDto,
+  ) {
     return this.prismaService.growthPlanTask.updateMany({
-      where: this.taskMultiupleQuery(ids, sessionInfo),
+      where: await this.taskMultiupleQuery(ids, sessionInfo),
       data: {
         onBoard,
       },
@@ -448,32 +434,13 @@ export class IprService {
   async findAllTasks(userId: number, session: GetSessionInfoDto) {
     const isAllTasksAccess = userId === session.id || session.role === 'admin';
 
-    let result = () =>
+    let result = async () =>
       this.prismaService.growthPlanTask.findMany({
         where: {
           plan: {
             userId,
             archived: false,
-            ...(isAllTasksAccess
-              ? {}
-              : {
-                  OR: [
-                    {
-                      rate360: {
-                        team: {
-                          curatorId: session.id,
-                        },
-                      },
-                    },
-                    {
-                      planCurators: {
-                        some: {
-                          userId: session.id,
-                        },
-                      },
-                    },
-                  ],
-                }),
+            ...(isAllTasksAccess ? {} : await this.planAccessFilters(session)),
           },
           onBoard: true,
         },
@@ -516,7 +483,10 @@ export class IprService {
         (await this.usersAccessService.findAllowedTeams(clientInfo)).includes(
           plan.rate360.team.id,
         ) ||
-        plan.planCurators.some((curator) => curator.userId === clientInfo.id)
+        plan.planCurators.some((curator) => curator.userId === clientInfo.id) ||
+        (
+          await this.usersAccessService.findAllowedSubbordinates(clientInfo.id)
+        ).some((subordinate) => subordinate === data.userId)
       )
     ) {
       throw new ForbiddenException(
@@ -603,7 +573,9 @@ export class IprService {
     const where = this.findAllFilters(params, sessionInfo);
 
     const allowedSubbordinates =
-      await this.usersAccessService.findAllowedSubbordinates(sessionInfo.id);
+      await this.usersAccessService.findAllowedSubbordinatesWithTeams(
+        sessionInfo.id,
+      );
 
     where.rate360 = {
       ...(specId ? { specId } : {}),
@@ -710,6 +682,13 @@ export class IprService {
           },
         },
       },
+      {
+        userId: {
+          in: await this.usersAccessService.findAllowedSubbordinates(
+            sessionInfo.id,
+          ),
+        },
+      },
     ];
     if (where.rate360?.teamId) {
       delete where.rate360.teamId;
@@ -793,31 +772,14 @@ export class IprService {
   }
 
   // access checks
-  taskMultiupleQuery(taskIds: number[], sessionInfo: GetSessionInfoDto) {
+  async taskMultiupleQuery(taskIds: number[], sessionInfo: GetSessionInfoDto) {
     return {
       id: {
         in: taskIds,
       },
       ...(sessionInfo.role !== 'admin'
         ? {
-            plan: {
-              OR: [
-                {
-                  rate360: {
-                    team: {
-                      curatorId: sessionInfo.id,
-                    },
-                  },
-                },
-                {
-                  planCurators: {
-                    some: {
-                      userId: sessionInfo.id,
-                    },
-                  },
-                },
-              ],
-            },
+            plan: await this.planAccessFilters(sessionInfo),
           }
         : {}),
     };

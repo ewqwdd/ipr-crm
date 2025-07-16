@@ -6,13 +6,12 @@ import { DateObject } from 'react-multi-date-picker';
 import { Filters, FiltersSkillType } from './types';
 import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { universalApi } from '@/shared/api/universalApi';
-import { Rates360TableType } from '@/entities/rates';
 import { TeamsHierarchyFilterType } from '@/widgets/TeamsHierarchyFilter/types';
 
 interface RatesFiltersWrapperProps {
   filters: Filters;
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
-  type: Rates360TableType;
+  type: 'ALL' | 'TEAM';
   exclude?: (keyof Filters)[];
 }
 

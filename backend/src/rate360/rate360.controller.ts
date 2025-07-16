@@ -54,6 +54,18 @@ export class Rate360Controller {
     return await this.rate360Service.findAll(params, sessionInfo);
   }
 
+  @Get('/subbordinates-other-teams')
+  @UseGuards(AuthGuard)
+  async subbordinatesOtherTeams(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: RateFiltersDto,
+  ) {
+    return await this.rate360Service.findAllSubbordinatesOtherTeams(
+      params,
+      sessionInfo,
+    );
+  }
+
   @Post('/')
   @UseGuards(AuthGuard)
   async createRate(

@@ -42,18 +42,38 @@ export class Rate360Service {
       : {};
   }
 
-  async accessCheckWithSubTeams(sessionInfo: GetSessionInfoDto) {
+  async accessCheckWithSubTeams(
+    sessionInfo: GetSessionInfoDto,
+  ): Promise<Prisma.Rate360FindManyArgs['where'][]> {
     if (sessionInfo.role === 'admin') {
-      return {};
+      return [{}];
     }
     const allowedTeamIds =
       await this.usersService.findAllowedTeams(sessionInfo);
+    const allowedUsers = await this.usersService.findAllowedSubbordinates(
+      sessionInfo.id,
+    );
 
-    return {
-      team: {
-        id: { in: allowedTeamIds },
+    return [
+      {
+        team: {
+          id: { in: allowedTeamIds },
+        },
       },
-    };
+      {
+        userId: {
+          in: allowedUsers,
+        },
+      },
+      {
+        evaluators: {
+          some: {
+            userId: sessionInfo.id,
+            type: EvaluatorType.CURATOR,
+          },
+        },
+      },
+    ];
   }
 
   findAllFilters({
@@ -119,16 +139,6 @@ export class Rate360Service {
       ].filter(Boolean) as number[];
       if (ids.some((id) => !teamAccess.includes(id)))
         return { total: 0, page, limit, data: [] };
-      // const recur = (ids: number[]): Prisma.Rate360WhereInput['team'] => {
-      //   const current = ids.shift();
-      //   if (!current) return undefined;
-      //   return {
-      //     id: current,
-      //     parentTeam: {
-      //       ...recur(ids),
-      //     }
-      //   }
-      // }
       where.team = {
         id: ids[0],
       };
@@ -164,6 +174,58 @@ export class Rate360Service {
         delete where.OR;
       }
     }
+
+    let [total, rates] = await this.prismaService.$transaction([
+      this.prismaService.rate360.count({ where }),
+      this.prismaService.rate360.findMany({
+        where,
+        include: findAllRateInclude,
+        ...(Number.isInteger(page) ? { skip: (page - 1) * limit } : {}),
+        ...(limit ? { take: limit } : {}),
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+    ]);
+
+    return {
+      total,
+      page,
+      limit,
+      data: rates,
+    };
+  }
+
+  async findAllSubbordinatesOtherTeams(
+    data: RateFiltersDto,
+    curator: GetSessionInfoDto,
+  ) {
+    const teamFilter = {
+      product: data.product,
+      department: data.department,
+      direction: data.direction,
+      group: data.group,
+    };
+    const isTeamFilter = Object.values(teamFilter).filter(Boolean).length > 0;
+    const { page, limit } = data;
+
+    const where = this.findAllFilters(data);
+
+    if (isTeamFilter) {
+      const ids = [
+        teamFilter.group,
+        teamFilter.direction,
+        teamFilter.department,
+        teamFilter.product,
+      ].filter(Boolean) as number[];
+      where.team = {
+        id: ids[0],
+      };
+    }
+
+    where.userId = {
+      in: await this.usersService.findAllowedSubbordinates(curator.id),
+    };
 
     let [total, rates] = await this.prismaService.$transaction([
       this.prismaService.rate360.count({ where }),
@@ -1031,9 +1093,7 @@ export class Rate360Service {
                   curatorConfirmed: true,
                   showReportToUser: true,
                 },
-                {
-                  ...(await this.accessCheckWithSubTeams(sessionInfo)),
-                },
+                ...(await this.accessCheckWithSubTeams(sessionInfo)),
               ],
             }
           : {}),

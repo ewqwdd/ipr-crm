@@ -101,8 +101,12 @@ export class TeamsService {
       sessionInfo,
       true,
     );
+    const userAccess = await this.usersAccessService.findAllowedSubbordinates(
+      sessionInfo.id,
+      true,
+    );
 
-    return { teams, teamAccess };
+    return { teams, teamAccess, userAccess };
   }
 
   async findOne(id: number) {
@@ -190,6 +194,11 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException('Команда не найдена.');
     }
+    if (team.curatorId) {
+      await this.usersAccessService.asyncRemoveRedisSubordinatesCache(
+        team.curatorId,
+      );
+    }
     await this.prisma.userTeam.create({ data: { userId, teamId } });
     return team;
   }
@@ -239,6 +248,12 @@ export class TeamsService {
           : undefined,
       },
     });
+    await this.usersAccessService.asyncRemoveRedisSubordinatesCache(
+      team.curatorId,
+    );
+    await this.usersAccessService.asyncRemoveRedisSubordinatesCache(
+      body.curatorId,
+    );
     await this.usersAccessService.removeRedisTeamsCache(team.curatorId);
     await this.usersAccessService.removeRedisTeamsCache(body.curatorId);
     if (body.curatorId && team.users.find((e) => e.userId === body.curatorId)) {
@@ -279,6 +294,12 @@ export class TeamsService {
       }
     }
 
+    await this.usersAccessService.asyncRemoveRedisSubordinatesCache(
+      team.curatorId,
+    );
+    await this.usersAccessService.asyncRemoveRedisSubordinatesCache(
+      sessionInfo.id,
+    );
     await this.usersAccessService.removeRedisTeamsCache(team.curatorId);
     await this.usersAccessService.removeRedisTeamsCache(sessionInfo.id);
 
@@ -385,6 +406,13 @@ export class TeamsService {
         })),
       });
     }
+
+    if (team.curatorId) {
+      await this.usersAccessService.asyncRemoveRedisSubordinatesCache(
+        team.curatorId,
+      );
+    }
+    await this.usersAccessService.asyncRemoveRedisSubordinatesCache(curatorId);
 
     return { success: true };
   }
@@ -535,6 +563,9 @@ export class TeamsService {
     await this.prisma.userTeam.createMany({
       data,
     });
+    await this.usersAccessService.asyncRemoveRedisSubordinatesCache(
+      team.curatorId,
+    );
 
     return;
   }
@@ -553,7 +584,6 @@ export class TeamsService {
         throw new ForbiddenException('У вас нет доступа к этой команде.');
       }
     }
-
     return this.prisma.userTeam.deleteMany({
       where: filters,
     });

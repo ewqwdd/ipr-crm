@@ -42,6 +42,7 @@ const rate360Api = createApi({
   }),
   tagTypes: [
     'Rate360',
+    'Rate360Subbordinates',
     'AssignedRate',
     'SelfRate',
     'ConfirmRateCurator',
@@ -56,6 +57,18 @@ const rate360Api = createApi({
         params,
       }),
       providesTags: (_, __, params) => [{ type: 'Rate360', params }],
+    }),
+    getSubbordinatesRates: build.query<
+      { data: Rate[]; total: number },
+      RateFiltersDto
+    >({
+      query: (params) => ({
+        url: '/rate360/subbordinates-other-teams',
+        params,
+      }),
+      providesTags: (_, __, params) => [
+        { type: 'Rate360Subbordinates', params },
+      ],
     }),
     createRate: build.mutation<
       void,
@@ -116,6 +129,7 @@ const rate360Api = createApi({
       }),
       invalidatesTags: [
         'Rate360',
+        'Rate360Subbordinates',
         'AssignedRate',
         'SelfRate',
         'UserRates',
@@ -129,6 +143,7 @@ const rate360Api = createApi({
       }),
       invalidatesTags: [
         'Rate360',
+        'Rate360Subbordinates',
         'AssignedRate',
         'SelfRate',
         'UserRates',
@@ -151,6 +166,7 @@ const rate360Api = createApi({
       }),
       invalidatesTags: [
         'Rate360',
+        'Rate360Subbordinates',
         'ConfirmRateCurator',
         'AssignedRate',
         'UserRates',
@@ -162,7 +178,13 @@ const rate360Api = createApi({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Rate360', 'ConfirmRateUser', 'SelfRate', 'UserRates'],
+      invalidatesTags: [
+        'Rate360',
+        'Rate360Subbordinates',
+        'ConfirmRateUser',
+        'SelfRate',
+        'UserRates',
+      ],
     }),
     deleteRates: build.mutation<void, { ids: number[] }>({
       query: ({ ids }) => ({
@@ -172,6 +194,7 @@ const rate360Api = createApi({
       }),
       invalidatesTags: [
         'Rate360',
+        'Rate360Subbordinates',
         'AssignedRate',
         'SelfRate',
         'ConfirmRateCurator',
@@ -200,7 +223,12 @@ const rate360Api = createApi({
         method: 'POST',
         body: { isVisible: visible, ids },
       }),
-      invalidatesTags: ['Rate360', 'UserRates', 'RateReport'],
+      invalidatesTags: [
+        'Rate360',
+        'Rate360Subbordinates',
+        'UserRates',
+        'RateReport',
+      ],
     }),
     editEvaluators: build.mutation<
       void,
@@ -220,7 +248,12 @@ const rate360Api = createApi({
           evaluateSubbordinate: data.evaluateSubbordinate,
         },
       }),
-      invalidatesTags: ['Rate360', 'AssignedRate', 'UserRates'],
+      invalidatesTags: [
+        'Rate360',
+        'Rate360Subbordinates',
+        'AssignedRate',
+        'UserRates',
+      ],
     }),
     leaveAssigned: build.mutation<void, { rateId: number }>({
       query: ({ rateId }) => ({
@@ -229,6 +262,7 @@ const rate360Api = createApi({
       }),
       invalidatesTags: [
         'Rate360',
+        'Rate360Subbordinates',
         'AssignedRate',
         'SelfRate',
         'UserRates',
@@ -241,7 +275,7 @@ const rate360Api = createApi({
         method: 'POST',
         body: { ids },
       }),
-      invalidatesTags: ['Rate360'],
+      invalidatesTags: ['Rate360', 'Rate360Subbordinates'],
     }),
   }),
 });

@@ -108,8 +108,12 @@ export class UsersService {
       { email: user.email, id: user.id, role: user.role.name },
       true,
     );
+    const userAccess = await this.usersAccessService.findAllowedSubbordinates(
+      user.id,
+      true,
+    );
 
-    return { ...user, teamAccess };
+    return { ...user, teamAccess, userAccess };
   }
 
   async findOne(id: number, includeAccess = false) {
@@ -143,8 +147,12 @@ export class UsersService {
       { email: user.email, id: user.id, role: user.role.name },
       true,
     );
+    const userAccess = await this.usersAccessService.findAllowedSubbordinates(
+      user.id,
+      true,
+    );
 
-    return { ...user, teamAccess };
+    return { ...user, teamAccess, userAccess };
   }
 
   async create(data: CreateUserDto) {

@@ -12,8 +12,8 @@ const AddUser = React.lazy(() => import('@/pages/AddUser/AddUser'));
 const Structure = React.lazy(() => import('@/pages/Structure/Structure'));
 const Teams = React.lazy(() => import('@/pages/Teams/Teams'));
 const TeamPage = React.lazy(() => import('@/pages/TeamPage/TeamPage'));
-const Rates360Table = React.lazy(
-  () => import('@/entities/rates/ui/Rates360Table/Rates360Table'),
+const Rates360TablePage = React.lazy(
+  () => import('@/features/Rates360TablePage/Rates360TablePage'),
 );
 const Rate360MeList = React.lazy(
   () => import('@/pages/Rate360MeList/Rate360MeList'),
@@ -77,6 +77,9 @@ const SupportOverview = React.lazy(
 const Rate360Statistic = React.lazy(
   () => import('@/pages/Rate360Statistic/Rate360Statistic'),
 );
+const RateSubbordinates = React.lazy(
+  () => import('@/pages/RatesSubbordinates/RatesSubbordinates'),
+);
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -96,13 +99,13 @@ export const routerItems: RouterItemType[] = [
   { path: '/teams/:id', element: <TeamPage /> },
   {
     path: '/360rate',
-    element: <Rates360Table type="ALL" />,
+    element: <Rates360TablePage type="ALL" />,
     onlyAdmin: true,
     curator: true,
   },
   {
     path: '/360rate-team',
-    element: <Rates360Table type="TEAM" />,
+    element: <Rates360TablePage type="TEAM" />,
     onlyAdmin: true,
     curator: true,
   },
@@ -210,6 +213,11 @@ export const routerItems: RouterItemType[] = [
     element: <Rate360Statistic />,
     curator: true,
     onlyAdmin: true,
+  },
+  {
+    path: '/rate-subordinates',
+    element: <RateSubbordinates />,
+    curator: true,
   },
 ];
 

@@ -7,10 +7,11 @@ import EvaluateModal from './ui/EvaluateModal/EvaluateModal';
 import { rateDescriptions } from './model/rateDescriptions';
 import ConfirmEvaluatorsModal from './ui/ConfirmEvaluatorsModal/ConfirmEvaluatorsModal';
 import { EditEvaluatorsModal } from './ui/EditEvaluatorsModal';
-import Rates360Table from './ui/Rates360Table/Rates360Table';
-import type { Rates360TableType } from './ui/Rates360Table/types';
+import RatesTable from './ui/RatesTable/RatesTable';
+import { transformRateFilters } from './model/transformRateFilters';
+import RateSettings from './ui/RateSettings/RateSettings';
 
-export type { Rate, AddRateDto, Rates360TableType };
+export type { Rate, AddRateDto };
 
 export {
   ratesReducer,
@@ -22,5 +23,7 @@ export {
   rateDescriptions,
   ConfirmEvaluatorsModal,
   EditEvaluatorsModal,
-  Rates360Table,
+  RatesTable,
+  transformRateFilters,
+  RateSettings,
 };

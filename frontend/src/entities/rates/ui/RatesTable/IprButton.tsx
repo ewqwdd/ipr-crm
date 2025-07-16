@@ -14,7 +14,7 @@ export default function IprButton({ rate }: IprButtonProps) {
 
   const handleClick = async () => {
     await mutate(rate.id);
-    invalidateTags(['Rate360', 'UserRates']);
+    invalidateTags(['Rate360', 'UserRates', 'Rate360Subbordinates']);
   };
 
   if (!rate.plan) {

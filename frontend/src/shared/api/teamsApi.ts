@@ -8,6 +8,7 @@ const teamsApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL,
     credentials: 'include',
   }),
+  refetchOnFocus: true,
   tagTypes: ['Team'],
   endpoints: (build) => ({
     getTeams: build.query<

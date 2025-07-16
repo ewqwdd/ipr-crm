@@ -29,6 +29,7 @@ export class UsersAccessService {
   };
 
   getRedisTeamsKey = (userId: number) => `allowedTeams:${userId}`;
+  getRedisSubordinatesKey = (userId: number) => `allowedSubordinates:${userId}`;
 
   async findAllowedTeams(
     { role, id }: GetSessionInfoDto,
@@ -96,13 +97,30 @@ export class UsersAccessService {
   }
 
   async removeRedisTeamsCache(userId: number): Promise<void> {
-    const redisKey = this.getRedisTeamsKey(userId);
-    await this.redis.del(redisKey).catch((error) => {
-      console.error(`Failed to delete Redis key ${redisKey}:`, error);
+    const redisTeamKey = this.getRedisTeamsKey(userId);
+    const redisSubordinatesKey = this.getRedisSubordinatesKey(userId);
+    await this.redis.del(redisTeamKey).catch((error) => {
+      console.error(`Failed to delete Redis key ${redisTeamKey}:`, error);
+    });
+    await this.redis.del(redisSubordinatesKey).catch((error) => {
+      console.error(
+        `Failed to delete Redis key ${redisSubordinatesKey}:`,
+        error,
+      );
     });
   }
 
-  async findAllowedSubbordinates(
+  async asyncRemoveRedisSubordinatesCache(userId: number): Promise<void> {
+    const redisSubordinatesKey = this.getRedisSubordinatesKey(userId);
+    await this.redis.del(redisSubordinatesKey).catch((error) => {
+      console.error(
+        `Failed to delete Redis key ${redisSubordinatesKey}:`,
+        error,
+      );
+    });
+  }
+
+  async findAllowedSubbordinatesWithTeams(
     userId: number,
   ): Promise<{ teamId: number; userId: number }[]> {
     const teams = await this.prisma.team.findMany({
@@ -142,5 +160,56 @@ export class UsersAccessService {
           .filter((subTeam) => subTeam.userId !== null),
       ];
     });
+  }
+
+  async findAllowedSubbordinates(
+    userId: number,
+    rewriteCache?: boolean,
+  ): Promise<number[]> {
+    if (!rewriteCache) {
+      const cachedSubordinates = await this.redis.get(
+        this.getRedisSubordinatesKey(userId),
+      );
+      if (cachedSubordinates) {
+        return JSON.parse(cachedSubordinates) as number[];
+      }
+    }
+    const teams = await this.prisma.team.findMany({
+      where: {
+        curatorId: userId,
+      },
+      include: {
+        users: {
+          select: {
+            userId: true,
+          },
+        },
+        subTeams: {
+          select: {
+            curatorId: true,
+          },
+        },
+      },
+    });
+
+    const subordinates = new Set<number>();
+    teams.forEach((team) => {
+      team.users.forEach((user) => subordinates.add(user.userId));
+      if (team.curatorId) {
+        subordinates.add(team.curatorId);
+      }
+      team.subTeams.forEach((subTeam) => {
+        if (subTeam.curatorId) {
+          subordinates.add(subTeam.curatorId);
+        }
+      });
+    });
+    await this.redis.setex(
+      this.getRedisSubordinatesKey(userId),
+      this.cacheTime,
+      JSON.stringify(Array.from(subordinates)),
+    );
+
+    return Array.from(subordinates);
   }
 }

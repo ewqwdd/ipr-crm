@@ -45,6 +45,7 @@ const tagsMap: TabMapType = {
   [foldersApi.reducerPath]: ['ProductFolders', 'SpecFolders', 'TeamFolders'],
   [rate360Api.reducerPath]: [
     'Rate360',
+    'Rate360Subbordinates',
     'AssignedRate',
     'ConfirmRateCurator',
     'ConfirmRateUser',

@@ -15,9 +15,9 @@ import { UsersSelect } from '@/shared/ui/UsersSelect';
 import { User } from '@/entities/user';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { PeriodSelector } from '@/shared/ui/PeriodSelector';
-import { Rates360TableType } from '@/entities/rates';
 import TeamsHierarchyFilter from '@/widgets/TeamsHierarchyFilter';
 import { TeamsHierarchyFilterType } from '@/widgets/TeamsHierarchyFilter/types';
+import { Rates360TableType } from '@/features/Rates360TablePage/types';
 
 type OnChange = (value: string | number) => void;
 

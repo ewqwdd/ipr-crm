@@ -1,15 +1,11 @@
 import { Heading } from '@/shared/ui/Heading';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SelectAll } from '@/widgets/SelectAll';
-import RatesTable from './ui/RatesTable';
 import { Pagination } from '@/shared/ui/Pagination';
-import Settings from './ui/Settings';
-import AddRate from '../AddRate/AddRate';
 import { Modal } from '@/shared/ui/Modal';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/app';
 import { rate360Api } from '@/shared/api/rate360Api';
-import { ratesActions } from '../../model/rateSlice';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Rates360TableType } from './types';
 import RatesFiltersWrapper, {
@@ -17,16 +13,22 @@ import RatesFiltersWrapper, {
   RateFilters,
 } from '@/features/rate/RatesFilters';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
-import { transformRateFilters } from './transformRateFilters';
 import { SoftButton } from '@/shared/ui/SoftButton';
+import {
+  ratesActions,
+  RateSettings,
+  RatesTable,
+  transformRateFilters,
+} from '@/entities/rates';
+import AddRate from '@/entities/rates/ui/AddRate/AddRate';
 
 const LIMIT = 10;
 
-interface Rates360TableProps {
+interface Rates360TablePageProps {
   type: Rates360TableType;
 }
 
-export default function Rates360Table({ type }: Rates360TableProps) {
+export default function Rates360TablePage({ type }: Rates360TablePageProps) {
   const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
@@ -121,7 +123,7 @@ export default function Rates360Table({ type }: Rates360TableProps) {
             setPage={setPage}
           />
         )}
-        <Settings
+        <RateSettings
           selected={selected}
           setSelected={setSelected}
           data={data?.data}

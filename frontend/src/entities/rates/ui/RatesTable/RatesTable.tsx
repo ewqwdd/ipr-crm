@@ -1,8 +1,8 @@
-import ColumnsHeading from './ColumnsHeading';
 import { Rate } from '@/entities/rates';
 import RateRow from './RateRow';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { cva } from '@/shared/lib/cva';
+import ColumnsHeading from './ColumnsHeading';
 
 interface RatesTableProps {
   data?: Rate[];
