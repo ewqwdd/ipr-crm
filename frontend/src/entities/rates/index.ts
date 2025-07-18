@@ -10,6 +10,7 @@ import { EditEvaluatorsModal } from './ui/EditEvaluatorsModal';
 import RatesTable from './ui/RatesTable/RatesTable';
 import { transformRateFilters } from './model/transformRateFilters';
 import RateSettings from './ui/RateSettings/RateSettings';
+import { useSaveFilters } from './hooks/useSaveFilters';
 
 export type { Rate, AddRateDto };
 
@@ -26,4 +27,5 @@ export {
   RatesTable,
   transformRateFilters,
   RateSettings,
+  useSaveFilters,
 };

@@ -16,12 +16,14 @@ import { Response } from 'express';
 import { AuthGuard } from '../utils/guards/auth.guard';
 import { SessionInfo } from './decorator/session-info.decorator';
 import { GetSessionInfoDto } from './dto/get-session-info.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private cookieService: CookieService,
+    private jwtService: JwtService,
   ) {}
 
   @Post('sign-in')
@@ -41,11 +43,27 @@ export class AuthController {
   @Get('me')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  async me(@SessionInfo() sessionInfo: GetSessionInfoDto) {
+  async me(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user = await this.authService.getSesssionInfo(Number(sessionInfo.id));
     if (!user) {
       throw new UnauthorizedException('Пользователь не найден');
     }
+
+    const token = await this.jwtService.signAsync(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role.name,
+      },
+      {
+        secret: process.env.SECRET_KEY,
+      },
+    );
+    this.cookieService.setToken(res, token);
+
     return user;
   }
 

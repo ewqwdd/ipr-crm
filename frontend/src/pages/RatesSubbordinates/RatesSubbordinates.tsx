@@ -1,7 +1,7 @@
 import { Heading } from '@/shared/ui/Heading';
 import { SelectAll } from '@/widgets/SelectAll';
 import { Pagination } from '@/shared/ui/Pagination';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { rate360Api } from '@/shared/api/rate360Api';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import RatesFiltersWrapper, {
@@ -13,26 +13,41 @@ import {
   RatesTable,
   transformRateFilters,
 } from '@/entities/rates';
+import { useSearchState } from '@/shared/hooks/useSearchState';
 
 const LIMIT = 10;
 
 export default function RatesSubbordinates() {
   const [selected, setSelected] = useState<number[]>([]);
-  const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState<RateFilters>(initialRateFilters);
+  const [filters, setFilters, inited] =
+    useSearchState<RateFilters>(initialRateFilters);
 
   const { data, isLoading, isFetching } =
     rate360Api.useGetSubbordinatesRatesQuery(
-      transformRateFilters(filters, '', LIMIT, page),
+      transformRateFilters(filters, '', LIMIT, filters.page),
     );
 
-  useEffect(() => {
-    setPage(1);
-    setFilters(initialRateFilters);
-  }, []);
+  const setPage = (page: number) => {
+    setFilters((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
+
+  const prevFilters = useRef<RateFilters>();
 
   useEffect(() => {
-    setPage(1);
+    if (
+      inited &&
+      filters.page !== 1 &&
+      prevFilters.current &&
+      prevFilters.current.page === filters.page
+    ) {
+      setPage(1);
+    }
+    return () => {
+      prevFilters.current = filters;
+    };
   }, [filters]);
 
   useEffect(() => {
@@ -69,7 +84,7 @@ export default function RatesSubbordinates() {
         {!!data?.total && data?.total > LIMIT && (
           <Pagination
             limit={LIMIT}
-            page={page}
+            page={filters.page}
             count={data?.total}
             setPage={setPage}
           />

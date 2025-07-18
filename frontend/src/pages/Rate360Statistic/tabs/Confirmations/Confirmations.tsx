@@ -8,7 +8,7 @@ import { Pagination } from '@/shared/ui/Pagination';
 import { TableBody } from '@/widgets/TableBody';
 import { TableHeading } from '@/widgets/TableHeading';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
-import { useEffect, useState } from 'react';
+import React, { SetStateAction } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router';
 import StatusFilter from './StatusFilter';
@@ -17,15 +17,32 @@ import ExportConfirmations from './ExportConfirmations';
 
 interface ConfirmationsProps {
   filters: RateFilters;
+  setFilters: React.Dispatch<SetStateAction<RateFilters>>;
 }
 
 const LIMIT = 8;
 
-export default function Confirmations({ filters }: ConfirmationsProps) {
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<RateFilters['status']>('NOT_CONFIRMED');
+export default function Confirmations({
+  filters,
+  setFilters,
+}: ConfirmationsProps) {
+  const page = filters.page;
+  const setPage = (page: number) => {
+    setFilters((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
+
+  const setStatus = (status: RateFilters['status']) => {
+    setFilters((prev) => ({
+      ...prev,
+      status,
+    }));
+  };
+
   const { data, isFetching } = rate360Api.useGetRatesQuery(
-    transformFiltersToParams({ ...filters, status }, page),
+    transformFiltersToParams(filters, page),
   );
 
   const sendNotification = (rateId: number) => {
@@ -39,15 +56,11 @@ export default function Confirmations({ filters }: ConfirmationsProps) {
       });
   };
 
-  useEffect(() => {
-    setPage(1);
-  }, [filters, status]);
-
   return (
     <div className="mt-6 flex flex-col 2xl:px-8 px-0">
       <div className="flex justify-between  px-3 sm:px-5 mb-4 flex-wrap gap-5">
-        <StatusFilter filter={status} setFilter={setStatus} />
-        <ExportConfirmations filters={filters} status={status} />
+        <StatusFilter filter={filters.status} setFilter={setStatus} />
+        <ExportConfirmations filters={filters} status={filters.status} />
       </div>
       <div className="flex-1 overflow-x-auto">
         <LoadingOverlay active={isFetching} className="h-full">

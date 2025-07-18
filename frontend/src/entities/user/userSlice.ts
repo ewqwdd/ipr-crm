@@ -25,7 +25,6 @@ const userSlice = createSlice({
         return;
       }
       const user = action.payload as UserStoreSchema['user'];
-      console.debug('setUser', user);
       if (!user!.teamAccess) {
         user!.teamAccess = state.user?.teamAccess ?? [];
       }

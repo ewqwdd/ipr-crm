@@ -3,11 +3,12 @@ import { Tabs } from '@/shared/ui/Tabs';
 import { useSearchParams } from 'react-router';
 import { rate360StatistcTabs } from './config';
 import Confirmations from './tabs/Confirmations/Confirmations';
-import { useState } from 'react';
 import RatesFiltersWrapper, {
   initialRateFilters,
   RateFilters,
 } from '@/features/rate/RatesFilters';
+import { useSearchState } from '@/shared/hooks/useSearchState';
+import { useEffect, useRef } from 'react';
 
 export default function Rate360Statistic() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,7 +16,30 @@ export default function Rate360Statistic() {
   const setTab = (tab: string) => {
     setSearchParams(`?tab=${tab}`);
   };
-  const [filters, setFilters] = useState<RateFilters>(initialRateFilters);
+  const setPage = (page: number) => {
+    setFilters((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
+
+  const [filters, setFilters, inited] =
+    useSearchState<RateFilters>(initialRateFilters);
+  const prevFilters = useRef<RateFilters>();
+
+  useEffect(() => {
+    if (
+      inited &&
+      filters.page !== 1 &&
+      prevFilters.current &&
+      prevFilters.current.page === filters.page
+    ) {
+      setPage(1);
+    }
+    return () => {
+      prevFilters.current = filters;
+    };
+  }, [filters]);
 
   return (
     <div className="py-6 sm:py-10 flex flex-col sm:h-full">
@@ -35,7 +59,9 @@ export default function Rate360Statistic() {
           type="ALL"
         />
       </div>
-      {activeTab === 'confirmations' && <Confirmations filters={filters} />}
+      {activeTab === 'confirmations' && (
+        <Confirmations setFilters={setFilters} filters={filters} />
+      )}
     </div>
   );
 }

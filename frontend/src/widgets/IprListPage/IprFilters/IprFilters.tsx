@@ -37,6 +37,7 @@ export default memo(function IprFilters({
 
   const changedFiltersCount = Object.entries(filters).reduce(
     (acc, [key, value]) => {
+      if (key === 'page') return acc;
       if (Array.isArray(value)) {
         if (value.length > 0) {
           return acc + 1;
@@ -44,7 +45,6 @@ export default memo(function IprFilters({
       } else if (
         initialIprFilters[key as keyof typeof initialIprFilters] !== value
       ) {
-        console.log(key);
         return acc + 1;
       }
       return acc;

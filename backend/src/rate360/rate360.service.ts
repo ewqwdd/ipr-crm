@@ -102,8 +102,28 @@ export class Rate360Service {
       ...(status === 'CONFIRMED_BY_USER'
         ? { userConfirmed: true, curatorConfirmed: false }
         : {}),
-      ...(startDate ? { startDate: { gte: new Date(startDate) } } : {}),
-      ...(endDate ? { endDate: { lte: new Date(endDate) } } : {}),
+      ...(endDate && startDate
+        ? {
+            AND: [
+              {
+                startDate: {
+                  gte: new Date(startDate),
+                },
+              },
+              {
+                startDate: {
+                  lte: new Date(endDate),
+                },
+              },
+            ],
+          }
+        : {}),
+      ...(endDate && !startDate
+        ? { startDate: { lte: new Date(endDate) } }
+        : {}),
+      ...(!endDate && startDate
+        ? { startDate: { gte: new Date(startDate) } }
+        : {}),
       ...(curatorId
         ? { evaluators: { some: { userId: curatorId, type: 'CURATOR' } } }
         : {}),

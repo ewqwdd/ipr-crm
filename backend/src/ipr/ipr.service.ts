@@ -33,17 +33,24 @@ export class IprService {
 
   async planAccessFilters(
     sessionInfo: GetSessionInfoDto,
-  ): Promise<Prisma.IndividualGrowthPlanWhereInput> {
+    teams: number[] = [],
+  ): Promise<Pick<Prisma.IndividualGrowthPlanWhereInput, 'OR'>> {
     if (sessionInfo.role === 'admin') {
       return {};
     }
+    const accessTeams =
+      await this.usersAccessService.findAllowedTeams(sessionInfo);
+
     return {
       OR: [
         {
           rate360: {
             team: {
               id: {
-                in: await this.usersAccessService.findAllowedTeams(sessionInfo),
+                in:
+                  teams.length > 0
+                    ? teams.filter((t) => accessTeams.includes(t))
+                    : accessTeams,
               },
             },
           },
@@ -659,37 +666,8 @@ export class IprService {
       };
     }
 
-    const accessTeams =
-      await this.usersAccessService.findAllowedTeams(sessionInfo);
+    where.OR = (await this.planAccessFilters(sessionInfo, teamFilters)).OR;
 
-    where.OR = [
-      {
-        planCurators: {
-          some: {
-            userId: sessionInfo.id,
-          },
-        },
-      },
-      {
-        rate360: {
-          team: {
-            id: {
-              in:
-                teamFilters.length > 0
-                  ? teamFilters.filter((t) => accessTeams.includes(t))
-                  : accessTeams,
-            },
-          },
-        },
-      },
-      {
-        userId: {
-          in: await this.usersAccessService.findAllowedSubbordinates(
-            sessionInfo.id,
-          ),
-        },
-      },
-    ];
     if (where.rate360?.teamId) {
       delete where.rate360.teamId;
     }

@@ -3,7 +3,7 @@ import { iprApi } from '@/shared/api/iprApi';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Pagination } from '@/shared/ui/Pagination';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   initialIprFilters,
   IprFilters as IprFiltersType,
@@ -11,6 +11,7 @@ import {
 import IprFilters from './IprFilters/IprFilters';
 import { IprListPageType } from './config';
 import IprListSettings from './IprListSettings';
+import { useSearchState } from '@/shared/hooks/useSearchState';
 
 const LIMIT = 10;
 
@@ -19,8 +20,32 @@ interface IprListPageProps {
 }
 
 export default function IprListPage({ type }: IprListPageProps) {
-  const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState<IprFiltersType>(initialIprFilters);
+  const [filters, setFilters, inited] =
+    useSearchState<IprFiltersType>(initialIprFilters);
+  const prevFilters = useRef<IprFiltersType>();
+
+  const page = filters.page;
+  const setPage = (page: number) => {
+    setFilters((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
+
+  useEffect(() => {
+    if (
+      inited &&
+      filters.page !== 1 &&
+      prevFilters.current &&
+      prevFilters.current.page === filters.page
+    ) {
+      setPage(1);
+    }
+    return () => {
+      prevFilters.current = filters;
+    };
+  }, [filters]);
+
   const { data, isFetching } = iprApi.useFindAllIprQuery({
     page,
     limit: LIMIT,
@@ -38,11 +63,6 @@ export default function IprListPage({ type }: IprListPageProps) {
     deputyOnly: filters.deputyOnly,
   });
   const [selected, setSelected] = useState<number[]>([]);
-
-  useEffect(() => {
-    setPage(1);
-    setFilters(initialIprFilters);
-  }, [type]);
 
   return (
     <LoadingOverlay active={isFetching} fullScereen>

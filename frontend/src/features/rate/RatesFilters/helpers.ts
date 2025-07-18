@@ -9,6 +9,9 @@ export const getChangedFilters = (
   const changedFilters = (
     Object.keys(initialFilters) as Array<keyof Filters>
   ).filter((key) => {
+    if (key === 'page') return false;
+    if (key === 'status' && currentFilters.status === 'NOT_CONFIRMED')
+      return false;
     return (
       JSON.stringify(initialFilters[key] ?? '') !==
       JSON.stringify(currentFilters[key] ?? '')

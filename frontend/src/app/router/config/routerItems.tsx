@@ -99,13 +99,13 @@ export const routerItems: RouterItemType[] = [
   { path: '/teams/:id', element: <TeamPage /> },
   {
     path: '/360rate',
-    element: <Rates360TablePage type="ALL" />,
+    element: <Rates360TablePage key="ALL" type="ALL" />,
     onlyAdmin: true,
     curator: true,
   },
   {
     path: '/360rate-team',
-    element: <Rates360TablePage type="TEAM" />,
+    element: <Rates360TablePage key="TEAM" type="TEAM" />,
     onlyAdmin: true,
     curator: true,
   },

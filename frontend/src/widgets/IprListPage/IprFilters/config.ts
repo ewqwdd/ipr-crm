@@ -11,6 +11,7 @@ export type IprFilters = {
   period?: DateObject[];
   skillType: 'ALL' | Rate['type'];
   deputyOnly?: boolean;
+  page: number;
 };
 
 export const initialIprFilters: IprFilters = {
@@ -19,6 +20,7 @@ export const initialIprFilters: IprFilters = {
   specId: 'ALL',
   status: 'ALL',
   skillType: 'ALL',
+  page: 1,
 };
 
 export const skillTypeOptions: Array<{ value: Rate['type']; label: string }> = [

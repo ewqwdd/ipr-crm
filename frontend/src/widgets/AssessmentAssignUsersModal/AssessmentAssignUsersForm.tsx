@@ -108,8 +108,6 @@ export default function TestAssignedForm({
     setSelected,
   };
 
-  console.debug(noTeamUsers);
-
   return (
     <div className="flex flex-col gap-4 min-h-96">
       <div className="flex flex-col gap-1">

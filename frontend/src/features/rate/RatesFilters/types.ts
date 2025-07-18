@@ -19,4 +19,5 @@ export type Filters = {
   skillType: FiltersSkillType;
   period?: DateObject[];
   hidden?: boolean;
+  page: number;
 };

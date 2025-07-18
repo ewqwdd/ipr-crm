@@ -3,7 +3,7 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SelectAll } from '@/widgets/SelectAll';
 import { Pagination } from '@/shared/ui/Pagination';
 import { Modal } from '@/shared/ui/Modal';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch } from '@/app';
 import { rate360Api } from '@/shared/api/rate360Api';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
@@ -21,7 +21,8 @@ import {
   transformRateFilters,
 } from '@/entities/rates';
 import AddRate from '@/entities/rates/ui/AddRate/AddRate';
-
+import { Filters } from '../rate/RatesFilters/types';
+import { useSearchState } from '@/shared/hooks/useSearchState';
 const LIMIT = 10;
 
 interface Rates360TablePageProps {
@@ -31,23 +32,37 @@ interface Rates360TablePageProps {
 export default function Rates360TablePage({ type }: Rates360TablePageProps) {
   const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
-  const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState<RateFilters>(initialRateFilters);
   const dispatch = useAppDispatch();
   const isAdmin = useIsAdmin();
+  const prevFilters = useRef<RateFilters>();
+
+  const [filters, setFilters, inited] =
+    useSearchState<Filters>(initialRateFilters);
+  const page = filters.page;
+  const setPage = (page: number) => {
+    setFilters((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
+
+  useEffect(() => {
+    if (
+      inited &&
+      filters.page !== 1 &&
+      prevFilters.current &&
+      prevFilters.current.page === filters.page
+    ) {
+      setPage(1);
+    }
+    return () => {
+      prevFilters.current = filters;
+    };
+  }, [filters]);
 
   const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery(
     transformRateFilters(filters, type, LIMIT, page),
   );
-
-  useEffect(() => {
-    setPage(1);
-    setFilters(initialRateFilters);
-  }, [type]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
 
   useEffect(() => {
     setSelected([]);

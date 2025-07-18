@@ -24,4 +24,5 @@ export const initialFilters: Filters = {
   period: undefined,
   status: 'ALL', // TODO: add status
   curatorId: 'ALL',
+  page: 1,
 };

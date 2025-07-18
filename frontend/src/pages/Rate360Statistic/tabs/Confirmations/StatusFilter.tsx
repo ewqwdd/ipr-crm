@@ -14,7 +14,7 @@ export default memo(function StatusFilter({
   const handleUserChange = () => {
     if (filter === 'CONFIRMED_BY_USER') {
       setFilter('NOT_CONFIRMED');
-    } else if (filter === 'NOT_CONFIRMED') {
+    } else if (['NOT_CONFIRMED', 'ALL'].includes(filter)) {
       setFilter('CONFIRMED_BY_USER');
     } else if (filter === 'CONFIRMED') {
       setFilter('CONFIRMED');
