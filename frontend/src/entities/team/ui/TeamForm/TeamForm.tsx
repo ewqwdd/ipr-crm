@@ -105,7 +105,8 @@ export default forwardRef(function TeamForm(
         label="Родительская команда"
         disabledTeams={[...disabledTeams, ...groups.map((g) => g.id)]}
         team={data.parentTeamId}
-        setTeam={({ id }) => fieldChange(id, 'parentTeamId')}
+        setTeam={(v) => fieldChange(v?.id, 'parentTeamId')}
+        clearText="Не выбрано"
       />
       <div className="flex flex-col gap-1">
         <label className="block text-sm font-medium text-gray-700">Лидер</label>

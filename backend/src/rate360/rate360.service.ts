@@ -22,6 +22,7 @@ import { TeamsHelpersService } from 'src/teams/teams.helpers.service';
 import { findHierarchyElements } from './helpers';
 import { NotificationsService } from 'src/notification/notifications.service';
 import { MultipleRateIdDto } from './dto/multiple-rate-id.dto';
+import { EvaluatorsFiltersDto } from './dto/evaluators-filters.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -1022,7 +1023,13 @@ export class Rate360Service {
         block.competencies.flatMap((competency) => competency.indicators),
       );
     const userRates = rate.userRates;
-    if (userRates.length < indicators.length) {
+    const isValid = this.checkIfValidRates(
+      userRates,
+      indicators.length,
+      rate.id,
+      userId,
+    );
+    if (!isValid) {
       throw new ForbiddenException('Оценка не завершена');
     }
 
@@ -1081,7 +1088,13 @@ export class Rate360Service {
         block.competencies.flatMap((competency) => competency.indicators),
       );
     const userRates = rate.userRates;
-    if (userRates.length < indicators.length) {
+    const isValid = this.checkIfValidRates(
+      userRates,
+      indicators.length,
+      rate.id,
+      userId,
+    );
+    if (!isValid) {
       throw new ForbiddenException('Оценка не завершена');
     }
 
@@ -1808,5 +1821,283 @@ export class Rate360Service {
     }
 
     return await this.prismaService.rate360.updateMany(query);
+  }
+
+  async checkIfValidRates(
+    rates: { indicatorId: number; rate: number }[],
+    ratesAmount: number,
+    rateId: number,
+    userId: number,
+  ) {
+    const allIndicatorIds = Array.from(
+      new Set(rates.map((r) => r.indicatorId)),
+    );
+    if (rates.length === ratesAmount && allIndicatorIds.length === rates.length)
+      return true;
+    if (rates.length > allIndicatorIds.length) {
+      await this.clearDuplicateRates(rateId, userId);
+    }
+    if (allIndicatorIds.length < ratesAmount) return false;
+    return true;
+  }
+
+  async clearDuplicateRates(rateId: number, userId: number) {
+    const rates = await this.prismaService.userRates.findMany({
+      where: {
+        userId,
+        rate360Id: rateId,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+    let idsToDelete: number[] = [];
+    const allIndicatorIds = Array.from(
+      new Set(rates.map((r) => r.indicatorId)),
+    );
+    allIndicatorIds.forEach((indicatorId) => {
+      const foundRates = rates.filter(
+        (rate) => rate.indicatorId === indicatorId,
+      );
+      if (foundRates.length === 1) return;
+      idsToDelete.push(...foundRates.slice(1).map((r) => r.id));
+    });
+    if (idsToDelete.length > 0) {
+      await this.prismaService.userRates.deleteMany({
+        where: {
+          id: {
+            in: idsToDelete,
+          },
+        },
+      });
+    }
+  }
+
+  async getEvaluators(
+    sessionInfo: GetSessionInfoDto,
+    filters: EvaluatorsFiltersDto,
+  ) {
+    const getUserFilter = async () => {
+      if (sessionInfo.role === 'admin') {
+        if (filters.user) {
+          return { id: filters.user };
+        }
+        return {};
+      }
+      const allowedSubordinates =
+        await this.usersService.findAllowedSubbordinates(sessionInfo.id);
+      if (filters.user) {
+        if (!allowedSubordinates.includes(filters.user)) {
+          throw new ForbiddenException('You do not have access to this user');
+        }
+        return { id: filters.user };
+      }
+      return { id: { in: allowedSubordinates } };
+    };
+    const teamAccess = await this.usersService.findAllowedTeams(sessionInfo);
+
+    const teamFilter = {
+      product: filters.product,
+      department: filters.department,
+      direction: filters.direction,
+      group: filters.group,
+    };
+    const isTeamFilter = Object.values(teamFilter).filter(Boolean).length > 0;
+
+    let teamId = null;
+    if (isTeamFilter) {
+      const ids = [
+        teamFilter.group,
+        teamFilter.direction,
+        teamFilter.department,
+        teamFilter.product,
+      ].filter(Boolean) as number[];
+      if (ids.some((id) => !teamAccess.includes(id)))
+        return { total: 0, data: [] };
+      teamId = ids[0];
+    }
+
+    const where: Prisma.UserWhereInput = {
+      ...(await getUserFilter()),
+      ratesToEvaluate: {
+        some: {
+          rate360: {
+            archived: false,
+          },
+        },
+      },
+      ...(teamId
+        ? {
+            OR: [
+              { teams: { some: { teamId: teamId } } },
+              { teamCurator: { some: { id: teamId } } },
+            ],
+          }
+        : {}),
+    };
+
+    const [users, total] = await Promise.all([
+      this.prismaService.user.findMany({
+        take: filters.limit,
+        skip: (filters.page - 1) * filters.limit,
+        orderBy: {
+          id: 'desc',
+        },
+        where,
+        select: {
+          avatar: true,
+          id: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+          ratesToEvaluate: {
+            where: {
+              rate360: {
+                archived: false,
+              },
+            },
+            select: {
+              type: true,
+              rate360: {
+                select: {
+                  type: true,
+                  id: true,
+                  userId: true,
+                  finished: true,
+                  user: {
+                    select: {
+                      username: true,
+                      id: true,
+                    },
+                  },
+                  team: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  spec: true,
+                  userRates: {
+                    select: {
+                      rate: true,
+                      approved: true,
+                      userId: true,
+                    },
+                  },
+                  competencyBlocks: {
+                    select: {
+                      id: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+      this.prismaService.user.count({
+        where,
+      }),
+    ]);
+
+    const ids = Array.from(
+      new Set(
+        users.flatMap((user) =>
+          user.ratesToEvaluate.flatMap((rate) =>
+            rate.rate360.competencyBlocks.map((block) => block.id),
+          ),
+        ),
+      ),
+    );
+    const blocks = await this.prismaService.competencyBlock.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      select: {
+        id: true,
+        competencies: {
+          select: {
+            id: true,
+            indicators: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      total,
+      users: users.map((user) => ({
+        ...user,
+        ratesToEvaluate: user.ratesToEvaluate.map((rate) => ({
+          ...rate,
+          rate360: {
+            ...rate.rate360,
+            userRates: rate.rate360.userRates.filter(
+              (r) => r.userId === user.id,
+            ),
+            competencyBlocks: rate.rate360.competencyBlocks.map((block) => ({
+              ...block,
+              competencies: blocks.find((b) => b.id === block.id)?.competencies,
+            })),
+          },
+        })),
+      })),
+    };
+  }
+
+  async remindEvaluator(rateId: number, userId: number) {
+    const rate = await this.prismaService.rate360.findFirst({
+      where: {
+        id: rateId,
+        archived: false,
+        finished: false,
+      },
+      include: {
+        evaluators: {
+          where: {
+            userId,
+          },
+        },
+        competencyBlocks: {
+          select: {
+            competencies: {
+              select: {
+                indicators: true,
+              },
+            },
+          },
+        },
+        userRates: {
+          where: {
+            userId,
+            approved: true,
+          },
+        },
+      },
+    });
+    if (!rate) {
+      throw new NotFoundException('Оценка не найдена');
+    }
+    if (rate.evaluators.length === 0) {
+      throw new NotFoundException(
+        'Пользователь не является оценщиком для этой оценки',
+      );
+    }
+
+    const indicators = rate.competencyBlocks.flatMap((block) =>
+      block.competencies.flatMap((competency) => competency.indicators),
+    );
+    if (indicators.length <= rate.userRates.length) {
+      throw new ForbiddenException('Пользователь уже оценил все индикаторы');
+    }
+
+    await this.notificationsService.sendRateAssignedReminder(userId, rateId);
+    return HttpStatus.OK;
   }
 }

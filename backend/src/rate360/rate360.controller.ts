@@ -31,6 +31,7 @@ import { MultipleRateIdDto } from './dto/multiple-rate-id.dto';
 import { ExportService } from 'src/export/export.service';
 import { Response } from 'express';
 import { Indicator } from '@prisma/client';
+import { EvaluatorsFiltersDto } from './dto/evaluators-filters.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -284,6 +285,15 @@ export class Rate360Controller {
     return await this.rate360Service.notifyRates(data.ids);
   }
 
+  @Post('/:rateId/remind-evaluator/:userId')
+  @UseGuards(AuthGuard)
+  async remindEvaluator(
+    @Param('rateId', { transform: (v) => parseInt(v) }) rateId: number,
+    @Param('userId', { transform: (v) => parseInt(v) }) userId: number,
+  ) {
+    return await this.rate360Service.remindEvaluator(rateId, userId);
+  }
+
   @Delete('/:id/evaluator')
   @UseGuards(AdminGuard)
   async deleteEvaluators(
@@ -345,5 +355,14 @@ export class Rate360Controller {
         return a.progress - b.progress;
       });
     this.exportService.exportRates(res, ratesWithProgress);
+  }
+
+  @Get('/evaluators')
+  @UseGuards(AuthGuard)
+  async getEvaluators(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: EvaluatorsFiltersDto,
+  ) {
+    return await this.rate360Service.getEvaluators(sessionInfo, params);
   }
 }

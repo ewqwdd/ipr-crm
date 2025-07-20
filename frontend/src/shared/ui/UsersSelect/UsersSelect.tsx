@@ -1,8 +1,7 @@
-import { User } from '@/entities/user';
 import { SearchSelect } from '../SearchSelect';
 
 interface UserMultiSelectProps {
-  users: User[];
+  users: { id: number; username: string }[];
   value?: number;
   loading?: boolean;
   disabledUsers?: number[];

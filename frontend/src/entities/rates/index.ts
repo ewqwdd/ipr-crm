@@ -1,4 +1,4 @@
-import type { Rate, AddRateDto } from './types/types';
+import type { Rate, AddRateDto, RateEvaluatorResponse } from './types/types';
 import { ratesReducer, ratesActions } from './model/rateSlice';
 import AddEvaluatorModal from './ui/AddEvaluatorModal/AddEvaluatorModal';
 import RateStatsModal from './ui/RateStatsModal/RateStatsModal';
@@ -12,7 +12,7 @@ import { transformRateFilters } from './model/transformRateFilters';
 import RateSettings from './ui/RateSettings/RateSettings';
 import { useSaveFilters } from './hooks/useSaveFilters';
 
-export type { Rate, AddRateDto };
+export type { Rate, AddRateDto, RateEvaluatorResponse };
 
 export {
   ratesReducer,

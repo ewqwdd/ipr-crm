@@ -37,6 +37,7 @@ import {
 import AddSpecFolderModal from '../folders/ui/AddSpecFolderModal';
 import { ComptenciesEditModal } from '@/widgets/ComptenciesEditModal';
 import { UserDeputyModal } from '@/features/user/UserDeputyModal';
+import EvaluatorStatistic from '@/widgets/EvaluatorStatisticModal/EvaluatorStatisticModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -122,6 +123,8 @@ const ModalWrapper: FC = () => {
       return <ComptenciesEditModal {...updatedModalProps} />;
     case 'SET_DEPUTY':
       return <UserDeputyModal {...updatedModalProps} />;
+    case 'EVALUATOR_STATISTIC':
+      return <EvaluatorStatistic {...updatedModalProps} />;
     default:
       break;
   }

@@ -1,6 +1,5 @@
-import { User } from '@/entities/user';
+import { User, UsersFilter } from '@/entities/user';
 import { Option } from '@/shared/types/Option';
-import { Filters } from './constants';
 
 export const getTeamOptions = (users: User[]): Option[] => {
   const seen = new Set<number>();
@@ -39,37 +38,38 @@ export const getAllFilterOptions = (users: User[]) => ({
   specsOptions: getSpecOptions(users),
 });
 
-export const filterByTeam = (user: User, teams: Filters['teams']) => {
-  if (teams.length === 0) return true;
+export const filterByTeam = (user: User, teams: UsersFilter['teams']) => {
+  const isTeamFilters = Object.values(teams).some((team) => !!team);
+  if (!isTeamFilters) return true;
 
-  return teams.some((filterTeam) =>
-    user.teams?.some((userTeam) => userTeam.teamId === filterTeam.value),
-  );
+  const ids = [
+    teams.group,
+    teams.direction,
+    teams.department,
+    teams.product,
+  ].filter(Boolean);
+
+  return !!user.teams?.some((userTeam) => userTeam.teamId === ids[0]);
 };
 
-export const filterByUserId = (user: User, userId: Filters['userId']) => {
-  return userId === 'ALL' || user.id === Number(userId);
+export const filterByUserId = (user: User, userId: UsersFilter['user']) => {
+  return !userId || user.id === Number(userId);
 };
 
-export const filterBySpec = (user: User, specs: Filters['specs']) => {
-  if (specs.length === 0) return true;
-  return specs.some((spec) =>
-    user.specsOnTeams?.find((s) => s.spec.id === spec.value),
-  );
-};
-
-export const filterByAccess = (user: User, access: Filters['access']) => {
+export const filterByAccess = (user: User, access: UsersFilter['access']) => {
   if (access === 'ALL') return true;
   if (access === 'ACTIVE') return !!user.access;
   if (access === 'INACTIVE') return !user.access;
   return true;
 };
 
-export const applyUsersFilters = (user: User, filters: Filters): boolean => {
+export const applyUsersFilters = (
+  user: User,
+  filters: UsersFilter,
+): boolean => {
   return (
     filterByTeam(user, filters.teams) &&
-    filterByUserId(user, filters.userId) &&
-    filterBySpec(user, filters.specs) &&
+    filterByUserId(user, filters.user) &&
     filterByAccess(user, filters.access)
   );
 };

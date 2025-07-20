@@ -1,6 +1,5 @@
 import { FC, useCallback, useMemo } from 'react';
 import RatesFilters from './RatesFilters';
-import { initialFilters } from './constatnts';
 import { Option } from '@/shared/types/Option';
 import { DateObject } from 'react-multi-date-picker';
 import { Filters, FiltersSkillType } from './types';
@@ -13,6 +12,7 @@ interface RatesFiltersWrapperProps {
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
   type: 'ALL' | 'TEAM';
   exclude?: (keyof Filters)[];
+  initialFilters: Filters;
 }
 
 const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
@@ -20,6 +20,7 @@ const RatesFiltersWrapper: FC<RatesFiltersWrapperProps> = ({
   setFilters,
   type,
   exclude,
+  initialFilters,
 }) => {
   const updateFilters = useCallback((newFilters: Partial<Filters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));

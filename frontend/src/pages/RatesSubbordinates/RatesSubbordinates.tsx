@@ -68,6 +68,7 @@ export default function RatesSubbordinates() {
             type={'TEAM'}
             filters={filters}
             setFilters={setFilters}
+            initialFilters={initialRateFilters}
           />
           <SelectAll
             data={data?.data ?? []}

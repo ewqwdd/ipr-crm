@@ -83,3 +83,49 @@ export type ChangeSpecsType = {
   specId: number;
   userId: number;
 };
+
+export interface RateEvaluatorResponse {
+  avatar: string | null;
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  ratesToEvaluate: {
+    type: EvaulatorType;
+    rate360: {
+      type: 'SOFT';
+      id: number;
+      userId: number;
+      finished: boolean;
+      team: {
+        id: number;
+        name: string;
+      };
+      user: {
+        id: number;
+        username: string;
+      };
+      spec: {
+        id: number;
+        name: string;
+        active: boolean;
+        description: string | null;
+        archived: boolean;
+      };
+      userRates: {
+        rate: number;
+        approved: boolean;
+        userId: number;
+      }[];
+      competencyBlocks: {
+        id: number;
+        competencies: {
+          id: number;
+          indicators: {
+            id: number;
+          }[];
+        }[];
+      }[];
+    };
+  }[];
+}

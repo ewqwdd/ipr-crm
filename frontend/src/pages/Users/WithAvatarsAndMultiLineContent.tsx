@@ -1,33 +1,29 @@
 import { usersApi } from '@/shared/api/usersApi/usersApi';
 import TableRow from './TableRow';
 import { cva } from '@/shared/lib/cva';
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Pagination } from '@/shared/ui/Pagination';
 import UsersFilters, { applyUsersFilters } from './usersFilters';
-import { User } from '@/entities/user';
-import { Filters, initialFilters } from './usersFilters/constants';
+import { initialUserFilters, User, UsersFilter } from '@/entities/user';
+import { useSearchState } from '@/shared/hooks/useSearchState';
 
 const LIMIT = 8;
 
 export default function WithAvatarsAndMultiLineContent() {
-  const [page, setPage] = useState<number>(1);
   const { data, isLoading } = usersApi.useGetUsersQuery();
   const [filteredData, setFilteredData] = useState<User[]>([]);
 
-  const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [filters, setFilters, inited] =
+    useSearchState<UsersFilter>(initialUserFilters);
+  const prevFilters = useRef<UsersFilter>();
 
-  const updateFilters = useCallback((key: keyof Filters, value: unknown) => {
-    setFilters((prevFilters: Filters) => ({
-      ...prevFilters,
-      [key]: value,
+  const page = filters.page;
+  const setPage = (page: number) => {
+    setFilters((prev) => ({
+      ...prev,
+      page,
     }));
-  }, []);
+  };
 
   useLayoutEffect(() => {
     setFilteredData(data?.users || []);
@@ -48,10 +44,18 @@ export default function WithAvatarsAndMultiLineContent() {
   const paginateddata = filteredData.slice((page - 1) * LIMIT, page * LIMIT);
 
   useEffect(() => {
-    if (paginateddata.length === 0 && page > 1) {
-      setPage((prevPage) => prevPage - 1);
+    if (
+      inited &&
+      filters.page !== 1 &&
+      prevFilters.current &&
+      prevFilters.current.page === filters.page
+    ) {
+      setPage(1);
     }
-  }, [filteredData, page, paginateddata.length]);
+    return () => {
+      prevFilters.current = filters;
+    };
+  }, [filters]);
 
   const activeUsers = useMemo(() => {
     return data?.users.filter((user) => user.access) || [];
@@ -69,7 +73,7 @@ export default function WithAvatarsAndMultiLineContent() {
       <UsersFilters
         data={data?.users}
         filters={filters}
-        updateFilters={updateFilters}
+        setFilters={setFilters}
       />
       <div
         className={cva(

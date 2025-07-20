@@ -117,6 +117,7 @@ export default function Rates360TablePage({ type }: Rates360TablePageProps) {
             type={type}
             filters={filters}
             setFilters={setFilters}
+            initialFilters={initialRateFilters}
           />
           <SelectAll
             data={data?.data ?? []}

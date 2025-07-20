@@ -47,7 +47,7 @@ export interface User {
 }
 
 export interface UserStoreSchema {
-  user: (User & { teamAccess: number[] }) | null;
+  user: (User & { teamAccess: number[]; userAccess: number[] }) | null;
   isMounted: boolean;
   isAdmin: boolean;
 }
@@ -65,4 +65,16 @@ export interface UserFormData {
   specId?: number;
   avatar?: File;
   teams?: MultiValue<{ value: number; label: string }>;
+}
+
+export interface UsersFilter {
+  user?: number;
+  teams: {
+    product?: number;
+    department?: number;
+    direction?: number;
+    group?: number;
+  };
+  access: 'ALL' | 'ACTIVE' | 'INACTIVE';
+  page: number;
 }

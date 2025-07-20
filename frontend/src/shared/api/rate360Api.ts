@@ -1,5 +1,8 @@
 import { AddRateDto, Rate } from '@/entities/rates';
-import { EvaluateUser } from '@/entities/rates/types/types';
+import {
+  EvaluateUser,
+  RateEvaluatorResponse,
+} from '@/entities/rates/types/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 interface ConfirmDto {
@@ -34,6 +37,16 @@ export interface RateFiltersDto {
   curatorId?: number;
 }
 
+export interface EvaluatorsFiltersDto {
+  page?: number;
+  limit?: number;
+  user?: number;
+  product?: number;
+  department?: number;
+  direction?: number;
+  group?: number;
+}
+
 const rate360Api = createApi({
   reducerPath: 'rate360Api',
   baseQuery: fetchBaseQuery({
@@ -49,6 +62,7 @@ const rate360Api = createApi({
     'ConfirmRateUser',
     'UserRates',
     'RateReport',
+    'RateEvaluators',
   ],
   endpoints: (build) => ({
     getRates: build.query<{ data: Rate[]; total: number }, RateFiltersDto>({
@@ -276,6 +290,16 @@ const rate360Api = createApi({
         body: { ids },
       }),
       invalidatesTags: ['Rate360', 'Rate360Subbordinates'],
+    }),
+    getEvaluators: build.query<
+      { users: RateEvaluatorResponse[]; total: number },
+      EvaluatorsFiltersDto
+    >({
+      query: (filters) => ({
+        url: '/rate360/evaluators',
+        params: filters,
+      }),
+      providesTags: ['RateEvaluators'],
     }),
   }),
 });

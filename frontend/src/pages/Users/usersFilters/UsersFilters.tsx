@@ -1,47 +1,33 @@
-import { User } from '@/entities/user';
-import { Option } from '@/shared/types/Option';
+import { initialUserFilters, User, UsersFilter } from '@/entities/user';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import { ChangeEvent, FC, memo, useCallback, useMemo, useState } from 'react';
-import { MultiValue } from 'react-select';
-import { getAllFilterOptions } from './helpers';
-import SpecSelector from './SpecSelector';
-import { Filters, initialFilters } from './constants';
+import React, { ChangeEvent, FC, memo, useCallback, useState } from 'react';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
 import AccessSelect from './AccessSelect';
-import { TeamSelector } from '@/widgets/TeamSelector';
+import TeamsHierarchyFilter from '@/widgets/TeamsHierarchyFilter';
 
 interface UsersFiltersProps {
   data?: User[];
-  filters: Filters;
-  updateFilters: (key: keyof Filters, value: unknown) => void;
+  filters: UsersFilter;
+  setFilters: React.Dispatch<React.SetStateAction<UsersFilter>>;
 }
 
-const UsersFilters: FC<UsersFiltersProps> = ({
-  data,
-  filters,
-  updateFilters,
-}) => {
+const UsersFilters: FC<UsersFiltersProps> = ({ data, filters, setFilters }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { teamsOptions, specsOptions } = useMemo(() => {
-    if (!data) return { teamsOptions: [], specsOptions: [] };
-    return getAllFilterOptions(data);
-  }, [data]);
-
-  const onChangeTeams = useCallback(
-    (value: MultiValue<Option>) => updateFilters('teams', value),
-    [updateFilters],
+  const updateFilters = useCallback(
+    (key: keyof UsersFilter, value: unknown) => {
+      setFilters((prevFilters: UsersFilter) => ({
+        ...prevFilters,
+        [key]: value,
+      }));
+    },
+    [setFilters],
   );
 
   const onChangeUser = useCallback(
     (value?: number) => {
-      updateFilters('userId', value ?? 'ALL');
+      updateFilters('user', value);
     },
-    [updateFilters],
-  );
-
-  const onChangeSpecs = useCallback(
-    (value: MultiValue<Option>) => updateFilters('specs', value),
     [updateFilters],
   );
 
@@ -53,17 +39,18 @@ const UsersFilters: FC<UsersFiltersProps> = ({
   );
 
   const resetFilters = () => {
-    updateFilters('teams', initialFilters.teams);
-    updateFilters('userId', initialFilters.userId);
-    updateFilters('specs', initialFilters.specs);
-    updateFilters('access', initialFilters.access);
+    updateFilters('teams', initialUserFilters.teams);
+    updateFilters('user', undefined);
+    updateFilters('access', initialUserFilters.access);
   };
 
   const changedFiltersCount = [
-    filters.teams.length !== initialFilters.teams.length,
-    filters.userId !== initialFilters.userId,
-    filters.specs.length !== initialFilters.specs.length,
-    filters.access !== initialFilters.access,
+    filters.teams.product,
+    filters.teams.department,
+    filters.teams.direction,
+    filters.teams.group,
+    filters.user,
+    filters.access !== initialUserFilters.access,
   ].filter(Boolean).length;
 
   return (
@@ -86,30 +73,24 @@ const UsersFilters: FC<UsersFiltersProps> = ({
       </div>
 
       {isOpen && (
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 min-[1300px]:grid-cols-3">
-          <TeamSelector
-            options={teamsOptions}
-            value={filters.teams}
-            onChange={onChangeTeams}
-          />
-          <div>
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 min-[1300px]:grid-cols-4">
+          <div className="min-[1300px]:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Поиск
             </label>
             <UsersSelect
               setValue={onChangeUser}
               users={data ?? []}
-              value={filters.userId === 'ALL' ? undefined : filters.userId}
+              value={filters.user}
             />
           </div>
-          <SpecSelector
-            options={specsOptions}
-            value={filters.specs}
-            onChange={onChangeSpecs}
-          />
           <AccessSelect
             access={filters.access}
             onChangeAccess={onChangeAccess}
+          />
+          <TeamsHierarchyFilter
+            filters={filters.teams}
+            onChange={(value) => updateFilters('teams', value)}
           />
         </div>
       )}

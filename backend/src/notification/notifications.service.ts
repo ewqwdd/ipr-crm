@@ -442,4 +442,33 @@ export class NotificationsService {
     }
     console.log(`sendSurveyAssignedCron ended. ${count} notifications sent`);
   }
+
+  async sendRateAssignedReminder(userId: number, rateId: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    const message = 'Напоминанем о назначеной оценке';
+    const link = `${process.env.FRONTEND_URL}/progress?tab=by-others`;
+
+    const html = this.generateButtonText(user, message, link, 'Перейти');
+
+    await this.mailService.sendMail(
+      user.email,
+      'Напоминание об оценке в AYA SKILLS',
+      html,
+    );
+
+    await this.prismaService.notification.create({
+      data: {
+        title: 'Напоминание об оценке',
+        userId: userId,
+        type: 'RATE_ASSIGNED',
+        rateId: rateId,
+        url: '/progress',
+      },
+    });
+  }
 }
