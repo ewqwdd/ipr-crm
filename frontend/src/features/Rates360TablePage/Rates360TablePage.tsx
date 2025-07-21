@@ -107,7 +107,7 @@ export default function Rates360TablePage({ type }: Rates360TablePageProps) {
                 Добавить
               </PrimaryButton>
               <SoftButton onClick={handleExport} className="ml-2 self-start">
-                Експортировать
+                Экспортировать
               </SoftButton>
             </>
           )}

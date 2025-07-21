@@ -31,5 +31,5 @@ export default memo(function ExportConfirmations({
     window.open(url);
   };
 
-  return <SoftButton onClick={handleExport}>Експорт</SoftButton>;
+  return <SoftButton onClick={handleExport}>Экспортировать </SoftButton>;
 });

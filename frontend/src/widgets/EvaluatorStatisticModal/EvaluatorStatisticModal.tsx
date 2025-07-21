@@ -91,7 +91,7 @@ export default function EvaluatorStatistic({
             enabledTeams={teamOptions}
           />
         )}
-        <SoftButton onClick={handleExport}>Експорт в Excel</SoftButton>
+        <SoftButton onClick={handleExport}>Экспорт в Excel</SoftButton>
         {filteredUserRates.map((rate) => (
           <EvaluatorRateItem
             userId={data.id}

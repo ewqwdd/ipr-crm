@@ -7,7 +7,7 @@ export const rate360StatistcTabs: { name: string; key: TabKeys }[] = [
   },
   {
     key: 'evaluators_progress',
-    name: 'Прогресс оцениваниющих',
+    name: 'Прогресс оценивающих',
   },
 ];
 
