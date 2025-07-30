@@ -43,13 +43,11 @@ export interface Ipr {
   goal: string;
   result: string | null;
   specId: number | null;
-  mentorId: number | null;
   rate360Id: number;
   archived: boolean;
   version: string;
   skillType: 'HARD' | 'SOFT';
   tasks: Task[];
-  mentor: User | null;
   user: User;
   rate360: Rate;
   team: { name: string };

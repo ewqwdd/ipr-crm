@@ -16,6 +16,7 @@ import { UsersAccessService } from './users-access.service';
 import { MailService } from 'src/mail/mail.service';
 import { Prisma } from '@prisma/client';
 import { FilesService } from 'src/files/files.service';
+import { UpdateSelfUserDto } from './dto/update-self-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -254,6 +255,15 @@ export class UsersService {
       where: { id },
       data: updates,
       include: this.defaultInclude,
+    });
+  }
+
+  async updateSelf(id: number, updateUserDto: UpdateSelfUserDto) {
+    await this.usersAccessService.removeRedisTeamsCache(id);
+
+    return await this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
     });
   }
 

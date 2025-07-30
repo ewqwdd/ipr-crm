@@ -643,6 +643,13 @@ export class Rate360Service {
             id: true,
           },
         },
+        team: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+        comments: true,
         competencyBlocks: {
           include: {
             competencies: {
@@ -701,6 +708,13 @@ export class Rate360Service {
             },
           },
         },
+        team: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+        comments: true,
         evaluators: {
           where: {
             userId,
@@ -1578,11 +1592,9 @@ export class Rate360Service {
         where,
         include: {
           spec: true,
+          comments: true,
           userRates: {
-            where: {
-              approved: true,
-            },
-            select: {
+            include: {
               user: {
                 select: {
                   username: true,
@@ -1591,7 +1603,17 @@ export class Rate360Service {
               },
             },
           },
-          team: true,
+          team: {
+            select: {
+              name: true,
+              curatorId: true,
+              parentTeam: {
+                select: {
+                  curatorId: true,
+                },
+              },
+            },
+          },
           competencyBlocks: {
             include: {
               competencies: {
@@ -1603,7 +1625,20 @@ export class Rate360Service {
           },
           evaluators: {
             select: {
+              type: true,
+              userId: true,
+              user: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
+          user: {
+            select: {
+              username: true,
               id: true,
+              avatar: true,
             },
           },
         },

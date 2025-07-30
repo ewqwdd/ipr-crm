@@ -25,6 +25,7 @@ import { InviteUserDTO } from './dto/invite-user.dto';
 import { InviteAcceptDTO } from './dto/invite-accept.dto';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 import { FilesService } from 'src/files/files.service';
+import { UpdateSelfUserDto } from './dto/update-self-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -74,7 +75,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('avatar'))
   async updateMe(
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateSelfUserDto,
     @UploadedFile() file: Express.Multer.File,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
@@ -85,7 +86,7 @@ export class UsersController {
       );
     }
     const id = sessionInfo.id;
-    await this.usersService.update(id, updateUserDto);
+    await this.usersService.updateSelf(id, updateUserDto);
     const user = await this.usersService.findOne(id);
     return user;
   }

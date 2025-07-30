@@ -39,9 +39,6 @@ model User {
   answeredQuestions UserAnsweredQuestion[]
 
   // Self-relation fields
-  mentees     User[] @relation("MentorMentees")
-  mentor      User?  @relation("MentorMentees", fields: [mentorId], references: [id])
-  mentorId    Int?
   deputyRelationsAsUser    UserDeputy[] @relation("UserDeputyUser")
   deputyRelationsAsDeputy  UserDeputy[] @relation("UserDeputyDeputy")
 
@@ -420,6 +417,7 @@ model IndividualGrowthPlan {
   notifications Notification[]
 }
 
+// пока не использован нигде
 model GrowthPlanLog {
   id          Int        @id @default(autoincrement())
   planId      Int

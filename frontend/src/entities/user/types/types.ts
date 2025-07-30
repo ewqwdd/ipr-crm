@@ -33,7 +33,6 @@ export interface User {
   lastName: string;
   phone?: string;
   teams?: { teamId: number; team: { name: string } }[];
-  mentorId?: number;
   teamCurator?: { id: number; name: string }[];
   notifications: Notification[];
   access?: boolean;

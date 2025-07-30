@@ -92,7 +92,6 @@ export default function UserProfile({ data }: UserProfileProps) {
                     value={data?.Spec?.name}
                   />
                   <UserDataItem label="Email адрес" value={data?.email} />
-                  <UserDataItem label="Руководитель" value={data?.mentorId} />
                   <UserDataItem label="Телефон" value={data?.phone} />
                   <UserDataItem
                     label="Команды"
