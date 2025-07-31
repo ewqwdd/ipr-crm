@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { IprService } from './ipr.service';
@@ -24,10 +25,17 @@ import { RemoveFromBoardDto } from './dto/remove-from-board.dto';
 import { IprFiltersDto } from './dto/ipr-filters.dto';
 import { DeleteIprsDto } from './dto/delete-iprs.dto';
 import { SetDeputyDto } from './dto/set-deputy.dto';
+import { ExportService } from 'src/export/export.service';
+import { Response } from 'express';
+import { FindAllIprType } from './ipr.types';
+import { Prisma } from '@prisma/client';
 
 @Controller('ipr')
 export class IprController {
-  constructor(private readonly iprService: IprService) {}
+  constructor(
+    private readonly iprService: IprService,
+    private readonly exportService: ExportService,
+  ) {}
 
   @Get('/360/:id')
   @UseGuards(AuthGuard)
@@ -42,6 +50,36 @@ export class IprController {
   @UseGuards(AdminGuard)
   async deleteIpr(@Body() data: DeleteIprsDto) {
     return this.iprService.deleteIprs(data);
+  }
+
+  @Get('/')
+  @UseGuards(AuthGuard)
+  async findAll(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: IprFiltersDto,
+  ) {
+    if (params.subbordinatesOnly) {
+      return await this.iprService.findAllSubbordinates(sessionInfo, params);
+    }
+    return this.iprService.findAll(sessionInfo, params);
+  }
+
+  @Get('/export')
+  @UseGuards(AuthGuard)
+  async export(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() params: IprFiltersDto,
+    @Res() res: Response,
+  ) {
+    if (params.subbordinatesOnly) {
+      const plans = await this.iprService.findAllSubbordinates(
+        sessionInfo,
+        params,
+      );
+      this.exportService.exportIprs(res, plans.data);
+    }
+    const plans = await this.iprService.findAll(sessionInfo, params);
+    this.exportService.exportIprs(res, plans.data);
   }
 
   @Post('/360/:rateId')
@@ -175,18 +213,6 @@ export class IprController {
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
     return this.iprService.addTask(data, sessionInfo);
-  }
-
-  @Get('/')
-  @UseGuards(AuthGuard)
-  async findAll(
-    @SessionInfo() sessionInfo: GetSessionInfoDto,
-    @Query() params: IprFiltersDto,
-  ) {
-    if (params.subbordinatesOnly) {
-      return await this.iprService.findAllSubbordinates(sessionInfo, params);
-    }
-    return this.iprService.findAll(sessionInfo, params);
   }
 
   @Get('/user/:id')

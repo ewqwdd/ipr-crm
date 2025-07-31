@@ -8,12 +8,9 @@ import RatesFiltersWrapper, {
   initialRateFilters,
   RateFilters,
 } from '@/features/rate/RatesFilters';
-import {
-  RateSettings,
-  RatesTable,
-  transformRateFilters,
-} from '@/entities/rates';
+import { RateSettings, RatesTable } from '@/entities/rates';
 import { useSearchState } from '@/shared/hooks/useSearchState';
+import { filterService } from '@/shared/lib/filterService';
 
 const LIMIT = 10;
 
@@ -24,7 +21,7 @@ export default function RatesSubbordinates() {
 
   const { data, isLoading, isFetching } =
     rate360Api.useGetSubbordinatesRatesQuery(
-      transformRateFilters(filters, '', LIMIT, filters.page),
+      filterService.rateFiltersTransform(filters, '', LIMIT, filters.page),
     );
 
   const setPage = (page: number) => {

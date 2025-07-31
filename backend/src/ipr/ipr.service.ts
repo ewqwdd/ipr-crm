@@ -18,7 +18,7 @@ import { PrismaService } from 'src/utils/db/prisma.service';
 import { AddTaskDto } from './dto/add-task.dto';
 import { IprFiltersDto } from './dto/ipr-filters.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
-import { findAllIprInclude } from './constants';
+import { findAllIprInclude, FindAllIprType } from './ipr.types';
 import { DeleteIprsDto } from './dto/delete-iprs.dto';
 import { NotificationsService } from 'src/notification/notifications.service';
 import { SetDeputyDto } from './dto/set-deputy.dto';
@@ -67,6 +67,15 @@ export class IprService {
             in: await this.usersAccessService.findAllowedSubbordinates(
               sessionInfo.id,
             ),
+          },
+        },
+        {
+          user: {
+            deputyRelationsAsDeputy: {
+              some: {
+                userId: sessionInfo.id,
+              },
+            },
           },
         },
       ],
@@ -561,9 +570,10 @@ export class IprService {
         ? {
             user: {
               deputyRelationsAsDeputy: {
-                some: {
-                  userId: sessionInfo.id,
-                },
+                some:
+                  sessionInfo.role === 'admin'
+                    ? {} // для админа - любые связи (все deputy)
+                    : { userId: sessionInfo.id }, // для обычного пользователя - только его связи
               },
             },
           }
@@ -621,7 +631,7 @@ export class IprService {
     ]);
 
     return {
-      data,
+      data: data as unknown as FindAllIprType[],
       total,
     };
   }
@@ -661,7 +671,7 @@ export class IprService {
       ]);
 
       return {
-        data,
+        data: data as unknown as FindAllIprType[],
         total,
       };
     }
@@ -688,7 +698,7 @@ export class IprService {
     ]);
 
     return {
-      data,
+      data: data as unknown as FindAllIprType[],
       total,
     };
   }

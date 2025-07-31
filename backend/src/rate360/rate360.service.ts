@@ -740,7 +740,7 @@ export class Rate360Service {
     const rate = await this.prismaService.rate360.findFirst({
       where: {
         id: rateId,
-        finished: false,
+        // finished: false,
         userConfirmed: true,
         curatorConfirmed: true,
         archived: false,
@@ -1783,6 +1783,17 @@ export class Rate360Service {
           })),
       ],
     });
+
+    if (evaluatorsToAdd.length > 0 && rate.finished) {
+      await this.prismaService.rate360.update({
+        where: {
+          id,
+        },
+        data: {
+          finished: false,
+        },
+      });
+    }
 
     if (rate.curatorConfirmed && rate.userConfirmed) {
       evaluatorsToAdd.forEach(async (id) => {

@@ -9,7 +9,6 @@ import { useAggregatedAverages } from './useAggregatedAverages';
 import WorkSpace from './WorkSpace';
 import AyeChart from './ayeChart';
 import CommentItem from './comments/CommentItem';
-import { teamsApi } from '@/shared/api/teamsApi';
 import { useAppSelector } from '@/app';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Rate } from '@/entities/rates';
@@ -63,11 +62,7 @@ interface Rate360Props {
 const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
   const userRates = rate?.userRates;
 
-  const { data: teams, isFetching: teamsFetching } =
-    teamsApi.useGetTeamsQuery();
-
   const spec = rate?.spec;
-  const curator = teams?.list.find((team) => team.id === rate?.teamId)?.curator;
   const { avatar, firstName, lastName, id: userId } = rate?.user || {};
 
   const indicatorRatings = useCalculateAvgIndicatorRaitings(
@@ -89,7 +84,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
   const onClickExport = () => exportReportPDF(ref.current!, loaderRef.current!);
 
   return (
-    <LoadingOverlay active={isLoading || teamsFetching} fullScereen>
+    <LoadingOverlay active={isLoading} fullScereen>
       <div className="h-full">
         <div className="pt-16 mb-5 flex items-center justify-between px-5">
           <h1 className="text-sm font-bold tracking-tight text-gray-900">
@@ -217,12 +212,6 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                                     {competencyComments?.map((comment) => (
                                       <CommentItem
                                         key={comment.id}
-                                        user={
-                                          rate?.evaluators?.find(
-                                            (user) =>
-                                              user.userId === comment.userId,
-                                          )?.user
-                                        }
                                         comment={comment.comment}
                                       />
                                     ))}
@@ -323,16 +312,10 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                 <h2 className="text-2xl mt-10">Комментарии</h2>
                 <div className="pl-3">
                   {rate?.curatorComment && (
-                    <CommentItem
-                      user={curator}
-                      comment={rate?.curatorComment}
-                    />
+                    <CommentItem comment={rate?.curatorComment} />
                   )}
                   {rate?.userComment && (
-                    <CommentItem
-                      user={rate?.user}
-                      comment={rate?.userComment}
-                    />
+                    <CommentItem comment={rate?.userComment} />
                   )}
                 </div>
               </>

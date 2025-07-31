@@ -1,4 +1,8 @@
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
+
 export default function ColumnsHeading() {
+  const isAdmin = useIsAdmin();
+
   return (
     <thead className="bg-gray-50">
       <tr>
@@ -7,9 +11,9 @@ export default function ColumnsHeading() {
         </th>
         <th
           scope="col"
-          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 whitespace-nowrap"
         >
-          Имя пользователя
+          {isAdmin ? 'Имя · Заместитель у' : 'Имя пользователя'}
         </th>
         <th
           scope="col"

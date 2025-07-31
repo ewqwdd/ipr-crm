@@ -8,7 +8,6 @@ import { rateDescriptions } from './model/rateDescriptions';
 import ConfirmEvaluatorsModal from './ui/ConfirmEvaluatorsModal/ConfirmEvaluatorsModal';
 import { EditEvaluatorsModal } from './ui/EditEvaluatorsModal';
 import RatesTable from './ui/RatesTable/RatesTable';
-import { transformRateFilters } from './model/transformRateFilters';
 import RateSettings from './ui/RateSettings/RateSettings';
 import { useSaveFilters } from './hooks/useSaveFilters';
 
@@ -25,7 +24,6 @@ export {
   ConfirmEvaluatorsModal,
   EditEvaluatorsModal,
   RatesTable,
-  transformRateFilters,
   RateSettings,
   useSaveFilters,
 };

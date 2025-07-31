@@ -16,7 +16,7 @@ export interface AddTaskDto {
   addToConstructor?: boolean;
 }
 
-interface IprFiltersDto {
+export interface IprFiltersDto {
   page?: number;
   limit?: number;
   skill?: 'HARD' | 'SOFT';

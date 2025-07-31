@@ -14,15 +14,11 @@ import RatesFiltersWrapper, {
 } from '@/features/rate/RatesFilters';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 import { SoftButton } from '@/shared/ui/SoftButton';
-import {
-  ratesActions,
-  RateSettings,
-  RatesTable,
-  transformRateFilters,
-} from '@/entities/rates';
+import { ratesActions, RateSettings, RatesTable } from '@/entities/rates';
 import AddRate from '@/entities/rates/ui/AddRate/AddRate';
 import { Filters } from '../rate/RatesFilters/types';
 import { useSearchState } from '@/shared/hooks/useSearchState';
+import { filterService } from '@/shared/lib/filterService';
 const LIMIT = 10;
 
 interface Rates360TablePageProps {
@@ -61,7 +57,7 @@ export default function Rates360TablePage({ type }: Rates360TablePageProps) {
   }, [filters]);
 
   const { data, isLoading, isFetching } = rate360Api.useGetRatesQuery(
-    transformRateFilters(filters, type, LIMIT, page),
+    filterService.rateFiltersTransform(filters, type, LIMIT, page),
   );
 
   useEffect(() => {
@@ -75,7 +71,7 @@ export default function Rates360TablePage({ type }: Rates360TablePageProps) {
 
   const handleExport = async () => {
     const url = new URL(import.meta.env.VITE_API_URL + '/rate360/export');
-    const params = transformRateFilters(filters, type);
+    const params = filterService.rateFiltersTransform(filters, type);
 
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {

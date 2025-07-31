@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
 
-interface ExcelData<T extends string[]> {
+interface ExcelData<T extends readonly string[]> {
   name: string;
   headers: Record<T[number], string>;
   keys: T;
@@ -11,7 +11,10 @@ interface ExcelData<T extends string[]> {
 
 @Injectable()
 export class ExcelService {
-  async generateExcel<T extends string[]>(res: Response, data: ExcelData<T>) {
+  async generateExcel<T extends readonly string[]>(
+    res: Response,
+    data: ExcelData<T>,
+  ) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(data.name);
 

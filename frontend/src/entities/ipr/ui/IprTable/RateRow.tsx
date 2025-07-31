@@ -74,10 +74,27 @@ export default function RateRow({
         >
           {usersService.displayName(task.user)}
         </Link>
-        {isDeputy && (
+        {!isAdmin && isDeputy && (
           <Badge color="green" size="sm" className="ml-1">
             Ваш заместитель
           </Badge>
+        )}
+        {isAdmin && task.user.deputyRelationsAsDeputy.length > 0 && (
+          <div className="font-medium inline-flex gap-1 items-center ml-1.5">
+            ·
+            {task.user.deputyRelationsAsDeputy.map((deputy, i) => (
+              <Link
+                to={`/users/${deputy.user.id}`}
+                className={cva({
+                  'ml-0.5': i === 0,
+                })}
+              >
+                <Badge key={deputy.user.id} color="green" size="sm">
+                  {usersService.displayName(deputy.user)}
+                </Badge>
+              </Link>
+            ))}
+          </div>
         )}
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">

@@ -12,6 +12,8 @@ import IprFilters from './IprFilters/IprFilters';
 import { IprListPageType } from './config';
 import IprListSettings from './IprListSettings';
 import { useSearchState } from '@/shared/hooks/useSearchState';
+import { filterService } from '@/shared/lib/filterService';
+import { SoftButton } from '@/shared/ui/SoftButton';
 
 const LIMIT = 10;
 
@@ -46,32 +48,44 @@ export default function IprListPage({ type }: IprListPageProps) {
     };
   }, [filters]);
 
-  const { data, isFetching } = iprApi.useFindAllIprQuery({
-    page,
-    limit: LIMIT,
-    skill: filters.skillType === 'ALL' ? undefined : filters.skillType,
-    user: filters.userId === -1 ? undefined : filters.userId,
-    teams:
-      filters.teams.length > 0
-        ? filters.teams.map((team) =>
-            typeof team.value === 'string' ? parseInt(team.value) : team.value,
-          )
-        : undefined,
-    startDate: filters.period?.[0]?.toDate()?.toISOString(),
-    endDate: filters.period?.[1]?.toDate()?.toISOString(),
-    subbordinatesOnly: type === 'TEAM' ? true : undefined,
-    deputyOnly: filters.deputyOnly,
-  });
+  const { data, isFetching } = iprApi.useFindAllIprQuery(
+    filterService.iprFiltersTransform(filters, page, LIMIT, type),
+  );
   const [selected, setSelected] = useState<number[]>([]);
+
+  const handleExport = () => {
+    const url = new URL(import.meta.env.VITE_API_URL + '/ipr/export');
+    const params = filterService.iprFiltersTransform(
+      filters,
+      page,
+      LIMIT,
+      type,
+    );
+    params.limit = undefined;
+    params.page = undefined;
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        url.searchParams.append(key, String(value));
+      }
+    });
+
+    window.open(url);
+  };
 
   return (
     <LoadingOverlay active={isFetching} fullScereen>
       <div className="sm:px-8 py-6 sm:py-10 flex flex-col">
-        <Heading
-          title="Планы развития"
-          description="Список планов развития"
-          className="max-sm:px-4"
-        />
+        <div className="flex justify-between">
+          <Heading
+            title="Планы развития"
+            description="Список планов развития"
+            className="max-sm:px-4"
+          />
+          <SoftButton onClick={handleExport} className="self-start">
+            Экспорт
+          </SoftButton>
+        </div>
         <IprFilters type={type} filters={filters} setFilters={setFilters} />
         {data && (
           <IprTable

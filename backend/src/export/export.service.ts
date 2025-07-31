@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Rate360 } from '@prisma/client';
-import { PrismaService } from 'src/utils/db/prisma.service';
 import { ExcelService } from './excel.service';
 import { Response } from 'express';
+import { ExportIprPayload, ExportRatesPayload } from './export.types';
 
 @Injectable()
 export class ExportService {
@@ -30,13 +30,10 @@ export class ExportService {
     });
   }
 
-  async exportRates(
-    res: Response,
-    rates: (Rate360 & { user: { username: string }; progress: number })[],
-  ) {
-    const keys = ['username', 'progress'];
+  async exportRates(res: Response, rates: ExportRatesPayload) {
+    const keys = ['index', 'username', 'type', 'progress'] as const;
 
-    await this.excelService.generateExcel(res, {
+    await this.excelService.generateExcel<typeof keys>(res, {
       keys,
       headers: {
         index: '',
@@ -50,6 +47,38 @@ export class ExportService {
         username: rate.user.username,
         type: rate.type,
         progress: `${(Math.min(rate.progress, 1) * 100).toFixed()}%`,
+      })),
+    });
+  }
+
+  async exportIprs(res: Response, plans: ExportIprPayload) {
+    const keys = ['index', 'username', 'deputy', 'team', 'progress'] as const;
+
+    await this.excelService.generateExcel(res, {
+      keys,
+      headers: {
+        index: '',
+        username: 'Никнейм',
+        deputy: 'Заместитель у',
+        team: 'Команда',
+        progress: 'Прогресс',
+      },
+      name: 'Планы развития',
+      rows: plans.map((plan, i) => ({
+        index: i + 1,
+        username: plan.user.username,
+        deputy: plan.user.deputyRelationsAsDeputy
+          .map((deputy) => deputy.user.username)
+          .join(', '),
+        team: plan.rate360?.team?.name,
+        progress:
+          (
+            (plan.tasks.filter(
+              (task) => task.status === 'COMPLETED' && !!task.onBoard,
+            ).length /
+              plan.tasks.filter((task) => !!task.onBoard).length) *
+            100
+          ).toFixed(0) + '%',
       })),
     });
   }
