@@ -72,13 +72,15 @@ export class ExportService {
           .join(', '),
         team: plan.rate360?.team?.name,
         progress:
-          (
-            (plan.tasks.filter(
-              (task) => task.status === 'COMPLETED' && !!task.onBoard,
-            ).length /
-              plan.tasks.filter((task) => !!task.onBoard).length) *
-            100
-          ).toFixed(0) + '%',
+          plan.tasks.filter((task) => !!task.onBoard).length > 0
+            ? (
+                (plan.tasks.filter(
+                  (task) => task.status === 'COMPLETED' && !!task.onBoard,
+                ).length /
+                  plan.tasks.filter((task) => !!task.onBoard).length) *
+                100
+              ).toFixed(0) + '%'
+            : '100%',
       })),
     });
   }
