@@ -8,7 +8,6 @@ import { CreateUserDto } from './dto/create-user.fto';
 import { PasswordService } from 'src/utils/password/password';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InviteUserDTO } from './dto/invite-user.dto';
-import { nanoid } from 'nanoid';
 import { Workbook } from 'exceljs';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 import { CreateProductsService } from './create-products.service';
@@ -284,7 +283,7 @@ export class UsersService {
     });
 
     if (withUsername) {
-      username = nanoid(6);
+      username = Date.now().toString();
     }
 
     const authCode = Math.random().toString(36).substring(2, 15);
