@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  # PostgreSQL
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ipr
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  # Backend API (NestJS)
+  backend-api:
+    build:
+      context: ./backend
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ipr
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+
+  # Backend Files (Fastify)
+  backend-files:
+    build:
+      context: ./files
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ipr
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+
+  # Frontend (Main)
+  frontend:
+    build:
+      context: ./client-frontend
+    networks:
+      - app-network
+
+  # Frontend Admin
+  frontend-admin:
+    build:
+      context: ./frontend
+    networks:
+      - app-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - frontend
+      - frontend-admin
+      - backend-api
+      - backend-files
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
