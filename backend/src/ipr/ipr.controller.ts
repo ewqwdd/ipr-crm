@@ -121,6 +121,14 @@ export class IprController {
     @Body() data: SetStatusDto,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
+    if (data.self) {
+      return this.iprService.updateTaskSelf(
+        data.id,
+        { status: data.status },
+        sessionInfo,
+      );
+    }
+
     return this.iprService.updateTask(
       data.id,
       { status: data.status },

@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
   UnauthorizedException,
   UseGuards,
@@ -12,7 +13,7 @@ import {
 import { AuthService } from './auth.service';
 import { CookieService } from 'src/utils/cookie/cookie.service';
 import { SignInDto } from './dto/signin.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthGuard } from '../utils/guards/auth.guard';
 import { SessionInfo } from './decorator/session-info.decorator';
 import { GetSessionInfoDto } from './dto/get-session-info.dto';
@@ -37,6 +38,11 @@ export class AuthController {
       signInDto.password,
     );
     this.cookieService.setToken(res, token);
+
+    if (user.role.name === 'admin' || user.teamCurator.length > 0) {
+      return { redirect: '/admin' };
+    }
+
     return user;
   }
 
@@ -46,6 +52,7 @@ export class AuthController {
   async me(
     @SessionInfo() sessionInfo: GetSessionInfoDto,
     @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
   ) {
     const user = await this.authService.getSesssionInfo(Number(sessionInfo.id));
     if (!user) {
@@ -63,6 +70,13 @@ export class AuthController {
       },
     );
     this.cookieService.setToken(res, token);
+
+    if (
+      !req.originalUrl.includes('/admin') &&
+      (user.role.name === 'admin' || user.teamCurator.length > 0)
+    ) {
+      return { redirect: '/admin' };
+    }
 
     return user;
   }

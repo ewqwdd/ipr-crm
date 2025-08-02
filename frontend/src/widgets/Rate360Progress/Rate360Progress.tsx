@@ -20,7 +20,7 @@ export default function Rate360Progress({
   if (percentInit) return <ProgressBar percent={percentInit} />;
 
   const evaluatorsCount = rate.evaluators.length ?? 0;
-  const ratesCount = rate.userRates.length ?? 0;
+  const ratesCount = rate.userRates.filter((r) => !!r.approved).length ?? 0;
 
   const indicators = rate?.competencyBlocks.flatMap((skill) =>
     skill!.competencies.flatMap((comp) => comp.indicators),

@@ -348,6 +348,36 @@ export class IprService {
     });
   }
 
+  async updateTaskSelf(
+    id: number,
+    data: Partial<GrowthPlanTask>,
+    session: GetSessionInfoDto,
+  ) {
+    const filters = {
+      userId: session.id,
+      tasks: {
+        some: {
+          id: id,
+        },
+      },
+    } as Prisma.IndividualGrowthPlanWhereInput;
+
+    const plan = await this.prismaService.individualGrowthPlan.findFirst({
+      where: filters,
+    });
+
+    if (!plan) {
+      throw new ForbiddenException('You are not allowed to update this task');
+    }
+
+    return this.prismaService.growthPlanTask.update({
+      where: {
+        id: id,
+      },
+      data: data,
+    });
+  }
+
   transferToGeneral(ids: number[], sessionInfo: GetSessionInfoDto) {
     return this.prismaService.growthPlanTask.updateMany({
       where: {
@@ -845,6 +875,12 @@ export class IprService {
           rate360: {
             include: {
               spec: true,
+              team: {
+                select: {
+                  name: true,
+                  id: true,
+                },
+              },
             },
           },
           planCurators: {

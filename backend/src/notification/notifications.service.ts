@@ -55,10 +55,18 @@ export class NotificationsService {
       where: {
         id: userId,
       },
+      include: {
+        teamCurator: true,
+        role: true,
+      },
     });
 
+    const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
+
     const message = `Вам назначен индивидуальный план развития`;
-    const link = `${process.env.FRONTEND_URL}/board`;
+    const link = isAdmin
+      ? `${process.env.FRONTEND_URL}/admin/board`
+      : `${process.env.FRONTEND_URL}/plans`;
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
@@ -92,6 +100,10 @@ export class NotificationsService {
         where: {
           id: userId,
         },
+        include: {
+          teamCurator: true,
+          role: true,
+        },
       }),
       (tx ?? this.prismaService).rate360.findUnique({
         where: {
@@ -103,8 +115,12 @@ export class NotificationsService {
       }),
     ]);
 
+    const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
+
     const message = `Вам назначена оценка ${rate.type}`;
-    const link = `${process.env.FRONTEND_URL}/progress`;
+    const link = isAdmin
+      ? `${process.env.FRONTEND_URL}/admin/progress`
+      : `${process.env.FRONTEND_URL}/assigned`;
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
@@ -131,6 +147,10 @@ export class NotificationsService {
         where: {
           id: userId,
         },
+        include: {
+          teamCurator: true,
+          role: true,
+        },
       }),
       this.prismaService.rate360.findUnique({
         where: {
@@ -142,8 +162,12 @@ export class NotificationsService {
       }),
     ]);
 
+    const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
+
     const message = `Вам назначена оценка ${rate.type}`;
-    const link = `${process.env.FRONTEND_URL}/progress?tab=self-assessment`;
+    const link = isAdmin
+      ? `${process.env.FRONTEND_URL}/admin/progress?tab=self-assessment`
+      : `${process.env.FRONTEND_URL}/assigned`;
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
@@ -177,10 +201,18 @@ export class NotificationsService {
         where: {
           id: userId,
         },
+        include: {
+          teamCurator: true,
+          role: true,
+        },
       });
 
+      const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
+
       const message = 'Вам назначено утверждение оценки';
-      const link = `${process.env.FRONTEND_URL}/progress?tab=confirm-list`;
+      const link = isAdmin
+        ? `${process.env.FRONTEND_URL}/admin/progress?tab=confirm-list`
+        : `${process.env.FRONTEND_URL}/assigned`;
 
       const html = this.generateButtonText(user, message, link, 'Перейти');
 
@@ -212,7 +244,7 @@ export class NotificationsService {
     });
 
     const message = 'Вам назначен тест';
-    const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=tests`;
+    const link = `${process.env.FRONTEND_URL}/admin/assigned-tests?tab=tests`;
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
@@ -239,7 +271,7 @@ export class NotificationsService {
     });
 
     const message = 'Время для теста истекло';
-    const link = `${process.env.FRONTEND_URL}/assigned-tests?tab=finished`;
+    const link = `${process.env.FRONTEND_URL}/admin/assigned-tests?tab=finished`;
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
@@ -340,7 +372,7 @@ export class NotificationsService {
     });
 
     const message = 'Вам назначен опрос';
-    const link = `${process.env.FRONTEND_URL}/assigned-surveys?tab=surveys`;
+    const link = `${process.env.FRONTEND_URL}/admin/assigned-surveys?tab=surveys`;
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
@@ -370,7 +402,7 @@ export class NotificationsService {
     },
   ) {
     const message = 'Новое обращение в поддержку';
-    const link = `${process.env.FRONTEND_URL}/support-admin`;
+    const link = `${process.env.FRONTEND_URL}/admin/support-admin`;
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
@@ -448,10 +480,17 @@ export class NotificationsService {
       where: {
         id: userId,
       },
+      include: {
+        teamCurator: true,
+        role: true,
+      },
     });
+    const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
 
     const message = 'Напоминанем о назначеной оценке';
-    const link = `${process.env.FRONTEND_URL}/progress?tab=by-others`;
+    const link = isAdmin
+      ? `${process.env.FRONTEND_URL}/admin/progress?tab=by-others`
+      : `${process.env.FRONTEND_URL}/assigned`;
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 

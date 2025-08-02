@@ -28,3 +28,13 @@ export const $uploadFile = async (file: File): Promise<string> => {
     throw new Error('Failed to upload file');
   }
 };
+
+$api.interceptors.response.use(
+  (response) => {
+    if (response.data?.redirect && !import.meta.env.DEV) {
+      window.location.replace(response.data.redirect);
+      return Promise.reject(response);
+    }
+    return response;
+  }
+)
