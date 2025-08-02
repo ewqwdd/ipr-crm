@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+@import "tailwindcss";
+
+body {
+  background: white;
+  font-family: "Manrope", sans-serif;
+  color: var(--Primary);
+  letter-spacing: -0.3px;
+}
+
+.layout {
+  max-width: 1240px;
+  margin: 0 auto;
+  min-height: 100dvh;
+}
+
+:root {
+  --Accent: hsl(216, 80%, 56%);
+  --Accent-highlight: hsl(216, 99%, 45%);
+  --Primary: hsla(0, 0%, 20%, 1);
+  --Secondary: hsla(0, 0%, 54%, 1);
+  --Teritary: hsla(0, 0%, 69%, 1);
+  --Foreground-1: hsla(0, 0%, 90%, 1);
+  --Error: hsla(7, 100%, 41%, 1);
+  --Success: hsla(74, 100%, 32%, 1);
+  --Accent-light: hsla(215, 79%, 95%, 1);
+  --Error-light: hsl(5, 79%, 95%);
+
+  --Success-Alt: hsl(75, 81%, 56%);
+  --Error-Alt: hsl(7, 81%, 56%);
+  --Warning-Alt: hsl(45, 93%, 66%);
+}
+
+@theme {
+  --color-accent: var(--Accent);
+  --color-primary: var(--Primary);
+  --color-secondary: var(--Secondary);
+  --color-teritary: var(--Teritary);
+  --color-foreground-1: var(--Foreground-1);
+  --color-error: var(--Error);
+  --color-success: var(--Success);
+  --color-accent-highlight: var(--Accent-highlight);
+  --color-accent-light: var(--Accent-light);
+  --color-waning-alt: var(--Warning-Alt);
+  --color-error-alt: var(--Error-Alt);
+  --color-success-alt: var(--Success-Alt);
+  --color-error-light: var(--Error-light);
+
+  --text-3xl: 32px;
+  --text-3xl--line-height: 100%;
+  --text-3xl--letter-spacing: -0.3px;
+
+  --text-sm--line-height: 24px;
+  --text-sm--letter-spacing: -0.3px;
+
+  --text-lg--line-height: 24px;
+  --text-lg--letter-spacing: -0.3px;
+}
+
+html {
+  width: 100vw;
+  overflow-x: clip;
+}
