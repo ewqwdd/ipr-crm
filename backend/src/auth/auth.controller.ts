@@ -71,8 +71,10 @@ export class AuthController {
     );
     this.cookieService.setToken(res, token);
 
+    const isAdmin = !!req.headers.admin
+
     if (
-      !req.originalUrl.includes('/admin') &&
+      !isAdmin &&
       (user.role.name === 'admin' || user.teamCurator.length > 0)
     ) {
       return { redirect: '/admin' };

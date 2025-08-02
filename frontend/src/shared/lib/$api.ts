@@ -4,6 +4,9 @@ import toast from 'react-hot-toast';
 export const $api = axios.create({
   withCredentials: true,
   baseURL: import.meta.env.VITE_API_URL as string,
+  headers: {
+    admin: 'true'
+  }
 });
 
 export const $fileApi = axios.create({
