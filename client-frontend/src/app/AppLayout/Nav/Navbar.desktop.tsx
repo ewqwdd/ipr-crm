@@ -5,7 +5,7 @@ import { $api } from "@/shared/lib/$api";
 import { useSetAtom } from "jotai";
 import { userAtom } from "@/atoms/userAtom";
 import NotificationDropdown from "@/widgets/NotificationDropdown";
-import Logo from "@/shared/icons/logo.svg";
+import Logo from "@/shared/icons/Logo.svg";
 
 export default function Navbar() {
   const setUser = useSetAtom(userAtom);
