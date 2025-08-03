@@ -8,9 +8,16 @@ import { queryKeys } from "@/shared/types/query-keys";
 import AssignedRate from "@/features/AssignedRate";
 
 export default function AssignedRatesList() {
-  const { data: assigned, isLoading: assignedLoading } = useGetAssignedRates();
-  const { data: assignedSelf, isLoading: assignedSelfLoading } =
-    useGetSelfRates();
+  const {
+    data: assigned,
+    isLoading: assignedLoading,
+    isRefetching: assignedRefetching,
+  } = useGetAssignedRates();
+  const {
+    data: assignedSelf,
+    isLoading: assignedSelfLoading,
+    isRefetching: assignedSelfRefetching,
+  } = useGetSelfRates();
 
   return (
     <AnimationWrapper.Opacity delay={0.05}>
@@ -32,6 +39,7 @@ export default function AssignedRatesList() {
                 queryKey={queryKeys.selfRates}
                 rate={item}
                 key={item.id}
+                loading={assignedRefetching || assignedSelfRefetching}
               />
             ))}
           {assignedSelfLoading &&
@@ -46,7 +54,9 @@ export default function AssignedRatesList() {
         </div>
 
         {(assignedLoading || (assigned && assigned.length > 0)) && (
-          <h2 className="text-accent font-extrabold my-3">Оценить других</h2>
+          <h2 className="text-accent font-extrabold mb-3 mt-5">
+            Оценить других
+          </h2>
         )}
         <div className="grid grid-cols-2 gap-3">
           {assignedLoading &&
@@ -64,6 +74,7 @@ export default function AssignedRatesList() {
                 queryKey={queryKeys.assignedRates}
                 rate={item}
                 key={item.id}
+                loading={assignedRefetching || assignedSelfRefetching}
               />
             ))}
         </div>

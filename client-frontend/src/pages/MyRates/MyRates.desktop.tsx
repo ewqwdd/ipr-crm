@@ -4,7 +4,7 @@ import GridCardsListLayout from "@/features/GridCardsListLayout";
 import MyRateCard from "@/features/MyRateCard";
 
 export default function MyRatesDesktop() {
-  const { data, isPending } = useGetRatesMe();
+  const { data, isPending, isRefetching } = useGetRatesMe();
 
   return (
     <AnimationWrapper.ScaleOpacity>
@@ -14,7 +14,9 @@ export default function MyRatesDesktop() {
         title="Командные отчёты"
         description="Список ваших оценок 360"
       >
-        {data?.data.map((item) => <MyRateCard rate={item} key={item.id} />)}
+        {data?.data.map((item) => (
+          <MyRateCard loading={isRefetching} rate={item} key={item.id} />
+        ))}
       </GridCardsListLayout>
     </AnimationWrapper.ScaleOpacity>
   );

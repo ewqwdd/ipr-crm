@@ -1,11 +1,10 @@
-import { useAppDispatch, useAppSelector } from '@/app';
+import { useAppSelector } from '@/app';
 import { Avatar } from '@/shared/ui/Avatar';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { adminNavigation } from './config/adminNavigation';
 import { userNavigation } from './config/userNavigation';
 import { LogoutIcon } from '@heroicons/react/outline';
 import { $api } from '@/shared/lib/$api';
-import { userActions } from '@/entities/user';
 import { NotificationBell } from '@/entities/notifications';
 import { generalService } from '@/shared/lib/generalService';
 import SidebarItem from './SidebarItem';
@@ -13,17 +12,14 @@ import SidebarGroup from './SidebarGroup';
 
 export default function Content() {
   const user = useAppSelector((state) => state.user.user);
-  const dispatch = useAppDispatch();
   const { pathname } = useLocation();
-  const navigate = useNavigate();
 
   const navigation =
     user?.role.name === 'admin' ? adminNavigation(user) : userNavigation(user);
 
   const logout = () => {
     $api.post('/auth/sign-out').then(() => {
-      navigate('/login');
-      dispatch(userActions.setUser(null));
+      window.location.replace('/login');
     });
   };
 

@@ -61,7 +61,7 @@ const Modal: React.FC<ModalBaseProps> = ({
     >
       <motion.div
         className={cva(
-          "bg-white border border-foreground-1 rounded-[20px] p-6 flex flex-col gap-5 max-w-[25rem] w-full font-extrabold",
+          "bg-white border border-foreground-1 rounded-[20px] p-6 flex flex-col gap-5 max-w-[25rem] w-full font-extrabold overflow-x-clip",
           { "animate-pulse pointer-events-none": !!loading },
           className,
         )}

@@ -56,7 +56,7 @@ export default function Plan() {
           {isMobile ? (
             <div className="flex flex-col font-extrabold px-5">{body}</div>
           ) : (
-            <Card className="mt-5">{body}</Card>
+            <Card className="mt-5 py-5">{body}</Card>
           )}
         </>
       )}

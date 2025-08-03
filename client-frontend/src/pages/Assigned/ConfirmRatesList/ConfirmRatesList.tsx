@@ -20,6 +20,7 @@ export default function ConfirmRatesList() {
       titleClassName="max-w-[676px] mb-5"
       title="Утверждение взаимодействующих для оценки 360"
       description="Выберите тех, кто оценит ваши навыки"
+      className=" py-6"
     >
       {confirmCuratorRates?.map((item) => (
         <ConfirmRate

@@ -10,8 +10,8 @@ const StatItem = ({
   value?: ReactNode;
   className?: string;
 }) => (
-  <div className={cva("flex flex-col text-sm", className)}>
-    <h3 className="text-secondary">{label}</h3>
+  <div className={cva("flex flex-col", className)}>
+    <h3 className="text-secondary text-sm">{label}</h3>
     <p>{value}</p>
   </div>
 );

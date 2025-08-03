@@ -11,6 +11,7 @@ interface TooltipProps {
   align?: Alignment;
   className?: string;
   contentClassName?: string;
+  arrow?: boolean;
 }
 
 const getPositionClasses = (position: Position, align: Alignment) => {
@@ -92,6 +93,7 @@ const Tooltip: FC<TooltipProps> = ({
   align = "center",
   className,
   contentClassName,
+  arrow,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -117,13 +119,15 @@ const Tooltip: FC<TooltipProps> = ({
             }}
           >
             {content}
-            <motion.div
-              className={getArrowClasses(position, align)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 0.05 }}
-            />
+            {arrow && (
+              <motion.div
+                className={getArrowClasses(position, align)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ delay: 0.05 }}
+              />
+            )}
           </motion.div>
         )}
       </AnimatePresence>

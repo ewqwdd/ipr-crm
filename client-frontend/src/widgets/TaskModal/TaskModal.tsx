@@ -5,9 +5,14 @@ import {
 } from "@/atoms/modalAtom";
 import ConditionalModalDrawer from "@/features/ConditionalModalDrawer";
 import { statusNames, taskStatuses, type TaskStatus } from "@/shared/types/Ipr";
+import Badge from "@/shared/ui/Badge";
 import Select from "@/shared/ui/Select";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useRef, useState } from "react";
+import Dead from "@/shared/icons/Dead.svg";
+import { dateService } from "@/shared/lib/services/dateService";
+import PriorityBadge from "@/features/PriorityBadge";
+import MaterialContentTypeBadge from "@/features/MaterialContentTypeBadge";
 
 const options = taskStatuses.map((status) => ({
   value: status,
@@ -44,6 +49,21 @@ export default function TaskModal() {
       onClose={closeModal}
     >
       <p>{task.material?.name}</p>
+      <div className="flex gap-1">
+        {task.deadline && (
+          <Badge
+            variant="secondary"
+            className="gap-1"
+            icon={<Dead className="size-4" />}
+          >
+            {dateService.formatDate(task.deadline)}
+          </Badge>
+        )}
+        {task.priority && <PriorityBadge priority={task.priority} />}
+        {task.material?.contentType && (
+          <MaterialContentTypeBadge type={task.material?.contentType} />
+        )}
+      </div>
     </ConditionalModalDrawer>
   );
 }

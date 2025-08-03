@@ -11,7 +11,7 @@ import { useIsMobile } from "@/shared/hooks/useScreenWidth";
 import { Navigate } from "react-router";
 
 export default function Board() {
-  const { data, isPending, isRefetching } = useGetUserBoard();
+  const { data, isPending } = useGetUserBoard();
 
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -38,10 +38,10 @@ export default function Board() {
 
   return (
     <AnimationWrapper.ScaleOpacity>
-      {!isPending && !isRefetching && data && (
+      {!isPending && data && (
         <TaskBoard onChange={handleChange} tasks={data ?? []} />
       )}
-      {(isPending || isRefetching) && (
+      {isPending && (
         <>
           <Card className="h-44 animate-pulse" />
           <Card className="h-44 animate-pulse mt-5" />

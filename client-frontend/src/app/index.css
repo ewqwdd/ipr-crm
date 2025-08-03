@@ -23,8 +23,12 @@ body {
   --Foreground-1: hsla(0, 0%, 90%, 1);
   --Error: hsla(7, 100%, 41%, 1);
   --Success: hsla(74, 100%, 32%, 1);
+  --Warning: hsla(45, 68%, 41%, 1);
+
   --Accent-light: hsla(215, 79%, 95%, 1);
   --Error-light: hsl(5, 79%, 95%);
+  --Warning-light: hsla(45, 94%, 87%, 1);
+  --Success-light: hsla(74, 94%, 80%, 1);
 
   --Success-Alt: hsl(75, 81%, 56%);
   --Error-Alt: hsl(7, 81%, 56%);
@@ -41,10 +45,13 @@ body {
   --color-success: var(--Success);
   --color-accent-highlight: var(--Accent-highlight);
   --color-accent-light: var(--Accent-light);
-  --color-waning-alt: var(--Warning-Alt);
+  --color-warning-alt: var(--Warning-Alt);
   --color-error-alt: var(--Error-Alt);
   --color-success-alt: var(--Success-Alt);
   --color-error-light: var(--Error-light);
+  --color-warning-light: var(--Warning-light);
+  --color-success-light: var(--Success-light);
+  --color-warning: var(--Warning);
 
   --text-3xl: 32px;
   --text-3xl--line-height: 100%;

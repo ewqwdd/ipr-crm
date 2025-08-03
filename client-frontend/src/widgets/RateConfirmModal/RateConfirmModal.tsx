@@ -116,7 +116,6 @@ export default function RateConfirmModal() {
             onAdd={setTab}
             evaluators={evaluators}
             setEvaluators={setEvaluators}
-            onCancel={closeModal}
             rate={rate}
           />
         )}
@@ -124,7 +123,6 @@ export default function RateConfirmModal() {
           <AddEvaluators
             key={"add"}
             type={tab === "subbordinates" ? "SUBORDINATE" : "TEAM_MEMBER"}
-            onCancel={() => setTab("main")}
             onSubmit={handleEdit}
             rateTeamId={rate.teamId}
             initialEvaluators={evaluators}

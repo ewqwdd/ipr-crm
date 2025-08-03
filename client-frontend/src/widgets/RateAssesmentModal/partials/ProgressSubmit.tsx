@@ -71,7 +71,7 @@ export default function ProgressSubmit({
             });
           });
         prevRates.current = userRates;
-      }, 3000);
+      }, 1500);
     }
   }, [userRates, rate.id]);
 
@@ -112,7 +112,7 @@ export default function ProgressSubmit({
       })}
       onClick={handleSubmit}
     >
-      {loading ? "Подождите" : "Сохранить"}
+      {loading ? "Подождите" : "Сохранить оценку"}
     </Button>
   );
 }

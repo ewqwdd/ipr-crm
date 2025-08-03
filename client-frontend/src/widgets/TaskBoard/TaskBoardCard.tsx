@@ -1,11 +1,10 @@
 import { openModalAtom } from "@/atoms/modalAtom";
 import { userBoardAtom } from "@/atoms/userBoardAtom";
+import MaterialContentTypeBadge from "@/features/MaterialContentTypeBadge";
 import PriorityBadge from "@/features/PriorityBadge";
 import { cva } from "@/shared/lib/cva";
 import { dateService } from "@/shared/lib/services/dateService";
 import type { Task, TaskStatus } from "@/shared/types/Ipr";
-import { materialTypes } from "@/shared/types/Material";
-import Badge from "@/shared/ui/Badge";
 import ShadowCard from "@/shared/ui/ShadowCard";
 import { useSetAtom } from "jotai";
 import type { MouseEvent } from "react";
@@ -65,9 +64,10 @@ export default function TaskBoardCard({
       </div>
       <p className="line-clamp-6 mt-1">{task.material?.name}</p>
       {task.material?.contentType && (
-        <Badge className="mt-3 self-start" variant="primary-light">
-          {materialTypes[task.material?.contentType]}
-        </Badge>
+        <MaterialContentTypeBadge
+          type={task.material?.contentType}
+          className="mt-3 self-start"
+        />
       )}
     </ShadowCard>
   );

@@ -38,7 +38,7 @@ const DroppableColumn = ({
 
   return (
     <div className="sm:p-3 px-5 flex flex-col gap-3 sm:gap-1 sm:bg-[#E6E6E6]/35 rounded-[20px]">
-      <p className="text-sm text-accent sm:text-secondary">
+      <p className="sm:text-sm text-accent sm:text-secondary">
         {columnNames[id]} <span className="sm:hidden">({count})</span>
       </p>
       <div ref={setNodeRef} className="grid sm:grid-cols-2 gap-2">

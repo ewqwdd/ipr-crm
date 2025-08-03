@@ -59,7 +59,7 @@ export default memo(function AssesmentIndicator({
   return (
     <div className="flex flex-col gap-2 items-start">
       <h3 className="mb-1">{indicator.name}</h3>
-      <Tooltip content={indicator.skipHint ?? rateDescriptions[0]}>
+      <Tooltip content={indicator.skipHint ?? rateDescriptions[0]} align="left">
         <SoftButton
           onClick={() => {
             setErrors((prev) => prev.filter((id) => id !== indicator.id));
@@ -88,7 +88,7 @@ export default memo(function AssesmentIndicator({
       {Object.entries(descriptions).map(([value, description]) => {
         const active = activeId === +value;
         return (
-          <Tooltip content={description} key={value}>
+          <Tooltip content={description} key={value} align="left">
             <SoftButton
               onClick={() => {
                 setErrors((prev) => prev.filter((id) => id !== indicator.id));

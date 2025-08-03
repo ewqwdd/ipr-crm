@@ -2,6 +2,7 @@ import { userAtom } from "@/atoms/userAtom";
 import type { CompetencyBlock, Rate } from "@/shared/types/Rate";
 import SoftButton from "@/shared/ui/SoftButton";
 import { useAtomValue } from "jotai";
+import Play from "@/shared/icons/Play.svg";
 
 interface RateProgressItemProps {
   block: CompetencyBlock;
@@ -27,6 +28,7 @@ export default function RateProgressItem({
     <div className="flex flex-col gap-2 font-extrabold">
       <h3 className="text-secondary text-sm">{block.name}</h3>
       <SoftButton onClick={openAssesment} className="self-start">
+        <Play className="size-4 min-w-4" />
         {filteredRates.length === 0
           ? "Начать оценку"
           : `Продолжить оценку (${(percent * 100).toFixed(0)}%)`}

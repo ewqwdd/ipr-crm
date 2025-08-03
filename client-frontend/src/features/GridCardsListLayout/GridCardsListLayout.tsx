@@ -25,7 +25,7 @@ export default function GridCardsListLayout({
   wrapperClassName,
 }: PropsWithChildren<GridCardsListLayoutProps>) {
   return (
-    <Card className={className}>
+    <Card className={cva("py-5", className)}>
       <div className="flex justify-between items-center">
         <Title
           className={titleClassName}

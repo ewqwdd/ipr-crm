@@ -10,7 +10,10 @@ export type BadgeVariant =
   | "warning"
   | "warning-alt"
   | "error-alt"
-  | "success-alt";
+  | "success-alt"
+  | "error-light"
+  | "warning-light"
+  | "success-light";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: BadgeVariant;
@@ -29,6 +32,9 @@ const badgeVariants: Record<BadgeVariant, string> = {
   "warning-alt": "bg-waning-alt text-primary",
   "error-alt": "bg-error-alt text-white",
   "success-alt": "bg-success-alt text-primary",
+  "error-light": "bg-error-light text-error-alt",
+  "warning-light": "bg-warning-light text-warning",
+  "success-light": "bg-success-light text-success-alt",
 };
 
 export default function Badge({
@@ -41,7 +47,7 @@ export default function Badge({
   return (
     <div
       className={cva(
-        "h-6 flex items-center text-sm font-extrabold gap-2 px-2 rounded-3xl",
+        "h-6 flex items-center text-sm font-extrabold px-2 rounded-3xl gap-1",
         {
           [badgeVariants[variant]]: true,
           "pl-1": !!icon,

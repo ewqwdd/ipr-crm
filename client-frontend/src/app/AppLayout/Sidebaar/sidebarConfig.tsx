@@ -33,7 +33,7 @@ export const sidebarConfig: SidebarItem[] = [
   },
   {
     icon: Road,
-    label: "Планы развития",
+    label: "Мои планы развития",
     link: "/plans",
   },
   {

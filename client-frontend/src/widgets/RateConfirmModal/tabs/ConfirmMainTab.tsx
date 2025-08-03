@@ -12,7 +12,6 @@ import AnimationWrapper from "@/shared/ui/AnimationWrapper";
 
 interface ConfirmMainTabProps {
   rate: Rate;
-  onCancel: () => void;
   evaluators: Rate["evaluators"];
   setEvaluators: React.Dispatch<React.SetStateAction<Rate["evaluators"]>>;
   onAdd: (tab: ConfirmTab) => void;
@@ -21,7 +20,6 @@ interface ConfirmMainTabProps {
 
 export default function ConfirmMainTab({
   rate,
-  onCancel,
   evaluators,
   setEvaluators,
   onAdd,
@@ -44,6 +42,7 @@ export default function ConfirmMainTab({
           <StatItem label="Команда" value={rate.team?.name} />
           <StatItem label="Специализация" value={rate.spec?.name} />
           <StatItem
+            className="gap-1"
             label="Руководители"
             value={
               <div className="flex flex-wrap gap-1">
@@ -90,13 +89,6 @@ export default function ConfirmMainTab({
           onClick={() => onSubmit(commentRef.current?.value)}
         >
           Утвердить список
-        </Button>
-        <Button
-          variant="teritary"
-          onClick={onCancel}
-          className="mt-3 max-lg:hidden"
-        >
-          Отменить
         </Button>
       </div>
     </AnimationWrapper.Opacity>

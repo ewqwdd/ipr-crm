@@ -1,5 +1,6 @@
 import { openModalAtom } from "@/atoms/modalAtom";
 import { userAtom } from "@/atoms/userAtom";
+import { cva } from "@/shared/lib/cva";
 import { dateService } from "@/shared/lib/services/dateService";
 import { rateService } from "@/shared/lib/services/rateService";
 import { queryKeys } from "@/shared/types/query-keys";
@@ -12,9 +13,10 @@ import { useNavigate } from "react-router";
 
 interface MyRateCardProps {
   rate: Rate;
+  loading?: boolean;
 }
 
-export default function MyRateCard({ rate }: MyRateCardProps) {
+export default function MyRateCard({ rate, loading }: MyRateCardProps) {
   const user = useAtomValue(userAtom);
   const navigate = useNavigate();
 
@@ -53,7 +55,7 @@ export default function MyRateCard({ rate }: MyRateCardProps) {
       <SoftButton
         onClick={() =>
           openModal({
-            type: "RATE_ASSESSMENT",
+            type: "RATE_PROGRESS",
             data: {
               rate: {
                 ...rate,
@@ -92,7 +94,11 @@ export default function MyRateCard({ rate }: MyRateCardProps) {
       </div>
       <h2 className="text-lg truncate mt-2">{rate.spec.name}</h2>
       <div className="flex gap-2 mt-3">
-        <div className="flex gap-2 flex-wrap flex-1">
+        <div
+          className={cva("flex gap-2 flex-wrap flex-1", {
+            "opacity-60 pointer-events-none": !!loading,
+          })}
+        >
           {button}
           {rate.finished && rate.showReportToUser && (
             <SoftButton

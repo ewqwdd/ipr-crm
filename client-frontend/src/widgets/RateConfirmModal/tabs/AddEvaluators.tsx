@@ -11,7 +11,6 @@ import AnimationWrapper from "@/shared/ui/AnimationWrapper";
 
 interface AddEvaluatorsProps {
   onSubmit: (evaluators: Rate["evaluators"]) => void;
-  onCancel: () => void;
   initialEvaluators: Rate["evaluators"];
   rateTeamId?: number;
   type: EvaulatorType;
@@ -19,7 +18,6 @@ interface AddEvaluatorsProps {
 
 export default function AddEvaluators({
   initialEvaluators,
-  onCancel,
   onSubmit,
   rateTeamId,
   type,
@@ -162,13 +160,9 @@ export default function AddEvaluators({
                 ),
             )}
         </div>
-
-        <div className="flex flex-col gap-3">
-          <Button onClick={() => onSubmit(evaluators)}>Добавить</Button>
-          <Button variant="teritary" onClick={onCancel}>
-            Отменить
-          </Button>
-        </div>
+        <Button className="mt-1" onClick={() => onSubmit(evaluators)}>
+          Добавить
+        </Button>
       </div>
     </AnimationWrapper.Right>
   );

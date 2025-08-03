@@ -1,5 +1,6 @@
 import { openModalAtom } from "@/atoms/modalAtom";
 import { userAtom } from "@/atoms/userAtom";
+import { cva } from "@/shared/lib/cva";
 import { dateService } from "@/shared/lib/services/dateService";
 import { generalService } from "@/shared/lib/services/generalService";
 import { rateService } from "@/shared/lib/services/rateService";
@@ -13,9 +14,10 @@ import { useAtomValue, useSetAtom } from "jotai";
 interface Props {
   rate: Rate;
   queryKey: string;
+  loading?: boolean;
 }
 
-export default function AssignedRate({ rate, queryKey }: Props) {
+export default function AssignedRate({ rate, queryKey, loading }: Props) {
   const user = useAtomValue(userAtom);
   const indicatorsCount = rateService.getIndicators(
     rate.competencyBlocks,
@@ -43,7 +45,13 @@ export default function AssignedRate({ rate, queryKey }: Props) {
       <p className="text-lg mt-2">{rate.team?.name}</p>
       <div className="flex justify-between mt-3 items-end">
         {isRated ? (
-          <SoftButton disabled className="cursor-default" variant="teritary">
+          <SoftButton
+            disabled
+            className={cva("cursor-default", {
+              "opacity-60 pointer-events-none": !!loading,
+            })}
+            variant="teritary"
+          >
             Завершено
           </SoftButton>
         ) : (
@@ -55,6 +63,9 @@ export default function AssignedRate({ rate, queryKey }: Props) {
                 data: { rate, key: queryKey },
               })
             }
+            className={cva({
+              "opacity-60 pointer-events-none": !!loading,
+            })}
           >
             Начать
           </SoftButton>
