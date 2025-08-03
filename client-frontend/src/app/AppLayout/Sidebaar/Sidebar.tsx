@@ -3,10 +3,10 @@ import { sidebarConfig } from "./sidebarConfig";
 import { useAtomValue } from "jotai";
 import { userAtom } from "@/atoms/userAtom";
 import Avatar from "@/shared/ui/Avatar";
-import { Link } from "react-router";
 import { generalService } from "@/shared/lib/services/generalService";
+import { memo } from "react";
 
-export default function Sidebar() {
+export default memo(function Sidebar() {
   const user = useAtomValue(userAtom);
 
   return (
@@ -21,16 +21,18 @@ export default function Sidebar() {
           {item.label}
         </NavbarLink>
       ))}
-      <Link
-        to="/"
-        className="pl-4 pr-5 h-14 flex items-center gap-2 font-extrabold text-sm mt-2"
+      <NavbarLink
+        className="mt-2 min-w-32"
+        avatar={
+          <Avatar
+            src={generalService.transformFileUrl(user?.avatar)}
+            alt="user avatar"
+          />
+        }
+        to={"/profile"}
       >
-        <Avatar
-          src={generalService.transformFileUrl(user?.avatar)}
-          alt="user avatar"
-        />
         {user?.username}
-      </Link>
+      </NavbarLink>
     </aside>
   );
-}
+});

@@ -5,9 +5,10 @@ import { motion } from "framer-motion";
 import NotificationWrapper from "../NotificationWrapper";
 
 interface NavbarLinkProps extends NavLinkProps {
-  Icon: FunctionComponent<SVGProps<SVGSVGElement>>;
+  Icon?: FunctionComponent<SVGProps<SVGSVGElement>>;
   notificationValue?: ReactNode;
   children: ReactNode;
+  avatar?: ReactNode;
 }
 
 export default function NavbarLink({
@@ -15,9 +16,11 @@ export default function NavbarLink({
   notificationValue,
   children,
   to,
+  avatar,
   className,
   ...props
 }: NavbarLinkProps) {
+  console.debug(to);
   return (
     <NavLink
       className={(params) =>
@@ -47,7 +50,8 @@ export default function NavbarLink({
 
           <div className="relative z-10 flex items-center gap-2">
             <NotificationWrapper value={notificationValue}>
-              <Icon className="size-6" />
+              {Icon && <Icon className="size-6" />}
+              {avatar}
             </NotificationWrapper>
             {children}
           </div>

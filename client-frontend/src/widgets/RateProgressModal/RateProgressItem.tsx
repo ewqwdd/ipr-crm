@@ -27,7 +27,7 @@ export default function RateProgressItem({
   return (
     <div className="flex flex-col gap-2 font-extrabold">
       <h3 className="text-secondary text-sm">{block.name}</h3>
-      <SoftButton onClick={openAssesment} className="self-start">
+      <SoftButton onClick={openAssesment} className="self-start [&>div]:pl-2">
         <Play className="size-4 min-w-4" />
         {filteredRates.length === 0
           ? "Начать оценку"

@@ -59,24 +59,27 @@ export default memo(function AssesmentIndicator({
   return (
     <div className="flex flex-col gap-2 items-start">
       <h3 className="mb-1">{indicator.name}</h3>
-      <Tooltip content={indicator.skipHint ?? rateDescriptions[0]} align="left">
+      <Tooltip
+        content={indicator.skipHint ?? rateDescriptions[0]}
+        align="left"
+        className="h-8"
+      >
         <SoftButton
           onClick={() => {
             setErrors((prev) => prev.filter((id) => id !== indicator.id));
             setRateAtom({ indicatorId: indicator.id, rate: 0 });
           }}
           variant={activeSkip ? "primary" : "teritary"}
-          animate={{
-            gap: activeSkip ? 8 : 0,
-          }}
+          className="[&>div]:pl-2 [&>div]:gap-0"
         >
           <motion.div
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25 }}
             initial={{ opacity: 0, width: 0, height: 0 }}
             animate={{
               opacity: activeSkip ? 1 : 0,
               width: activeSkip ? 16 : 0,
               height: activeSkip ? 16 : 0,
+              marginRight: activeSkip ? 6 : 3,
             }}
             exit={{ opacity: 0, width: 0, height: 0 }}
           >
@@ -88,24 +91,28 @@ export default memo(function AssesmentIndicator({
       {Object.entries(descriptions).map(([value, description]) => {
         const active = activeId === +value;
         return (
-          <Tooltip content={description} key={value} align="left">
+          <Tooltip
+            content={description}
+            key={value}
+            align="left"
+            className="h-8"
+          >
             <SoftButton
               onClick={() => {
                 setErrors((prev) => prev.filter((id) => id !== indicator.id));
                 setRateAtom({ indicatorId: indicator.id, rate: +value });
               }}
               variant={active ? "primary" : "teritary"}
-              animate={{
-                gap: active ? 8 : 0,
-              }}
+              className="[&>div]:pl-2 [&>div]:gap-0"
             >
               <motion.div
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.25 }}
                 initial={{ opacity: 0, width: 0, height: 0 }}
                 animate={{
                   opacity: active ? 1 : 0,
                   width: active ? 16 : 0,
                   height: active ? 16 : 0,
+                  marginRight: active ? 6 : 3,
                 }}
                 exit={{ opacity: 0, width: 0, height: 0 }}
               >

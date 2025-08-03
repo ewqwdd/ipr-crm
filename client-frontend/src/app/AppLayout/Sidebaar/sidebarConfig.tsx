@@ -1,5 +1,4 @@
 import type { FunctionComponent, SVGProps } from "react";
-import Home from "@/shared/icons/Home.svg";
 import Goal from "@/shared/icons/Goal.svg";
 import Tasks from "@/shared/icons/Tasks.svg";
 import Road from "@/shared/icons/Road.svg";
@@ -16,14 +15,9 @@ interface SidebarItem {
 
 export const sidebarConfig: SidebarItem[] = [
   {
-    icon: Home,
-    label: "Главная",
-    link: "/",
-  },
-  {
     icon: Goal,
     label: "Мне назначено",
-    link: "/assigned",
+    link: "/",
     notifications: RateNotifications,
   },
   {

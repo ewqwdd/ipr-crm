@@ -1,13 +1,17 @@
 import { useIsMobile } from "@/shared/hooks/useScreenWidth";
 import { lazy, Suspense } from "react";
+import { Navigate } from "react-router";
 
-const MyRatesMobile = lazy(() => import("./MyRates.mobile"));
 const MyRatesDesktop = lazy(() => import("./MyRates.desktop"));
 
 export default function MyRates() {
   const isMobile = useIsMobile();
 
+  if (isMobile) return <Navigate to="/" replace />;
+
   return (
-    <Suspense>{!isMobile ? <MyRatesDesktop /> : <MyRatesMobile />}</Suspense>
+    <Suspense>
+      <MyRatesDesktop />
+    </Suspense>
   );
 }

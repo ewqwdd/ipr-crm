@@ -28,7 +28,7 @@ export default function EvaluatorsList({
         {mapped.map((evaluator) =>
           evaluator.userId === -1 ? (
             <motion.li key={evaluator.userId} layout>
-              <SoftButton onClick={onAdd}>
+              <SoftButton onClick={onAdd} className="[&>div]:pl-2">
                 <Add className="size-4" />
                 Добавить
               </SoftButton>

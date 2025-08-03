@@ -1,27 +1,30 @@
 import { cva } from "@/shared/lib/cva";
-import type { ImgHTMLAttributes, HTMLAttributes } from "react";
+import { memo, type ImgHTMLAttributes } from "react";
+import AvatarIcon from "@/shared/icons/Avatar.svg";
 
 interface AvatarProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> {
   src?: string;
 }
 
-export default function Avatar({ src, ...props }: AvatarProps) {
-  return src ? (
+export default memo(function Avatar({ src, ...props }: AvatarProps) {
+  if (!src)
+    return (
+      <AvatarIcon
+        className={cva(
+          "rounded-full size-8 overflow-clip object-cover",
+          props.className,
+        )}
+      />
+    );
+
+  return (
     <img
       src={src}
       {...props}
       className={cva(
-        "bg-foreground-1 rounded-full size-8 overflow-clip object-cover",
-        props.className,
-      )}
-    />
-  ) : (
-    <div
-      {...(props as HTMLAttributes<HTMLDivElement>)}
-      className={cva(
-        "bg-foreground-1 rounded-full size-8 overflow-clip",
+        "rounded-full size-8 overflow-clip object-cover",
         props.className,
       )}
     />
   );
-}
+});

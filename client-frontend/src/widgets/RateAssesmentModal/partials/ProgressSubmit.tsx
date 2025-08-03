@@ -112,7 +112,13 @@ export default function ProgressSubmit({
       })}
       onClick={handleSubmit}
     >
-      {loading ? "Подождите" : "Сохранить оценку"}
+      {loading ? (
+        "Подождите"
+      ) : (
+        <p>
+          Сохранить <span className="max-sm:hidden">оценку</span>
+        </p>
+      )}
     </Button>
   );
 }

@@ -11,6 +11,7 @@ type DrawerProps = {
   title?: ReactNode;
   loading?: boolean;
   className?: string;
+  closeOnOutside?: boolean;
 };
 
 const overlayVariants = {
@@ -31,6 +32,7 @@ const Drawer: React.FC<DrawerProps> = ({
   title,
   loading,
   className,
+  closeOnOutside = true,
 }) => {
   useEffect(() => {
     if (!open) return;
@@ -54,7 +56,7 @@ const Drawer: React.FC<DrawerProps> = ({
       exit="hidden"
       variants={overlayVariants}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      onClick={onClose}
+      onClick={closeOnOutside ? onClose : undefined}
       aria-modal="true"
       role="dialog"
       aria-label={ariaLabel}

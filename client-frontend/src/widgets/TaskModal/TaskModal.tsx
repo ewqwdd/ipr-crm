@@ -40,7 +40,7 @@ export default function TaskModal() {
           <Select
             value={status}
             onChange={handleChange}
-            buttonClassName="h-6 px-2 py-0 w-auto min-w-32"
+            buttonClassName="h-6 px-2 py-0 w-auto min-w-28"
             options={options}
           />
         </div>

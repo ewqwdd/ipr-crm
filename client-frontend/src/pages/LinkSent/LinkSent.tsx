@@ -15,7 +15,7 @@ export default function LinkSent() {
       </p>
       <SoftButton
         variant="clean"
-        className="mt-5"
+        className="mt-5 [&>div]:pl-2"
         onClick={() => navigate("/login")}
       >
         <Go className="rotate-180" />

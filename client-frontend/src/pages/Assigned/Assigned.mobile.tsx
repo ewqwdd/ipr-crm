@@ -19,7 +19,7 @@ import TabButtonsWithNotifications from "@/features/TabButtonsWithNotifications"
 
 const tabs = ["assigned", "my", "confirm"] as const;
 
-export default function MyRatesMobile() {
+export default function AssignedMobile() {
   const [searchParams, setSearchParams] = useSearchParams();
   const current =
     searchParams.get("tab") ?? ("assigned" as (typeof tabs)[number]);

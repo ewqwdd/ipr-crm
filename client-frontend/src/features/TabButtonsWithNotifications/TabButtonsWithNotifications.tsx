@@ -25,6 +25,7 @@ export default function TabButtonsWithNotifications({
           <SoftButton
             onClick={() => onTabChange(tab)}
             variant={tab === currentTab ? "primary" : "teritary"}
+            className="[&>div]:pl-2"
           >
             {config[tab]?.icon}
             {config[tab]?.label}

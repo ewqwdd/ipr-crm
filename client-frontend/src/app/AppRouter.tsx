@@ -28,8 +28,8 @@ export default function AppRouter() {
         <Route path="/report/:id" element={<Report />} />
         {/* Protected routes with layout */}
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/assigned" element={<Assigned />} />
+          <Route path="/profile" element={<Home />} />
+          <Route path="/" element={<Assigned />} />
           <Route path="/board" element={<Board />} />
           <Route path="/plans" element={<Plans />} />
           <Route path="/plans/:id" element={<Plan />} />

@@ -74,6 +74,7 @@ export default function RateAssesmentModal() {
       title={<span className="sm:text-3xl text-lg">{rate.spec.name}</span>}
       open
       onClose={closeModal}
+      closeOnOutside={false}
     >
       {isMobile ? (
         <>

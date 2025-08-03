@@ -56,12 +56,12 @@ export default function Select({
         type="button"
       >
         {selected ? (
-          selected.label
+          <span className="pr-1">{selected.label}</span>
         ) : (
-          <span className="text-gray-400">{placeholder}</span>
+          <span className="text-gray-400 pr-1">{placeholder}</span>
         )}
         <Down
-          className={cva("size-3 ml-1", {
+          className={cva("size-3 ml-auto", {
             "rotate-180": open,
           })}
         />

@@ -21,7 +21,7 @@ const navLinks = [
         </NotificationWrapper>
       );
     },
-    link: "/my-rates",
+    link: "/",
   },
   {
     label: "Задачи",
@@ -36,7 +36,7 @@ const navLinks = [
       const user = useAtomValue(userAtom);
       return <Avatar className="size-8 min-w-8" src={user?.avatar} />;
     },
-    link: "/",
+    link: "/profile",
   },
 ];
 
