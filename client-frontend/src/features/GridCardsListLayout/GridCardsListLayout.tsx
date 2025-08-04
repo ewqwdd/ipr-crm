@@ -12,6 +12,7 @@ interface GridCardsListLayoutProps {
   description?: string;
   button?: ReactNode;
   wrapperClassName?: string;
+  isEmpty?: boolean;
 }
 
 export default function GridCardsListLayout({
@@ -23,6 +24,7 @@ export default function GridCardsListLayout({
   title,
   button,
   wrapperClassName,
+  isEmpty,
 }: PropsWithChildren<GridCardsListLayoutProps>) {
   return (
     <Card className={cva("py-5", className)}>
@@ -35,7 +37,7 @@ export default function GridCardsListLayout({
         {button}
       </div>
 
-      <div className={cva("grid grid-cols-2 gap-3", wrapperClassName)}>
+      {!loading && !isEmpty && <div className={cva("grid grid-cols-2 gap-3", wrapperClassName)}>
         {loading &&
           new Array(4)
             .fill(0)
@@ -43,7 +45,7 @@ export default function GridCardsListLayout({
               <ShadowCard className="min-h-[132px] animate-pulse" key={index} />
             ))}
         {!loading && children}
-      </div>
+      </div>}
     </Card>
   );
 }

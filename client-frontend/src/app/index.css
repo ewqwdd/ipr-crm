@@ -68,3 +68,9 @@ html {
   width: 100vw;
   overflow-x: clip;
 }
+
+@media ( 1024px < width <= 1320px ) {
+  .layout {
+    margin: 0 40px;
+  }
+}

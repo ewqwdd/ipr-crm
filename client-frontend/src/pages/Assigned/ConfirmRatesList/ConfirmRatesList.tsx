@@ -5,6 +5,7 @@ import {
 import { queryKeys } from "@/shared/types/query-keys";
 import GridCardsListLayout from "@/features/GridCardsListLayout";
 import ConfirmRate from "@/features/ConfirmRate";
+import { cva } from "@/shared/lib/cva";
 
 export default function ConfirmRatesList() {
   const { data: confirmRates, isLoading: confirmRatesLoading } =
@@ -14,13 +15,18 @@ export default function ConfirmRatesList() {
 
   const loading = confirmRatesLoading || confirmCuratorRatesLoading;
 
+  const isEmpty = (confirmCuratorRates && confirmCuratorRates.length === 0) && (confirmRates && confirmRates.length === 0)
+
   return (
     <GridCardsListLayout
       loading={loading}
-      titleClassName="max-w-[676px] mb-5"
+      titleClassName={cva("max-w-[676px] mb-5", {
+        'mb-0': !!isEmpty
+      })}
       title="Утверждение взаимодействующих для оценки 360"
       description="Выберите тех, кто оценит ваши навыки"
       className=" py-6"
+      isEmpty={isEmpty}
     >
       {confirmCuratorRates?.map((item) => (
         <ConfirmRate
