@@ -33,8 +33,6 @@ export class NotificationsService {
   ) {
     return `<div style="font-family: 'Nunito Sans', sans-serif; padding: 24px; text-align: center; color: #374151; background-color: #f9fafb; border-radius: 8px;">
 
-    <h2 style="font-size: 24px; font-weight: 800; line-height: 1.25; margin-bottom: 16px; color: #111827;">Вам назначено утверждение оценки в AYA SKILLS</h2>
-
     <div style="max-width: 600px; margin: 0 auto; padding: 24px; background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);">
 
         <p style="font-size: 16px; line-height: 1.5; margin-bottom: 16px;">Здравствуйте, ${user.firstName ?? user.username ?? user.email}!</p>
