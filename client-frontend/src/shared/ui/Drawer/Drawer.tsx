@@ -63,7 +63,7 @@ const Drawer: React.FC<DrawerProps> = ({
     >
       <motion.div
         className={cva(
-          "bg-white border border-foreground-1 rounded-t-[20px] p-5 flex flex-col gap-5 font-extrabold w-screen",
+          "bg-white border border-foreground-1 rounded-t-[20px] p-5 flex flex-col gap-5 font-extrabold w-screen overflow-x-clip",
           { "animate-pulse pointer-events-none": !!loading },
           className,
         )}

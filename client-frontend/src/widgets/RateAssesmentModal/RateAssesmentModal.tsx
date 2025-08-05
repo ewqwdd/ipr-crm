@@ -70,7 +70,7 @@ export default function RateAssesmentModal() {
 
   return (
     <ConditionalModalDrawer
-      className="max-w-[656px] max-lg:rounded-t-none max-lg:gap-0"
+      className="lg:max-w-[656px] max-lg:rounded-t-none max-lg:gap-0"
       title={<span className="sm:text-3xl text-lg">{rate.spec.name}</span>}
       open
       onClose={closeModal}
