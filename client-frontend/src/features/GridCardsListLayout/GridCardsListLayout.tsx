@@ -37,15 +37,20 @@ export default function GridCardsListLayout({
         {button}
       </div>
 
-      {!loading && !isEmpty && <div className={cva("grid grid-cols-2 gap-3", wrapperClassName)}>
-        {loading &&
-          new Array(4)
-            .fill(0)
-            .map((_, index) => (
-              <ShadowCard className="min-h-[132px] animate-pulse" key={index} />
-            ))}
-        {!loading && children}
-      </div>}
+      {!loading && !isEmpty && (
+        <div className={cva("grid grid-cols-2 gap-3", wrapperClassName)}>
+          {loading &&
+            new Array(4)
+              .fill(0)
+              .map((_, index) => (
+                <ShadowCard
+                  className="min-h-[132px] animate-pulse"
+                  key={index}
+                />
+              ))}
+          {!loading && children}
+        </div>
+      )}
     </Card>
   );
 }

@@ -5,18 +5,32 @@ import { userAtom } from "@/atoms/userAtom";
 import Avatar from "@/shared/ui/Avatar";
 import { generalService } from "@/shared/lib/services/generalService";
 import { memo } from "react";
+import { useIsOnPage } from "@/shared/hooks/useIsOnPage";
 
 export default memo(function Sidebar() {
   const user = useAtomValue(userAtom);
 
+  const isSidebarDisabled = useIsOnPage([
+    "/login",
+    "/forgot-password",
+    "/reset-password",
+    "/invite",
+    "/link-sent",
+    "/report/:id",
+  ]);
+
+  const notifications = sidebarConfig.map((item) => item.notifications?.());
+
+  if (isSidebarDisabled) return null;
+
   return (
     <aside className="flex items-start w-60 flex-col sticky top-3">
-      {sidebarConfig.map((item) => (
+      {sidebarConfig.map((item, i) => (
         <NavbarLink
           Icon={item.icon}
           to={item.link}
           key={item.label}
-          notificationValue={item.notifications?.()}
+          notificationValue={notifications[i]}
         >
           {item.label}
         </NavbarLink>

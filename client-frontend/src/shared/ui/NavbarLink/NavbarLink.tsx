@@ -20,7 +20,6 @@ export default function NavbarLink({
   className,
   ...props
 }: NavbarLinkProps) {
-  console.debug(to);
   return (
     <NavLink
       className={(params) =>

@@ -1,13 +1,20 @@
+import { cva } from "@/shared/lib/cva";
 import { motion } from "framer-motion";
 
 interface AnimationWrapperProps {
   children: React.ReactNode;
   delay?: number;
   exit?: boolean;
+  className?: string;
 }
 
 const AnimationWrapper = {
-  ScaleOpacity: ({ children, delay, exit = true }: AnimationWrapperProps) => {
+  ScaleOpacity: ({
+    children,
+    delay,
+    exit = true,
+    className,
+  }: AnimationWrapperProps) => {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -24,27 +31,38 @@ const AnimationWrapper = {
               }
         }
         transition={{ type: "spring", stiffness: 450, damping: 40, delay }}
-        className="min-h-2/3"
+        className={cva("min-h-2/3", className)}
       >
         {children}
       </motion.div>
     );
   },
 
-  Opacity: ({ children, delay, exit = true }: AnimationWrapperProps) => {
+  Opacity: ({
+    children,
+    delay,
+    exit = true,
+    className,
+  }: AnimationWrapperProps) => {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={!exit ? undefined : { opacity: 0, scale: 0.98 }}
         transition={{ type: "spring", stiffness: 450, damping: 40, delay }}
+        className={className}
       >
         {children}
       </motion.div>
     );
   },
 
-  Right: ({ children, delay, exit = true }: AnimationWrapperProps) => {
+  Right: ({
+    children,
+    delay,
+    exit = true,
+    className,
+  }: AnimationWrapperProps) => {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.98, x: "50%" }}
@@ -60,13 +78,19 @@ const AnimationWrapper = {
               }
         }
         transition={{ type: "spring", stiffness: 450, damping: 40, delay }}
+        className={className}
       >
         {children}
       </motion.div>
     );
   },
 
-  Left: ({ children, delay, exit = true }: AnimationWrapperProps) => {
+  Left: ({
+    children,
+    delay,
+    exit = true,
+    className,
+  }: AnimationWrapperProps) => {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.98, x: "-50%" }}
@@ -82,6 +106,7 @@ const AnimationWrapper = {
               }
         }
         transition={{ type: "spring", stiffness: 450, damping: 40, delay }}
+        className={className}
       >
         {children}
       </motion.div>

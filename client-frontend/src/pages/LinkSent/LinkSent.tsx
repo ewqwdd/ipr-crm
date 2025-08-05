@@ -8,7 +8,10 @@ export default function LinkSent() {
   const navigate = useNavigate();
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center font-extrabold bg-accent text-center text-white">
+    <main
+      className="min-h-screen flex flex-col items-center justify-center font-extrabold text-center text-white flex-1 before:bg-accent before:fixed before:inset-0 before:-z-10
+    "
+    >
       <h1 className="text-3xl">Skills.</h1>
       <p className="mt-3 max-w-80">
         Ссылка была отправлена на почту {state?.email}

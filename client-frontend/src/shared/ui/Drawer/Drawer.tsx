@@ -49,7 +49,7 @@ const Drawer: React.FC<DrawerProps> = ({
 
   return (
     <motion.div
-      className="fixed inset-0 bg-primary/40 z-50 overflow-y-auto"
+      className="fixed inset-0 bg-primary/40 z-50 overflow-y-auto w-screen max-w-full"
       style={{ display: "grid", placeItems: "end" }}
       initial="hidden"
       animate="visible"
@@ -63,7 +63,7 @@ const Drawer: React.FC<DrawerProps> = ({
     >
       <motion.div
         className={cva(
-          "bg-white border border-foreground-1 rounded-t-[20px] p-5 flex flex-col gap-5 w-full font-extrabold",
+          "bg-white border border-foreground-1 rounded-t-[20px] p-5 flex flex-col gap-5 font-extrabold w-screen",
           { "animate-pulse pointer-events-none": !!loading },
           className,
         )}

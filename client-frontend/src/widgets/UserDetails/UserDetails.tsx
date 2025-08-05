@@ -49,7 +49,7 @@ export default function UserDetails({
       <Divider />
       <div className="lg:grid grid-cols-4 gap-2 flex flex-col">
         <DetailItem label="Email" value={user?.email} />
-        <DetailItem label="Телефон" value={user?.phone} />
+        <DetailItem label="Telegram" value={user?.phone} />
       </div>
       <div className="lg:grid grid-cols-4 gap-2 mt-2 lg:mt-3 flex flex-col">
         <DetailItem label="Специализация" value={user?.Spec?.name} />

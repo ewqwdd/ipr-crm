@@ -65,11 +65,11 @@ body {
 }
 
 html {
-  width: 100vw;
+  width: 100dvw;
   overflow-x: clip;
 }
 
-@media ( 1024px < width <= 1320px ) {
+@media (1024px < width <= 1320px) {
   .layout {
     margin: 0 40px;
   }

@@ -58,8 +58,8 @@ export default function UserEdit({
       valid = false;
     }
 
-    if (data.phone && !validationService.validatePhone(data.phone)) {
-      newErrors.phone = "Некорректный номер телефона";
+    if (data.phone && data.phone.length < 2) {
+      newErrors.phone = "Некорректный Телеграм";
       valid = false;
     }
 
@@ -137,7 +137,7 @@ export default function UserEdit({
           />
           <Input
             placeholder="Необязательно"
-            label="Телефон"
+            label="Telegram"
             error={errors.phone}
             value={data.phone}
             onChange={(e) => setDataField("phone", e.target.value)}
@@ -145,7 +145,7 @@ export default function UserEdit({
         </div>
 
         <div className="mt-5 flex gap-3 justify-end max-sm:flex-col-reverse">
-          <Button variant="teritary" onClick={onCancel}>
+          <Button type="button" variant="teritary" onClick={onCancel}>
             Отменить
           </Button>
           <Button type="submit">Сохранить</Button>

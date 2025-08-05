@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import { checkAuthAtom, userAtom, userLoadingAtom } from "@/atoms/userAtom";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
+import { protectedRoutes } from "@/shared/constants/routes";
 
 interface Props {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ export function AuthChecker({ children }: Props) {
 
   useEffect(() => {
     if (!isLoading) {
-      if (!user) {
+      if (!user && protectedRoutes.includes(window.location.pathname)) {
         navigate("/login");
       }
       const timeout = setTimeout(() => {

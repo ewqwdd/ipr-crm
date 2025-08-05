@@ -15,13 +15,17 @@ export default function ConfirmRatesList() {
 
   const loading = confirmRatesLoading || confirmCuratorRatesLoading;
 
-  const isEmpty = (confirmCuratorRates && confirmCuratorRates.length === 0) && (confirmRates && confirmRates.length === 0)
+  const isEmpty =
+    confirmCuratorRates &&
+    confirmCuratorRates.length === 0 &&
+    confirmRates &&
+    confirmRates.length === 0;
 
   return (
     <GridCardsListLayout
       loading={loading}
       titleClassName={cva("max-w-[676px] mb-5", {
-        'mb-0': !!isEmpty
+        "mb-0": !!isEmpty,
       })}
       title="Утверждение взаимодействующих для оценки 360"
       description="Выберите тех, кто оценит ваши навыки"

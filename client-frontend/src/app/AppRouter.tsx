@@ -13,6 +13,7 @@ import Plans from "@/pages/Plans";
 import Plan from "@/pages/Plan";
 import Board from "@/pages/Board";
 import Report from "@/pages/Report";
+import { ROUTES } from "@/shared/constants/routes";
 
 export default function AppRouter() {
   const location = useLocation();
@@ -20,21 +21,21 @@ export default function AppRouter() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/invite" element={<ResetPassword />} />
-        <Route path="/link-sent" element={<LinkSent />} />
-        <Route path="/report/:id" element={<Report />} />
+        <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
+        <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
+        <Route path={ROUTES.INVITE} element={<ResetPassword />} />
+        <Route path={ROUTES.LINK_SENT} element={<LinkSent />} />
+        <Route path={ROUTES.REPORT} element={<Report />} />
         {/* Protected routes with layout */}
         <Route element={<AppLayout />}>
-          <Route path="/profile" element={<Home />} />
-          <Route path="/" element={<Assigned />} />
-          <Route path="/board" element={<Board />} />
-          <Route path="/plans" element={<Plans />} />
-          <Route path="/plans/:id" element={<Plan />} />
-          <Route path="/my-rates" element={<MyRates />} />
-          <Route path="/support" element={<Support />} />
+          <Route path={ROUTES.PROFILE} element={<Home />} />
+          <Route path={ROUTES.HOME} element={<Assigned />} />
+          <Route path={ROUTES.BOARD} element={<Board />} />
+          <Route path={ROUTES.PLANS} element={<Plans />} />
+          <Route path={ROUTES.PLAN} element={<Plan />} />
+          <Route path={ROUTES.MY_RATES} element={<MyRates />} />
+          <Route path={ROUTES.SUPPORT} element={<Support />} />
         </Route>
       </Routes>
     </AnimatePresence>

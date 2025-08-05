@@ -63,8 +63,6 @@ export default function ReportRates({ rate }: ReportRatesProps) {
     countRates.reduce((acc, item) => acc + item.teamMembers, 0) /
     countRates.length;
 
-  console.debug(countRates);
-
   return (
     <div className="flex flex-col gap-4 mt-4">
       {countRates.map((item) => (

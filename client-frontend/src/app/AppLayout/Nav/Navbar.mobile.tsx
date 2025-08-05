@@ -43,7 +43,15 @@ const navLinks = [
 export default function NavbarMobile() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isBlocked = useIsOnPage(["support"]);
+  const isBlocked = useIsOnPage([
+    "support",
+    "/login",
+    "/forgot-password",
+    "/reset-password",
+    "/invite",
+    "/link-sent",
+    "/report/:id",
+  ]);
 
   if (isBlocked) return null;
 

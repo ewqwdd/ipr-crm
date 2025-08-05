@@ -53,7 +53,7 @@ export default function ForgotPassword() {
   );
 
   return (
-    <AnimationWrapper.Opacity>
+    <AnimationWrapper.Opacity className="flex-1">
       <main
         className={cva(
           "min-h-screen flex items-center justify-center font-extrabold px-5",
@@ -91,7 +91,6 @@ export default function ForgotPassword() {
           </Button>
           <Button
             variant="teritary"
-            className="mt-2"
             type="button"
             onClick={() => navigate("/login")}
           >

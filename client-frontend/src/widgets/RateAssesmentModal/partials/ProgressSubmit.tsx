@@ -86,7 +86,6 @@ export default function ProgressSubmit({
     });
     if (errors.length > 0) {
       toast.error("Ответьте на все вопросы");
-      console.debug("errors", errors);
       setErrors(errors);
       return;
     }

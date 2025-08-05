@@ -6,6 +6,7 @@ import { useSetAtom } from "jotai";
 import { userAtom } from "@/atoms/userAtom";
 import NotificationDropdown from "@/widgets/NotificationDropdown";
 import Logo from "@/shared/icons/Logo.svg";
+import { useIsOnPage } from "@/shared/hooks/useIsOnPage";
 
 export default function Navbar() {
   const setUser = useSetAtom(userAtom);
@@ -15,6 +16,17 @@ export default function Navbar() {
       setUser(null);
     });
   };
+
+  const isSidebarDisabled = useIsOnPage([
+    "/login",
+    "/forgot-password",
+    "/reset-password",
+    "/invite",
+    "/link-sent",
+    "/report/:id",
+  ]);
+
+  if (isSidebarDisabled) return null;
 
   return (
     <nav className="flex justify-between h-14 mt-7">

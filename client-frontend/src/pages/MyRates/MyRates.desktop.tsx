@@ -13,7 +13,7 @@ export default function MyRatesDesktop() {
     <AnimationWrapper.ScaleOpacity>
       <GridCardsListLayout
         titleClassName={cva({
-          'mb-5': !isEmpty
+          "mb-5": !isEmpty,
         })}
         loading={isPending}
         title="Командные отчёты"
