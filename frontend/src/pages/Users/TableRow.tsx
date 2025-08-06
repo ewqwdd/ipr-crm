@@ -1,4 +1,5 @@
 import { useModal } from '@/app/hooks/useModal';
+import { Team } from '@/entities/team';
 import { User } from '@/entities/user';
 import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
@@ -17,13 +18,17 @@ interface TableRowProps {
   edit?: boolean;
   last?: boolean;
   skeleton?: boolean;
+  teams?: Team[];
 }
+
+const structureKeys = ['product', 'department', 'direction', 'group'] as const;
 
 export default function TableRow({
   person,
   edit = true,
   last,
   skeleton,
+  teams,
 }: TableRowProps) {
   const navigate = useNavigate();
   const [deleteUser, deleteState] = usersApi.useRemoveUserMutation();
@@ -67,6 +72,37 @@ export default function TableRow({
     }
   }, [deleteState.isSuccess, deleteState.isError]);
 
+  const findParent = (list: Team[]): Team[] => {
+    const last = list[0];
+    const foundParent = teams?.find((team) => team.id === last.parentTeamId);
+    if (!foundParent) {
+      return list;
+    }
+    return findParent([foundParent, ...list]);
+  };
+
+  const structure = person.teams?.map((team) => {
+    const found = teams?.find((t) => t.id === team.teamId);
+    return findParent([found!]);
+  });
+
+  const structureItems = structure?.reduce<
+    Record<(typeof structureKeys)[number], Team[]>
+  >(
+    (acc, teams) => {
+      teams.forEach((team, i) => {
+        acc[structureKeys[i]].push(team);
+      });
+      return acc;
+    },
+    {
+      product: [],
+      department: [],
+      direction: [],
+      group: [],
+    },
+  );
+
   return (
     <tr
       className={cva({
@@ -107,18 +143,46 @@ export default function TableRow({
         <div className="text-gray-500">{person.username}</div>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        {person.teams?.map((e, index) => (
-          <span key={e.teamId}>
-            {e?.team?.name}
-            {index !== person.teams!.length - 1 && ', '}
-          </span>
+        {structureItems?.product.map((team) => (
+          <Link to={`/teams/${team.id}`}>
+            <Badge color="gray" key={team.id} className="max-w-36">
+              <div className="truncate">{team.name}</div>
+            </Badge>
+          </Link>
+        ))}
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+        {structureItems?.department.map((team) => (
+          <Link to={`/teams/${team.id}`}>
+            <Badge color="purple" key={team.id} className="max-w-36">
+              <div className="truncate">{team.name}</div>
+            </Badge>
+          </Link>
+        ))}
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+        {structureItems?.direction.map((team) => (
+          <Link to={`/teams/${team.id}`}>
+            <Badge color="yellow" key={team.id} className="max-w-36">
+              <div className="truncate">{team.name}</div>
+            </Badge>
+          </Link>
+        ))}
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+        {structureItems?.group.map((team) => (
+          <Link to={`/teams/${team.id}`}>
+            <Badge color="indigo" key={team.id} className="max-w-36">
+              <div className="truncate">{team.name}</div>
+            </Badge>
+          </Link>
         ))}
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         <div className="flex flex-wrap gap-2 max-w-52">
           {person.specsOnTeams?.map((spec) => (
-            <Badge color="green" key={spec.spec.id}>
-              {spec.spec.name}
+            <Badge color="green" key={spec.spec.id} className="max-w-36">
+              <div className="truncate">{spec.spec.name}</div>
             </Badge>
           ))}
         </div>

@@ -14,6 +14,7 @@ import { Response } from 'express';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { UsersAccessService } from 'src/users/users-access.service';
 import { NotificationsService } from 'src/notification/notifications.service';
+import { FilesService } from 'src/files/files.service';
 
 type AssignedType = Prisma.User_Assigned_TestGetPayload<{
   include: {
@@ -29,6 +30,7 @@ export class TestService {
     private notificationsService: NotificationsService,
     private excelService: ExcelService,
     private usersAccessService: UsersAccessService,
+    private filesService: FilesService,
   ) {}
 
   async getFindAllInclude(
@@ -130,6 +132,7 @@ export class TestService {
         showScoreToUser: data.showScoreToUser,
         timeLimit: data.timeLimit,
         shuffleQuestions: data.shuffleQuestions,
+        previewImage: data.previewImage,
       },
     });
 
@@ -1133,6 +1136,10 @@ export class TestService {
     });
     if (!test) throw new NotFoundException('Тест не найден');
 
+    if (test.previewImage) {
+      await this.filesService.deleteFile(test.previewImage);
+    }
+
     return await this.prismaService.test.update({
       where: {
         id: testId,
@@ -1176,6 +1183,7 @@ export class TestService {
         showScoreToUser: data.showScoreToUser,
         timeLimit: data.timeLimit,
         shuffleQuestions: data.shuffleQuestions,
+        previewImage: data.previewImage ? data.previewImage : null,
       },
     });
 

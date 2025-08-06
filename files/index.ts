@@ -69,16 +69,24 @@ app.decorate(
   },
 );
 
+const sanitizeFileName = (fileName: string): string => {
+  return fileName
+    .replace(/[^a-zA-Z0-9.-]/g, '_') // заменяем спецсимволы на _
+    .replace(/_{2,}/g, '_') // убираем множественные _
+    .replace(/^_|_$/g, ''); // убираем _ в начале и конце
+};
+
 app.post(
   '/upload',
   { preHandler: [app.authenticate] },
   async (req: FastifyRequest, reply: FastifyReply) => {
     const data: MultipartFile = await (req as any).file();
-    const name = Date.now() + data.filename;
+    const sanitizedOriginalName = sanitizeFileName(data.filename);
+    const name = Date.now() + sanitizedOriginalName;
     const filePath = path.join(UPLOAD_DIR, name);
 
     await fs.promises.writeFile(filePath, await data.toBuffer());
-    reply.send({ success: true, filename: name });
+    reply.send({ success: true, filename: '/uploads/' + name });
   },
 );
 
@@ -86,7 +94,7 @@ app.get(
   '/uploads/*',
   { preHandler: [app.authenticate] },
   async (req: FastifyRequest, reply: FastifyReply) => {
-    const fileName = (req.params as any)['*'];
+    const fileName = decodeURIComponent((req.params as any)['*']);
     const filePath = path.join(UPLOAD_DIR, fileName);
 
     if (!fs.existsSync(filePath)) {
@@ -102,7 +110,8 @@ app.delete(
   { preHandler: [app.authenticate] },
   async (req: FastifyRequest, reply: FastifyReply) => {
     const { filename } = req.params as { filename: string };
-    const filePath = path.join(UPLOAD_DIR, filename);
+    const decodedFilename = decodeURIComponent(filename);
+    const filePath = path.join(UPLOAD_DIR, decodedFilename);
 
     if (!fs.existsSync(filePath)) {
       return reply.code(404).send({ error: 'File not found' });

@@ -8,116 +8,107 @@ datasource db {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  role         Role    @relation(fields: [roleId], references: [id])
-  roleId       Int
-  username     String  @unique
-  phone        String? @unique
-  email        String  @unique
-  passwordHash String?
-  firstName    String?
-  lastName     String?
-  avatar       String?
-  specId       Int?
-  authCode     String?
-
-  assignedCourses   Assigned_Course[]
-  assignedTests     User_Assigned_Test[]
-  assignedSurveys   User_Assigned_Survey[]
-  growthPlans       IndividualGrowthPlan[] @relation("UserGrowthPlans")
-
-  Spec              Spec?                  @relation(fields: [specId], references: [id])
-  ratesToEvaluate   Rate360Evaluator[]
-  rates360          Rate360[]
-  notifications     Notification[]
-  logs              GrowthPlanLog[]
-  teams             UserTeam[]
-  specsOnTeams      SpecsOnUserTeam[]
-  userRates         UserRates[]
-  userComments      UserComments[]
-  planCurators      GrowthPlanCurator[]
-  answeredQuestions UserAnsweredQuestion[]
-
-  // Self-relation fields
-  deputyRelationsAsUser    UserDeputy[] @relation("UserDeputyUser")
-  deputyRelationsAsDeputy  UserDeputy[] @relation("UserDeputyDeputy")
-
-  teamCurator Team[]
-
-  supportTickets SupportTicket[] @relation("UserSupportTicket")
-  curatorTickets SupportTicket[] @relation("CuratorSupportTicket")
-
-  createdAt DateTime @default(now())
+  id                      Int                    @id @default(autoincrement())
+  roleId                  Int
+  username                String                 @unique
+  phone                   String?                @unique
+  email                   String                 @unique
+  passwordHash            String?
+  firstName               String?
+  lastName                String?
+  avatar                  String?
+  specId                  Int?
+  authCode                String?
+  mentorId                Int?
+  createdAt               DateTime               @default(now())
+  assignedCourses         Assigned_Course[]
+  planCurators            GrowthPlanCurator[]
+  logs                    GrowthPlanLog[]
+  growthPlans             IndividualGrowthPlan[] @relation("UserGrowthPlans")
+  notifications           Notification[]
+  rates360                Rate360[]
+  ratesToEvaluate         Rate360Evaluator[]
+  specsOnTeams            SpecsOnUserTeam[]
+  curatorTickets          SupportTicket[]        @relation("CuratorSupportTicket")
+  supportTickets          SupportTicket[]        @relation("UserSupportTicket")
+  teamCurator             Team[]
+  User                    User?                  @relation("UserToUser", fields: [mentorId], references: [id])
+  other_User              User[]                 @relation("UserToUser")
+  role                    Role                   @relation(fields: [roleId], references: [id])
+  Spec                    Spec?                  @relation(fields: [specId], references: [id])
+  answeredQuestions       UserAnsweredQuestion[]
+  userComments            UserComments[]
+  deputyRelationsAsDeputy UserDeputy[]           @relation("UserDeputyDeputy")
+  deputyRelationsAsUser   UserDeputy[]           @relation("UserDeputyUser")
+  userRates               UserRates[]
+  teams                   UserTeam[]
+  assignedSurveys         User_Assigned_Survey[]
+  assignedTests           User_Assigned_Test[]
 }
 
 model UserDeputy {
-  id       Int @id @default(autoincrement())
-  userId   Int
-  deputyId Int
-  
-  user   User @relation("UserDeputyUser", fields: [userId], references: [id], onDelete: Cascade)
-  deputy User @relation("UserDeputyDeputy", fields: [deputyId], references: [id], onDelete: Cascade)
-  
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  deputyId  Int
   createdAt DateTime @default(now())
-  
+  deputy    User     @relation("UserDeputyDeputy", fields: [deputyId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserDeputyUser", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, deputyId])
 }
 
 model Rate360 {
-  id               Int         @id @default(autoincrement())
-  userConfirmed    Boolean     @default(false)
-  curatorConfirmed Boolean     @default(false)
-  startDate        DateTime?   @default(now())
+  id               Int                   @id @default(autoincrement())
+  userConfirmed    Boolean               @default(false)
+  curatorConfirmed Boolean               @default(false)
+  startDate        DateTime?             @default(now())
   endDate          DateTime?
   userId           Int
   specId           Int
   teamId           Int?
-  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  archived         Boolean     @default(false)
+  archived         Boolean               @default(false)
   type             SkillType
-  userComment      String?
+  createdAt        DateTime              @default(now())
   curatorComment   String?
-  finished         Boolean     @default(false)
-  hidden           Boolean     @default(false)
-  rateType         Rate360Type @default(Rate360)
-  showReportToUser Boolean     @default(false)
-
-  competencyBlocks CompetencyBlock[]
-  userRates        UserRates[]
+  finished         Boolean               @default(false)
+  rateType         Rate360Type           @default(Rate360)
+  userComment      String?
+  showReportToUser Boolean               @default(false)
+  hidden           Boolean               @default(false)
+  plan             IndividualGrowthPlan?
+  notifications    Notification[]
+  spec             Spec                  @relation(fields: [specId], references: [id], onDelete: Cascade)
+  team             Team?                 @relation(fields: [teamId], references: [id])
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   evaluators       Rate360Evaluator[]
   comments         UserComments[]
-  spec             Spec                  @relation(fields: [specId], references: [id], onDelete: Cascade)
-  team             Team?                  @relation(fields: [teamId], references: [id], onDelete: SetNull)
-  plan             IndividualGrowthPlan?
-  createdAt        DateTime              @default(now())
-  notifications    Notification[]
+  userRates        UserRates[]
+  competencyBlocks CompetencyBlock[]     @relation("CompetencyBlockToRate360")
 }
 
 model UserComments {
-  id           Int    @id @default(autoincrement())
+  id           Int        @id @default(autoincrement())
   userId       Int
   rate360Id    Int
   comment      String
   competencyId Int
-
-  compentency Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rate360     Rate360    @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
+  compentency  Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  rate360      Rate360    @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserRates {
-  id             Int     @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   userId         Int
   rate360Id      Int
   indicatorId    Int
   rate           Int
-  approved       Boolean @default(false)
-  approvedByUser Boolean @default(false)
-
-  indicator Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rate360   Rate360   @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
+  approved       Boolean   @default(false)
+  approvedByUser Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  indicator      Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  rate360        Rate360   @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Role {
@@ -126,7 +117,6 @@ model Role {
   users User[]
 }
 
-// назначенные курсы для юзеоов
 model Assigned_Course {
   id        Int       @id @default(autoincrement())
   userId    Int
@@ -134,227 +124,202 @@ model Assigned_Course {
   startDate DateTime?
   endDate   DateTime?
   status    Status    @default(ACTIVE)
-
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
+  course    Course    @relation(fields: [courseId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model Course {
-  id          Int     @id @default(autoincrement())
-  externalUrl String?
-  name        String
-  description String
-  specId      Int?
-  skillId     Int
-
-  Spec            Spec?             @relation(fields: [specId], references: [id])
-  Assigned_Course Assigned_Course[]
+  id              Int               @id @default(autoincrement())
+  externalUrl     String?
+  name            String
+  description     String
+  specId          Int?
+  skillId         Int
   archived        Boolean           @default(false)
+  Assigned_Course Assigned_Course[]
+  Spec            Spec?             @relation(fields: [specId], references: [id])
 }
 
 model Spec {
   id               Int                    @id @default(autoincrement())
   name             String
-  active           Boolean @default(true)
   description      String?
-  users            User[]
+  active           Boolean                @default(true)
+  archived         Boolean                @default(false)
   courses          Course[]
-  rate360          Rate360[]
-  growthPlans      IndividualGrowthPlan[]
-  usersTeams       SpecsOnUserTeam[]
-  competencyBlocks CompetencyBlock[] @relation("SpecBlocks")
   curatorSpecs     CuratorSpecs[]
-  archived         Boolean @default(false)
+  growthPlans      IndividualGrowthPlan[]
+  rate360          Rate360[]
+  usersTeams       SpecsOnUserTeam[]
+  users            User[]
+  competencyBlocks CompetencyBlock[]      @relation("SpecBlocks")
 }
 
-// назначенные тесты юзеру
 model User_Assigned_Test {
-  id                    Int       @id @default(autoincrement())
+  id                    Int                    @id @default(autoincrement())
   userId                Int
   testId                Int
   startDate             DateTime?
   endDate               DateTime?
-  finished              Boolean   @default(false)
-  availableFrom         DateTime? @default(now())
-  firstNotificationSent Boolean   @default(false)
-
-  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  test              Test                   @relation(fields: [testId], references: [id], onDelete: Cascade)
-  answeredQUestions UserAnsweredQuestion[]
-  notifications     Notification[]
+  availableFrom         DateTime?              @default(now())
+  finished              Boolean                @default(false)
+  firstNotificationSent Boolean                @default(false)
+  notifications         Notification[]
+  answeredQUestions     UserAnsweredQuestion[]
+  test                  Test                   @relation(fields: [testId], references: [id], onDelete: Cascade)
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// назначенные опросы юзеру
 model User_Assigned_Survey {
-  id                    Int       @id @default(autoincrement())
+  id                    Int                    @id @default(autoincrement())
   userId                Int
   surveyId              Int
   startDate             DateTime?
   endDate               DateTime?
-  finished              Boolean   @default(false)
-  availableFrom         DateTime? @default(now())
-  firstNotificationSent Boolean   @default(false)
-
-  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  survey            Survey                 @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  answeredQUestions UserAnsweredQuestion[]
-  notifications     Notification[]
+  finished              Boolean                @default(false)
+  availableFrom         DateTime?              @default(now())
+  firstNotificationSent Boolean                @default(false)
+  notifications         Notification[]
+  answeredQUestions     UserAnsweredQuestion[]
+  survey                Survey                 @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserAnsweredQuestion {
-  id               Int      @id @default(autoincrement())
+  id               Int                          @id @default(autoincrement())
   userId           Int
   questionId       Int?
   surveyQuestionId Int?
   assignedTestId   Int?
   assignedSurveyId Int?
   correct          Boolean?
-
-  textAnswer   String?
-  numberAnswer Int?
-  scaleAnswer  Int?
-  dateAnswer   DateTime?
-  fileAnswer   String?
-  phoneAnswer  String?
-  timeAnswer   String?
-
-  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  question       Question?             @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  surveyQuestion SurveyQuestion?       @relation(fields: [surveyQuestionId], references: [id], onDelete: Cascade)
-  test           User_Assigned_Test?   @relation(fields: [assignedTestId], references: [id], onDelete: Cascade)
-  survey         User_Assigned_Survey? @relation(fields: [assignedSurveyId], references: [id], onDelete: Cascade)
-
-  options UserAnsweredQuestionOption[]
+  textAnswer       String?
+  numberAnswer     Int?
+  scaleAnswer      Int?
+  dateAnswer       DateTime?
+  fileAnswer       String?
+  phoneAnswer      String?
+  timeAnswer       String?
+  survey           User_Assigned_Survey?        @relation(fields: [assignedSurveyId], references: [id], onDelete: Cascade)
+  test             User_Assigned_Test?          @relation(fields: [assignedTestId], references: [id], onDelete: Cascade)
+  question         Question?                    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  surveyQuestion   SurveyQuestion?              @relation(fields: [surveyQuestionId], references: [id], onDelete: Cascade)
+  user             User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  options          UserAnsweredQuestionOption[]
 }
 
 model UserAnsweredQuestionOption {
-  id                     Int      @id @default(autoincrement())
+  id                     Int                  @id @default(autoincrement())
   userAnsweredQuestionId Int
   optionId               Int
   correct                Boolean?
-
-  userAnsweredQuestion UserAnsweredQuestion @relation(fields: [userAnsweredQuestionId], references: [id], onDelete: Cascade)
-  option               Option               @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  option                 Option               @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userAnsweredQuestion   UserAnsweredQuestion @relation(fields: [userAnsweredQuestionId], references: [id], onDelete: Cascade)
 }
 
-// опросы
 model Survey {
-  id            Int        @id @default(autoincrement())
-  name          String
-  description   String?
-  finishMessage String?
-  startDate     DateTime
-  endDate       DateTime?
-  access        TestAccess @default(PRIVATE)
-  anonymous     Boolean    @default(false)
-
-  surveyQuestions SurveyQuestion[]
-  usersAssigned   User_Assigned_Survey[]
-
-  archived Boolean @default(false)
-  hidden   Boolean @default(true)
-}
-
-model SurveyQuestion {
-  id          Int        @id @default(autoincrement())
-  type        SurveyType
-  label       String
-  description String?
-  surveyId    Int
-  order       Int
-  required    Boolean    @default(true)
-  archived    Boolean    @default(false)
-  photoUrl String?
-
-  maxLength Int?
-
-  maxNumber    Int?
-  minNumber    Int?
-  allowDecimal Boolean @default(false)
-
-  scaleDots  Int?
-  scaleStart String?
-  scaleEnd   String?
-
-  options Option[]
-
-  Survey            Survey                 @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  answeredQuestions UserAnsweredQuestion[]
-}
-
-// тесты
-model Test {
-  id              Int        @id @default(autoincrement())
+  id              Int                    @id @default(autoincrement())
   name            String
   description     String?
   finishMessage   String?
   startDate       DateTime
   endDate         DateTime?
-  access          TestAccess @default(PRIVATE)
-  anonymous       Boolean    @default(false)
-  limitedByTime   Boolean    @default(false)
-  timeLimit       Int?
-  minimumScore    Int?
-  passedMessage   String?
-  failedMessage   String?
-  showScoreToUser Boolean    @default(false)
-
-  testQuestions Question[]
-  usersAssigned User_Assigned_Test[]
-
-  archived Boolean @default(false)
-  hidden   Boolean @default(true)
-  shuffleQuestions Boolean @default(false)
+  access          TestAccess             @default(PRIVATE)
+  anonymous       Boolean                @default(false)
+  archived        Boolean                @default(false)
+  hidden          Boolean                @default(true)
+  surveyQuestions SurveyQuestion[]
+  usersAssigned   User_Assigned_Survey[]
+  previewImage     String?
 }
 
-model Question {
-  id                 Int          @id @default(autoincrement())
-  type               QuestionType
-  label              String
-  description        String?
-  testId             Int
-  order              Int
-  options            Option[]
-  maxLength          Int?
-  maxNumber          Int?
-  minNumber          Int?
-  required           Boolean      @default(true)
-  numberCorrectValue Int?
-  allowDecimal       Boolean      @default(false)
-  textCorrectValue   String?
-  score              Int?
-
-  archived Boolean @default(false)
-  photoUrl String?
-
-  Test              Test                   @relation(fields: [testId], references: [id], onDelete: Cascade)
+model SurveyQuestion {
+  id                Int                    @id @default(autoincrement())
+  type              SurveyType
+  label             String
+  description       String?
+  surveyId          Int
+  order             Int
+  required          Boolean                @default(true)
+  archived          Boolean                @default(false)
+  maxLength         Int?
+  maxNumber         Int?
+  minNumber         Int?
+  allowDecimal      Boolean                @default(false)
+  scaleDots         Int?
+  scaleStart        String?
+  scaleEnd          String?
+  photoUrl          String?
+  options           Option[]
+  Survey            Survey                 @relation(fields: [surveyId], references: [id], onDelete: Cascade)
   answeredQuestions UserAnsweredQuestion[]
 }
 
-model Option {
-  id               Int     @id @default(autoincrement())
-  questionId       Int?
-  surveyQuestionId Int?
-  value            String
-  isCorrect        Boolean @default(false)
-  archived         Boolean @default(false)
-  score            Int?
-
-  Question       Question?                    @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  SurveyQuestion SurveyQuestion?              @relation(fields: [surveyQuestionId], references: [id], onDelete: Cascade)
-  pickedOptions  UserAnsweredQuestionOption[]
+model Test {
+  id               Int                  @id @default(autoincrement())
+  name             String
+  anonymous        Boolean              @default(false)
+  description      String?
+  startDate        DateTime
+  endDate          DateTime?
+  archived         Boolean              @default(false)
+  failedMessage    String?
+  finishMessage    String?
+  hidden           Boolean              @default(true)
+  limitedByTime    Boolean              @default(false)
+  minimumScore     Int?
+  passedMessage    String?
+  showScoreToUser  Boolean              @default(false)
+  timeLimit        Int?
+  access           TestAccess           @default(PRIVATE)
+  shuffleQuestions Boolean              @default(false)
+  testQuestions    Question[]
+  usersAssigned    User_Assigned_Test[]
+  previewImage     String?
 }
 
-// оценивающий 360
+model Question {
+  id                 Int                    @id @default(autoincrement())
+  description        String?
+  testId             Int
+  order              Int
+  allowDecimal       Boolean                @default(false)
+  archived           Boolean                @default(false)
+  label              String
+  maxLength          Int?
+  maxNumber          Int?
+  minNumber          Int?
+  numberCorrectValue Int?
+  required           Boolean                @default(true)
+  score              Int?
+  textCorrectValue   String?
+  type               QuestionType
+  photoUrl           String?
+  options            Option[]
+  Test               Test                   @relation(fields: [testId], references: [id], onDelete: Cascade)
+  answeredQuestions  UserAnsweredQuestion[]
+}
+
+model Option {
+  id               Int                          @id @default(autoincrement())
+  questionId       Int?
+  value            String
+  isCorrect        Boolean                      @default(false)
+  archived         Boolean                      @default(false)
+  score            Int?
+  surveyQuestionId Int?
+  Question         Question?                    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  SurveyQuestion   SurveyQuestion?              @relation(fields: [surveyQuestionId], references: [id], onDelete: Cascade)
+  pickedOptions    UserAnsweredQuestionOption[]
+}
+
 model Rate360Evaluator {
-  id        Int @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   userId    Int
   rate360Id Int
-
-  type EvaluatorType @default(TEAM_MEMBER)
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rate360 Rate360 @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
+  type      EvaluatorType @default(TEAM_MEMBER)
+  rate360   Rate360       @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SkillsOnRate360 {
@@ -365,172 +330,156 @@ model SkillsOnRate360 {
 }
 
 model GrowthPlanCurator {
-  id           Int @id @default(autoincrement())
-  userId       Int
-  planId       Int
-
-  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan       IndividualGrowthPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  id     Int                  @id @default(autoincrement())
+  userId Int
+  planId Int
+  plan   IndividualGrowthPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user   User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model GrowthPlanTask {
-  id       Int              @id @default(autoincrement())
-  deadline DateTime?
-  status   TaskStatus
-  priority TaskPriority?    @default(MEDIUM)
-  type     TaskMaterialType
-  onBoard  Boolean          @default(false)
-
+  id           Int                  @id @default(autoincrement())
+  deadline     DateTime?
+  status       TaskStatus
+  priority     TaskPriority?        @default(MEDIUM)
+  type         TaskMaterialType
+  onBoard      Boolean              @default(false)
   planId       Int
-  competencyId Int?
   indicatorId  Int?
   materialId   Int
-
-  material   Material              @relation(fields: [materialId], references: [id], onDelete: Cascade)
-  competency Competency?           @relation(fields: [competencyId], references: [id])
-  indicator  Indicator?            @relation(fields: [indicatorId], references: [id])
-  plan       IndividualGrowthPlan? @relation(fields: [planId], references: [id], onDelete: Cascade)
+  competencyId Int?
+  competency   Competency?          @relation(fields: [competencyId], references: [id])
+  indicator    Indicator?           @relation(fields: [indicatorId], references: [id])
+  material     Material             @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  plan         IndividualGrowthPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
 }
 
-// ИПР
 model IndividualGrowthPlan {
-  id        Int       @id @default(autoincrement())
-  userId    Int
-  startDate DateTime
-  endDate   DateTime?
-  status    Status
-  goal      String
-  result    Resut?
-  specId    Int?
-  rate360Id Int?      @unique // Добавляем @unique
-
-  spec          Spec?               @relation(fields: [specId], references: [id])
-  user          User                @relation("UserGrowthPlans", fields: [userId], references: [id], onDelete: Cascade)
-  rate360       Rate360?            @relation(fields: [rate360Id], references: [id], onDelete: SetNull) // Делаем опциональным
-  materials     Material[]
-  logs          GrowthPlanLog[]
+  id            Int                 @id @default(autoincrement())
+  userId        Int
+  startDate     DateTime
+  endDate       DateTime?
+  status        Status
+  goal          String
+  result        Resut?
+  specId        Int?
   archived      Boolean             @default(false)
-  tasks         GrowthPlanTask[]
   version       DateTime            @default(now())
   skillType     SkillType
+  rate360Id     Int?                @unique
   planCurators  GrowthPlanCurator[]
+  logs          GrowthPlanLog[]
+  tasks         GrowthPlanTask[]
+  rate360       Rate360?            @relation(fields: [rate360Id], references: [id])
+  spec          Spec?               @relation(fields: [specId], references: [id])
+  user          User                @relation("UserGrowthPlans", fields: [userId], references: [id], onDelete: Cascade)
+  materials     Material[]
   notifications Notification[]
 }
 
-// пока не использован нигде
 model GrowthPlanLog {
-  id          Int        @id @default(autoincrement())
+  id          Int                  @id @default(autoincrement())
   planId      Int
   changedById Int
-  changeDate  DateTime   @default(now())
-  changeType  ChangeType // Например, CREATED, UPDATED, DELETED
+  changeDate  DateTime             @default(now())
+  changeType  ChangeType
   changes     Json
-
-  plan      IndividualGrowthPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
-  changedBy User                 @relation(fields: [changedById], references: [id])
+  changedBy   User                 @relation(fields: [changedById], references: [id])
+  plan        IndividualGrowthPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
 }
 
 model Notification {
-  id               Int              @id @default(autoincrement())
+  id               Int                   @id @default(autoincrement())
   userId           Int
   title            String
   description      String?
-  date             DateTime         @default(now())
-  watched          Boolean          @default(false)
-  type             NotificationType
-  assignedTestId   Int?
-  assignedSurveyId Int?
+  date             DateTime              @default(now())
+  watched          Boolean               @default(false)
   url              String?
-
-  rateId Int?
-  rate   Rate360? @relation(fields: [rateId], references: [id], onDelete: Cascade)
-
-  iprId Int?
-  ipr   IndividualGrowthPlan? @relation(fields: [iprId], references: [id], onDelete: Cascade)
-
-  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  assignedTest   User_Assigned_Test?   @relation(fields: [assignedTestId], references: [id], onDelete: Cascade)
-  assignedSurvey User_Assigned_Survey? @relation(fields: [assignedSurveyId], references: [id], onDelete: Cascade)
+  assignedSurveyId Int?
+  assignedTestId   Int?
+  iprId            Int?
+  rateId           Int?
+  type             NotificationType
+  assignedSurvey   User_Assigned_Survey? @relation(fields: [assignedSurveyId], references: [id], onDelete: Cascade)
+  assignedTest     User_Assigned_Test?   @relation(fields: [assignedTestId], references: [id], onDelete: Cascade)
+  ipr              IndividualGrowthPlan? @relation(fields: [iprId], references: [id], onDelete: Cascade)
+  rate             Rate360?              @relation(fields: [rateId], references: [id], onDelete: Cascade)
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Team {
   id           Int            @id @default(autoincrement())
-  name         String         
+  name         String
   description  String?
-  users        UserTeam[]
   parentTeamId Int?
+  curatorId    Int?
+  createdAt    DateTime       @default(now())
+  curatorSpecs CuratorSpecs[]
+  Rate360      Rate360[]
+  curator      User?          @relation(fields: [curatorId], references: [id])
   parentTeam   Team?          @relation("SubTeams", fields: [parentTeamId], references: [id])
   subTeams     Team[]         @relation("SubTeams")
-  curatorId    Int?
-  curator      User?          @relation(fields: [curatorId], references: [id])
-  createdAt    DateTime       @default(now())
-  Rate360      Rate360[]
-  curatorSpecs CuratorSpecs[]
+  users        UserTeam[]
 }
 
 model CuratorSpecs {
   specId Int
   teamId Int
-
-  spec Spec @relation(fields: [specId], references: [id], onDelete: Cascade)
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  spec   Spec @relation(fields: [specId], references: [id], onDelete: Cascade)
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@id([specId, teamId])
 }
 
 model UserTeam {
-  id     Int @id @default(autoincrement())
+  id     Int               @id @default(autoincrement())
   userId Int
   teamId Int
-
-  user  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  team  Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  specs SpecsOnUserTeam[] @relation("UserTeamToSpecs")
+  specs  SpecsOnUserTeam[] @relation("UserTeamToSpecs")
+  team   Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, teamId])
 }
 
 model SpecsOnUserTeam {
-  specId Int
-  teamId Int
-  userId Int
-
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  spec     Spec     @relation(fields: [specId], references: [id], onDelete: Cascade)
-  userTeam UserTeam @relation("UserTeamToSpecs", fields: [userId, teamId], references: [userId, teamId], onDelete: Cascade)
-
+  specId    Int
+  teamId    Int
+  userId    Int
   createdAt DateTime @default(now())
+  spec      Spec     @relation(fields: [specId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userTeam  UserTeam @relation("UserTeamToSpecs", fields: [userId, teamId], references: [userId, teamId], onDelete: Cascade)
 
   @@id([specId, teamId, userId])
 }
 
-// Компетенции внутри специализации
-// специализация -> блоки компетенций -> компетенции -> индикаторы
 model CompetencyBlock {
-  id           Int          @id @default(autoincrement())
-  name         String
-  type         SkillType // Soft или Hard
-  competencies Competency[] // Связь с компетенциями
-  specs        Spec[]   @relation("SpecBlocks")
-  rates360     Rate360[]
-  profileStrcuctureFoldersSpec ProfileConstructorFolderSpec[]
-  order        Int @default(0)
-  archived     Boolean?     @default(false)
-  archivedDate DateTime?
+  id                           Int                            @id @default(autoincrement())
+  name                         String
+  type                         SkillType
+  archived                     Boolean?                       @default(false)
+  archivedDate                 DateTime?
+  order                        Int                            @default(0)
+  competencies                 Competency[]
+  profileStrcuctureFoldersSpec ProfileConstructorFolderSpec[] @relation("CompetencyBlockToProfileConstructorFolderSpec")
+  rates360                     Rate360[]                      @relation("CompetencyBlockToRate360")
+  specs                        Spec[]                         @relation("SpecBlocks")
 }
 
 model Competency {
   id           Int                  @id @default(autoincrement())
   name         String
   blockId      Int
-  block        CompetencyBlock      @relation(fields: [blockId], references: [id], onDelete: Cascade)
-  indicators   Indicator[] // Связь с индикаторами
-  materials    CompetencyMaterial[]
-  comments     UserComments[]
-  task         GrowthPlanTask[]
-  order        Int @default(0)
   archived     Boolean?             @default(false)
   archivedDate DateTime?
+  order        Int                  @default(0)
+  block        CompetencyBlock      @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  materials    CompetencyMaterial[]
+  task         GrowthPlanTask[]
+  indicators   Indicator[]
+  comments     UserComments[]
 }
 
 model Indicator {
@@ -538,47 +487,40 @@ model Indicator {
   name         String
   description  String?
   competencyId Int
+  archived     Boolean?            @default(false)
+  archivedDate DateTime?
   boundary     Int                 @default(3)
+  hint1        String?
+  hint2        String?
+  hint3        String?
+  hint4        String?
+  hint5        String?
+  value1       String?
+  value2       String?
+  value3       String?
+  value4       String?
+  value5       String?
+  skipHint     String?
+  skipValue    String?
+  order        Int                 @default(0)
+  task         GrowthPlanTask[]
   competency   Competency          @relation(fields: [competencyId], references: [id], onDelete: Cascade)
   materials    IndicatorMaterial[]
-  order        Int @default(0)
-
   userRates    UserRates[]
-  task         GrowthPlanTask[]
-  archived     Boolean?         @default(false)
-  archivedDate DateTime?
-
-  skipHint String?
-  skipValue String?
-
-  hint1 String?
-  hint2 String?
-  hint3 String?
-  hint4 String?
-  hint5 String?
-
-  value1 String?
-  value2 String?
-  value3 String?
-  value4 String?
-  value5 String?
 }
 
-// Материалы 
-// Привязаны к компетенциям и индикаторам
 model Material {
-  id          Int                 @id @default(autoincrement())
-  planId      Int?
-  name        String
-  description String
-  url         String?
-  level       Int
-  contentType MaterialContentType
-
-  plan                IndividualGrowthPlan? @relation(fields: [planId], references: [id])
+  id                  Int                   @id @default(autoincrement())
+  planId              Int?
+  name                String
+  description         String
+  url                 String?
+  level               Int
+  contentType         MaterialContentType
   competencyMaterials CompetencyMaterial[]
-  indicatorMaterials  IndicatorMaterial[]
   task                GrowthPlanTask[]
+  indicatorMaterials  IndicatorMaterial[]
+  plan                IndividualGrowthPlan? @relation(fields: [planId], references: [id])
 }
 
 model CompetencyMaterial {
@@ -600,50 +542,45 @@ model IndicatorMaterial {
 }
 
 model ProfileVersion {
-  id Int @id @default(autoincrement())
-
+  id   Int      @id @default(autoincrement())
   date DateTime
 }
 
 model SupportTicket {
-  id          Int      @id @default(autoincrement())
+  id          Int                 @id @default(autoincrement())
   userId      Int
   title       String
   description String
   status      SupportTicketStatus @default(OPEN)
-  createdAt   DateTime @default(now())
+  createdAt   DateTime            @default(now())
   curatorId   Int?
-
-  user User @relation("UserSupportTicket", fields: [userId], references: [id], onDelete: Cascade)
-  curator User? @relation("CuratorSupportTicket", fields: [curatorId], references: [id], onDelete: SetNull)
+  curator     User?               @relation("CuratorSupportTicket", fields: [curatorId], references: [id])
+  user        User                @relation("UserSupportTicket", fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// ProfileConstructorFolderProduct[] -> ProfileConstructorFolderTeam[] -> ProfileConstructorFolderSpec[] -> CompetencyBlock[] -> Competency[] -> Indicator[]
 model ProfileConstructorFolderProduct {
-  id          Int      @id @default(autoincrement())
-  name        String
-  createdAt   DateTime  @default(now())
-  teams       ProfileConstructorFolderTeam[]
+  id        Int                            @id @default(autoincrement())
+  name      String
+  createdAt DateTime                       @default(now())
+  teams     ProfileConstructorFolderTeam[]
 }
 
 model ProfileConstructorFolderTeam {
-  id          Int      @id @default(autoincrement())
-  name        String
-  productId   Int
-  createdAt   DateTime @default(now())
-
-  product ProfileConstructorFolderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
-  specs   ProfileConstructorFolderSpec[] 
+  id        Int                             @id @default(autoincrement())
+  name      String
+  productId Int
+  createdAt DateTime                        @default(now())
+  specs     ProfileConstructorFolderSpec[]
+  product   ProfileConstructorFolderProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProfileConstructorFolderSpec {
-  id          Int      @id @default(autoincrement())
-  name        String
-  teamId      Int
-  createdAt   DateTime @default(now())
-
-  team ProfileConstructorFolderTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  competencyBlocks CompetencyBlock[]
+  id               Int                          @id @default(autoincrement())
+  name             String
+  teamId           Int
+  createdAt        DateTime                     @default(now())
+  team             ProfileConstructorFolderTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  competencyBlocks CompetencyBlock[]            @relation("CompetencyBlockToProfileConstructorFolderSpec")
 }
 
 enum SkillType {
