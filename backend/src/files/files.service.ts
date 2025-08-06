@@ -79,7 +79,7 @@ export class FilesService {
   }
 
   //   @Cron('0 0 * * 0')
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_WEEKEND)
   async cleanUpUnusedFiles() {
     try {
       console.log('Starting cleanup of unused files...');

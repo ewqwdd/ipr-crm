@@ -28,3 +28,12 @@ export const $uploadFile = async (file: File): Promise<string> => {
     throw new Error('Failed to upload file');
   }
 };
+
+export const $deleteFile = async (filename?: string): Promise<void> => {
+  try {
+    if (!filename) return;
+    await $fileApi.delete(`/uploads/${filename}`);
+  } catch (error) {
+    console.error('File deletion failed:', error);
+  }
+};

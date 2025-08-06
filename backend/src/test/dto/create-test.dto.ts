@@ -162,4 +162,8 @@ export class CreateTestDTO {
   @ValidateNested({ each: true })
   @Type(() => QuestionDTO)
   questions: QuestionDTO[];
+
+  @IsOptional()
+  @IsString()
+  previewImage?: string;
 }

@@ -67,6 +67,7 @@ export interface TestCreate {
   timeLimit?: number;
   minimumScore?: number;
   shuffleQuestions?: boolean;
+  previewImage?: string;
 }
 
 export interface TestCreateStoreSchema extends TestCreate {
@@ -106,6 +107,7 @@ export interface Test {
   timeLimit?: number;
   minimumScore?: number;
   shuffleQuestions?: boolean;
+  previewImage?: string;
 
   usersAssigned: AssignedTest[];
 }

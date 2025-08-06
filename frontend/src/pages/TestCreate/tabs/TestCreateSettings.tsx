@@ -18,6 +18,7 @@ export default function TestCreateSettings() {
   const shuffleQuestions = useAppSelector(
     (state) => state.testCreate.shuffleQuestions,
   );
+  const previewImage = useAppSelector((state) => state.testCreate.previewImage);
 
   // errors
   const errors = useAppSelector((state) => state.testCreate.errors);
@@ -101,18 +102,32 @@ export default function TestCreateSettings() {
     );
   }, [dispatch, shuffleQuestions]);
 
+  const onChangePreviewImage = useCallback(
+    (image?: string) => {
+      dispatch(
+        testCreateActions.setField({
+          field: 'previewImage',
+          value: image,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   const props = {
     name,
     description,
     passedMessage,
     showScoreToUser,
     shuffleQuestions,
+    previewImage,
     errors,
     onChangeName,
     onChangeDescription,
     onChangeShowScore,
     onChangePassedMessage,
     onChangeShuffleQuestions,
+    onChangePreviewImage,
   };
 
   return <TestSettings {...props} />;
