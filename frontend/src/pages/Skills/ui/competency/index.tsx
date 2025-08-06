@@ -31,21 +31,29 @@ const Competency: FC<CompetencyProps> = ({ archiveMutation }) => {
     if (!data) return;
     return data
       .map((item) => {
+        if (item.name.toLowerCase().includes(search.toLowerCase())) {
+          return item;
+        }
         const filteredCompetencies = item.competencies
-          .map((comp) => {
-            const filteredIndicators = comp.indicators.filter((indicator) =>
-              indicator.name.toLowerCase().includes(search.toLowerCase()),
-            );
+          .map((competency) => {
+            const isFoundName = competency.name
+              .toLowerCase()
+              .includes(search.toLowerCase());
             return {
-              ...comp,
-              indicators: filteredIndicators,
+              ...competency,
+              indicators: isFoundName
+                ? competency.indicators
+                : competency.indicators.filter((indicator) =>
+                    indicator.name.toLowerCase().includes(search.toLowerCase()),
+                  ),
             };
           })
           .filter(
-            (comp) =>
-              comp.indicators.length > 0 ||
-              comp.name.toLowerCase().includes(search.toLowerCase()),
+            (competency) =>
+              competency.indicators.length > 0 ||
+              competency.name.toLowerCase().includes(search.toLowerCase()),
           );
+
         return {
           ...item,
           competencies: filteredCompetencies,

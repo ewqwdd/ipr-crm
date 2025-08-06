@@ -146,16 +146,16 @@ export default function EditSkillsModal({
     closeModal();
   };
 
-  let title
+  let title;
   switch (type) {
     case CompetencyType.COMPETENCY:
-      title = 'Редактировать компетенцию'
+      title = 'Редактировать компетенцию';
       break;
     case CompetencyType.COMPETENCY_BLOCK:
-      title = 'Редактировать блок компетенции'
+      title = 'Редактировать блок компетенции';
       break;
     case CompetencyType.INDICATOR:
-      title = 'Редактировать индикатор'
+      title = 'Редактировать индикатор';
       break;
   }
 
