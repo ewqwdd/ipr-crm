@@ -2029,6 +2029,9 @@ export class Rate360Service {
                       approved: true,
                       userId: true,
                     },
+                    where: {
+                      approved: true,
+                    }
                   },
                   competencyBlocks: {
                     select: {
