@@ -90,10 +90,10 @@ export default function TableRow({
     Record<(typeof structureKeys)[number], Team[]>
   >(
     (acc, teams) => {
-      teams.forEach((team, i) => {
+      teams.slice(0, 4).forEach((team, i) => {
         const arr = acc[structureKeys[i]];
-        if (!arr.some((t) => t.id === team.id)) {
-          acc[structureKeys[i]].push(team);
+        if (!arr?.some((t) => t.id === team.id)) {
+          arr.push(team);
         }
       });
       return acc;
