@@ -17,7 +17,7 @@ import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
 import { AddEvaluatorsDto } from './dto/add-evalators.dto';
 import { RateFiltersDto } from './dto/rate-filters.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
-import { findAllRateInclude } from './constants';
+import { findAllRateInclude, RateTeamFiltersType } from './constants';
 import { TeamsHelpersService } from 'src/teams/teams.helpers.service';
 import { findHierarchyElements } from './helpers';
 import { NotificationsService } from 'src/notification/notifications.service';
@@ -77,6 +77,38 @@ export class Rate360Service {
     ];
   }
 
+  buildTeamFilters(
+    product?: string,
+    department?: string,
+    direction?: string,
+    group?: string,
+  ): { OR: RateTeamFiltersType[] } | undefined {
+    const getTeamFilters = (names: string[]) => {
+      if (names.length === 0) return null;
+      return {
+        parentTeam: {
+          name: names[0],
+          ...getTeamFilters(names.slice(1)),
+        },
+      };
+    };
+
+    const teamFilters = [group, direction, department, product];
+    const firstNotNull = teamFilters.findIndex(Boolean);
+    const sliced = teamFilters.slice(firstNotNull);
+
+    return sliced.length > 0 && firstNotNull !== -1
+      ? {
+          OR: new Array(firstNotNull + 1).fill(null).map((_, i) => {
+            return {
+              name: teamFilters[i],
+              ...getTeamFilters(teamFilters.slice(i + 1)),
+            };
+          }),
+        }
+      : undefined;
+  }
+
   findAllFilters({
     endDate,
     skill,
@@ -86,6 +118,10 @@ export class Rate360Service {
     user,
     hidden,
     curatorId,
+    department,
+    direction,
+    group,
+    product,
   }: RateFiltersDto): Prisma.Rate360FindManyArgs['where'] {
     return {
       archived: false,
@@ -129,46 +165,25 @@ export class Rate360Service {
         ? { evaluators: { some: { userId: curatorId, type: 'CURATOR' } } }
         : {}),
       hidden: !!hidden,
+      team: this.buildTeamFilters(product, department, direction, group),
     };
   }
 
   async findAll(data: RateFiltersDto, curator: GetSessionInfoDto) {
     const teamAccess = await this.usersService.findAllowedTeams(curator);
-    const teamFilter = {
-      product: data.product,
-      department: data.department,
-      direction: data.direction,
-      group: data.group,
-    };
-    const isTeamFilter = Object.values(teamFilter).filter(Boolean).length > 0;
+
     const { page, limit } = data;
 
     const where = this.findAllFilters(data);
 
-    where.team = {
-      id: {
-        in: teamAccess,
-      },
+    if (!where.team) where.team = {};
+
+    where.team.id = {
+      in: teamAccess,
     };
 
-    if (isTeamFilter) {
-      const ids = [
-        teamFilter.group,
-        teamFilter.direction,
-        teamFilter.department,
-        teamFilter.product,
-      ].filter(Boolean) as number[];
-      if (ids.some((id) => !teamAccess.includes(id)))
-        return { total: 0, page, limit, data: [] };
-      where.team = {
-        id: ids[0],
-      };
-    }
-
     if (curator?.id && data.includeWhereEvaluatorCurator) {
-      if (!isTeamFilter) {
-        delete where.team;
-      }
+      delete where.team.id;
       const or = [
         {
           team: { id: { in: teamAccess } },
@@ -221,28 +236,9 @@ export class Rate360Service {
     data: RateFiltersDto,
     curator: GetSessionInfoDto,
   ) {
-    const teamFilter = {
-      product: data.product,
-      department: data.department,
-      direction: data.direction,
-      group: data.group,
-    };
-    const isTeamFilter = Object.values(teamFilter).filter(Boolean).length > 0;
     const { page, limit } = data;
 
     const where = this.findAllFilters(data);
-
-    if (isTeamFilter) {
-      const ids = [
-        teamFilter.group,
-        teamFilter.direction,
-        teamFilter.department,
-        teamFilter.product,
-      ].filter(Boolean) as number[];
-      where.team = {
-        id: ids[0],
-      };
-    }
 
     where.userId = {
       in: await this.usersService.findAllowedSubbordinates(curator.id),
@@ -1940,28 +1936,13 @@ export class Rate360Service {
       }
       return { id: { in: allowedSubordinates } };
     };
-    const teamAccess = await this.usersService.findAllowedTeams(sessionInfo);
 
-    const teamFilter = {
-      product: filters.product,
-      department: filters.department,
-      direction: filters.direction,
-      group: filters.group,
-    };
-    const isTeamFilter = Object.values(teamFilter).filter(Boolean).length > 0;
-
-    let teamId = null;
-    if (isTeamFilter) {
-      const ids = [
-        teamFilter.group,
-        teamFilter.direction,
-        teamFilter.department,
-        teamFilter.product,
-      ].filter(Boolean) as number[];
-      if (ids.some((id) => !teamAccess.includes(id)))
-        return { total: 0, data: [] };
-      teamId = ids[0];
-    }
+    const teamFilter = this.buildTeamFilters(
+      filters.product,
+      filters.department,
+      filters.direction,
+      filters.group,
+    );
 
     const where: Prisma.UserWhereInput = {
       ...(await getUserFilter()),
@@ -1972,11 +1953,11 @@ export class Rate360Service {
           },
         },
       },
-      ...(teamId
+      ...(teamFilter
         ? {
             OR: [
-              { teams: { some: { teamId: teamId } } },
-              { teamCurator: { some: { id: teamId } } },
+              { teams: { some: { team: teamFilter } } },
+              { teamCurator: { some: teamFilter } },
             ],
           }
         : {}),
@@ -2031,7 +2012,7 @@ export class Rate360Service {
                     },
                     where: {
                       approved: true,
-                    }
+                    },
                   },
                   competencyBlocks: {
                     select: {

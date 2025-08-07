@@ -91,7 +91,10 @@ export default function TableRow({
   >(
     (acc, teams) => {
       teams.forEach((team, i) => {
-        acc[structureKeys[i]].push(team);
+        const arr = acc[structureKeys[i]];
+        if (!arr.some((t) => t.id === team.id)) {
+          acc[structureKeys[i]].push(team);
+        }
       });
       return acc;
     },
@@ -143,40 +146,48 @@ export default function TableRow({
         <div className="text-gray-500">{person.username}</div>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        {structureItems?.product.map((team) => (
-          <Link to={`/teams/${team.id}`}>
-            <Badge color="gray" key={team.id} className="max-w-36">
-              <div className="truncate">{team.name}</div>
-            </Badge>
-          </Link>
-        ))}
+        <div className="flex flex-col gap-1">
+          {structureItems?.product.map((team) => (
+            <Link to={`/teams/${team.id}`}>
+              <Badge color="gray" key={team.id} className="max-w-36">
+                <div className="truncate">{team.name}</div>
+              </Badge>
+            </Link>
+          ))}
+        </div>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        {structureItems?.department.map((team) => (
-          <Link to={`/teams/${team.id}`}>
-            <Badge color="purple" key={team.id} className="max-w-36">
-              <div className="truncate">{team.name}</div>
-            </Badge>
-          </Link>
-        ))}
+        <div className="flex flex-col gap-1">
+          {structureItems?.department.map((team) => (
+            <Link to={`/teams/${team.id}`}>
+              <Badge color="purple" key={team.id} className="max-w-36">
+                <div className="truncate">{team.name}</div>
+              </Badge>
+            </Link>
+          ))}
+        </div>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        {structureItems?.direction.map((team) => (
-          <Link to={`/teams/${team.id}`}>
-            <Badge color="yellow" key={team.id} className="max-w-36">
-              <div className="truncate">{team.name}</div>
-            </Badge>
-          </Link>
-        ))}
+        <div className="flex flex-col gap-1">
+          {structureItems?.direction.map((team) => (
+            <Link to={`/teams/${team.id}`}>
+              <Badge color="yellow" key={team.id} className="max-w-36">
+                <div className="truncate">{team.name}</div>
+              </Badge>
+            </Link>
+          ))}
+        </div>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        {structureItems?.group.map((team) => (
-          <Link to={`/teams/${team.id}`}>
-            <Badge color="indigo" key={team.id} className="max-w-36">
-              <div className="truncate">{team.name}</div>
-            </Badge>
-          </Link>
-        ))}
+        <div className="flex flex-col gap-1">
+          {structureItems?.group.map((team) => (
+            <Link to={`/teams/${team.id}`}>
+              <Badge color="indigo" key={team.id} className="max-w-36">
+                <div className="truncate">{team.name}</div>
+              </Badge>
+            </Link>
+          ))}
+        </div>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         <div className="flex flex-wrap gap-2 max-w-52">

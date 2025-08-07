@@ -57,3 +57,8 @@ export const findAllRateInclude: Prisma.Rate360FindManyArgs['include'] = {
   },
   plan: true,
 };
+
+export type RateTeamFiltersType = {
+  name?: string;
+  parentTeam?: RateTeamFiltersType | null;
+};

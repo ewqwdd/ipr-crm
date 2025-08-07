@@ -30,148 +30,123 @@ export default function TeamsHierarchyFilter({
   const access = useAppSelector((state) => state.user.user?.teamAccess);
   const { data } = teamsApi.useGetTeamsQuery();
   const structure = data?.structure;
-  const teams = data?.list;
-
-  const accessedTeams = useMemo<Team[]>(
-    () => teams?.filter((team) => access?.includes(team.id)) ?? [],
-    [teams, access],
-  );
 
   const availableProducts = useMemo<TeamItem[]>(
     () => map(structure?.filter((team) => access?.includes(team.id))),
     [structure, access],
   );
 
+  const productNames = useMemo<string[]>(
+    () => Array.from(new Set(availableProducts.map((team) => team.name))),
+    [availableProducts],
+  );
+
+  const allDepartments = useMemo<Team[]>(
+    () => data?.structure?.flatMap((team) => team.subTeams ?? []) ?? [],
+    [data?.structure],
+  );
+
   const availableDepartments = useMemo<TeamItem[]>(
-    () =>
-      map(
-        accessedTeams?.filter(
-          (team) =>
-            availableProducts.some(
-              (product) => product.id === team.parentTeamId,
-            ) &&
-            (filters?.product === undefined ||
-              team.parentTeamId === filters?.product),
-        ),
-      ),
-    [accessedTeams, availableProducts, filters?.product],
+    () => allDepartments?.filter((team) => access?.includes(team.id)) ?? [],
+    [allDepartments, access],
+  );
+
+  const departmentNames = useMemo<string[]>(
+    () => Array.from(new Set(availableDepartments.map((team) => team.name))),
+    [availableDepartments],
+  );
+
+  const allDirections = useMemo<Team[]>(
+    () => allDepartments?.flatMap((team) => team.subTeams ?? []) ?? [],
+    [allDepartments],
   );
 
   const availableDirections = useMemo<TeamItem[]>(
-    () =>
-      map(
-        accessedTeams?.filter(
-          (team) =>
-            availableDepartments.some(
-              (department) => department.id === team.parentTeamId,
-            ) &&
-            (filters?.department === undefined ||
-              team.parentTeamId === filters?.department),
-        ),
-      ),
-    [accessedTeams, availableDepartments, filters?.department],
+    () => allDirections?.filter((team) => access?.includes(team.id)) ?? [],
+    [allDirections, access],
+  );
+
+  const directionNames = useMemo<string[]>(
+    () => Array.from(new Set(availableDirections.map((team) => team.name))),
+    [availableDirections],
+  );
+
+  const allGroups = useMemo<Team[]>(
+    () => allDirections?.flatMap((team) => team.subTeams ?? []) ?? [],
+    [allDirections],
   );
 
   const availableGroups = useMemo<TeamItem[]>(
-    () =>
-      map(
-        accessedTeams?.filter(
-          (team) =>
-            availableDirections.some(
-              (direction) => direction.id === team.parentTeamId,
-            ) &&
-            (filters?.direction === undefined ||
-              team.parentTeamId === filters?.direction),
-        ),
-      ),
-    [accessedTeams, availableDirections, filters?.direction],
+    () => allGroups?.filter((team) => access?.includes(team.id)) ?? [],
+    [allGroups, access],
   );
 
-  const handleChange = (
-    filters: TeamsHierarchyFilterType,
-    key: keyof TeamsHierarchyFilterType,
-  ) => {
-    const newFilters: TeamsHierarchyFilterType = {};
+  const groupNames = useMemo<string[]>(
+    () => Array.from(new Set(availableGroups.map((team) => team.name))),
+    [availableGroups],
+  );
 
-    newFilters.group = filters.group;
-
-    newFilters.direction = filters.direction;
-    if (newFilters.group && !newFilters.direction) {
-      const team = accessedTeams.find((t) => t.id === newFilters.group)!;
-      newFilters.direction = team.parentTeamId;
-    }
-
-    newFilters.department = filters.department;
-    if (newFilters.direction && !newFilters.department) {
-      const team = accessedTeams.find((t) => t.id === newFilters.direction)!;
-      newFilters.department = team.parentTeamId;
-    }
-
-    newFilters.product = filters.product;
-
-    if (newFilters.department && !newFilters.product) {
-      const team = accessedTeams.find((t) => t.id === newFilters.department)!;
-      newFilters.product = team.parentTeamId;
-    }
-
-    const keysOrder = ['product', 'department', 'direction', 'group'];
-    const findIndex = keysOrder.indexOf(key);
-    for (let i = findIndex + 1; i < keysOrder.length; i++) {
-      const nextKey = keysOrder[i];
-      newFilters[nextKey as keyof TeamsHierarchyFilterType] = undefined;
-    }
-
-    onChange?.(newFilters);
+  const handleChange = (filters: TeamsHierarchyFilterType) => {
+    onChange?.(filters);
   };
 
   return (
     <>
       <SearchSelect
-        value={filters?.product ?? -1}
+        value={filters?.product ?? ''}
         label="Продукт"
         onChange={({ id }) =>
-          handleChange(
-            { ...filters, product: id === -1 ? undefined : Number(id) },
-            'product',
-          )
+          handleChange({
+            ...filters,
+            product: id === '' ? undefined : String(id),
+          })
         }
-        options={[{ id: -1, name: 'Все продукты' }, ...availableProducts]}
+        options={[
+          { id: '', name: 'Все продукты' },
+          ...productNames.map((p) => ({ id: p, name: p })),
+        ]}
       />
       <SearchSelect
         label="Департамент"
-        value={filters?.department ?? -1}
+        value={filters?.department ?? ''}
         onChange={({ id }) =>
-          handleChange(
-            { ...filters, department: id === -1 ? undefined : Number(id) },
-            'department',
-          )
+          handleChange({
+            ...filters,
+            department: id === '' ? undefined : String(id),
+          })
         }
         options={[
-          { id: -1, name: 'Все департаменты' },
-          ...availableDepartments,
+          { id: '', name: 'Все департаменты' },
+          ...departmentNames.map((d) => ({ id: d, name: d })),
         ]}
       />
       <SearchSelect
         label="Направление"
-        value={filters?.direction ?? -1}
+        value={filters?.direction ?? ''}
         onChange={({ id }) =>
-          handleChange(
-            { ...filters, direction: id === -1 ? undefined : Number(id) },
-            'direction',
-          )
+          handleChange({
+            ...filters,
+            direction: id === '' ? undefined : String(id),
+          })
         }
-        options={[{ id: -1, name: 'Все направления' }, ...availableDirections]}
+        options={[
+          { id: '', name: 'Все направления' },
+          ...directionNames.map((d) => ({ id: d, name: d })),
+        ]}
       />
       <SearchSelect
         label="Группа"
-        value={filters?.group ?? -1}
+        value={filters?.group ?? ''}
         onChange={({ id }) =>
-          handleChange(
-            { ...filters, group: id === -1 ? undefined : Number(id) },
-            'group',
-          )
+          handleChange({
+            ...filters,
+            group: id === '' ? undefined : String(id),
+          })
         }
-        options={[{ id: -1, name: 'Все группы' }, ...availableGroups]}
+        options={[
+          { id: '', name: 'Все группы' },
+          ...groupNames.map((g) => ({ id: g, name: g })),
+        ]}
       />
     </>
   );

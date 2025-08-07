@@ -29,7 +29,7 @@ export default function UsersSelect({
           setValue(undefined);
           return;
         }
-        setValue(id);
+        setValue(Number(id));
       }}
     />
   );

@@ -10,7 +10,7 @@ interface UsersTabProps {
   survey?: Survey;
 }
 
-type SelectValue = { id: number; name: string };
+type SelectValue = { id: number | string; name: string };
 
 export default function UsersTab({ survey }: UsersTabProps) {
   const [userId, setUserId] = useState<number | undefined>();
@@ -31,7 +31,7 @@ export default function UsersTab({ survey }: UsersTabProps) {
   }, [survey]);
 
   const handleUserChange = (value: SelectValue) => {
-    setUserId(value.id);
+    setUserId(Number(value.id));
   };
 
   const userAssigned = survey?.usersAssigned.find(

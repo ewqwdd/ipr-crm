@@ -35,7 +35,7 @@ export default function WithAvatarsAndMultiLineContent() {
     const timeout = setTimeout(() => {
       const users = data?.users || [];
       const filtered = users.filter((user) => {
-        return applyUsersFilters(user, filters);
+        return applyUsersFilters(user, filters, teams?.structure ?? []);
       });
       setFilteredData(filtered);
     }, 300);

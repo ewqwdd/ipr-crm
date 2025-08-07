@@ -25,10 +25,10 @@ export interface RateFiltersDto {
     | 'CONFIRMED_BY_USER';
   specId?: number;
   user?: number;
-  product?: number;
-  department?: number;
-  direction?: number;
-  group?: number;
+  product?: string;
+  department?: string;
+  direction?: string;
+  group?: string;
   startDate?: string;
   endDate?: string;
   hidden?: boolean;
@@ -41,10 +41,10 @@ export interface EvaluatorsFiltersDto {
   page?: number;
   limit?: number;
   user?: number;
-  product?: number;
-  department?: number;
-  direction?: number;
-  group?: number;
+  product?: string;
+  department?: string;
+  direction?: string;
+  group?: string;
 }
 
 const rate360Api = createApi({
