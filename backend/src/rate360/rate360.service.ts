@@ -178,9 +178,11 @@ export class Rate360Service {
 
     if (!where.team) where.team = {};
 
-    where.team.id = {
-      in: teamAccess,
-    };
+    if (curator.role !== 'admin') {
+      where.team.id = {
+        in: teamAccess,
+      };
+    }
 
     if (curator?.id && data.includeWhereEvaluatorCurator) {
       delete where.team.id;
