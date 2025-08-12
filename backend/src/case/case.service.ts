@@ -12,12 +12,14 @@ import { CreateCaseRateDto } from './dto/create-case-rate.dto';
 import { AnswerCaseRateDto } from './dto/answer-case-rate.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
 import { SetEvaluatorsDto } from './dto/ser-evaluators.dto';
+import { AssesmentService } from 'src/shared/assesment/assesment.service';
 
 @Injectable()
 export class CaseService {
   constructor(
     private prismaService: PrismaService,
     private usersAccessService: UsersAccessService,
+    private assesmentService: AssesmentService,
   ) {}
 
   transformCaseRate(
@@ -446,46 +448,10 @@ export class CaseService {
   }
 
   async setEvaluators(data: SetEvaluatorsDto) {
-    const currentRate = await this.prismaService.rate360.findUnique({
-      where: { id: data.rateId },
-      include: { evaluators: true },
-    });
-
-    const currentEvaluatorIds =
-      currentRate?.evaluators.map((e) => e.userId) || [];
-    const newEvaluatorIds = data.evaluators;
-
-    const toDelete = currentEvaluatorIds.filter(
-      (id) => !newEvaluatorIds.includes(id),
-    );
-
-    const toAdd = newEvaluatorIds.filter(
-      (id) => !currentEvaluatorIds.includes(id),
-    );
-
-    await this.prismaService.rate360.update({
-      where: {
-        id: data.rateId,
-      },
-      data: {
-        evaluators: {
-          deleteMany:
-            toDelete.length > 0
-              ? {
-                  userId: { in: toDelete },
-                }
-              : undefined,
-          createMany:
-            toAdd.length > 0
-              ? {
-                  data: toAdd.map((evaluatorId: number) => ({
-                    userId: evaluatorId,
-                    type: EvaluatorType.TEAM_MEMBER,
-                  })),
-                }
-              : undefined,
-        },
-      },
+    await this.assesmentService.setEvaluators(data.rateId, {
+      evaluateTeam: data.evaluators,
+      evaluateCurators: [],
+      evaluateSubbordinate: [],
     });
 
     await this.checkIfFinished(data.rateId);

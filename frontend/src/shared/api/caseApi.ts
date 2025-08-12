@@ -83,7 +83,12 @@ const caseApi = createApi({
         method: 'POST',
         body: { rates, globalComment },
       }),
-      invalidatesTags: ['CaseAssigned', 'CaseRateReport'],
+      invalidatesTags: [
+        'CaseAssigned',
+        'CaseRateReport',
+        'CaseRateReport',
+        'CaseRate',
+      ],
     }),
     getReport: build.query<CaseRate, string>({
       query: (id) => ({
@@ -108,7 +113,13 @@ const caseApi = createApi({
         method: 'POST',
         body: { evaluators, rateId },
       }),
-      invalidatesTags: ['CaseRate'],
+      invalidatesTags: [
+        'CaseRate',
+        'MyRates',
+        'CaseAssigned',
+        'CaseRateReport',
+        'CaseRateReport',
+      ],
     }),
   }),
 });

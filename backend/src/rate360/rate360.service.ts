@@ -1501,6 +1501,7 @@ export class Rate360Service {
         );
       });
     }
+    await this.checkIfFinished(rate.id);
 
     return newEvaluators;
   }
