@@ -97,7 +97,7 @@ export interface RateEvaluatorResponse {
       id: number;
       userId: number;
       finished: boolean;
-      team: {
+      team?: {
         id: number;
         name: string;
       };

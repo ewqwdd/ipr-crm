@@ -62,7 +62,7 @@ export default function EvaluatorRateItem({
         </h4>
         ·
         <span className="text-gray-600 text-sm font-medium ml-1">
-          {rate.rate360.team.name}
+          {rate.rate360.team?.name}
         </span>
         <span className="text-gray-500 ml-auto">
           {(percent * 100).toFixed(0)}%
