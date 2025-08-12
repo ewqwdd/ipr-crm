@@ -1,21 +1,21 @@
-FROM node:18-alpine as build
+FROM node:18-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm i --force
+RUN npm i
 
 COPY . .
 
 RUN npm run build
 
-FROM nginx:alpine
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S fastify -u 1001
 
-COPY --from=build /app/dist /usr/share/nginx/html
+RUN chown -R fastify:nodejs /app
+USER fastify
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 3000
 
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]
