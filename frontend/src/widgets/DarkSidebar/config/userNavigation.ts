@@ -1,4 +1,5 @@
 import {
+  BriefcaseIcon,
   ChartBarIcon,
   HomeIcon,
   InboxInIcon,
@@ -33,6 +34,11 @@ export const userNavigation: (user: User | null) => NavType[] = (
       name: 'Мои оценки 360',
       icon: InboxInIcon,
       href: '/360rate/me',
+    },
+    {
+      name: 'Мои кейсы',
+      icon: BriefcaseIcon,
+      href: '/my-cases',
     },
     {
       name: 'Поддержка',

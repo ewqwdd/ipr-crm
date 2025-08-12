@@ -13,16 +13,16 @@ import { GetSessionInfoDto } from 'src/auth/dto/get-session-info.dto';
 import { ToggleReportVisibilityDto } from './dto/toggle-report-visibility.dto';
 import { SingleRateIdDto } from './dto/single-rate-id.dto';
 import { SingleCommentDto } from './dto/single-comment.dto';
-import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
 import { AddEvaluatorsDto } from './dto/add-evalators.dto';
-import { RateFiltersDto } from './dto/rate-filters.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
-import { findAllRateInclude, RateTeamFiltersType } from './constants';
+import { findAllRateInclude } from './constants';
 import { TeamsHelpersService } from 'src/teams/teams.helpers.service';
 import { findHierarchyElements } from './helpers';
 import { NotificationsService } from 'src/notification/notifications.service';
 import { MultipleRateIdDto } from './dto/multiple-rate-id.dto';
 import { EvaluatorsFiltersDto } from './dto/evaluators-filters.dto';
+import { AssesmentService } from 'src/shared/assesment/assesment.service';
+import { RateFiltersDto } from 'src/shared/assesment/dto/rate-filters.dto';
 
 @Injectable()
 export class Rate360Service {
@@ -31,150 +31,15 @@ export class Rate360Service {
     private notificationsService: NotificationsService,
     private usersService: UsersAccessService,
     private teamsHelperService: TeamsHelpersService,
+    private assesmentService: AssesmentService,
   ) {}
-
-  accessCheck(sessionInfo: GetSessionInfoDto) {
-    return sessionInfo.role !== 'admin'
-      ? {
-          team: {
-            curatorId: sessionInfo.id,
-          },
-        }
-      : {};
-  }
-
-  async accessCheckWithSubTeams(
-    sessionInfo: GetSessionInfoDto,
-  ): Promise<Prisma.Rate360FindManyArgs['where'][]> {
-    if (sessionInfo.role === 'admin') {
-      return [{}];
-    }
-    const allowedTeamIds =
-      await this.usersService.findAllowedTeams(sessionInfo);
-    const allowedUsers = await this.usersService.findAllowedSubbordinates(
-      sessionInfo.id,
-    );
-
-    return [
-      {
-        team: {
-          id: { in: allowedTeamIds },
-        },
-      },
-      {
-        userId: {
-          in: allowedUsers,
-        },
-      },
-      {
-        evaluators: {
-          some: {
-            userId: sessionInfo.id,
-            type: EvaluatorType.CURATOR,
-          },
-        },
-      },
-    ];
-  }
-
-  buildTeamFilters(
-    product?: string,
-    department?: string,
-    direction?: string,
-    group?: string,
-  ): { OR: RateTeamFiltersType[] } | undefined {
-    const getTeamFilters = (names: string[]) => {
-      if (names.length === 0) return null;
-      return {
-        parentTeam: {
-          name: names[0],
-          ...getTeamFilters(names.slice(1)),
-        },
-      };
-    };
-
-    const teamFilters = [group, direction, department, product];
-    const firstNotNull = teamFilters.findIndex(Boolean);
-    const sliced = teamFilters.slice(firstNotNull);
-
-    return sliced.length > 0 && firstNotNull !== -1
-      ? {
-          OR: new Array(firstNotNull + 1).fill(null).map((_, i) => {
-            return {
-              name: teamFilters[i],
-              ...getTeamFilters(teamFilters.slice(i + 1)),
-            };
-          }),
-        }
-      : undefined;
-  }
-
-  findAllFilters({
-    endDate,
-    skill,
-    specId,
-    startDate,
-    status,
-    user,
-    hidden,
-    curatorId,
-    department,
-    direction,
-    group,
-    product,
-  }: RateFiltersDto): Prisma.Rate360FindManyArgs['where'] {
-    return {
-      archived: false,
-      ...(user ? { userId: user } : {}),
-      ...(specId ? { specId } : {}),
-      ...(skill ? { type: skill } : {}),
-      ...(status === 'COMPLETED' ? { finished: true } : {}),
-      ...(status === 'NOT_COMPLETED' ? { finished: false } : {}),
-      ...(status === 'NOT_CONFIRMED'
-        ? { userConfirmed: false, curatorConfirmed: false }
-        : {}),
-      ...(status === 'CONFIRMED'
-        ? { userConfirmed: true, curatorConfirmed: true }
-        : {}),
-      ...(status === 'CONFIRMED_BY_USER'
-        ? { userConfirmed: true, curatorConfirmed: false }
-        : {}),
-      ...(endDate && startDate
-        ? {
-            AND: [
-              {
-                startDate: {
-                  gte: new Date(startDate),
-                },
-              },
-              {
-                startDate: {
-                  lte: new Date(endDate),
-                },
-              },
-            ],
-          }
-        : {}),
-      ...(endDate && !startDate
-        ? { startDate: { lte: new Date(endDate) } }
-        : {}),
-      ...(!endDate && startDate
-        ? { startDate: { gte: new Date(startDate) } }
-        : {}),
-      ...(curatorId
-        ? { evaluators: { some: { userId: curatorId, type: 'CURATOR' } } }
-        : {}),
-      hidden: !!hidden,
-      team: this.buildTeamFilters(product, department, direction, group),
-    };
-  }
 
   async findAll(data: RateFiltersDto, curator: GetSessionInfoDto) {
     const teamAccess = await this.usersService.findAllowedTeams(curator);
 
     const { page, limit } = data;
 
-    const where = this.findAllFilters(data);
+    const where = this.assesmentService.findAllFilters(data, '360');
 
     if (!where.team) where.team = {};
 
@@ -240,7 +105,7 @@ export class Rate360Service {
   ) {
     const { page, limit } = data;
 
-    const where = this.findAllFilters(data);
+    const where = this.assesmentService.findAllFilters(data, '360');
 
     where.userId = {
       in: await this.usersService.findAllowedSubbordinates(curator.id),
@@ -270,7 +135,7 @@ export class Rate360Service {
   async findAllSubbordinates(data: RateFiltersDto, curatorId: number) {
     const { page, limit } = data;
 
-    const where = this.findAllFilters(data);
+    const where = this.assesmentService.findAllFilters(data, '360');
 
     where.evaluators = {
       some: {
@@ -298,12 +163,6 @@ export class Rate360Service {
       limit,
       data: rates,
     };
-  }
-
-  async deleteRate(id: number) {
-    return await this.prismaService.rate360.delete({
-      where: { id },
-    });
   }
 
   async findFolderdsForRates(
@@ -613,6 +472,9 @@ export class Rate360Service {
     const rate360 = await this.prismaService.rate360.findMany({
       where: {
         // finished: false,
+        rateType: {
+          in: ['Rate180', 'Rate360'],
+        },
         hidden: false,
         evaluators: {
           some: {
@@ -683,6 +545,9 @@ export class Rate360Service {
         curatorConfirmed: true,
         archived: false,
         hidden: false,
+        rateType: {
+          in: ['Rate180', 'Rate360'],
+        },
       },
       include: {
         spec: true,
@@ -734,73 +599,13 @@ export class Rate360Service {
     return filtered;
   }
 
-  async findForUser(userId: number, rateId: number) {
-    const rate = await this.prismaService.rate360.findFirst({
-      where: {
-        id: rateId,
-        // finished: false,
-        userConfirmed: true,
-        curatorConfirmed: true,
-        archived: false,
-      },
-      include: {
-        competencyBlocks: {
-          include: {
-            competencies: {
-              include: {
-                indicators: true,
-              },
-            },
-          },
-        },
-        spec: true,
-        userRates: {
-          where: {
-            userId,
-          },
-        },
-        team: true,
-        evaluators: {
-          where: {
-            userId,
-          },
-        },
-        comments: {
-          where: {
-            userId,
-          },
-        },
-      },
-    });
-    if (!rate) {
-      throw new NotFoundException('Rate not found');
-    }
-    if (
-      rate.userId !== userId &&
-      !rate.evaluators.some((evaluator) => evaluator.userId === userId)
-    ) {
-      throw new NotFoundException('Rate not found');
-    }
-    const indicators = rate.competencyBlocks.flatMap((block) =>
-      block.competencies.flatMap((competency) => competency.indicators),
-    );
-    const userRates = rate.userRates.filter(
-      (rate) => rate.userId === userId && rate.approved,
-    );
-    if (userRates.length < indicators.length) {
-      return rate;
-    } else {
-      throw new ForbiddenException('Rate already approved');
-    }
-  }
-
   async singleAssessment(
     userId: number,
     indicatorId: number,
     data: SingleRateIdDto,
   ) {
     const { rate, rateId } = data;
-    const found = await this.findForUser(userId, rateId);
+    const found = await this.assesmentService.findForUser(userId, rateId);
     if (!found) {
       throw new NotFoundException('Rate not found');
     }
@@ -836,7 +641,7 @@ export class Rate360Service {
 
   async multipleAssessment(userId: number, data: MultipleRateIdDto) {
     const { rates, rateId } = data;
-    const found = await this.findForUser(userId, rateId);
+    const found = await this.assesmentService.findForUser(userId, rateId);
     if (!found) {
       throw new NotFoundException('Rate not found');
     }
@@ -866,7 +671,7 @@ export class Rate360Service {
     userId: number,
     { rateId, ratings, comments }: RatingsDto,
   ) {
-    const found = await this.findForUser(userId, rateId);
+    const found = await this.assesmentService.findForUser(userId, rateId);
     if (!found) {
       throw new NotFoundException('Rate not found');
     }
@@ -916,7 +721,7 @@ export class Rate360Service {
   }
 
   async singleComment(userId: number, data: SingleCommentDto) {
-    const found = await this.findForUser(userId, data.rateId);
+    const found = await this.assesmentService.findForUser(userId, data.rateId);
     if (!found) {
       throw new NotFoundException('Rate not found');
     }
@@ -1129,6 +934,9 @@ export class Rate360Service {
       where: {
         id: rateId,
         archived: false,
+        rateType: {
+          in: ['Rate180', 'Rate360'],
+        },
         ...(sessionInfo.role !== 'admin'
           ? {
               OR: [
@@ -1138,7 +946,9 @@ export class Rate360Service {
                   curatorConfirmed: true,
                   showReportToUser: true,
                 },
-                ...(await this.accessCheckWithSubTeams(sessionInfo)),
+                ...(await this.assesmentService.accessCheckWithSubTeams(
+                  sessionInfo,
+                )),
               ],
             }
           : {}),
@@ -1278,6 +1088,9 @@ export class Rate360Service {
         userId,
         userConfirmed: false,
         archived: false,
+        rateType: {
+          in: ['Rate180', 'Rate360'],
+        },
       },
       include: {
         spec: true,
@@ -1320,6 +1133,9 @@ export class Rate360Service {
   async findRatesToConfirmByCurator(userId: number) {
     const rates = await this.prismaService.rate360.findMany({
       where: {
+        rateType: {
+          in: ['Rate180', 'Rate360'],
+        },
         evaluators: {
           some: {
             userId,
@@ -1581,9 +1397,12 @@ export class Rate360Service {
   }
 
   async findMyRates(userId: number, params: RateFiltersDto) {
-    const where = {
+    const where: Prisma.Rate360FindManyArgs['where'] = {
       userId,
       archived: false,
+      rateType: {
+        in: ['Rate180', 'Rate360'],
+      },
     };
     const [data, total] = await Promise.all([
       this.prismaService.rate360.findMany({
@@ -1662,7 +1481,7 @@ export class Rate360Service {
         id: {
           in: data.ids,
         },
-        ...this.accessCheck(sessionInfo),
+        ...this.assesmentService.accessCheck(sessionInfo),
       },
       data: {
         showReportToUser: !!data.isVisible,
@@ -1670,128 +1489,9 @@ export class Rate360Service {
     });
   }
 
-  async deleteEvaluators(id: number, data: DeleteEvaluatorsDto) {
-    const promises = [
-      this.prismaService.rate360Evaluator.deleteMany({
-        where: {
-          rate360Id: id,
-          userId: {
-            in: data.ids,
-          },
-        },
-      }),
-      this.prismaService.notification.deleteMany({
-        where: {
-          rateId: id,
-          userId: {
-            in: data.ids,
-          },
-        },
-      }),
-      this.prismaService.userRates.deleteMany({
-        where: {
-          rate360Id: id,
-          userId: {
-            in: data.ids,
-          },
-        },
-      }),
-    ];
-    const result = await Promise.all(promises);
-    return result[0];
-  }
-
   async setEvaluators(id: number, data: AddEvaluatorsDto) {
-    const rate = await this.prismaService.rate360.findFirst({
-      where: {
-        id,
-      },
-    });
-    if (!rate) {
-      throw new NotFoundException('Rate not found');
-    }
-
-    const evaluators = await this.prismaService.rate360Evaluator.findMany({
-      where: {
-        rate360Id: id,
-      },
-    });
-
-    const allIds = [
-      ...data.evaluateCurators,
-      ...data.evaluateSubbordinate,
-      ...data.evaluateTeam,
-    ];
-
-    const evaluatorsIds = evaluators.map((evaluator) => evaluator.userId);
-    const evaluatorsToAdd = allIds.filter((id) => !evaluatorsIds.includes(id));
-    const evaluatorsToDelete = evaluatorsIds.filter(
-      (id) => !allIds.includes(id),
-    );
-
-    await this.prismaService.$transaction([
-      this.prismaService.rate360Evaluator.deleteMany({
-        where: {
-          rate360Id: id,
-          userId: {
-            in: evaluatorsToDelete,
-          },
-        },
-      }),
-      this.prismaService.notification.deleteMany({
-        where: {
-          rateId: id,
-          userId: {
-            in: evaluatorsToDelete,
-          },
-        },
-      }),
-      this.prismaService.userRates.deleteMany({
-        where: {
-          rate360Id: id,
-          userId: {
-            in: evaluatorsToDelete,
-          },
-        },
-      }),
-    ]);
-
-    const newEvaluators = await this.prismaService.rate360Evaluator.createMany({
-      data: [
-        ...data.evaluateCurators
-          .filter((id) => evaluatorsToAdd.includes(id))
-          .map((evaluator) => ({
-            userId: evaluator,
-            type: EvaluatorType.CURATOR,
-            rate360Id: id,
-          })),
-        ...data.evaluateSubbordinate
-          .filter((id) => evaluatorsToAdd.includes(id))
-          .map((evaluator) => ({
-            userId: evaluator,
-            type: EvaluatorType.SUBORDINATE,
-            rate360Id: id,
-          })),
-        ...data.evaluateTeam
-          .filter((id) => evaluatorsToAdd.includes(id))
-          .map((evaluator) => ({
-            userId: evaluator,
-            type: EvaluatorType.TEAM_MEMBER,
-            rate360Id: id,
-          })),
-      ],
-    });
-
-    if (evaluatorsToAdd.length > 0 && rate.finished) {
-      await this.prismaService.rate360.update({
-        where: {
-          id,
-        },
-        data: {
-          finished: false,
-        },
-      });
-    }
+    const { rate, evaluatorsToAdd, newEvaluators } =
+      await this.assesmentService.setEvaluators(id, data);
 
     if (rate.curatorConfirmed && rate.userConfirmed) {
       evaluatorsToAdd.forEach(async (id) => {
@@ -1939,7 +1639,7 @@ export class Rate360Service {
       return { id: { in: allowedSubordinates } };
     };
 
-    const teamFilter = this.buildTeamFilters(
+    const teamFilter = this.assesmentService.buildTeamFilters(
       filters.product,
       filters.department,
       filters.direction,
@@ -1952,6 +1652,9 @@ export class Rate360Service {
         some: {
           rate360: {
             archived: false,
+            rateType: {
+              in: ['Rate180', 'Rate360'],
+            },
           },
         },
       },
@@ -1983,6 +1686,9 @@ export class Rate360Service {
             where: {
               rate360: {
                 archived: false,
+                rateType: {
+                  in: ['Rate180', 'Rate360'],
+                },
               },
             },
             select: {
