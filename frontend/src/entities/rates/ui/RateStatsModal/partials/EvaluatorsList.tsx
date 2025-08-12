@@ -1,8 +1,9 @@
 import { evaluatorTypeNames } from '@/entities/rates/model/evaluatorTypeNames';
-import { EvaulatorType, Rate } from '@/entities/rates/types/types';
+import { Rate } from '@/entities/rates/types/types';
 import { Indicator } from '@/entities/skill';
 import { Accordion } from '@/shared/ui/Accordion';
 import EvaluatorItem from './EvaluatorItem';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface EvaluatorsListProps {
   evaluators: Rate['evaluators'];

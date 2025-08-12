@@ -3,11 +3,7 @@ import { teamsApi } from '@/shared/api/teamsApi';
 import { TabType } from '../AddRate';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
-import {
-  EvaluateUser,
-  EvaulatorType,
-  Rate,
-} from '@/entities/rates/types/types';
+import { EvaluateUser, Rate } from '@/entities/rates/types/types';
 import { ratesActions } from '@/entities/rates/model/rateSlice';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cva } from '@/shared/lib/cva';
@@ -15,6 +11,7 @@ import { rate360Api } from '@/shared/api/rate360Api';
 import toast from 'react-hot-toast';
 import { TeamItem } from '../../EvaluatorsTeamForm';
 import { getInitialEvaluators } from '@/entities/rates/model/getInitialEvaluators';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface EvaluatorsTabProps {
   setTab: (tab: TabType) => void;

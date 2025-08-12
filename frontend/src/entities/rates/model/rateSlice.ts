@@ -3,11 +3,11 @@ import {
   AddRateDto,
   ChangeSpecsType,
   EvaluateUser,
-  EvaulatorType,
   Rate,
   RateStoreSchema,
 } from '../types/types';
 import { TeamItemIds } from '../ui/AddRate/EvaluatorsTab/EvaluatorsTab';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 const initialState: RateStoreSchema = {
   selectedSpecs: [],
