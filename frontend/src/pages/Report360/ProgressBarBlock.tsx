@@ -1,5 +1,6 @@
 import { SkillType } from '@/entities/skill';
 import { FC } from 'react';
+import { getBoundaries } from './helpers';
 
 interface ProgressBarBlockProps {
   type: SkillType;
@@ -8,11 +9,7 @@ interface ProgressBarBlockProps {
 const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
   const boundary = type === 'HARD' ? 4 : 5;
 
-  const bars = [
-    type === 'SOFT' ? 3 : 2,
-    type === 'SOFT' ? 1.5 : 1,
-    type === 'SOFT' ? 0.5 : 1,
-  ];
+  const bars = getBoundaries(type);
 
   return (
     <div>

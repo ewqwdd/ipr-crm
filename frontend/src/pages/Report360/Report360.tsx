@@ -3,7 +3,7 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useRef } from 'react';
 import ProgressBarBlock from './ProgressBarBlock';
 import { cva } from '@/shared/lib/cva';
-import { dateFormatter } from './helpers';
+import { dateFormatter, getBoundaries } from './helpers';
 import { useCalculateAvgIndicatorRaitings } from './useCalculateAvgIndicatorRaitings';
 import { useAggregatedAverages } from './useAggregatedAverages';
 import WorkSpace from './WorkSpace';
@@ -13,6 +13,7 @@ import { useAppSelector } from '@/app';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
 import { Rate } from '@/entities/rates';
 import { exportReportPDF } from '@/features/exportReportPDF';
+import { SkillType } from '@/entities/skill';
 
 const evaluatorTypes = [
   'CURATOR',
@@ -29,22 +30,24 @@ const commonHeaders = [
 
 const RateCell = ({
   rate,
-  boundary = 3,
   className,
+  type,
 }: {
   rate?: number;
-  boundary?: number;
+  type: SkillType;
   className?: string;
 }) => {
   if (!rate)
     return <td className={cva('px-3 py-4 text-sm', className)}>N/D</td>;
 
+  const bars = getBoundaries(type);
+
   const color =
-    rate > boundary
+    rate > bars[1] + bars[0]
       ? 'text-green-500'
-      : rate === boundary
-        ? ''
-        : 'text-red-500';
+      : rate < bars[0]
+        ? 'text-red-500'
+        : 'text-indigo-700';
   return (
     <td
       className={cva('whitespace-nowrap px-3 py-4 text-sm', className, color)}
@@ -160,7 +163,8 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                                     </td>
                                     {evaluatorTypes.map((evaluatorType) => (
                                       <RateCell
-                                        className="text-indigo-700 font-semibold"
+                                        type={rate.type}
+                                        className="font-semibold"
                                         key={evaluatorType}
                                         rate={
                                           competenciesRaiting?.[
@@ -180,7 +184,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                                         </td>
                                         {evaluatorTypes.map((evaluatorType) => (
                                           <RateCell
-                                            boundary={indicator.boundary}
+                                            type={rate.type}
                                             key={evaluatorType}
                                             rate={
                                               indicatorRatings?.[
@@ -250,6 +254,7 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                                 </td>
                                 {evaluatorTypes.map((evaluatorType) => (
                                   <RateCell
+                                    type={rate.type}
                                     key={evaluatorType}
                                     rate={
                                       blocksRaiting?.[blocksCompetencies?.id]?.[
@@ -291,16 +296,20 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                       <td className="w-full px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Общая оценка
                       </td>
-                      {evaluatorTypes.map((evaluatorType) => (
-                        <RateCell
-                          key={evaluatorType}
-                          rate={
-                            overallAverage?.[
-                              evaluatorType as keyof typeof overallAverage
-                            ]
-                          }
-                        />
-                      ))}
+                      {evaluatorTypes.map(
+                        (evaluatorType) =>
+                          rate && (
+                            <RateCell
+                              type={rate.type}
+                              key={evaluatorType}
+                              rate={
+                                overallAverage?.[
+                                  evaluatorType as keyof typeof overallAverage
+                                ]
+                              }
+                            />
+                          ),
+                      )}
                     </tr>
                   </tbody>
                 </table>
