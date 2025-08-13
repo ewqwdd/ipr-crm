@@ -43,7 +43,7 @@ export const getCuratorsAndMembers = (
 };
 
 export const getBoundaries = (type: SkillType) => [
-  type === 'SOFT' ? 3 : 2,
-  type === 'SOFT' ? 1.5 : 1,
+  type === 'SOFT' ? 3 : 1.5,
+  type === 'SOFT' ? 1.5 : 1.5,
   type === 'SOFT' ? 0.5 : 1,
 ];
