@@ -8,6 +8,12 @@ interface ProgressBarBlockProps {
 const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
   const boundary = type === 'HARD' ? 4 : 5;
 
+  const bars = [
+    type === 'SOFT' ? 3 : 2,
+    type === 'SOFT' ? 1.5 : 1,
+    type === 'SOFT' ? 0.5 : 1,
+  ];
+
   return (
     <div>
       <p className="mt-6 text-sm text-gray-700">
@@ -38,7 +44,7 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
         <div className="mt-[50px] flex gap-1">
           <div
             style={{
-              width: `${(2 / boundary) * 100}%`,
+              width: `${(bars[0] / boundary) * 100}%`,
             }}
             aria-hidden="true"
           >
@@ -53,15 +59,15 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
           <div
             aria-hidden="true"
             style={{
-              width: `${(1 / boundary) * 100}%`,
+              width: `${(bars[1] / boundary) * 100}%`,
             }}
           >
             <div className="bg-gray-200 rounded-full overflow-hidden">
               <div className="h-2 bg-indigo-600 rounded-full w-full" />
             </div>
             <div className="flex justify-between">
-              <div className="ml-[-0.5rem]">2</div>
-              <div className="mr-[-0.5rem]">3</div>
+              <div className="ml-[-0.5rem]">{bars[0]}</div>
+              <div className="mr-[-0.5rem]">{bars[0] + bars[1]}</div>
             </div>
             <div className="text-sm font-medium text-gray-600 mt-1">
               <div className="text-center">Соответствует ожиданиям</div>
@@ -69,7 +75,7 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
           </div>
           <div
             style={{
-              width: `${((boundary - 3) / boundary) * 100}%`,
+              width: `${(bars[2] / boundary) * 100}%`,
             }}
             aria-hidden="true"
           >
