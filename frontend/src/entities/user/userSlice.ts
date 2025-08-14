@@ -26,10 +26,13 @@ const userSlice = createSlice({
       }
       const user = action.payload as UserStoreSchema['user'];
       if (!user!.teamAccess) {
-        user!.teamAccess = state.user?.teamAccess ?? [];
+        state.user = {
+          ...user!,
+          teamAccess: state.user?.teamAccess ?? [],
+        };
+      } else {
+        state.user = user;
       }
-
-      state.user = user;
       state.isMounted = true;
       state.isAdmin = action.payload?.role.name === 'admin';
     },

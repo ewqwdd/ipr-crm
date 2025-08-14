@@ -1,4 +1,4 @@
-import { $fileApi, $uploadFile } from '@/shared/lib/$api';
+import { $deleteFile, $uploadFile } from '@/shared/lib/$api';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { TrashIcon } from '@heroicons/react/outline';
 import React, { useRef } from 'react';
@@ -18,14 +18,14 @@ export default function QuestionPictureUpload({
     const file = e.target.files?.[0];
     if (!file) return;
     if (value !== '' && !!value) {
-      await $fileApi.delete('/uploads/' + value);
+      $deleteFile(value);
     }
     const fileName = await $uploadFile(file);
     onChange?.(fileName);
   };
 
   const handleRemove = () => {
-    $fileApi.delete('/uploads/' + value);
+    $deleteFile(value);
     if (onChange) onChange('');
     if (inputRef.current) inputRef.current.value = '';
   };

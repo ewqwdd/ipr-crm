@@ -69,10 +69,10 @@ export interface UserFormData {
 export interface UsersFilter {
   user?: number;
   teams: {
-    product?: number;
-    department?: number;
-    direction?: number;
-    group?: number;
+    product?: string;
+    department?: string;
+    direction?: string;
+    group?: string;
   };
   access: 'ALL' | 'ACTIVE' | 'INACTIVE';
   page: number;

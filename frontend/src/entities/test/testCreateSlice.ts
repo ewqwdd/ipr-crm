@@ -5,7 +5,7 @@ import {
   TestCreate,
   TestCreateStoreSchema,
 } from './types/types';
-import { $fileApi } from '@/shared/lib/$api';
+import { $deleteFile } from '@/shared/lib/$api';
 
 const initialState: TestCreateStoreSchema = {
   errors: {},
@@ -182,7 +182,7 @@ const testCreateSlice = createSlice({
       const question = state.questions[index];
       if (question) {
         if (question.photoUrl) {
-          $fileApi.delete(`/uploads/${question.photoUrl}`);
+          $deleteFile(question.photoUrl);
         }
         state.questions.splice(index, 1);
         state.errors.questions = undefined;
@@ -212,6 +212,7 @@ const testCreateSlice = createSlice({
       state.limitedByTime = test.limitedByTime;
       state.timeLimit = test.timeLimit;
       state.shuffleQuestions = test.shuffleQuestions;
+      state.previewImage = test.previewImage;
 
       state.questions = test.testQuestions.map((question) => ({
         ...question,

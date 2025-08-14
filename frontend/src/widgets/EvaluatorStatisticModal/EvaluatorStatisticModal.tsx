@@ -26,11 +26,15 @@ export default function EvaluatorStatistic({
 
   const options = data.ratesToEvaluate.map((rate) => rate.rate360.user);
   const teamOptions = Array.from(
-    new Set(data.ratesToEvaluate.map((rate) => rate.rate360.team.id)),
+    new Set(
+      data.ratesToEvaluate
+        .map((rate) => rate.rate360.team?.id)
+        .filter((id) => !!id),
+    ),
   );
 
   const filteredTeamRates = teamId
-    ? data.ratesToEvaluate.filter((rate) => rate.rate360.team.id === teamId)
+    ? data.ratesToEvaluate.filter((rate) => rate.rate360.team?.id === teamId)
     : data.ratesToEvaluate;
 
   const filteredUserRates = userId
@@ -58,7 +62,7 @@ export default function EvaluatorStatistic({
 
         return {
           Сотрудник: usersService.displayName(rate.rate360.user),
-          Команда: rate.rate360.team.name,
+          Команда: rate.rate360.team?.name,
           Специализация: rate.rate360.spec.name,
           Тип: rate.rate360.type,
           Прогресс: `${userRatesCount} из ${indicatorsCount}`,
@@ -88,7 +92,7 @@ export default function EvaluatorStatistic({
           <TeamsSelect
             setTeam={(v) => setTeamId(v?.id)}
             team={teamId}
-            enabledTeams={teamOptions}
+            enabledTeams={teamOptions as number[]}
           />
         )}
         <SoftButton onClick={handleExport}>Экспорт в Excel</SoftButton>

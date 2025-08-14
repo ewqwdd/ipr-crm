@@ -262,7 +262,14 @@ export class UsersService {
 
     return await this.prisma.user.update({
       where: { id },
-      data: updateUserDto,
+      data: {
+        email: updateUserDto.email,
+        firstName: updateUserDto.firstName,
+        lastName: updateUserDto.lastName,
+        phone: updateUserDto.phone,
+        username: updateUserDto.username,
+        avatar: updateUserDto.avatar,
+      },
     });
   }
 

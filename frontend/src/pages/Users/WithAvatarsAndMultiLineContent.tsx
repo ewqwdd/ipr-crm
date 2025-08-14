@@ -6,11 +6,13 @@ import { Pagination } from '@/shared/ui/Pagination';
 import UsersFilters, { applyUsersFilters } from './usersFilters';
 import { initialUserFilters, User, UsersFilter } from '@/entities/user';
 import { useSearchState } from '@/shared/hooks/useSearchState';
+import { teamsApi } from '@/shared/api/teamsApi';
 
 const LIMIT = 8;
 
 export default function WithAvatarsAndMultiLineContent() {
-  const { data, isLoading } = usersApi.useGetUsersQuery();
+  const { data, isLoading: usersLoading } = usersApi.useGetUsersQuery();
+  const { data: teams, isLoading: teamsLoading } = teamsApi.useGetTeamsQuery();
   const [filteredData, setFilteredData] = useState<User[]>([]);
 
   const [filters, setFilters, inited] =
@@ -33,7 +35,7 @@ export default function WithAvatarsAndMultiLineContent() {
     const timeout = setTimeout(() => {
       const users = data?.users || [];
       const filtered = users.filter((user) => {
-        return applyUsersFilters(user, filters);
+        return applyUsersFilters(user, filters, teams?.structure ?? []);
       });
       setFilteredData(filtered);
     }, 300);
@@ -61,6 +63,8 @@ export default function WithAvatarsAndMultiLineContent() {
     return data?.users.filter((user) => user.access) || [];
   }, [data]);
 
+  const isLoading = usersLoading || teamsLoading;
+
   return (
     <>
       <div className="flex mb-4 text-sm text-gray-700">
@@ -82,7 +86,7 @@ export default function WithAvatarsAndMultiLineContent() {
       >
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full align-middle md:px-6 lg:px-8">
-            <table className="min-w-full divide-y divide-gray-300">
+            <table className="w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
                   <th
@@ -101,7 +105,25 @@ export default function WithAvatarsAndMultiLineContent() {
                     scope="col"
                     className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                   >
-                    Подразделение
+                    Продукт
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Департамент
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Направление
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Группа
                   </th>
                   <th
                     scope="col"
@@ -122,6 +144,7 @@ export default function WithAvatarsAndMultiLineContent() {
                       key={person.id}
                       person={person}
                       last={index === paginateddata.length - 1}
+                      teams={teams?.list}
                     />
                   ))}
                 {isLoading &&

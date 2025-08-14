@@ -3,14 +3,14 @@ import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 import { Combobox } from '@headlessui/react';
 import { cva } from '@/shared/lib/cva';
 
-type SelectValue = { id: number; name: string };
+type SelectValue = { id: number | string; name: string };
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
 }
 
 interface SearchSelectProps {
-  value?: number;
+  value?: number | string;
   onChange: (value: SelectValue) => void;
   options: SelectValue[];
   loading?: boolean;

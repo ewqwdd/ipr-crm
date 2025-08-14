@@ -4,6 +4,7 @@ import {
   ShuffleQuestions,
   TaskDescription,
   TaskName,
+  TestPreview,
 } from '@/widgets/TestSettings';
 
 interface TestSettingsProps {
@@ -12,6 +13,7 @@ interface TestSettingsProps {
   passedMessage?: string;
   showScoreToUser?: boolean;
   shuffleQuestions?: boolean;
+  previewImage?: string;
   errors: {
     name?: string;
     description?: string;
@@ -22,6 +24,7 @@ interface TestSettingsProps {
   onChangeShowScore: () => void;
   onChangePassedMessage: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onChangeShuffleQuestions: () => void;
+  onChangePreviewImage?: (string?: string) => void;
 }
 
 export default function TestSettings({
@@ -36,10 +39,16 @@ export default function TestSettings({
   passedMessage,
   showScoreToUser,
   shuffleQuestions,
+  onChangePreviewImage,
+  previewImage,
 }: TestSettingsProps) {
   return (
     <div className="flex flex-col gap-8 mt-6 max-w-2xl">
       <TaskName name={name} error={errors?.name} onChange={onChangeName} />
+      <TestPreview
+        onChangePreviewImage={onChangePreviewImage}
+        previewImage={previewImage}
+      />
       <TaskDescription
         description={description}
         error={errors?.description}

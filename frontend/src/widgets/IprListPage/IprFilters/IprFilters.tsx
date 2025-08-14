@@ -136,7 +136,7 @@ export default memo(function IprFilters({
             options={usersOptions}
             value={filters.userId}
             onChange={(value) =>
-              setFilters((prev) => ({ ...prev, userId: value.id }))
+              setFilters((prev) => ({ ...prev, userId: Number(value.id) }))
             }
           />
           {type !== 'TEAM' && (

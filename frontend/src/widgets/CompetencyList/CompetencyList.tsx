@@ -1,6 +1,6 @@
 import { CompetencyBlock, CompetencyType } from '@/entities/skill';
 import { Accordion } from '@/shared/ui/Accordion';
-import { FC, memo, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import CompetencyListItem from './CompetencyItem';
 import { cva } from '@/shared/lib/cva';
 import { useModal } from '@/app/hooks/useModal';
@@ -23,6 +23,12 @@ const CompetencyList: FC<ICompetencyListProps> = ({
   const { openModal } = useModal();
 
   const [list, setList] = useState<CompetencyBlock[]>(data || []);
+
+  useEffect(() => {
+    if (data) {
+      setList(data);
+    }
+  }, [data]);
 
   return (
     <div

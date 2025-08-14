@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 export class EvaluatorsFiltersDto {
   @IsOptional()
   @Transform(({ value }) => Number(value))
@@ -17,22 +17,18 @@ export class EvaluatorsFiltersDto {
   user?: number;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  product?: number;
+  @IsString()
+  product?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  department?: number;
+  @IsString()
+  department?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  direction?: number;
+  @IsString()
+  direction?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  group?: number;
+  @IsString()
+  group?: string;
 }

@@ -41,3 +41,11 @@ $api.interceptors.response.use(
     return response;
   }
 )
+export const $deleteFile = async (filename?: string): Promise<void> => {
+  try {
+    if (!filename) return;
+    await $fileApi.delete(`/uploads/${filename}`);
+  } catch (error) {
+    console.error('File deletion failed:', error);
+  }
+};

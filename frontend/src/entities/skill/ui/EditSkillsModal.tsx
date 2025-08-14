@@ -146,11 +146,24 @@ export default function EditSkillsModal({
     closeModal();
   };
 
+  let title;
+  switch (type) {
+    case CompetencyType.COMPETENCY:
+      title = 'Редактировать компетенцию';
+      break;
+    case CompetencyType.COMPETENCY_BLOCK:
+      title = 'Редактировать блок компетенции';
+      break;
+    case CompetencyType.INDICATOR:
+      title = 'Редактировать индикатор';
+      break;
+  }
+
   return (
     <Modal
       open={isOpen}
       setOpen={closeModal}
-      title="Редактировать блок компетенции"
+      title={title}
       onSubmit={onSubmit}
       submitText="Добавить"
       loading={loading}

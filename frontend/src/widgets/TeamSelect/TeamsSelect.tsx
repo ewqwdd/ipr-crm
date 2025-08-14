@@ -46,7 +46,7 @@ export default function TeamsSelect({
           setTeam(undefined);
           return;
         }
-        setTeam(v);
+        setTeam({ id: Number(v.id), name: v.name });
       }}
     />
   );

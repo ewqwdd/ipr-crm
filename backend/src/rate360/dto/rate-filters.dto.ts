@@ -52,24 +52,20 @@ export class RateFiltersDto {
   user?: number;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  product?: number;
+  @IsString()
+  product?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  department?: number;
+  @IsString()
+  department?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  direction?: number;
+  @IsString()
+  direction?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  group?: number;
+  @IsString()
+  group?: string;
 
   @IsOptional()
   @IsDateString()
