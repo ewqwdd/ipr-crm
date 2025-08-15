@@ -1,4 +1,4 @@
-import { EvaulatorType } from '../../types/types';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface ConfirmTitleProps {
   setAddType: (type: EvaulatorType) => void;

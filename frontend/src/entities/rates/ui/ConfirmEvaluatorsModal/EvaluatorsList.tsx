@@ -1,7 +1,8 @@
 import { cva } from '@/shared/lib/cva';
 import { Badge } from '@/shared/ui/Badge';
 import { XIcon } from '@heroicons/react/outline';
-import { EvaluateUser, EvaulatorType } from '../../types/types';
+import { EvaluateUser } from '../../types/types';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface EvaluatorsListProps {
   evaluators: EvaluateUser[];

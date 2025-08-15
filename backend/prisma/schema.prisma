@@ -26,14 +26,11 @@ model User {
   logs                    GrowthPlanLog[]
   growthPlans             IndividualGrowthPlan[] @relation("UserGrowthPlans")
   notifications           Notification[]
-  rates360                Rate360[]
   ratesToEvaluate         Rate360Evaluator[]
   specsOnTeams            SpecsOnUserTeam[]
   curatorTickets          SupportTicket[]        @relation("CuratorSupportTicket")
   supportTickets          SupportTicket[]        @relation("UserSupportTicket")
   teamCurator             Team[]
-  User                    User?                  @relation("UserToUser", fields: [mentorId], references: [id])
-  other_User              User[]                 @relation("UserToUser")
   role                    Role                   @relation(fields: [roleId], references: [id])
   Spec                    Spec?                  @relation(fields: [specId], references: [id])
   answeredQuestions       UserAnsweredQuestion[]
@@ -44,6 +41,8 @@ model User {
   teams                   UserTeam[]
   assignedSurveys         User_Assigned_Survey[]
   assignedTests           User_Assigned_Test[]
+  authorRates             Rate360[]               @relation("AuthoredRates")
+  rates360                Rate360[]               @relation("AssignedRates")
 }
 
 model UserDeputy {
@@ -64,7 +63,7 @@ model Rate360 {
   startDate        DateTime?             @default(now())
   endDate          DateTime?
   userId           Int
-  specId           Int
+  specId           Int?
   teamId           Int?
   archived         Boolean               @default(false)
   type             SkillType
@@ -75,15 +74,19 @@ model Rate360 {
   userComment      String?
   showReportToUser Boolean               @default(false)
   hidden           Boolean               @default(false)
+  globalCommentsEnabled  Boolean                @default(false)
+  authorId         Int? 
   plan             IndividualGrowthPlan?
   notifications    Notification[]
-  spec             Spec                  @relation(fields: [specId], references: [id], onDelete: Cascade)
+  spec             Spec?                  @relation(fields: [specId], references: [id], onDelete: Cascade)
   team             Team?                 @relation(fields: [teamId], references: [id])
-  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User                  @relation("AssignedRates", fields: [userId], references: [id], onDelete: Cascade)
+  author           User?                 @relation("AuthoredRates", fields: [authorId], references: [id], onDelete: SetNull)
   evaluators       Rate360Evaluator[]
   comments         UserComments[]
   userRates        UserRates[]
   competencyBlocks CompetencyBlock[]     @relation("CompetencyBlockToRate360")
+  cases             Case[]
 }
 
 model UserComments {
@@ -91,8 +94,8 @@ model UserComments {
   userId       Int
   rate360Id    Int
   comment      String
-  competencyId Int
-  compentency  Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  competencyId Int?
+  compentency  Competency? @relation(fields: [competencyId], references: [id], onDelete: Cascade)
   rate360      Rate360    @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -101,12 +104,16 @@ model UserRates {
   id             Int       @id @default(autoincrement())
   userId         Int
   rate360Id      Int
-  indicatorId    Int
+  indicatorId    Int?
+  caseId         Int?
   rate           Int
   approved       Boolean   @default(false)
-  approvedByUser Boolean   @default(false)
   createdAt      DateTime  @default(now())
-  indicator      Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  comment        String?
+
+
+  case           Case?      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  indicator      Indicator? @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
   rate360        Rate360   @relation(fields: [rate360Id], references: [id], onDelete: Cascade)
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -583,6 +590,29 @@ model ProfileConstructorFolderSpec {
   competencyBlocks CompetencyBlock[]            @relation("CompetencyBlockToProfileConstructorFolderSpec")
 }
 
+model Case {
+  id               Int                          @id @default(autoincrement())
+  name    String
+  description String?
+  commentEnabled     Boolean?   
+  archived    Boolean   @default(false)
+
+  createdAt        DateTime                     @default(now())
+  variants  CaseVariant[]
+  rates     Rate360[]
+  useRates UserRates[]
+}
+
+model CaseVariant {
+  id               Int                          @id @default(autoincrement())
+  name    String
+  value   Int
+  createdAt        DateTime                     @default(now())
+
+  caseId  Int
+  case        Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}
+
 enum SkillType {
   SOFT
   HARD
@@ -641,6 +671,7 @@ enum EvaluatorType {
 enum Rate360Type {
   Rate360
   Rate180
+  Case
 }
 
 enum NotificationType {

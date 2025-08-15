@@ -1,5 +1,6 @@
 import { useAppSelector } from '@/app';
 import { rate360Api } from '../api/rate360Api';
+import { caseApi } from '../api/caseApi';
 
 export const useLoadRates = () => {
   const user = useAppSelector((state) => state.user.user);
@@ -15,6 +16,9 @@ export const useLoadRates = () => {
     skip: !isMounted || !user,
   });
   rate360Api.useSelfRatesQuery(undefined, {
+    skip: !isMounted || !user,
+  });
+  caseApi.useGetAssignedCasesQuery(undefined, {
     skip: !isMounted || !user,
   });
 };

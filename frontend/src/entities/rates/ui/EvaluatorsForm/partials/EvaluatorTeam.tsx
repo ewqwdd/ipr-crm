@@ -1,11 +1,12 @@
 import { Team, TeamUser } from '@/entities/team';
 import React from 'react';
 import Evaluator from './Evaluator';
-import { EvaluateUser, EvaulatorType } from '@/entities/rates/types/types';
+import { EvaluateUser } from '@/entities/rates/types/types';
 import toast from 'react-hot-toast';
 import { teamsApi } from '@/shared/api/teamsApi';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface EvaluatorTeamProps {
   team: Team;

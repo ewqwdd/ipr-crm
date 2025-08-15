@@ -1,5 +1,6 @@
 import { useModal } from '@/app/hooks/useModal';
-import { EvaluateUser, EvaulatorType } from '@/entities/rates/types/types';
+import { EvaluateUser } from '@/entities/rates/types/types';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 import { Badge } from '@/shared/ui/Badge';
 import { SoftButton } from '@/shared/ui/SoftButton';
 import { XIcon } from '@heroicons/react/outline';

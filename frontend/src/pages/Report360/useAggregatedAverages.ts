@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { EvaulatorType } from '@/entities/rates/types/types';
 import { Competency, CompetencyBlock } from '@/entities/skill';
 import { calculateAverage } from './helpers';
 import { FinalRatings } from './useCalculateAvgIndicatorRaitings';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 type EvaluatorType = EvaulatorType | 'SELF';
 

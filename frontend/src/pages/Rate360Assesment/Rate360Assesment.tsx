@@ -65,7 +65,7 @@ export default function Rate360Assesment() {
       setAssessment(assesmentData);
       const comments: Record<number, string> = {};
       data.comments.forEach((comment) => {
-        comments[comment.competencyId] = comment.comment;
+        comments[comment.competencyId!] = comment.comment;
       });
       setComments(comments);
     }

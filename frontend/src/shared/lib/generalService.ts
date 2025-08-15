@@ -62,7 +62,6 @@ export const generalService = {
               );
               acc[indicator.id] = {
                 rate: foundRate?.rate,
-                comment: foundRate?.comment,
               };
               return acc;
             },

@@ -38,6 +38,10 @@ import AddSpecFolderModal from '../folders/ui/AddSpecFolderModal';
 import { ComptenciesEditModal } from '@/widgets/ComptenciesEditModal';
 import { UserDeputyModal } from '@/features/user/UserDeputyModal';
 import EvaluatorStatistic from '@/widgets/EvaluatorStatisticModal/EvaluatorStatisticModal';
+import { CaseCreateModal } from '@/widgets/CaseCreateModal';
+import { CaseEditModal } from '@/widgets/CaseEditModal';
+import { CaseRateCreateModal } from '@/widgets/CaseRateCreateModal';
+import { CaseEvaluatorsModal } from '@/widgets/CaseEvaluatorsModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -125,6 +129,14 @@ const ModalWrapper: FC = () => {
       return <UserDeputyModal {...updatedModalProps} />;
     case 'EVALUATOR_STATISTIC':
       return <EvaluatorStatistic {...updatedModalProps} />;
+    case 'CREATE_CASE':
+      return <CaseCreateModal {...updatedModalProps} />;
+    case 'EDIT_CASE':
+      return <CaseEditModal {...updatedModalProps} />;
+    case 'CREATE_CASE_RATE':
+      return <CaseRateCreateModal {...updatedModalProps} />;
+    case 'CASE_EVALUATORS':
+      return <CaseEvaluatorsModal {...updatedModalProps} />;
     default:
       break;
   }

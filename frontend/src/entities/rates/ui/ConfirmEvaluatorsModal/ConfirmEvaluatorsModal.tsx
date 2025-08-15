@@ -1,10 +1,5 @@
 import { Modal } from '@/shared/ui/Modal';
-import {
-  AddRateDto,
-  EvaluateUser,
-  EvaulatorType,
-  Rate,
-} from '../../types/types';
+import { AddRateDto, EvaluateUser, Rate } from '../../types/types';
 import { useEffect, useState } from 'react';
 import { rateTypeNames } from '../../model/rateTypeNames';
 import EvaluatorsList from './EvaluatorsList';
@@ -17,6 +12,7 @@ import TeamFilters from '../../../../features/team/TeamFilters/TeamFilters';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { AlertPortal } from '@/shared/ui/AlertPortal';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface ConfirmEvaluatorsModalData {
   rate: Rate;
