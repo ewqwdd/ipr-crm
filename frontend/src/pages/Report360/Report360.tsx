@@ -197,27 +197,27 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                                 </tbody>
                               </table>
                             </div>
-                            {isAdmin &&
-                              (competencyComments?.length ?? 0) > 0 && (
-                                <div className="mt-6 pl-5">
-                                  <h3>
-                                    <span className="text-black font-semibold">
-                                      Комментарии к компетенции:
-                                    </span>
-                                    <span className="text-gray-900 ml-2">
-                                      {competency?.name}
-                                    </span>
-                                  </h3>
-                                  <div className="pl-3">
-                                    {competencyComments?.map((comment) => (
-                                      <CommentItem
-                                        key={comment.id}
-                                        comment={comment.comment}
-                                      />
-                                    ))}
-                                  </div>
+                            {(competencyComments?.length ?? 0) > 0 && (
+                              <div className="mt-6 pl-5">
+                                <h3>
+                                  <span className="text-black font-semibold">
+                                    Комментарии к компетенции:
+                                  </span>
+                                  <span className="text-gray-900 ml-2">
+                                    {competency?.name}
+                                  </span>
+                                </h3>
+                                <div className="pl-3">
+                                  {competencyComments?.map((comment) => (
+                                    <CommentItem
+                                      key={comment.id}
+                                      comment={comment.comment}
+                                      user={comment.user}
+                                    />
+                                  ))}
                                 </div>
-                              )}
+                              </div>
+                            )}
                           </div>
                         );
                       })}

@@ -1190,6 +1190,13 @@ export class Rate360Service {
             comment: true,
             competencyId: true,
             userId: true,
+            user: {
+              select: {
+                username: true,
+                avatar: true,
+                id: true,
+              },
+            },
           },
         },
         userRates: {
