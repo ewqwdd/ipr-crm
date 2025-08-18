@@ -50,6 +50,11 @@ export interface Rate {
     rate360Id: number;
     comment: string;
     competencyId: number;
+    user: {
+      id: number;
+      username: string;
+      avatar?: string;
+    };
   }[];
   plan?: Ipr;
   competencyBlocks: CompetencyBlock[];
