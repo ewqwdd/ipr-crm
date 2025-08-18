@@ -37,6 +37,11 @@ export interface AssesmentBaseType {
     rate360Id: number;
     comment: string;
     competencyId?: number;
+    user: {
+      id: number;
+      username: string;
+      avatar?: string;
+    }
   }[];
   rateType: 'Rate180' | 'Rate360' | 'Case';
   finished: boolean;
