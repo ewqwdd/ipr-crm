@@ -6,6 +6,8 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { CaseService } from './case.service';
@@ -19,12 +21,18 @@ import { AnswerCaseRateDto } from './dto/answer-case-rate.dto';
 import { DeleteCaseDto } from './dto/delete-case.dto';
 import { SetEvaluatorsDto } from './dto/ser-evaluators.dto';
 import { AssesmentService } from 'src/shared/assesment/assesment.service';
+import { DeleteCaseRatesDto } from './dto/delete-case-rates.dto';
+import { CasesRatesFilterDto } from './dto/cases-rates-filter.dto';
+import { ExportService } from 'src/export/export.service';
+import { Response } from 'express';
+import { ExportCaseRatesPayload } from 'src/export/export.types';
 
 @Controller('case')
 export class CaseController {
   constructor(
     private caseService: CaseService,
     private assesmentService: AssesmentService,
+    private exportService: ExportService,
   ) {}
 
   @Get()
@@ -53,8 +61,11 @@ export class CaseController {
 
   @Get('/rates')
   @UseGuards(AuthGuard)
-  getCaseRates(@SessionInfo() sessionInfo: GetSessionInfoDto) {
-    return this.caseService.getCaseRates(sessionInfo);
+  getCaseRates(
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Query() data: CasesRatesFilterDto,
+  ) {
+    return this.caseService.getCaseRates(data, sessionInfo);
   }
 
   @Get('/my-rates')
@@ -110,5 +121,26 @@ export class CaseController {
   @UseGuards(AdminGuard)
   getEvaluators(@Body() data: SetEvaluatorsDto) {
     return this.caseService.setEvaluators(data);
+  }
+
+  @Delete('/rates')
+  @UseGuards(AdminGuard)
+  deleteCaseRate(@Body() data: DeleteCaseRatesDto) {
+    return this.caseService.archiveRates(data);
+  }
+
+  @Get('/rates/:id/export')
+  @UseGuards(AdminGuard)
+  async exportCaseRate(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @SessionInfo() sessionInfo: GetSessionInfoDto,
+    @Res() res: Response,
+  ) {
+    const rate = (await this.caseService.getCaseResult(
+      id,
+      sessionInfo,
+    )) as unknown as ExportCaseRatesPayload;
+
+    return this.exportService.exportCases(res, rate);
   }
 }

@@ -2,6 +2,7 @@ import { Case, CaseCreateDto } from '@/entities/cases';
 import {
   CaseCreateRateDto,
   CaseRate,
+  CaseRateFilters,
   CaseRateItemDto,
 } from '@/entities/cases/types/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
@@ -45,12 +46,16 @@ const caseApi = createApi({
       }),
       invalidatesTags: ['Case'],
     }),
-    getCaseRates: build.query<CaseRate[], void>({
-      query: () => ({
+    getCaseRates: build.query<
+      { data: CaseRate[]; total: number },
+      CaseRateFilters
+    >({
+      query: (filters) => ({
         url: '/case/rates',
         method: 'GET',
+        params: filters,
       }),
-      providesTags: ['CaseRate'],
+      providesTags: (_, __, params) => [{ type: 'CaseRate', params }],
     }),
     createCaseRate: build.mutation<void, CaseCreateRateDto>({
       query: (data) => ({
@@ -112,6 +117,20 @@ const caseApi = createApi({
         url: '/case/rates/evaluators',
         method: 'POST',
         body: { evaluators, rateId },
+      }),
+      invalidatesTags: [
+        'CaseRate',
+        'MyRates',
+        'CaseAssigned',
+        'CaseRateReport',
+        'CaseRateReport',
+      ],
+    }),
+    deleteRates: build.mutation<void, number[]>({
+      query: (ids) => ({
+        url: '/case/rates',
+        method: 'DELETE',
+        body: { ids },
       }),
       invalidatesTags: [
         'CaseRate',
