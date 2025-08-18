@@ -5,7 +5,6 @@ import {
   UserIprTasks,
 } from '@/entities/ipr';
 import IprDetails from '@/entities/ipr/ui/partials/IprDetails';
-import IprGoal from '@/entities/ipr/ui/partials/IprGoal';
 import { iprApi } from '@/shared/api/iprApi';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
@@ -36,7 +35,7 @@ export default function IprUser() {
         <IprHeadingCurator ipr={data} />
         <IprDetails ipr={data} />
         <IprProgress ipr={data} />
-        <IprGoal ipr={data} />
+        {/* <IprGoal ipr={data} /> */}
         {data &&
           taskTypes.map((type) => <UserIprTasks ipr={data} type={type} />)}
       </div>
