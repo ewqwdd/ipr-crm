@@ -24,6 +24,18 @@ export type Rate = AssesmentBaseType & {
     approved: boolean;
     createdAt: string;
   }[];
+  comments: {
+    id: number;
+    userId: number;
+    rate360Id: number;
+    comment: string;
+    competencyId: number;
+    user: {
+      id: number;
+      username: string;
+      avatar?: string;
+    };
+  }[];
   plan?: Ipr;
   competencyBlocks: CompetencyBlock[];
   rateType: 'Rate180' | 'Rate360';
