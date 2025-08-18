@@ -1,6 +1,6 @@
 import { cva } from "@/shared/lib/cva";
 import { rateService } from "@/shared/lib/services/rateService";
-import type { Rate } from "@/shared/types/Rate";
+import type { Rate, SkillType } from "@/shared/types/Rate";
 import ReportTableWrapper from "./ReportTableWrapper";
 
 interface ReportRatesProps {
@@ -16,20 +16,26 @@ const commonHeaders = [
 
 const RateCell = ({
   rate,
-  boundary = 3,
   className,
+  type,
 }: {
   rate?: number;
-  boundary?: number;
   className?: string;
+  type: SkillType;
 }) => {
   if (!rate)
     return (
       <td className={cva("px-3 py-4 text-sm text-center", className)}>N/D</td>
     );
+  const bars = rateService.getBoundaries(type);
 
   const color =
-    rate > boundary ? "text-success" : rate === boundary ? "" : "text-error";
+    rate > bars[1] + bars[0]
+      ? "text-success"
+      : rate < bars[0]
+        ? "text-error"
+        : "text-indigo-600";
+
   return (
     <td
       className={cva(
@@ -82,6 +88,7 @@ export default function ReportRates({ rate }: ReportRatesProps) {
                     key={key}
                     rate={competency[key]}
                     className="text-accent"
+                    type={rate.type}
                   />
                 ))}
               </tr>
@@ -91,7 +98,11 @@ export default function ReportRates({ rate }: ReportRatesProps) {
                     {indicator.name}
                   </td>
                   {keys.map((key) => (
-                    <RateCell key={key} rate={indicator[key]} />
+                    <RateCell
+                      key={key}
+                      rate={indicator[key]}
+                      type={rate.type}
+                    />
                   ))}
                 </tr>
               ))}
@@ -102,10 +113,10 @@ export default function ReportRates({ rate }: ReportRatesProps) {
       <ReportTableWrapper headers={["Общая оцегка", ...commonHeaders]}>
         <tr>
           <td className="text-sm px-3 py-4 w-full">Общая оценка</td>
-          <RateCell rate={avgCuratorsRates} />
-          <RateCell rate={avgTeamMembersRates} />
-          <RateCell rate={avgSubbordinatesRates} />
-          <RateCell rate={avgSelfRates} />
+          <RateCell type={rate.type} rate={avgCuratorsRates} />
+          <RateCell type={rate.type} rate={avgTeamMembersRates} />
+          <RateCell type={rate.type} rate={avgSubbordinatesRates} />
+          <RateCell type={rate.type} rate={avgSelfRates} />
         </tr>
       </ReportTableWrapper>
     </div>

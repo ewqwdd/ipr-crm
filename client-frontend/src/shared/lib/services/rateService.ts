@@ -3,6 +3,7 @@ import type {
   CompetencyBlock,
   Indicator,
   Rate,
+  SkillType,
 } from "@/shared/types/Rate";
 
 export const rateService = {
@@ -126,4 +127,10 @@ export const rateService = {
       };
     });
   },
+
+  getBoundaries: (type: SkillType) => [
+    type === "SOFT" ? 3 : 1.5,
+    type === "SOFT" ? 1.5 : 1.5,
+    type === "SOFT" ? 0.5 : 1,
+  ],
 };
