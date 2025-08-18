@@ -1,4 +1,5 @@
 import { Rate } from '@/entities/rates';
+import { SkillType } from '@/entities/skill';
 
 export const calculateAverage = (values: number[]): number => {
   if (!values.length) return 0;
@@ -40,3 +41,9 @@ export const getCuratorsAndMembers = (
       .map((evaluator) => evaluator.user.username),
   };
 };
+
+export const getBoundaries = (type: SkillType) => [
+  type === 'SOFT' ? 3 : 1.5,
+  type === 'SOFT' ? 1.5 : 1.5,
+  type === 'SOFT' ? 0.5 : 1,
+];
