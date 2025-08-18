@@ -13,6 +13,8 @@ import { AnswerCaseRateDto } from './dto/answer-case-rate.dto';
 import { UsersAccessService } from 'src/users/users-access.service';
 import { SetEvaluatorsDto } from './dto/ser-evaluators.dto';
 import { AssesmentService } from 'src/shared/assesment/assesment.service';
+import { DeleteCaseRatesDto } from './dto/delete-case-rates.dto';
+import { CasesRatesFilterDto } from './dto/cases-rates-filter.dto';
 
 @Injectable()
 export class CaseService {
@@ -124,68 +126,103 @@ export class CaseService {
     });
   }
 
-  async getCaseRates(sessionInfo: GetSessionInfoDto) {
+  async getCaseRates(
+    filters: CasesRatesFilterDto,
+    sessionInfo: GetSessionInfoDto,
+  ) {
     const isAdmin = sessionInfo.role === 'admin';
 
-    const rates = await this.prismaService.rate360.findMany({
-      where: {
-        rateType: 'Case',
-        ...(isAdmin
-          ? {}
-          : {
-              userId: {
-                in: (
-                  await this.usersAccessService.findAllowedSubbordinates(
-                    sessionInfo.id,
-                  )
-                ).filter((id) => id !== sessionInfo.id),
-              },
-            }),
-      },
-      include: {
-        cases: {
-          include: {
-            variants: true,
-          },
-        },
-        userRates: true,
-        evaluators: {
-          include: {
+    const where: Prisma.Rate360WhereInput = {
+      rateType: 'Case',
+      archived: false,
+      ...(filters.username
+        ? {
             user: {
-              select: {
-                username: true,
-                id: true,
-                avatar: true,
+              username: {
+                contains: filters.username,
+              },
+            },
+          }
+        : {}),
+      ...(filters.case
+        ? {
+            cases: {
+              some: {
+                name: {
+                  contains: filters.case,
+                },
+              },
+            },
+          }
+        : {}),
+      ...(isAdmin
+        ? {}
+        : {
+            userId: {
+              in: (
+                await this.usersAccessService.findAllowedSubbordinates(
+                  sessionInfo.id,
+                )
+              ).filter((id) => id !== sessionInfo.id),
+            },
+          }),
+    };
+
+    const [data, total] = await Promise.all([
+      this.prismaService.rate360.findMany({
+        where,
+        include: {
+          cases: {
+            include: {
+              variants: true,
+            },
+          },
+          userRates: true,
+          evaluators: {
+            include: {
+              user: {
+                select: {
+                  username: true,
+                  id: true,
+                  avatar: true,
+                },
               },
             },
           },
-        },
-        comments: true,
-        user: {
-          select: {
-            username: true,
-            id: true,
-            avatar: true,
+          comments: true,
+          user: {
+            select: {
+              username: true,
+              id: true,
+              avatar: true,
+            },
+          },
+          author: {
+            select: {
+              username: true,
+              id: true,
+              avatar: true,
+            },
           },
         },
-        author: {
-          select: {
-            username: true,
-            id: true,
-            avatar: true,
-          },
+        orderBy: {
+          id: 'desc',
         },
-      },
-      orderBy: {
-        id: 'desc',
-      },
-    });
+        ...(filters.limit ? { take: filters.limit } : {}),
+        ...(filters.page && filters.limit
+          ? { skip: (filters.page - 1) * filters.limit }
+          : {}),
+      }),
+      this.prismaService.rate360.count({
+        where,
+      }),
+    ]);
 
-    const transformedRates = rates.map((rate) =>
+    const transformedRates = data.map((rate) =>
       this.transformCaseRate(rate, sessionInfo, true),
     );
 
-    return transformedRates.filter(Boolean);
+    return { total, data: transformedRates.filter(Boolean) };
   }
 
   async getMyCaseRates(sessionInfo: GetSessionInfoDto) {
@@ -194,6 +231,7 @@ export class CaseService {
         rateType: 'Case',
         userId: sessionInfo.id,
         finished: true,
+        archived: false,
       },
       include: {
         cases: true,
@@ -380,7 +418,7 @@ export class CaseService {
 
   async getCaseResult(id: number, sessionInfo: GetSessionInfoDto) {
     const rate = await this.prismaService.rate360.findFirst({
-      where: { id },
+      where: { id, archived: false },
       include: {
         cases: true,
         userRates: {
@@ -455,6 +493,20 @@ export class CaseService {
     });
 
     await this.checkIfFinished(data.rateId);
+    return HttpStatus.OK;
+  }
+
+  async archiveRates(data: DeleteCaseRatesDto) {
+    await this.prismaService.rate360.updateMany({
+      where: {
+        id: {
+          in: data.ids,
+        },
+      },
+      data: {
+        archived: true,
+      },
+    });
     return HttpStatus.OK;
   }
 }

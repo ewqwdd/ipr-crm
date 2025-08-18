@@ -5,6 +5,7 @@ import { generalService } from '@/shared/lib/generalService';
 import { Avatar } from '@/shared/ui/Avatar';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { SoftButton } from '@/shared/ui/SoftButton';
 import { useParams } from 'react-router';
 
 export default function CaseReport() {
@@ -12,11 +13,23 @@ export default function CaseReport() {
   const { data, isLoading } = caseApi.useGetReportQuery(id ?? '');
   const isAdmin = useIsAdmin();
 
+  const handleExport = async () => {
+    const url = new URL(
+      import.meta.env.VITE_API_URL + '/case/rates/' + id + '/export',
+    );
+    window.open(url);
+  };
+
   return (
     <LoadingOverlay fullScereen active={isLoading}>
       <div className="sm:px-8 sm:py-10 px-4 py-6 flex flex-col sm:h-full gap-6">
-        <div>
+        <div className="flex gap-2">
           <Heading title="Отчет" description="Отчет пройденного кейса" />
+          {isAdmin && (
+            <SoftButton onClick={handleExport} className="self-center">
+              Скачать
+            </SoftButton>
+          )}
         </div>
         {data?.cases.map((item) => (
           <div className="flex flex-col gap-2">
@@ -47,7 +60,7 @@ export default function CaseReport() {
                       Средняя оценка
                     </td>
                     <td className="whitespace-nowrap pr-4 py-2 text-sm text-center font-semibold">
-                      {item.avg}
+                      {item.avg?.toFixed(2)}
                     </td>
                   </tr>
                   {isAdmin &&

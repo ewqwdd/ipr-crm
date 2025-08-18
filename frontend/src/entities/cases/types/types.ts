@@ -70,3 +70,10 @@ export interface CaseRateItemDto {
   rate: number;
   comment?: string;
 }
+
+export interface CaseRateFilters {
+  username?: string;
+  case?: string;
+  page?: number;
+  limit?: number;
+}

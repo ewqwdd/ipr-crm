@@ -1,18 +1,65 @@
 import { useModal } from '@/app/hooks/useModal';
+import { type CaseRateFilters as CaseRateFiltersType } from '@/entities/cases';
+import { CaseRateFilters } from '@/features/case/CaseRateFilters';
 import { caseApi } from '@/shared/api/caseApi';
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
+import { useSearchState } from '@/shared/hooks/useSearchState';
 import { dateService } from '@/shared/lib/dateService';
+import { Checkbox } from '@/shared/ui/Checkbox';
 import { Heading } from '@/shared/ui/Heading';
 import LoadingOverlay from '@/shared/ui/LoadingOverlay';
+import { Pagination } from '@/shared/ui/Pagination';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SoftButton } from '@/shared/ui/SoftButton';
+import { ActionBar } from '@/widgets/ActionBar';
 import { TableBody } from '@/widgets/TableBody';
 import { TableHeading } from '@/widgets/TableHeading';
 import { UsersIcon } from '@heroicons/react/outline';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 
+const PAGE_LIMIT = 10;
+
+const initial: CaseRateFiltersType = {
+  page: 1,
+  limit: PAGE_LIMIT,
+};
+
 export default function CaseRates() {
-  const { data, isLoading } = caseApi.useGetCaseRatesQuery();
+  const [selected, setSelected] = useState<number[]>([]);
   const { openModal } = useModal();
+  const isAdmin = useIsAdmin();
+  const [mutate, { isLoading: deleteLoading }] =
+    caseApi.useDeleteRatesMutation();
+  const [showFilters, setShowFilters] = useState(false);
+
+  const [filters, setFilters, inited] =
+    useSearchState<CaseRateFiltersType>(initial);
+  const prevFilters = useRef<CaseRateFiltersType>();
+
+  const page = filters.page;
+  const setPage = (page: number) => {
+    setFilters((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
+
+  useEffect(() => {
+    if (
+      inited &&
+      filters.page !== 1 &&
+      prevFilters.current &&
+      prevFilters.current.page === filters.page
+    ) {
+      setPage(1);
+    }
+    return () => {
+      prevFilters.current = filters;
+    };
+  }, [filters]);
+
+  const { data, isLoading } = caseApi.useGetCaseRatesQuery(filters);
 
   return (
     <LoadingOverlay active={isLoading}>
@@ -25,6 +72,14 @@ export default function CaseRates() {
           <PrimaryButton onClick={() => openModal('CREATE_CASE_RATE')}>
             Добавить опрос
           </PrimaryButton>
+        </div>
+        <div className="flex-col gap-1 mt-6 relative mb-2">
+          <SoftButton onClick={() => setShowFilters((prev) => !prev)}>
+            Фильтры
+          </SoftButton>
+          {showFilters && (
+            <CaseRateFilters filters={filters} setFilters={setFilters} />
+          )}
         </div>
         <div className="max-sm:max-w-full overflow-x-auto">
           <table className="sm:w-full divide-y divide-gray-300 mt-2">
@@ -41,12 +96,26 @@ export default function CaseRates() {
               ]}
             />
             <TableBody
-              data={data || []}
+              data={data?.data || []}
               columnRender={[
                 {
-                  render: (_, i) => (
-                    <span className="text-gray-900">{i + 1}</span>
-                  ),
+                  render: (item, i) =>
+                    isAdmin ? (
+                      <Checkbox
+                        checked={selected.includes(item.id)}
+                        onChange={() =>
+                          setSelected((prev) => {
+                            if (prev.includes(item.id)) {
+                              return prev.filter((id) => id !== item.id);
+                            } else {
+                              return [...prev, item.id];
+                            }
+                          })
+                        }
+                      />
+                    ) : (
+                      <span className="text-gray-900 font-medium">{i + 1}</span>
+                    ),
                 },
                 {
                   render: (item) => (
@@ -128,6 +197,34 @@ export default function CaseRates() {
             />
           </table>
         </div>
+        <Pagination
+          limit={PAGE_LIMIT}
+          page={page ?? 1}
+          setPage={setPage}
+          count={data?.total}
+        />
+        {selected.length > 0 && (
+          <ActionBar
+            clearSelected={() => setSelected([])}
+            selected={selected}
+            loading={deleteLoading}
+            buttonsConfig={[
+              {
+                label: 'Удалить',
+                onClick: () =>
+                  openModal('CONFIRM', {
+                    submitText: 'Удалить',
+                    title: 'Удалить выбранные Оценки?',
+                    onSubmit: async () => {
+                      await mutate(selected);
+                      setSelected([]);
+                    },
+                  }),
+                danger: true,
+              },
+            ]}
+          />
+        )}
       </div>
     </LoadingOverlay>
   );
