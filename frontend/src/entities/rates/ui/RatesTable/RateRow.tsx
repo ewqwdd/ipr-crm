@@ -11,6 +11,7 @@ import IprButton from './IprButton';
 import { SetStateAction } from 'react';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import { Rate360Progress } from '@/widgets/Rate360Progress';
+import { dateService } from '@/shared/lib/dateService';
 
 interface RateRowProps {
   rate: Rate;
@@ -133,6 +134,9 @@ export default function RateRow({
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
         {rate.startDate?.slice(0, 10)}
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
+        {rate.meetDate && dateService.formatDate(rate.meetDate)}
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         {percent >= 1 && <IprButton rate={rate} />}
