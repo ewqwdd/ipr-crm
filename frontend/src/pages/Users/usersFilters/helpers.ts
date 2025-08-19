@@ -94,6 +94,10 @@ export const filterByUserId = (user: User, userId: UsersFilter['user']) => {
   return !userId || user.id === Number(userId);
 };
 
+export const filterByUserFired = (user: User, fired?: boolean) => {
+  return !!user.fired === !!fired;
+};
+
 export const filterByAccess = (user: User, access: UsersFilter['access']) => {
   if (access === 'ALL') return true;
   if (access === 'ACTIVE') return !!user.access;
@@ -109,6 +113,7 @@ export const applyUsersFilters = (
   return (
     !!filterByTeam(user, filters.teams, structure) &&
     filterByUserId(user, filters.user) &&
-    filterByAccess(user, filters.access)
+    filterByAccess(user, filters.access) &&
+    filterByUserFired(user, filters.fired)
   );
 };
