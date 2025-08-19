@@ -57,7 +57,7 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
                   <div className="mr-[-0.75rem]">1.5</div>
                 </div>
                 <div className="text-sm font-medium text-gray-600 mt-1">
-                  <div className="text-center">Освоение основ</div>
+                  <div className="text-center">Ниже ожиданий</div>
                 </div>
               </div>
               <div
@@ -73,7 +73,9 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
                   <div className="mr-[-0.5rem]">3</div>
                 </div>
                 <div className="text-sm font-medium text-gray-600 mt-1">
-                  <div className="text-center">Развитие навыков</div>
+                  <div className="text-center">
+                    Частично соответствует ожиданиям
+                  </div>
                 </div>
               </div>
               <div
@@ -83,13 +85,13 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
                 aria-hidden="true"
               >
                 <div className="bg-gray-200 rounded-full overflow-hidden">
-                  <div className="h-2 bg-green-600 rounded-full w-full" />
+                  <div className="h-2 bg-indigo-600 rounded-full w-full" />
                 </div>
                 <div className="flex justify-end">
                   <div className="mr-[-0.75rem]">3.6</div>
                 </div>
                 <div className="text-sm font-medium text-gray-600 mt-1">
-                  <div className="text-center">Уровень мастерства</div>
+                  <div className="text-center">Соответствует ожиданиям</div>
                 </div>
               </div>
               <div
@@ -105,7 +107,7 @@ const ProgressBarBlock: FC<ProgressBarBlockProps> = ({ type }) => {
                   <div>{boundary}</div>
                 </div>
                 <div className="text-sm font-medium text-gray-600 mt-1">
-                  <div className="text-center">Экспертный уровень</div>
+                  <div className="text-center">Выше ожиданий</div>
                 </div>
               </div>
             </>
