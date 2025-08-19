@@ -52,7 +52,20 @@ export class ExportService {
   }
 
   async exportIprs(res: Response, plans: ExportIprPayload) {
-    const keys = ['index', 'username', 'deputy', 'team', 'progress'] as const;
+    const keys = [
+      'index',
+      'username',
+      'deputy',
+      'team',
+      'progress',
+      'meetDate',
+    ] as const;
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    };
 
     await this.excelService.generateExcel(res, {
       keys,
@@ -62,6 +75,7 @@ export class ExportService {
         deputy: 'Заместитель у',
         team: 'Команда',
         progress: 'Прогресс',
+        meetDate: 'Дата встречи',
       },
       name: 'Планы развития',
       rows: plans.map((plan, i) => ({
@@ -81,6 +95,7 @@ export class ExportService {
                 100
               ).toFixed(0) + '%'
             : '100%',
+        meetDate: plan.rate360?.meetDate?.toLocaleString('ru-RU', options),
       })),
     });
   }

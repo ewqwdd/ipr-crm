@@ -75,6 +75,7 @@ model Rate360 {
   userComment      String?
   showReportToUser Boolean               @default(false)
   hidden           Boolean               @default(false)
+  meetDate        DateTime?
   plan             IndividualGrowthPlan?
   notifications    Notification[]
   spec             Spec                  @relation(fields: [specId], references: [id], onDelete: Cascade)

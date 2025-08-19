@@ -24,6 +24,7 @@ export const findAllIprInclude: Prisma.IndividualGrowthPlanFindManyArgs['include
             name: true,
           },
         },
+        meetDate: true,
       },
     },
     tasks: true,
@@ -54,6 +55,7 @@ export type FindAllIprType = Prisma.IndividualGrowthPlanGetPayload<{
             name: true;
           };
         };
+        meetDate: true;
       };
     };
     tasks: true;

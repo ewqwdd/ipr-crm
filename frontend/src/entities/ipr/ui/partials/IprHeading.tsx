@@ -7,6 +7,7 @@ import { UserRateHeader } from '@/widgets/UserRateHeader';
 import { useAppSelector } from '@/app';
 import AdminSetDeputy from './deputy/AdminSetDeputy';
 import CuratorDeputy from './deputy/CuratorDeputy';
+import { dateService } from '@/shared/lib/dateService';
 
 interface IprHeadingProps {
   ipr?: Ipr;
@@ -26,12 +27,20 @@ export default function IprHeading({ ipr }: IprHeadingProps) {
           <CuratorDeputy ipr={ipr} />
         )}
 
-        <Link to={`/board/${ipr?.user.id}`} className="ml-auto">
-          <SecondaryButton>
-            Доска задач
-            <ArrowRightIcon className="size-4 ml-2 max-sm:hidden" />
-          </SecondaryButton>
-        </Link>
+        <div className="flex items-center gap-4 ml-auto">
+          {ipr?.rate360.meetDate && (
+            <span className="text-gray-600 font-medium text-sm">
+              Дата встречи: {dateService.formatDate(ipr?.rate360.meetDate)}
+            </span>
+          )}
+
+          <Link to={`/board/${ipr?.user.id}`}>
+            <SecondaryButton>
+              Доска задач
+              <ArrowRightIcon className="size-4 ml-2 max-sm:hidden" />
+            </SecondaryButton>
+          </Link>
+        </div>
       </div>
     </>
   );
