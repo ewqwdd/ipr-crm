@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Rate360 } from '@prisma/client';
 import { ExcelService } from './excel.service';
 import { Response } from 'express';
-import { ExportIprPayload, ExportRatesPayload } from './export.types';
+import {
+  ExportIprPayload,
+  ExportRatesPayload,
+  ExportTeamsPayload,
+} from './export.types';
 
 @Injectable()
 export class ExportService {
@@ -30,8 +34,46 @@ export class ExportService {
     });
   }
 
-  async exportRates(res: Response, rates: ExportRatesPayload) {
-    const keys = ['index', 'username', 'type', 'progress'] as const;
+  async exportRates(
+    res: Response,
+    rates: ExportRatesPayload,
+    teams: ExportTeamsPayload,
+  ) {
+    const keys = [
+      'index',
+      'username',
+      'type',
+      'progress',
+      'product',
+      'department',
+      'direction',
+      'group',
+    ] as const;
+
+    const recurTeam = (team: ExportTeamsPayload[0]): string[] => {
+      if (!team.parentTeam) return [team.name];
+      return [team.name, ...recurTeam(team.parentTeam)];
+    };
+
+    const getTeams = (rate: ExportRatesPayload[0]) => {
+      const foundTeam = teams.find((team) => team.id === rate.teamId);
+      if (!foundTeam)
+        return {
+          product: '',
+          department: '',
+          direction: '',
+          group: '',
+        };
+
+      const teamsArr = recurTeam(foundTeam);
+      teamsArr.reverse();
+      return {
+        product: teamsArr[0] ?? '',
+        department: teamsArr[1] ?? '',
+        direction: teamsArr[2] ?? '',
+        group: teamsArr[3] ?? '',
+      };
+    };
 
     await this.excelService.generateExcel<typeof keys>(res, {
       keys,
@@ -40,6 +82,10 @@ export class ExportService {
         username: 'Никнейм',
         type: 'Тип',
         progress: 'Прогресс',
+        product: 'Продукт',
+        department: 'Департамент',
+        direction: 'Направление',
+        group: 'Группа',
       },
       name: '360 оценки',
       rows: rates.map((rate, i) => ({
@@ -47,6 +93,7 @@ export class ExportService {
         username: rate.user.username,
         type: rate.type,
         progress: `${(Math.min(rate.progress, 1) * 100).toFixed()}%`,
+        ...getTeams(rate),
       })),
     });
   }

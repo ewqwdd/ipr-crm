@@ -33,12 +33,14 @@ import { Response } from 'express';
 import { Indicator } from '@prisma/client';
 import { EvaluatorsFiltersDto } from './dto/evaluators-filters.dto';
 import { ConfirmMeetDto } from './dto/confirm-meet.dto';
+import { PrismaService } from 'src/utils/db/prisma.service';
 
 @Controller('rate360')
 export class Rate360Controller {
   constructor(
     private readonly rate360Service: Rate360Service,
     private readonly exportService: ExportService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   @Get('/')
@@ -355,11 +357,39 @@ export class Rate360Controller {
       .sort((a, b) => {
         return a.progress - b.progress;
       });
-    this.exportService.exportRates(res, ratesWithProgress);
+
+    const teamIds = ratesWithProgress?.map((r) => r.teamId) as number[];
+    const teams = await this.prismaService.team.findMany({
+      where: { id: { in: teamIds } },
+      select: {
+        id: true,
+        name: true,
+        parentTeam: {
+          select: {
+            id: true,
+            name: true,
+            parentTeam: {
+              select: {
+                id: true,
+                name: true,
+                parentTeam: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    this.exportService.exportRates(res, ratesWithProgress, teams);
   }
 
   @Post('/:id/confirm-meeting')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   async confirmMeeting(
     @Param('id', { transform: (v) => parseInt(v) }) id: number,
     @Body() data: ConfirmMeetDto,

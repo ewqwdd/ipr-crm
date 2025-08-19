@@ -12,3 +12,28 @@ export type ExportRatesPayload = (Prisma.Rate360GetPayload<{
     };
   };
 }> & { progress: number })[];
+
+export type ExportTeamsPayload = Prisma.TeamGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    parentTeam: {
+      select: {
+        id: true;
+        name: true;
+        parentTeam: {
+          select: {
+            id: true;
+            name: true;
+            parentTeam: {
+              select: {
+                id: true;
+                name: true;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+}>[];
