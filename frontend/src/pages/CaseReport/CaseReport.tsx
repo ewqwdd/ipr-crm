@@ -24,7 +24,15 @@ export default function CaseReport() {
     <LoadingOverlay fullScereen active={isLoading}>
       <div className="sm:px-8 sm:py-10 px-4 py-6 flex flex-col sm:h-full gap-6">
         <div className="flex gap-2">
-          <Heading title="Отчет" description="Отчет пройденного кейса" />
+          <Avatar
+            className="size-14 rounded-md"
+            src={generalService.transformFileUrl(data?.user.avatar)}
+          />
+          <Heading
+            title={data?.user.username}
+            className="[&>p]:mt-0.5"
+            description="Отчет пройденного кейса"
+          />
           {isAdmin && (
             <SoftButton onClick={handleExport} className="self-center">
               Скачать

@@ -67,7 +67,7 @@ export default function CaseRates() {
         <div className="flex max-sm:flex-col-reverse max-sm:gap-2 items-start">
           <Heading
             title="Опросы по кейсам"
-            description={'Список поросов по кейсам'}
+            description={'Список опросов по кейсам'}
           />
           <PrimaryButton onClick={() => openModal('CREATE_CASE_RATE')}>
             Добавить опрос

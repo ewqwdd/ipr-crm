@@ -10,24 +10,34 @@ interface FinishedCaseItemProps {
 
 export default function FinishedCaseItem({ caseItem }: FinishedCaseItemProps) {
   return (
-    <Card className="[&>div]:flex [&>div]:min-h-[62px] [&>div]:gap-2 sm:[&>div]:gap-4 [&>div]:p-4 [&>div]:px-3 sm:[&>div]:p-3 sm:[&>div]:px-6  [&>div]:items-center">
-      <Link
-        to={`/users/${caseItem.user.id}`}
-        className="font-semibold text-indigo-600 hover:text-indigo-800 max-sm:text-sm truncate"
-      >
-        {caseItem?.user.username}
-      </Link>
-      <div className="flex gap-2 items-center max-sm:flex-col">
-        <p className="text-gray-500 ml-auto text-sm truncate max-w-32">
-          {caseItem.startDate && dateService.formatDate(caseItem.startDate)}
-        </p>
-        <Badge color="yellow">Оценен</Badge>
+    <Card className="[&>div]:p-4 [&>div]:px-3 [&>div]:sm:p-3 [&>div]:sm:px-6">
+      <div className="flex gap-2 sm:gap-4 items-center">
+        <Link
+          to={`/users/${caseItem.user.id}`}
+          className="font-semibold text-indigo-600 hover:text-indigo-800 max-sm:text-sm truncate"
+        >
+          {caseItem?.user.username}
+        </Link>
+        <div className="flex gap-2 items-center max-sm:flex-col">
+          <p className="text-gray-500 ml-auto text-sm truncate max-w-32">
+            {caseItem.startDate && dateService.formatDate(caseItem.startDate)}
+          </p>
+          <Badge color="yellow">Оценен</Badge>
+        </div>
+        {caseItem.finished && (
+          <span className="text-sm font-medium text-gray-600 ml-auto">
+            Завершено
+          </span>
+        )}
       </div>
-      {caseItem.finished && (
-        <span className="text-sm font-medium text-gray-600 ml-auto">
-          Завершено
-        </span>
-      )}
+      <div className="text-sm flex flex-col mt-1.5">
+        <p className="text-gray-900 font-medium">Кейсы:</p>
+        <ul className="text-gray-600 flex flex-col mt-1">
+          {caseItem.cases.map((c) => (
+            <li className="truncate">{c.name}</li>
+          ))}
+        </ul>
+      </div>
     </Card>
   );
 }
