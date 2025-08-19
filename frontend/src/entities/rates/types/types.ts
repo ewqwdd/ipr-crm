@@ -60,6 +60,7 @@ export interface Rate {
   competencyBlocks: CompetencyBlock[];
   rateType: 'Rate180' | 'Rate360';
   finished: boolean;
+  meetDate?: string;
 }
 export type EvaluateUser = { userId: number; username?: string };
 

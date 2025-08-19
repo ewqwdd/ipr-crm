@@ -32,6 +32,7 @@ import { ExportService } from 'src/export/export.service';
 import { Response } from 'express';
 import { Indicator } from '@prisma/client';
 import { EvaluatorsFiltersDto } from './dto/evaluators-filters.dto';
+import { ConfirmMeetDto } from './dto/confirm-meet.dto';
 
 @Controller('rate360')
 export class Rate360Controller {
@@ -355,6 +356,15 @@ export class Rate360Controller {
         return a.progress - b.progress;
       });
     this.exportService.exportRates(res, ratesWithProgress);
+  }
+
+  @Post('/:id/confirm-meeting')
+  @UseGuards(AuthGuard)
+  async confirmMeeting(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @Body() data: ConfirmMeetDto,
+  ) {
+    return await this.rate360Service.confirmMeet(id, data.date);
   }
 
   @Get('/evaluators')

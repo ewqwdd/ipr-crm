@@ -301,6 +301,14 @@ const rate360Api = createApi({
       }),
       providesTags: ['RateEvaluators'],
     }),
+    confirmMeet: build.mutation<void, { id: number; date: Date }>({
+      query: ({ date, id }) => ({
+        url: `/rate360/${id}/confirm-meeting`,
+        method: 'POST',
+        body: { date },
+      }),
+      invalidatesTags: ['Rate360', 'UserRates', 'Rate360Subbordinates'],
+    }),
   }),
 });
 

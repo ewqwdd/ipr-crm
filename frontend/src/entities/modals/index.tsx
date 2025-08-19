@@ -38,6 +38,7 @@ import AddSpecFolderModal from '../folders/ui/AddSpecFolderModal';
 import { ComptenciesEditModal } from '@/widgets/ComptenciesEditModal';
 import { UserDeputyModal } from '@/features/user/UserDeputyModal';
 import EvaluatorStatistic from '@/widgets/EvaluatorStatisticModal/EvaluatorStatisticModal';
+import { EndMeetingModal } from '@/widgets/EndMeetingModal';
 
 export type ModalProps = {
   isOpen: boolean;
@@ -125,6 +126,8 @@ const ModalWrapper: FC = () => {
       return <UserDeputyModal {...updatedModalProps} />;
     case 'EVALUATOR_STATISTIC':
       return <EvaluatorStatistic {...updatedModalProps} />;
+    case 'END_MEETING':
+      return <EndMeetingModal {...updatedModalProps} />;
     default:
       break;
   }
