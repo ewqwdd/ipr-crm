@@ -4,6 +4,7 @@ import React, { ChangeEvent, FC, memo, useCallback, useState } from 'react';
 import { UsersSelect } from '@/shared/ui/UsersSelect';
 import AccessSelect from './AccessSelect';
 import TeamsHierarchyFilter from '@/widgets/TeamsHierarchyFilter';
+import FiredStatusSelect from './FiredStatusSelect';
 
 interface UsersFiltersProps {
   data?: User[];
@@ -91,6 +92,10 @@ const UsersFilters: FC<UsersFiltersProps> = ({ data, filters, setFilters }) => {
           <TeamsHierarchyFilter
             filters={filters.teams}
             onChange={(value) => updateFilters('teams', value)}
+          />
+          <FiredStatusSelect
+            value={filters.fired}
+            onChange={(value) => updateFilters('fired', value)}
           />
         </div>
       )}

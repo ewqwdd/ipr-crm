@@ -4,7 +4,11 @@ import { DotsVerticalIcon } from '@heroicons/react/solid';
 import { cva } from '@/shared/lib/cva';
 
 interface DotsDropdownProps {
-  buttons?: { text: string; onClick?: () => void; icon?: ReactNode }[];
+  buttons?: {
+    text: string | ReactNode;
+    onClick?: () => void;
+    icon?: ReactNode;
+  }[];
   children?: ReactNode;
   className?: string;
   bodyClassName?: string;

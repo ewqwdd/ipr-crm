@@ -26,6 +26,7 @@ import { InviteAcceptDTO } from './dto/invite-accept.dto';
 import { CreateMultipleUsersDto } from './dto/create-multiple-users.dto';
 import { FilesService } from 'src/files/files.service';
 import { UpdateSelfUserDto } from './dto/update-self-user.dto';
+import { ToggleFiredStatusDto } from './dto/toggle-fired-status.dto';
 
 @Controller('users')
 export class UsersController {
@@ -163,5 +164,15 @@ export class UsersController {
     @Param('id', { transform: (id) => Number(id) }) id: number,
   ) {
     return this.usersService.resendInvite(id);
+  }
+
+  @Post('/:id/toggle-fired')
+  @UseGuards(AdminGuard)
+  @HttpCode(HttpStatus.OK)
+  async toggleFiredStatus(
+    @Param('id', { transform: (id) => Number(id) }) id: number,
+    @Body() data: ToggleFiredStatusDto,
+  ) {
+    return this.usersService.toggleFiredStatus(id, data.fired);
   }
 }
