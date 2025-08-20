@@ -22,9 +22,11 @@ export const findAllIprInclude: Prisma.IndividualGrowthPlanFindManyArgs['include
         team: {
           select: {
             name: true,
+            id: true,
           },
         },
         meetDate: true,
+        teamId: true,
       },
     },
     tasks: true,
