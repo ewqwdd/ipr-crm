@@ -4,7 +4,6 @@ import IprDetails from './partials/IprDetails';
 import TasksSection from './partials/tasks';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useModal } from '@/app/hooks/useModal';
-import { dateService } from '@/shared/lib/dateService';
 interface IprEditProps {
   ipr?: Ipr;
 }
