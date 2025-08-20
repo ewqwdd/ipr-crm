@@ -496,9 +496,10 @@ export class IprService {
     if (
       clientInfo.role !== 'admin' &&
       !(
-        (await this.usersAccessService.findAllowedTeams(clientInfo)).includes(
-          plan.rate360.team.id,
-        ) ||
+        (plan.rate360.teamId &&
+          (await this.usersAccessService.findAllowedTeams(clientInfo)).includes(
+            plan.rate360.teamId,
+          )) ||
         plan.planCurators.some((curator) => curator.userId === clientInfo.id) ||
         (
           await this.usersAccessService.findAllowedSubbordinates(clientInfo.id)
