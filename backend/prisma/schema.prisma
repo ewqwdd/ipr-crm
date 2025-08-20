@@ -76,6 +76,7 @@ model Rate360 {
   hidden           Boolean               @default(false)
   globalCommentsEnabled  Boolean                @default(false)
   authorId         Int? 
+  meetDate        DateTime?
   plan             IndividualGrowthPlan?
   notifications    Notification[]
   spec             Spec?                  @relation(fields: [specId], references: [id], onDelete: Cascade)

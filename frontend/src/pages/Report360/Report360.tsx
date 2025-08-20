@@ -3,7 +3,7 @@ import { SoftButton } from '@/shared/ui/SoftButton';
 import { FC, useRef } from 'react';
 import ProgressBarBlock from './ProgressBarBlock';
 import { cva } from '@/shared/lib/cva';
-import { dateFormatter, getBoundaries } from './helpers';
+import { dateFormatter } from './helpers';
 import { useCalculateAvgIndicatorRaitings } from './useCalculateAvgIndicatorRaitings';
 import { useAggregatedAverages } from './useAggregatedAverages';
 import WorkSpace from './WorkSpace';
@@ -40,14 +40,18 @@ const RateCell = ({
   if (!rate)
     return <td className={cva('px-3 py-4 text-sm', className)}>N/D</td>;
 
-  const bars = getBoundaries(type);
-
   const color =
-    rate > bars[1] + bars[0]
-      ? 'text-green-500'
-      : rate < bars[0]
-        ? 'text-red-500'
-        : 'text-indigo-700';
+    type === 'HARD'
+      ? rate >= 3.6
+        ? 'text-green-500'
+        : rate <= 1.5
+          ? 'text-red-500'
+          : 'text-indigo-700'
+      : rate >= 4.5
+        ? 'text-green-500'
+        : rate <= 3
+          ? 'text-red-500'
+          : 'text-indigo-700';
   return (
     <td
       className={cva('whitespace-nowrap px-3 py-4 text-sm', className, color)}

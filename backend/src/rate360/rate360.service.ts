@@ -1846,4 +1846,17 @@ export class Rate360Service {
     await this.notificationsService.sendRateAssignedReminder(userId, rateId);
     return HttpStatus.OK;
   }
+
+  async confirmMeet(rateId: number, date: Date) {
+    await this.prismaService.rate360.update({
+      where: {
+        id: rateId,
+      },
+      data: {
+        meetDate: date,
+      },
+    });
+
+    return HttpStatus.OK;
+  }
 }

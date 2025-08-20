@@ -38,6 +38,7 @@ import AddSpecFolderModal from '../folders/ui/AddSpecFolderModal';
 import { ComptenciesEditModal } from '@/widgets/ComptenciesEditModal';
 import { UserDeputyModal } from '@/features/user/UserDeputyModal';
 import EvaluatorStatistic from '@/widgets/EvaluatorStatisticModal/EvaluatorStatisticModal';
+import { EndMeetingModal } from '@/widgets/EndMeetingModal';
 import { CaseCreateModal } from '@/widgets/CaseCreateModal';
 import { CaseEditModal } from '@/widgets/CaseEditModal';
 import { CaseRateCreateModal } from '@/widgets/CaseRateCreateModal';
@@ -129,6 +130,8 @@ const ModalWrapper: FC = () => {
       return <UserDeputyModal {...updatedModalProps} />;
     case 'EVALUATOR_STATISTIC':
       return <EvaluatorStatistic {...updatedModalProps} />;
+    case 'END_MEETING':
+      return <EndMeetingModal {...updatedModalProps} />;
     case 'CREATE_CASE':
       return <CaseCreateModal {...updatedModalProps} />;
     case 'EDIT_CASE':

@@ -31,6 +31,8 @@ import { ExportService } from 'src/export/export.service';
 import { Response } from 'express';
 import { Indicator } from '@prisma/client';
 import { EvaluatorsFiltersDto } from './dto/evaluators-filters.dto';
+import { ConfirmMeetDto } from './dto/confirm-meet.dto';
+import { PrismaService } from 'src/utils/db/prisma.service';
 import { RateFiltersDto } from 'src/shared/assesment/dto/rate-filters.dto';
 import { AssesmentService } from 'src/shared/assesment/assesment.service';
 
@@ -40,6 +42,7 @@ export class Rate360Controller {
     private readonly rate360Service: Rate360Service,
     private readonly exportService: ExportService,
     private readonly assesmentService: AssesmentService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   @Get('/')
@@ -341,7 +344,44 @@ export class Rate360Controller {
       .sort((a, b) => {
         return a.progress - b.progress;
       });
-    this.exportService.exportRates(res, ratesWithProgress);
+
+    const teamIds = ratesWithProgress?.map((r) => r.teamId) as number[];
+    const teams = await this.prismaService.team.findMany({
+      where: { id: { in: teamIds } },
+      select: {
+        id: true,
+        name: true,
+        parentTeam: {
+          select: {
+            id: true,
+            name: true,
+            parentTeam: {
+              select: {
+                id: true,
+                name: true,
+                parentTeam: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    this.exportService.exportRates(res, ratesWithProgress, teams);
+  }
+
+  @Post('/:id/confirm-meeting')
+  @UseGuards(AdminGuard)
+  async confirmMeeting(
+    @Param('id', { transform: (v) => parseInt(v) }) id: number,
+    @Body() data: ConfirmMeetDto,
+  ) {
+    return await this.rate360Service.confirmMeet(id, data.date);
   }
 
   @Get('/evaluators')
