@@ -61,7 +61,8 @@ export class NotificationsService {
 
     const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
 
-    const message = `Вам назначен индивидуальный план развития`;
+    const message =
+      '<span>Индивидуальный план развития сформирован.</span><br><span>Перейти к формирвоаниею задач на следующий период</span>';
     const link = isAdmin
       ? `${process.env.FRONTEND_URL}/admin/board`
       : `${process.env.FRONTEND_URL}/plans`;
@@ -70,7 +71,7 @@ export class NotificationsService {
 
     await this.mailService.sendMail(
       user.email,
-      'Вам назначен индивидуальный план развития',
+      'Вам назначен индивидуальный план развития в AYA SKILLS',
       html,
     );
 
@@ -115,7 +116,7 @@ export class NotificationsService {
 
     const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
 
-    const message = `Вам назначена оценка ${rate.type}`;
+    const message = 'Вам назначена оценка';
     const link = isAdmin
       ? `${process.env.FRONTEND_URL}/admin/progress`
       : `${process.env.FRONTEND_URL}/assigned`;
@@ -124,7 +125,7 @@ export class NotificationsService {
 
     await this.mailService.sendMail(
       user.email,
-      'Вам назначена оценка в  AYA SKILLS',
+      'Вам назначена оценка в AYA SKILLS',
       html,
     );
 
@@ -162,7 +163,7 @@ export class NotificationsService {
 
     const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
 
-    const message = `Вам назначена оценка ${rate.type}`;
+    const message = 'Вам назначена оценка';
     const link = isAdmin
       ? `${process.env.FRONTEND_URL}/admin/progress?tab=self-assessment`
       : `${process.env.FRONTEND_URL}/assigned`;
@@ -171,7 +172,7 @@ export class NotificationsService {
 
     await this.mailService.sendMail(
       user.email,
-      'Вам назначена оценка в  AYA SKILLS',
+      'Вам назначена оценка в AYA SKILLS',
       html,
     );
 
@@ -207,7 +208,8 @@ export class NotificationsService {
 
       const isAdmin = user.teamCurator.length > 0 || user.role.name === 'admin';
 
-      const message = 'Вам назначено утверждение оценки';
+      const message =
+        '<span>Вам назначено утверждение оценки.</span><br><span>Добавьте коллег, утвердите список оценивающих.</span>';
       const link = isAdmin
         ? `${process.env.FRONTEND_URL}/admin/progress?tab=confirm-list`
         : `${process.env.FRONTEND_URL}/assigned`;
@@ -216,7 +218,7 @@ export class NotificationsService {
 
       await this.mailService.sendMail(
         user.email,
-        'Вам назначено утверждение оценки',
+        'Вам назначено утверждение оценки в AYA SKILLS',
         html,
       );
 
@@ -246,7 +248,11 @@ export class NotificationsService {
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
-    await this.mailService.sendMail(user.email, 'Вам назначен тест', html);
+    await this.mailService.sendMail(
+      user.email,
+      'Вам назначен тест в AYA SKILLS',
+      html,
+    );
 
     await this.prismaService.notification.create({
       data: {
@@ -275,7 +281,7 @@ export class NotificationsService {
 
     await this.mailService.sendMail(
       user.email,
-      'Время для теста истекло',
+      'Время для теста истекло AYA SKILLS',
       html,
     );
 
@@ -374,7 +380,11 @@ export class NotificationsService {
 
     const html = this.generateButtonText(user, message, link, 'Перейти');
 
-    await this.mailService.sendMail(user.email, 'Вам назначен опрос', html);
+    await this.mailService.sendMail(
+      user.email,
+      'Вам назначен опрос в AYA SKILLS',
+      html,
+    );
 
     await this.prismaService.notification.create({
       data: {
@@ -406,7 +416,7 @@ export class NotificationsService {
 
     await this.mailService.sendMail(
       user.email,
-      'Новое обращение в поддержку',
+      'Новое обращение в поддержку в AYA SKILLS',
       html,
     );
 

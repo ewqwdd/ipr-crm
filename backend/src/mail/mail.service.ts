@@ -112,6 +112,6 @@ export class MailService {
       <a href="${process.env.FRONTEND_URL}/reset-password?code=${user.authCode}" style="display:inline-block;margin-top:20px;padding:10px 20px;background-color:#007bff;color:#fff;text-decoration:none;border-radius:5px;">Задать пароль</a>
       </div>
         `;
-    return { subject: 'Смена пароля', html };
+    return { subject: 'Смена пароля в AYA SKILLS', html };
   }
 }
