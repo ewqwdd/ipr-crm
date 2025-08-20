@@ -799,4 +799,11 @@ export class UsersService {
 
     this.mailService.sendBulkMail(inviteEmails);
   }
+
+  async toggleFiredStatus(userId: number, fired: boolean) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { fired },
+    });
+  }
 }

@@ -21,6 +21,7 @@ model User {
   authCode                String?
   mentorId                Int?
   createdAt               DateTime               @default(now())
+  fired                   Boolean?
   assignedCourses         Assigned_Course[]
   planCurators            GrowthPlanCurator[]
   logs                    GrowthPlanLog[]

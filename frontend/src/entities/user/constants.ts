@@ -5,6 +5,7 @@ export const initialUserFilters: UsersFilter = {
   access: 'ALL',
   teams: {},
   page: 1,
+  fired: false,
 };
 
 export const userAccessOptions: Option[] = [

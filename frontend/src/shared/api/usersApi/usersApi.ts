@@ -91,6 +91,14 @@ const usersApi = createApi({
       onQueryStarted: handleRemoveDeputyQuery,
       invalidatesTags: (_, __, { userId }) => [{ type: 'User', id: userId }],
     }),
+    toggleFired: build.mutation<void, { userId: number; fired: boolean }>({
+      query: ({ userId, fired }) => ({
+        url: `/users/${userId}/toggle-fired`,
+        method: 'POST',
+        body: { fired },
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 

@@ -43,6 +43,7 @@ export interface User {
   deputyRelationsAsUser: {
     deputy: DeputyUser;
   }[];
+  fired?: boolean;
 }
 
 export interface UserStoreSchema {
@@ -75,5 +76,6 @@ export interface UsersFilter {
     group?: string;
   };
   access: 'ALL' | 'ACTIVE' | 'INACTIVE';
+  fired?: boolean;
   page: number;
 }

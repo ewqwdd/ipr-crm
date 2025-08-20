@@ -32,6 +32,7 @@ export default function TableRow({
 }: TableRowProps) {
   const navigate = useNavigate();
   const [deleteUser, deleteState] = usersApi.useRemoveUserMutation();
+  const [toggleFiredStatus, firedState] = usersApi.useToggleFiredMutation();
   const isAdmin = useIsAdmin();
   const [loading, setLoading] = useState(false);
   const { openModal } = useModal();
@@ -109,7 +110,8 @@ export default function TableRow({
   return (
     <tr
       className={cva({
-        'animate-pulse pointer-events-none opacity-50': !!loading,
+        'animate-pulse pointer-events-none opacity-50':
+          !!loading || !!firedState.isLoading,
         '[&_span]:opacity-60 [&_a]:opacity-60': !person?.access,
       })}
     >
@@ -201,6 +203,7 @@ export default function TableRow({
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 [&_span]:opacity-100">
         {!skeleton && (
           <div className="flex justify-end items-center gap-2">
+            {person.fired && <Badge color="red">Уволен</Badge>}
             {person.access ? (
               <Badge color="green">Активен</Badge>
             ) : (
@@ -225,6 +228,22 @@ export default function TableRow({
                         {
                           text: 'Пригласить повторно',
                           onClick: () => resendInvite(),
+                        },
+                      ]
+                    : []),
+                  ...(isAdmin
+                    ? [
+                        {
+                          text: person.fired ? (
+                            <span className="text-green-500">Восстановить</span>
+                          ) : (
+                            <span className="text-red-500">Уволить</span>
+                          ),
+                          onClick: () =>
+                            toggleFiredStatus({
+                              userId: person.id!,
+                              fired: !person.fired,
+                            }),
                         },
                       ]
                     : []),
