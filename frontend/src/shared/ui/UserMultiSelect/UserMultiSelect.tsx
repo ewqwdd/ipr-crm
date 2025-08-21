@@ -12,6 +12,7 @@ interface UserMultiSelectProps {
     actionMeta: ActionMeta<Option>,
   ) => void;
   loading?: boolean;
+  className?: string;
 }
 
 export default function UserMultiSelect({
@@ -19,6 +20,7 @@ export default function UserMultiSelect({
   onChange,
   value,
   loading,
+  className,
 }: UserMultiSelectProps) {
   const options = users.map((user) => ({
     value: user.id,
@@ -32,9 +34,13 @@ export default function UserMultiSelect({
       onChange={onChange}
       options={options}
       value={value}
-      className={cva('basic-multi-select', {
-        'animate-pulse': !!loading,
-      })}
+      className={cva(
+        'basic-multi-select',
+        {
+          'animate-pulse': !!loading,
+        },
+        className,
+      )}
       classNamePrefix="select"
     />
   );

@@ -27,6 +27,7 @@ import { MailModule } from './mail/mail.module';
 import { RedisService } from './utils/redis/redis.service';
 import { ExportModule } from './export/export.module';
 import { FilesModule } from './files/files.module';
+import { CaseModule } from './case/case.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { FilesModule } from './files/files.module';
     MailModule,
     ExportModule,
     FilesModule,
+    CaseModule,
   ],
   providers: [
     PrismaService,

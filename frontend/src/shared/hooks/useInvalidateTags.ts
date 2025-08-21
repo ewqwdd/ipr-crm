@@ -10,6 +10,7 @@ import { teamsApi } from '../api/teamsApi';
 import { testsApi } from '../api/testsApi';
 import { universalApi } from '../api/universalApi';
 import { useCallback } from 'react';
+import { caseApi } from '../api/caseApi';
 
 const apis = [
   usersApi,
@@ -22,6 +23,7 @@ const apis = [
   teamsApi,
   testsApi,
   universalApi,
+  caseApi,
 ] as const;
 
 type ApiType = (typeof apis)[number];
@@ -64,6 +66,13 @@ const tagsMap: TabMapType = {
   [teamsApi.reducerPath]: ['Team'],
   [testsApi.reducerPath]: ['Test', 'TestFinished', 'TestAssigned'],
   [universalApi.reducerPath]: ['Role', 'Spec'],
+  [caseApi.reducerPath]: [
+    'Case',
+    'CaseRate',
+    'CaseAssigned',
+    'CaseRateReport',
+    'MyRates',
+  ],
 };
 type AllTags = TabMapType[keyof TabMapType][number];
 type Tags = (AllTags | { type: AllTags; id: number })[];

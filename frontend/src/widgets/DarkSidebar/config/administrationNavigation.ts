@@ -1,4 +1,5 @@
 import {
+  BriefcaseIcon,
   ChartBarIcon,
   ChatAltIcon,
   ClipboardListIcon,
@@ -80,6 +81,24 @@ export const administrationNavigation = (type: 'admin' | 'curator') => [
         },
       ]
     : []),
+  {
+    name: 'Кейсы',
+    icon: BriefcaseIcon,
+    children: [
+      ...(type === 'admin'
+        ? [
+            {
+              name: 'Список кейсов',
+              href: '/cases',
+            },
+          ]
+        : []),
+      {
+        name: 'Опросы',
+        href: '/case-rates',
+      },
+    ],
+  },
   {
     name: 'Тесты',
     icon: QuestionMarkCircleIcon,

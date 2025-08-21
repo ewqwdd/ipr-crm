@@ -1,4 +1,4 @@
-import { EvaulatorType } from '@/entities/rates/types/types';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 import { ChartData } from 'chart.js';
 
 const evaluatorTypes = [

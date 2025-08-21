@@ -1,9 +1,10 @@
 import { usersApi } from '@/shared/api/usersApi/usersApi';
 import EvaluatorTeam from './EvaluatorTeam';
 import { useMemo } from 'react';
-import { EvaluateUser, EvaulatorType } from '@/entities/rates/types/types';
+import { EvaluateUser } from '@/entities/rates/types/types';
 import { Team } from '@/entities/team';
 import { generalService } from '@/shared/lib/generalService';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface EvaluatorTeamProps {
   excluded?: EvaluateUser[];

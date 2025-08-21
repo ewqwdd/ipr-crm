@@ -101,13 +101,6 @@ const rate360Api = createApi({
       }),
       invalidatesTags: ['Rate360', 'UserRates'],
     }),
-    deleteRate: build.mutation<void, { id: number }>({
-      query: ({ id }) => ({
-        url: `/rate360/${id}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: ['Rate360', 'UserRates'],
-    }),
     assignedRates: build.query<Rate[], void>({
       query: () => '/rate360/assigned-rates',
       providesTags: ['AssignedRate'],

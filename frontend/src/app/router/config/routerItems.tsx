@@ -3,6 +3,8 @@ import { RouterItemType } from './types';
 import { ResetPassword } from '@/pages/ResetPassword';
 import { Profile } from '@/pages/Profile';
 import React from 'react';
+import { AssignedCase } from '@/pages/AssignedCase';
+import { MyCaseRates } from '@/pages/MyCaseRates';
 
 const UserPage = React.lazy(() => import('@/pages/UserPage/UserPage'));
 const Users = React.lazy(() => import('@/pages/Users/Users'));
@@ -80,6 +82,12 @@ const Rate360Statistic = React.lazy(
 const RateSubbordinates = React.lazy(
   () => import('@/pages/RatesSubbordinates/RatesSubbordinates'),
 );
+const Cases = React.lazy(() => import('@/pages/Cases/Cases'));
+const CaseRates = React.lazy(() => import('@/pages/CaseRates/CaseRates'));
+const AssignedCases = React.lazy(
+  () => import('@/pages/AssignedCases/AssignedCases'),
+);
+const CaseReport = React.lazy(() => import('@/pages/CaseReport/CaseReport'));
 
 export const routerItems: RouterItemType[] = [
   { path: '/login', element: <Login /> },
@@ -218,6 +226,33 @@ export const routerItems: RouterItemType[] = [
     path: '/rate-subordinates',
     element: <RateSubbordinates />,
     curator: true,
+  },
+  {
+    path: '/cases',
+    element: <Cases />,
+    onlyAdmin: true,
+  },
+  {
+    path: '/case-rates',
+    element: <CaseRates />,
+    onlyAdmin: true,
+    curator: true,
+  },
+  {
+    path: '/assigned-cases',
+    element: <AssignedCases />,
+  },
+  {
+    path: '/assigned-cases/:id',
+    element: <AssignedCase />,
+  },
+  {
+    path: '/case-report/:id',
+    element: <CaseReport />,
+  },
+  {
+    path: '/my-cases',
+    element: <MyCaseRates />,
   },
 ];
 

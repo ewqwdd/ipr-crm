@@ -2,6 +2,7 @@ import { useAppSelector } from '@/app';
 import { rate360Api } from '../api/rate360Api';
 import { surveyApi } from '../api/surveyApi';
 import { testsApi } from '../api/testsApi';
+import { caseApi } from '../api/caseApi';
 
 const useAssignedRatesCounter = () => {
   const { data: assigned } = rate360Api.useAssignedRatesQuery();
@@ -66,6 +67,19 @@ const useSurveysCounter = () => {
   return assignedSurveys?.filter((s) => !s.finished).length || 0;
 };
 
+const useCasesCounter = () => {
+  const { data: assignedCases } = caseApi.useGetAssignedCasesQuery();
+  const userId = useAppSelector((state) => state.user.user?.id);
+  return (
+    assignedCases?.filter(
+      (c) =>
+        !c.finished &&
+        c.userRates.filter((rate) => rate.userId === userId).length <
+          c.cases.length,
+    ).length || 0
+  );
+};
+
 export {
   useRatesCounter,
   useTestsCounter,
@@ -73,4 +87,5 @@ export {
   useAssignedRatesCounter,
   useConfirmRatesCounter,
   useAssignedSelfRatesCounter,
+  useCasesCounter,
 };

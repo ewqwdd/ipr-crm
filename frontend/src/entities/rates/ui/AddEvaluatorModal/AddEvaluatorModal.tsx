@@ -1,11 +1,12 @@
 import { Modal } from '@/shared/ui/Modal';
-import { EvaluateUser, EvaulatorType } from '../../types/types';
+import { EvaluateUser } from '../../types/types';
 import { useAppSelector } from '@/app';
 import { useState } from 'react';
 import EvaluatorsForm from '../EvaluatorsForm/EvaluatorsForm';
 import { TeamFilters } from '@/features/team/TeamFilters';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { SecondaryButton } from '@/shared/ui/SecondaryButton';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface AddEvaluatorModalData {
   onSubmit: (data: EvaluateUser[]) => void;

@@ -3,6 +3,7 @@ import { Rate360 } from '@prisma/client';
 import { ExcelService } from './excel.service';
 import { Response } from 'express';
 import {
+  ExportCaseRatesPayload,
   ExportIprPayload,
   ExportRatesPayload,
   ExportTeamsPayload,
@@ -158,6 +159,77 @@ export class ExportService {
         ),
         link: `${process.env.FRONTEND_URL}/ipr/360/${plan.id}`,
       })),
+    });
+  }
+
+  async exportCases(res: Response, data: ExportCaseRatesPayload) {
+    const keys = ['username', 'case', 'rate', 'comment'] as const;
+
+    const caseRates = data.cases.map((caseRate) => {
+      const userRates = data.userRates
+        .filter((userRate) => userRate.caseId === caseRate.id)
+        .sort((a, b) => b.userId - a.userId);
+
+      return userRates.map((userRate) => ({
+        username: userRate.user.username,
+        case: caseRate.name,
+        rate: userRate.rate,
+        comment: userRate.comment,
+      }));
+    });
+
+    console.log(caseRates);
+
+    await this.excelService.generateExcel<typeof keys>(res, {
+      keys,
+      headers: {
+        username: 'Никнейм',
+        case: 'Кейс',
+        rate: 'Оценка',
+        comment: 'Комментарий',
+      },
+      name: `${data.user.username} - Кейсы`,
+      rows: [
+        ...caseRates
+          .filter((caseRate) => caseRate.length > 0)
+          .flatMap((caseRate) => [
+            ...caseRate,
+            {
+              username: 'Средняя оценка',
+              case: caseRate[0].case,
+              rate: (
+                caseRate.reduce((acc, rate) => acc + rate.rate, 0) /
+                caseRate.length
+              ).toFixed(1),
+              comment: '',
+            },
+          ]),
+        ...(data.comments.length > 0
+          ? [
+              {
+                username: 'Комментарии',
+                case: '',
+                rate: '',
+                comment: '',
+              },
+            ]
+          : []),
+        ...data.comments.map((comment) => ({
+          username: comment.user.username,
+          case: '',
+          rate: '',
+          comment: comment.comment,
+        })),
+        {
+          username: 'Общая оценка',
+          case: '',
+          rate: (
+            data.userRates.reduce((acc, rate) => acc + rate.rate, 0) /
+            data.userRates.length
+          ).toFixed(1),
+          comment: '',
+        },
+      ],
     });
   }
 }

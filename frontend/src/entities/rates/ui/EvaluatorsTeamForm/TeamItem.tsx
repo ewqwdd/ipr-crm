@@ -6,7 +6,8 @@ import { universalApi } from '@/shared/api/universalApi';
 import EvaluatorsItem from './EvaluatorsItem';
 import { usersApi } from '@/shared/api/usersApi/usersApi';
 import { TeamItemIds } from '../AddRate/EvaluatorsTab/EvaluatorsTab';
-import { EvaluateUser, EvaulatorType } from '../../types/types';
+import { EvaluateUser } from '../../types/types';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface TeamItemProps {
   teamId: TeamItemIds;

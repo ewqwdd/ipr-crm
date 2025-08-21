@@ -1,11 +1,12 @@
 import EvaluatorTeam from './partials/EvaluatorTeam';
 import NoTeamEvaluators from './partials/NoTeamEvaluators';
 import React, { memo, useLayoutEffect, useMemo } from 'react';
-import { AddRateDto, EvaluateUser, EvaulatorType } from '../../types/types';
+import { AddRateDto, EvaluateUser } from '../../types/types';
 import { MultiValue } from 'react-select';
 import { Option } from '@/shared/types/Option';
 import { useFilteredTeams } from '../../hooks/useFilteredTeams';
 import { teamsApi } from '@/shared/api/teamsApi';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 interface EvaluatorsFormProps {
   teamId?: number;

@@ -26,12 +26,13 @@ import { SingleRateIdDto } from './dto/single-rate-id.dto';
 import { SingleCommentDto } from './dto/single-comment.dto';
 import { DeleteEvaluatorsDto } from './dto/delete-evaluators.dto';
 import { AddEvaluatorsDto } from './dto/add-evalators.dto';
-import { RateFiltersDto } from './dto/rate-filters.dto';
 import { MultipleRateIdDto } from './dto/multiple-rate-id.dto';
 import { ExportService } from 'src/export/export.service';
 import { Response } from 'express';
 import { Indicator } from '@prisma/client';
 import { EvaluatorsFiltersDto } from './dto/evaluators-filters.dto';
+import { RateFiltersDto } from 'src/shared/assesment/dto/rate-filters.dto';
+import { AssesmentService } from 'src/shared/assesment/assesment.service';
 import { ConfirmMeetDto } from './dto/confirm-meet.dto';
 import { PrismaService } from 'src/utils/db/prisma.service';
 
@@ -41,6 +42,7 @@ export class Rate360Controller {
     private readonly rate360Service: Rate360Service,
     private readonly exportService: ExportService,
     private readonly prismaService: PrismaService,
+    private readonly assesmentService: AssesmentService,
   ) {}
 
   @Get('/')
@@ -79,12 +81,6 @@ export class Rate360Controller {
     return this.rate360Service.createRate(data, sessionInfo);
   }
 
-  @Delete('/:id')
-  @UseGuards(AdminGuard)
-  async deleteRate(@Param('id', { transform: (v) => parseInt(v) }) id: number) {
-    return this.rate360Service.deleteRate(id);
-  }
-
   @Post('/report-visibility')
   @UseGuards(AuthGuard)
   async toggleReportVisibility(
@@ -114,7 +110,7 @@ export class Rate360Controller {
     @Param('id', { transform: (v) => parseInt(v) }) id: number,
     @SessionInfo() sessionInfo: GetSessionInfoDto,
   ) {
-    return await this.rate360Service.findForUser(sessionInfo.id, id);
+    return await this.assesmentService.findForUser(sessionInfo.id, id);
   }
 
   @Post('/assesment')
@@ -295,15 +291,6 @@ export class Rate360Controller {
     @Param('userId', { transform: (v) => parseInt(v) }) userId: number,
   ) {
     return await this.rate360Service.remindEvaluator(rateId, userId);
-  }
-
-  @Delete('/:id/evaluator')
-  @UseGuards(AdminGuard)
-  async deleteEvaluators(
-    @Param('id', { transform: (v) => parseInt(v) }) id: number,
-    @Body() data: DeleteEvaluatorsDto,
-  ) {
-    return await this.rate360Service.deleteEvaluators(id, data);
   }
 
   @Post('/:id/evaluator')

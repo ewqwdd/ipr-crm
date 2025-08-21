@@ -8,6 +8,7 @@ import { rate360Api } from '../api/rate360Api';
 import { testsApi } from '../api/testsApi';
 import { surveyApi } from '../api/surveyApi';
 import { iprApi } from '../api/iprApi';
+import { caseApi } from '../api/caseApi';
 
 export const useAuthControl = () => {
   const user = useAppSelector((state) => state.user.user);
@@ -37,6 +38,7 @@ export const useAuthControl = () => {
       dispatch(iprApi.util.resetApiState());
       dispatch(testsApi.util.resetApiState());
       dispatch(surveyApi.util.resetApiState());
+      dispatch(caseApi.util.resetApiState());
       if (!isGuestRoute) {
         navigate('/login');
       }

@@ -10,9 +10,9 @@ import {
   ChartData,
   TooltipItem,
 } from 'chart.js';
-import { EvaulatorType } from '@/entities/rates/types/types';
 import { getAyeChartData } from './helpers';
 import { FC } from 'react';
+import { EvaulatorType } from '@/shared/types/AssesmentBaseType';
 
 ChartJS.register(
   CategoryScale,
