@@ -220,7 +220,6 @@ const Report360: FC<Rate360Props> = ({ rate, isLoading }) => {
                                     <CommentItem
                                       key={comment.id}
                                       comment={comment.comment}
-                                      user={comment.user}
                                     />
                                   ))}
                                 </div>

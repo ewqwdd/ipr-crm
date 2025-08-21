@@ -42,6 +42,11 @@ export default function IprHeading({ ipr }: IprHeadingProps) {
           </Link>
         </div>
       </div>
+      {!ipr?.rate360.meetDate && (
+        <div className="bg-yellow-100 rounded-md px-4 py-2 text-sm font-semibold border border-black/20 ring-1 self-start  ring-yellow-100">
+          Пожалуйста, не забудьте указать дату завершения встречи
+        </div>
+      )}
     </>
   );
 }

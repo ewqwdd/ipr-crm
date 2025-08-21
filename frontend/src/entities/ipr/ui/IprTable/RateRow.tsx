@@ -52,6 +52,8 @@ export default function RateRow({
     [setSelected, task.id],
   );
 
+  const deputies = task.user.deputyRelationsAsDeputy;
+
   return (
     <tr
       className={cva({
@@ -66,23 +68,26 @@ export default function RateRow({
           />
         )}
       </td>
-
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-        <Link
-          className="font-medium text-gray-900  hover:text-violet-900 transition-all"
-          to={'/users/' + task?.userId}
-        >
-          {usersService.displayName(task.user)}
-        </Link>
-        {!isAdmin && isDeputy && (
-          <Badge color="green" size="sm" className="ml-1">
-            Ваш заместитель
-          </Badge>
-        )}
-        {isAdmin && task.user.deputyRelationsAsDeputy.length > 0 && (
-          <div className="font-medium inline-flex gap-1 items-center ml-1.5">
-            ·
-            {task.user.deputyRelationsAsDeputy.map((deputy, i) => (
+      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 text-center">
+        <div className="font-medium flex gap-1 items-center justify-center">
+          {task.planCurators.map((curator, i) => (
+            <Link
+              to={`/users/${curator.user.id}`}
+              className={cva({
+                'ml-0.5': i === 0,
+              })}
+            >
+              <Badge key={curator.user.id} color="indigo" size="sm">
+                {usersService.displayName(curator.user)}
+              </Badge>
+            </Link>
+          ))}
+        </div>
+      </td>
+      {isAdmin && (
+        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+          <div className="font-medium flex gap-1 items-center justify-center">
+            {deputies.map((deputy, i) => (
               <Link
                 to={`/users/${deputy.user.id}`}
                 className={cva({
@@ -95,6 +100,20 @@ export default function RateRow({
               </Link>
             ))}
           </div>
+        </td>
+      )}
+
+      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 text-center">
+        <Link
+          className="font-medium text-gray-900  hover:text-violet-900 transition-all "
+          to={'/users/' + task?.userId}
+        >
+          {usersService.displayName(task.user)}
+        </Link>
+        {!isAdmin && isDeputy && (
+          <Badge color="green" size="sm" className="ml-1">
+            Ваш заместитель
+          </Badge>
         )}
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">

@@ -578,7 +578,14 @@ export class IprService {
   }
 
   findAllFilters(
-    { startDate, endDate, user, deputyOnly }: IprFiltersDto,
+    {
+      startDate,
+      endDate,
+      user,
+      deputyOnly,
+      curatorId,
+      deputyId,
+    }: IprFiltersDto,
     sessionInfo: GetSessionInfoDto,
   ): Prisma.IndividualGrowthPlanWhereInput {
     return {
@@ -597,18 +604,21 @@ export class IprService {
           }
         : {}),
       ...(user ? { userId: user } : {}),
-      ...(deputyOnly
+      ...(deputyOnly || deputyId
         ? {
             user: {
               deputyRelationsAsDeputy: {
                 some:
                   sessionInfo.role === 'admin'
-                    ? {} // для админа - любые связи (все deputy)
+                    ? deputyId
+                      ? { userId: deputyId }
+                      : {} // для админа - любые связи (все deputy)
                     : { userId: sessionInfo.id }, // для обычного пользователя - только его связи
               },
             },
           }
         : {}),
+      ...(curatorId ? { planCurators: { some: { userId: curatorId } } } : {}),
     };
   }
 

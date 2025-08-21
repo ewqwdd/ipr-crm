@@ -345,7 +345,9 @@ export class Rate360Controller {
         return a.progress - b.progress;
       });
 
-    const teamIds = ratesWithProgress?.map((r) => r.teamId).filter(Boolean) as number[];
+    const teamIds = ratesWithProgress
+      ?.map((r) => r.teamId)
+      .filter(Boolean) as number[];
     const teams = await this.prismaService.team.findMany({
       where: { id: { in: teamIds } },
       select: {

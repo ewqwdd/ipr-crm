@@ -27,7 +27,7 @@ export default function IprEdit({ ipr }: IprEditProps) {
           className="mt-2 ml-auto block"
           onClick={() => openModal('END_MEETING', { rateId: ipr?.rate360Id })}
         >
-          Звершить встречу
+          Завершить встречу
         </PrimaryButton>
       )}
     </div>

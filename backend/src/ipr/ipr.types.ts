@@ -31,6 +31,17 @@ export const findAllIprInclude: Prisma.IndividualGrowthPlanFindManyArgs['include
     },
     tasks: true,
     spec: true,
+    planCurators: {
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+      },
+    },
   };
 
 export type FindAllIprType = Prisma.IndividualGrowthPlanGetPayload<{
@@ -62,5 +73,16 @@ export type FindAllIprType = Prisma.IndividualGrowthPlanGetPayload<{
     };
     tasks: true;
     spec: true;
+    planCurators: {
+      include: {
+        user: {
+          select: {
+            id: true;
+            username: true;
+            avatar: true;
+          };
+        };
+      };
+    };
   };
 }>;
