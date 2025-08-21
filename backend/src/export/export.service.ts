@@ -12,6 +12,12 @@ import {
 export class ExportService {
   constructor(private readonly excelService: ExcelService) {}
 
+  dateOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  };
+
   async ratesConfirm(
     res: Response,
     rates: (Rate360 & { user: { username: string } })[],
@@ -44,6 +50,7 @@ export class ExportService {
       'username',
       'type',
       'progress',
+      'meetDate',
       'product',
       'department',
       'direction',
@@ -82,6 +89,7 @@ export class ExportService {
         username: 'Никнейм',
         type: 'Тип',
         progress: 'Прогресс',
+        meetDate: 'Дата встречи',
         product: 'Продукт',
         department: 'Департамент',
         direction: 'Направление',
@@ -93,6 +101,7 @@ export class ExportService {
         username: rate.user.username,
         type: rate.type,
         progress: `${(Math.min(rate.progress, 1) * 100).toFixed()}%`,
+        meetDate: rate?.meetDate?.toLocaleString('ru-RU', this.dateOptions),
         ...getTeams(rate),
       })),
     });
@@ -107,12 +116,6 @@ export class ExportService {
       'progress',
       'meetDate',
     ] as const;
-
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    };
 
     await this.excelService.generateExcel(res, {
       keys,
@@ -142,7 +145,10 @@ export class ExportService {
                 100
               ).toFixed(0) + '%'
             : '100%',
-        meetDate: plan.rate360?.meetDate?.toLocaleString('ru-RU', options),
+        meetDate: plan.rate360?.meetDate?.toLocaleString(
+          'ru-RU',
+          this.dateOptions,
+        ),
       })),
     });
   }
