@@ -17,6 +17,7 @@ import { StaticSelectFilter } from '@/shared/ui/StaticSelectFilter';
 import { universalApi } from '@/shared/api/universalApi';
 import { IprListPageType } from '../config';
 import { Checkbox } from '@/shared/ui/Checkbox';
+import { useIsAdmin } from '@/shared/hooks/useIsAdmin';
 
 interface IprFiltersProps {
   filters: IprFiltersType;
@@ -34,6 +35,7 @@ export default memo(function IprFilters({
   const { data: teams } = teamsApi.useGetTeamsQuery();
   const { data: specs } = universalApi.useGetSpecsQuery();
   const user = useAppSelector((state) => state.user.user);
+  const isAdmin = useIsAdmin();
 
   const changedFiltersCount = Object.entries(filters).reduce(
     (acc, [key, value]) => {
@@ -167,6 +169,24 @@ export default memo(function IprFilters({
             onChange={onChangeSkillType}
             value={filters.skillType}
           />
+          <SearchSelect
+            label="Руководитель"
+            options={usersOptions}
+            value={filters.curatorId}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, curatorId: Number(value.id) }))
+            }
+          />
+          {isAdmin && (
+            <SearchSelect
+              label="Заместитель"
+              options={usersOptions}
+              value={filters.deputyId}
+              onChange={(value) =>
+                setFilters((prev) => ({ ...prev, deputyId: Number(value.id) }))
+              }
+            />
+          )}
           <div className="flex items-center gap-2">
             <Checkbox
               title="Только заместители"

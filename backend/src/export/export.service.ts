@@ -110,27 +110,34 @@ export class ExportService {
   async exportIprs(res: Response, plans: ExportIprPayload) {
     const keys = [
       'index',
-      'username',
+      'curator',
       'deputy',
+      'username',
       'team',
       'progress',
       'meetDate',
+      'link',
     ] as const;
 
     await this.excelService.generateExcel(res, {
       keys,
       headers: {
         index: '',
-        username: 'Никнейм',
+        curator: 'Руководитель',
         deputy: 'Заместитель у',
+        username: 'Никнейм',
         team: 'Команда',
         progress: 'Прогресс',
         meetDate: 'Дата встречи',
+        link: 'Ссылка',
       },
       name: 'Планы развития',
       rows: plans.map((plan, i) => ({
         index: i + 1,
         username: plan.user.username,
+        curator: plan.planCurators
+          .map((curator) => curator.user.username)
+          .join(', '),
         deputy: plan.user.deputyRelationsAsDeputy
           .map((deputy) => deputy.user.username)
           .join(', '),
@@ -149,6 +156,7 @@ export class ExportService {
           'ru-RU',
           this.dateOptions,
         ),
+        link: `${process.env.FRONTEND_URL}/ipr/360/${plan.id}`,
       })),
     });
   }

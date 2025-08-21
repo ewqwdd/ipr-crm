@@ -24,6 +24,8 @@ export const filterService = {
     endDate: filters.period?.[1]?.toDate()?.toISOString(),
     subbordinatesOnly: type === 'TEAM' ? true : undefined,
     deputyOnly: filters.deputyOnly,
+    curatorId: filters.curatorId === -1 ? undefined : filters.curatorId,
+    deputyId: filters.deputyId === -1 ? undefined : filters.deputyId,
   }),
 
   rateFiltersTransform: (
