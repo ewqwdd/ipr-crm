@@ -64,6 +64,9 @@ export default function Content() {
                 Профиль
               </p>
             </div>
+            <span className="text-gray-300 font-medium text-sm mr-4">
+              {import.meta.env.VITE_APP_VERSION}
+            </span>
             <button onClick={logout}>
               <LogoutIcon className="size-6 text-gray-100" />
             </button>
