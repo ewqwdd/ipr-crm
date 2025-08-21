@@ -55,4 +55,14 @@ export class IprFiltersDto {
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
   deputyOnly?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => Number(value))
+  @IsNumber()
+  deputyId?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => Number(value))
+  @IsNumber()
+  curatorId?: number;
 }

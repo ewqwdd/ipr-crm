@@ -17,7 +17,7 @@ export default function IprTable({
   setSelected,
 }: IprTableProps) {
   return (
-    <div className="max-sm:max-w-full max-sm:overflow-x-auto">
+    <div className="max-sm:max-w-full overflow-x-auto">
       <table className="sm:min-w-full divide-y divide-gray-300 mt-2">
         <ColumnsHeading />
         <tbody

@@ -27,6 +27,8 @@ export interface IprFiltersDto {
   endDate?: string;
   subbordinatesOnly?: boolean;
   deputyOnly?: boolean;
+  curatorId?: number;
+  deputyId?: number;
 }
 
 const iprApi = createApi({
@@ -139,31 +141,12 @@ const iprApi = createApi({
       ],
     }),
     findAllIpr: build.query<{ data: Ipr[]; total: number }, IprFiltersDto>({
-      query: ({
-        limit,
-        page,
-        endDate,
-        skill,
-        specId,
-        startDate,
-        teams,
-        user,
-        subbordinatesOnly,
-        deputyOnly,
-      }) => ({
+      query: ({ teams, ...rest }) => ({
         url: '/ipr',
         method: 'GET',
         params: {
-          limit,
-          page,
-          endDate,
-          skill,
-          specId,
-          startDate,
           teams: teams?.join(','),
-          user,
-          subbordinatesOnly,
-          deputyOnly,
+          ...rest,
         },
       }),
       providesTags: (_, __, params) => [{ type: 'Ipr', params }],

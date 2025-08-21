@@ -11,9 +11,23 @@ export default function ColumnsHeading() {
         </th>
         <th
           scope="col"
-          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 whitespace-nowrap"
+          className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6 whitespace-nowrap"
         >
-          {isAdmin ? 'Имя · Заместитель у' : 'Имя пользователя'}
+          Руководитель
+        </th>
+        {isAdmin && (
+          <th
+            scope="col"
+            className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-center whitespace-nowrap"
+          >
+            Заместитель у
+          </th>
+        )}
+        <th
+          scope="col"
+          className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6 whitespace-nowrap"
+        >
+          Сотрудник
         </th>
         <th
           scope="col"
