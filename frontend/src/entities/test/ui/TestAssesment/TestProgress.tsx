@@ -8,18 +8,23 @@ interface TestProgressProps {
 
 export default memo(function TestProgress({ test }: TestProgressProps) {
   const answers = useAppSelector((state) => state.testAssesment.answers);
-  const answersCount = Object.values(answers).filter(
-    (answer) =>
-      !answer.numberAnswer && !answer.textAnswer && !answer.optionAnswer,
-  ).length;
-  const progress =
-    answersCount === 0
-      ? 0
-      : (test.test.testQuestions.length / answersCount) * 100;
+  const questions = test.test.testQuestions;
+  const countAnswers = Object.entries(answers).filter(([i, answer]) => {
+    const question = questions[Number(i)];
+    console.debug(answers);
+    if (['SINGLE', 'MULTIPLE'].includes(question?.type ?? '')) {
+      return (answer.optionAnswer?.length ?? 0) > 0;
+    } else if (question?.type === 'NUMBER') {
+      return (answer.numberAnswer?.length ?? 0) > 0;
+    } else if (question?.type === 'TEXT') {
+      return (answer.textAnswer?.length ?? 0) > 0;
+    }
+  }).length;
+  const total = questions.length;
 
   return (
     <div className="mt-5 self-center text-gray-900 font-semibold">
-      {progress.toFixed(0)}%
+      {countAnswers}/{total}
     </div>
   );
 });
