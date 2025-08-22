@@ -53,10 +53,6 @@ export default function TeamItem({
     [users, teamId.userId],
   );
 
-  if (!team) {
-    return null;
-  }
-
   const evaluatorItemProps = {
     userId: teamId.userId,
     specId: teamId.specId,
@@ -73,8 +69,12 @@ export default function TeamItem({
       })}
     >
       <span className="text-indigo-600 flex gap-2 items-center">
-        <UsersIcon className="size-4" />
-        <span>{team.name}</span>
+        {team && (
+          <>
+            <UsersIcon className="size-4" />
+            <span>{team.name}</span>
+          </>
+        )}
       </span>
       <span className="text-gray-800 font-medium">{user?.username}</span>
 

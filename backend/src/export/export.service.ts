@@ -152,7 +152,7 @@ export class ExportService {
                   plan.tasks.filter((task) => !!task.onBoard).length) *
                 100
               ).toFixed(0) + '%'
-            : '100%',
+            : '',
         meetDate: plan.rate360?.meetDate?.toLocaleString(
           'ru-RU',
           this.dateOptions,

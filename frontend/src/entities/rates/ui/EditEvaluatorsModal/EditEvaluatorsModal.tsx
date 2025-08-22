@@ -57,6 +57,8 @@ export default function EditEvaluatorsModal({
     return null;
   }
 
+  console.debug(modalData);
+
   const onAdd = () => {
     dispatch(
       ratesActions.setSelectedSpecs([
