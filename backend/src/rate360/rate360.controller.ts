@@ -378,12 +378,13 @@ export class Rate360Controller {
   }
 
   @Post('/:id/confirm-meeting')
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   async confirmMeeting(
     @Param('id', { transform: (v) => parseInt(v) }) id: number,
     @Body() data: ConfirmMeetDto,
+    @SessionInfo() session: GetSessionInfoDto,
   ) {
-    return await this.rate360Service.confirmMeet(id, data.date);
+    return await this.rate360Service.confirmMeet(id, data.date, session);
   }
 
   @Get('/evaluators')

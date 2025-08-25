@@ -1840,10 +1840,51 @@ export class Rate360Service {
     return HttpStatus.OK;
   }
 
-  async confirmMeet(rateId: number, date: Date) {
+  async confirmMeet(
+    rateId: number,
+    date: Date,
+    sessionInfo: GetSessionInfoDto,
+  ) {
     await this.prismaService.rate360.update({
       where: {
         id: rateId,
+        ...(sessionInfo.role === 'admin'
+          ? {}
+          : {
+              OR: [
+                {
+                  evaluators: {
+                    some: {
+                      userId: sessionInfo.id,
+                      type: EvaluatorType.CURATOR,
+                    },
+                  },
+                },
+                {
+                  teamId: {
+                    in: await this.usersService.findAllowedTeams(sessionInfo),
+                  },
+                },
+                {
+                  plan: {
+                    planCurators: {
+                      some: {
+                        userId: sessionInfo.id,
+                      },
+                    },
+                  },
+                },
+                {
+                  user: {
+                    deputyRelationsAsDeputy: {
+                      some: {
+                        userId: sessionInfo.id,
+                      },
+                    },
+                  },
+                },
+              ],
+            }),
       },
       data: {
         meetDate: date,
